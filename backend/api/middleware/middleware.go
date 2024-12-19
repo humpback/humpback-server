@@ -1,0 +1,129 @@
+package middleware
+
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"io"
+	"log/slog"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+
+	"humpback/common/response"
+)
+
+const (
+	KeyErrCodeMap = "KeyErrCodeMap"
+)
+
+func Log() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if (c.Request.Method == http.MethodPost || c.Request.Method == http.MethodPut) && strings.EqualFold(c.GetHeader("Content-Type"), "application/json") {
+			data, err := io.ReadAll(c.Request.Body)
+			if err != nil {
+				AbortErr(c, err)
+				return
+			}
+			c.Set("Body", data)
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(data))
+		}
+		startTime := time.Now()
+		c.Next()
+		if strings.HasPrefix(c.Request.URL.Path, "/webapi") ||
+			strings.HasPrefix(c.Request.URL.Path, "/platform-api") ||
+			strings.HasPrefix(c.Request.URL.Path, "/extern-api") ||
+			strings.HasPrefix(c.Request.URL.Path, "/object-api") {
+			slog.Info("request", c.Request.Method, c.Request.URL, "T", time.Now().Sub(startTime).String())
+			v, ok := c.Get("Body")
+			if ok {
+				fmt.Printf("%s\n", v)
+			}
+		}
+	}
+}
+
+func CorsCheck() gin.HandlerFunc {
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	return cors.New(corsConfig)
+}
+
+func HandleError() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+		length := len(c.Errors)
+		if length == 0 {
+			return
+		}
+		var result *response.ErrInfo
+		errInfo := c.Errors[length-1]
+		if errInfo != nil && errInfo.Err != nil {
+			if !errors.As(errInfo.Err, &result) {
+				result = response.NewRespServerErr(errInfo.Err.Error())
+			}
+		} else {
+			result = response.NewRespServerErr()
+		}
+		slog.Error("Response", "url", c.Request.URL, "msg", result.String())
+		if result.StatusCode == http.StatusBadRequest {
+			errCodeMap := GetErrCodeMap(c)
+			if code, ok := errCodeMap[result.Code]; ok {
+				result.ReplaceCode(code)
+			}
+		}
+		if result.StatusCode == 0 {
+			result.StatusCode = 500
+		}
+		result.ParseCodeMsg(c.GetHeader("Accept-Language"))
+		c.JSON(result.StatusCode, result)
+	}
+}
+
+func SetErrCodeMap(code map[string]string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+		if len(c.Errors) > 0 {
+			c.Set(KeyErrCodeMap, code)
+		}
+	}
+}
+
+func GetErrCodeMap(c *gin.Context) map[string]string {
+	errMap, exist := c.Get(KeyErrCodeMap)
+	if !exist {
+		return make(map[string]string)
+	}
+	errCode, ok := errMap.(map[string]string)
+	if !ok {
+		return make(map[string]string)
+	}
+	return errCode
+}
+
+func CheckLogin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		startUp := strings.ToLower(c.Query("startup")) == "true"
+		sessionId, err := GetUserCookie(c)
+		if err != nil {
+			AbortErr(c, response.NewRespUnauthorized(startUp))
+			return
+		}
+		SetUserSessionId(c, sessionId)
+		//userInfo, expired, err := controller.CommonCtl().SessionCheckAndRefresh(sessionId)
+		//if err != nil {
+		//	AbortErr(c, err)
+		//	return
+		//}
+		//if expired {
+		//	SetUserCookie(c, sessionId, 0)
+		//	AbortErr(c, response.NewRespUnauthorized(startUp))
+		//	return
+		//}
+		//SetUserCookie(c, sessionId, int(config.RedisArgs().SessionTTL.Seconds()))
+		//SetUserInfo(c, userInfo)
+	}
+}

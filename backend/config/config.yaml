@@ -1,0 +1,10 @@
+version: 1.0.0
+location: local  # local / dev / prd
+node:
+  hostIp: 0.0.0.0
+  port: 8080
+db:
+  root: "../../humpback.db"
+  timeout: 5s
+htmlDir:
+  default: "../front/projects/web/dist"
