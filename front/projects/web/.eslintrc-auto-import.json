@@ -355,6 +355,19 @@
     "IconMdiCogOutline": true,
     "IconMdiCompany": true,
     "IconMdiTextBoxOutline": true,
-    "IconMdiViewDashboard": true
+    "IconMdiViewDashboard": true,
+    "ColorBtn": true,
+    "HttpRequestOptions": true,
+    "OperateUserBaseInfo": true,
+    "OperateUserInfo": true,
+    "OrgInfo": true,
+    "PageInfo": true,
+    "QueryInfo": true,
+    "QueryList": true,
+    "ResponseSuccess": true,
+    "SortInfo": true,
+    "TableSortEvent": true,
+    "UserBill": true,
+    "UserInfo": true
   }
 }

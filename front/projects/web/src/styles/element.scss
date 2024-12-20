@@ -7,15 +7,38 @@
 }
 
 //弹出框菜单菜单样式
-.el-menu--popup {
-  padding: 2px 0 !important;
-  --el-border-radius-small: 8px;
+.el-popper.website-menu-popover {
+  --el-menu-bg-color: var(--hp-aside-bg-color);
+  --el-menu-text-color: var(--hp-aside-text-color);
+  --el-menu-active-color: var(--hp-aside-active-color);
+  --el-menu-base-level-padding: var(--hp-menu-padding);
+  --el-menu-sub-item-height: var(--hp-menu-item-height);
+  --el-menu-item-height: var(--hp-menu-item-height);
 
-  .el-menu-item {
-    margin: 6px !important;
-    border-radius: var(--el-border-radius-small) !important;
+  border-radius: 8px;
+
+  .el-menu--popup-container.website-menu-popover {
+    border-radius: 8px;
+
+    .el-menu--popup {
+      border-radius: 8px;
+
+      li.el-menu-item {
+        margin: 6px;
+        border-radius: 8px;
+
+        &:hover {
+          background-color: var(--hp-aside-active-bg-color);
+        }
+
+        &.is-active {
+          background-color: var(--hp-aside-active-bg-color);
+        }
+      }
+    }
   }
 }
+
 
 //dialog样式
 .custom-dialog {

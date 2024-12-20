@@ -358,8 +358,23 @@ declare global {
   export type { ChangeEventType, ChangeEventType } from './src/utils/event'
   import('./src/utils/event')
   // @ts-ignore
+  export type { HttpRequestOptions } from './src/services/http-client'
+  import('./src/services/http-client')
+  // @ts-ignore
   export type { SortType, SortType } from './src/models/enum'
   import('./src/models/enum')
+  // @ts-ignore
+  export type { ColorBtn, TableSortEvent } from './src/types/common'
+  import('./src/types/common')
+  // @ts-ignore
+  export type { ResponseSuccess, OperateUserBaseInfo, OperateUserInfo } from './src/types/types'
+  import('./src/types/types')
+  // @ts-ignore
+  export type { QueryInfo, PageInfo, SortInfo, QueryList } from './src/types/query'
+  import('./src/types/query')
+  // @ts-ignore
+  export type { OrgInfo, UserInfo, UserBill } from './src/types/user'
+  import('./src/types/user')
 }
 
 // for vue template auto import
