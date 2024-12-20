@@ -58,7 +58,7 @@ class HttpClientService {
             case "R40102":
               userStore.clearUserInfo()
               disposeStore()
-              console.log(body.errMsg)
+              console.error(body.errMsg)
               break
             default:
               ShowErrMsg(body.errMsg)
@@ -68,7 +68,7 @@ class HttpClientService {
 
         if (!options || !options.disableErrMsg) {
           if (body.statusCode >= 500) {
-            console.log(body.errMsg)
+            console.error(body.errMsg)
             ShowSystemErrMsg()
           } else {
             ShowErrMsg(body.errMsg)

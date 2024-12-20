@@ -8,7 +8,7 @@ export enum ChangeEventType {
 }
 
 export function GetChannelMessage(handleFunc: (data: any) => void) {
-  bc.onmessage = function(e) {
+  bc.onmessage = function (e) {
     if (e.data?.code === code) {
       return
     }

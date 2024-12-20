@@ -3,9 +3,9 @@ package api
 import (
 	"fmt"
 	"log/slog"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"humpback/api/handle"
 	"humpback/api/middleware"
 	"humpback/api/static"
 	"humpback/config"
@@ -32,11 +32,9 @@ func InitRouter() {
 }
 
 func (api *router) Start() error {
-	slog.Info("[Api] init front static resource to cache start...")
-	//if err := static.InitStaticsResource(); err != nil {
-	//	return fmt.Errorf("init front static resource to cache failed: %s", err)
-	//}
-	slog.Info("[Api] init front static resource to cache complted.")
+	if err := static.InitStaticsResource(); err != nil {
+		return fmt.Errorf("init front static resource to cache failed: %s", err)
+	}
 	listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.NodeArgs().Port)
 	slog.Info("[Api] listening...", "Address", listeningAddress)
 	if err := api.engine.Run(listeningAddress); err != nil {
@@ -52,9 +50,7 @@ func (api *router) setMiddleware() {
 func (api *router) setRoute() {
 	var routes = map[string]map[string][]any{
 		"/webapi": {
-			"/config": {func(c *gin.Context) {
-				c.JSON(http.StatusOK, config.Config())
-			}},
+			"/user": {handle.RouteUser},
 		},
 	}
 

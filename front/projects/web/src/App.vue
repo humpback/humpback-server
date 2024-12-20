@@ -3,14 +3,10 @@ import { CloseChannelMessage, GetChannelMessage, ChangeEventType } from "utils/i
 import { GetUILocale } from "@/locales/index.ts"
 
 const { t } = useI18n()
-const route = useRoute()
 const pageStore = usePageStore()
 const userStore = useUserStore()
 
 const handleChannelMessage = (data: any) => {
-  if (route.meta.loginLimit === LoginPermission.Ingore) {
-    return
-  }
   switch (data?.type) {
     case ChangeEventType.Login:
       if (!data.value || data.value?.userId != userStore.userInfo.userId) {

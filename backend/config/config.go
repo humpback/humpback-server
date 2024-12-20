@@ -73,6 +73,10 @@ func getEnvLocation() string {
 	return ""
 }
 
+func Location() string {
+	return configuration.Location
+}
+
 func HtmlDir() HtmlDirConfig {
 	return configuration.HtmlDir
 }

@@ -2,6 +2,7 @@ package static
 
 import (
 	"fmt"
+	"log/slog"
 	"mime"
 	"net/http"
 	"os"
@@ -26,8 +27,12 @@ var defaultCache = map[string]*staticResourceInfo{}
 
 func InitStaticsResource() (err error) {
 	staticResourceDir := config.HtmlDir()
-	if defaultCache, err = readFileToCache(staticResourceDir.Default); err != nil {
-		return err
+	if config.Location() != "local" {
+		slog.Info("[Api] init front static resource to cache start...")
+		if defaultCache, err = readFileToCache(staticResourceDir.Default); err != nil {
+			return err
+		}
+		slog.Info("[Api] init front static resource to cache complted.")
 	}
 	return nil
 }

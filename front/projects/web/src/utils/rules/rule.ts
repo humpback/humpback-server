@@ -24,7 +24,7 @@ export function RuleCannotBeEmpty(rule: any, value: any, callback: any) {
 
 export function RuleIsRequired(fieldI18nName: string) {
   return (rule: any, value: any, callback: any) => {
-    return IsEmpty(value) ? callback(new Error(`${ GetI18nMessage(fieldI18nName) } ${ GetI18nMessage("rules.isRequired") }`)) : callback()
+    return IsEmpty(value) ? callback(new Error(`${GetI18nMessage(fieldI18nName)} ${GetI18nMessage("rules.isRequired")}`)) : callback()
   }
 }
 
