@@ -40,7 +40,7 @@ func (api *Router) Start() {
 		if err := static.InitStaticsResource(); err != nil {
 			slog.Error(fmt.Sprintf("init front static resource to cache failed: %s", err))
 		}
-		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.NodeArgs().Port)
+		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.NodeArgs().SitePort)
 		slog.Info("[Api] listening...", "Address", listeningAddress)
 		api.httpSrv = &http.Server{
 			Addr:    listeningAddress,

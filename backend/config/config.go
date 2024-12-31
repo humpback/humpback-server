@@ -13,8 +13,9 @@ import (
 var configuration *config
 
 type NodeConfig struct {
-	HostIp string `yaml:"hostIp" json:"hostIp" env:"HOST_IP"`
-	Port   string `yaml:"port" json:"port" env:"PORT"`
+	HostIp      string `yaml:"hostIp" json:"hostIp" env:"HOST_IP"`
+	SitePort    string `yaml:"sitePort" json:"sitePort" env:"SITE_PORT"`
+	BackendPort string `yaml:"backendPort" json:"backendPort" env:"BACKEND_PORT"`
 }
 
 type HtmlDirConfig struct {

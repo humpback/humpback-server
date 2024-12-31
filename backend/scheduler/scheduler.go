@@ -29,7 +29,7 @@ func (scheduler *HumpbackScheduler) Start() {
 			})
 		})
 
-		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.NodeArgs().Port)
+		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.NodeArgs().BackendPort)
 		slog.Info("[Api] listening...", "Address", listeningAddress)
 		scheduler.httpSrv = &http.Server{
 			Addr:    listeningAddress,

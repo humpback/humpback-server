@@ -42,5 +42,4 @@ func main() {
 	}
 
 	slog.Info("[App] quit...")
-
 }
