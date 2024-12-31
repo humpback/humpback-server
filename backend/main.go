@@ -1,20 +1,16 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
 	"os/signal"
-	"syscall"
+	"time"
 
 	"humpback/app"
 	"humpback/config"
 	"humpback/pkg/glog"
 	"humpback/pkg/utils"
-)
-
-type (
-	StartupFunc    func() error
-	SignalQuitFunc func()
 )
 
 func init() {
@@ -28,31 +24,23 @@ func init() {
 }
 
 func main() {
-	if err := app.InitApp(); err != nil {
-		panic(err)
-	}
-	slog.Info("[APP] new completed.")
-	InitSignal(app.Startup, app.Close)
-}
+	application := app.InitApp()
 
-func InitSignal(startupF StartupFunc, closeF SignalQuitFunc) {
-	defer glog.Close()
-	defer slog.Info("[Exit] Process Exit... Over")
-	if startupF == nil {
-		slog.Error("[Startup] StartupFunc Is Nil.")
-		return
+	slog.Info("[APP] new completed.")
+
+	// Start server
+	application.Startup()
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := application.Close(ctx); err != nil {
+		slog.Error(err.Error())
 	}
-	ch := make(chan os.Signal, 1)
-	defer close(ch)
-	go func() {
-		if err := startupF(); err != nil {
-			slog.Error("[Startup] " + err.Error())
-			ch <- syscall.SIGQUIT
-		}
-	}()
-	signal.Notify(ch, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
-	<-ch
-	if closeF != nil {
-		closeF()
-	}
+
+	slog.Info("[App] quit...")
+
 }
