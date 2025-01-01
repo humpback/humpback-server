@@ -37,7 +37,6 @@ declare module 'vue' {
     VCopyPopover: typeof import('./src/components/common/v-copy/VCopyPopover.vue')['default']
     VCopyText: typeof import('./src/components/common/v-copy/VCopyText.vue')['default']
     VDatePicker: typeof import('./src/components/common/v-date/VDatePicker.vue')['default']
-    VDateTimeView: typeof import('./src/components/common/v-date/VDateTimeView.vue')['default']
     VDialog: typeof import('./src/components/common/v-dialog/VDialog.vue')['default']
     VDivider: typeof import('./src/components/common/v-divider/VDivider.vue')['default']
     VDrawer: typeof import('./src/components/common/v-drawer/VDrawer.vue')['default']

@@ -31,6 +31,8 @@ func main() {
 	// Start server
 	application.Startup()
 
+	slog.Info("[APP] startup completed.")
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.

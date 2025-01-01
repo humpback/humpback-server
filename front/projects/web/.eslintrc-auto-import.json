@@ -368,6 +368,8 @@
     "SortInfo": true,
     "TableSortEvent": true,
     "UserBill": true,
-    "UserInfo": true
+    "UserInfo": true,
+    "usePreferredReducedTransparency": true,
+    "useSSRWidth": true
   }
 }
