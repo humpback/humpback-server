@@ -1,0 +1,3 @@
+location: prd  # local / dev / prd
+htmlDir:
+  default: "./html/web"

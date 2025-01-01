@@ -1,0 +1,107 @@
+//@import "element-plus/dist/index.css"
+//@import "element-plus/theme-chalk/src/message.scss";
+//@import "element-plus/theme-chalk/src/notification.scss";
+/*弹出框及抽屉的样式*/
+.aside_drawer_box .el-drawer__body {
+  padding: 0 !important;
+}
+
+//弹出框菜单菜单样式
+.el-popper.website-menu-popover {
+  --el-menu-bg-color: var(--hp-aside-bg-color);
+  --el-menu-text-color: var(--hp-aside-text-color);
+  --el-menu-active-color: var(--hp-aside-active-color);
+  --el-menu-base-level-padding: var(--hp-menu-padding);
+  --el-menu-sub-item-height: var(--hp-menu-item-height);
+  --el-menu-item-height: var(--hp-menu-item-height);
+
+  border-radius: 8px;
+
+  .el-menu--popup-container.website-menu-popover {
+    border-radius: 8px;
+
+    .el-menu--popup {
+      border-radius: 8px;
+
+      li.el-menu-item {
+        margin: 6px;
+        border-radius: 8px;
+
+        &:hover {
+          background-color: var(--hp-aside-active-bg-color);
+        }
+
+        &.is-active {
+          background-color: var(--hp-aside-active-bg-color);
+        }
+      }
+    }
+  }
+}
+
+
+//dialog样式
+.custom-dialog {
+  --el-dialog-border-radius: 8px !important;
+
+  .el-dialog__header {
+    background-color: #eeeff0;
+    color: #2b2b2b;
+    margin: -16px -16px 20px -16px;
+    padding: 12px;
+    border-top-left-radius: var(--el-dialog-border-radius);
+    border-top-right-radius: var(--el-dialog-border-radius);
+  }
+}
+
+//抽屉样式
+.custom-drawer {
+  .el-drawer__header {
+    background-color: #eeeff0;
+    color: #2b2b2b;
+    border-width: 0;
+    padding: 16px 20px;
+    line-height: 22px;
+    margin: 0;
+    font-weight: bold;
+  }
+}
+
+// message消息样式
+.messageBox {
+  z-index: 9999 !important;
+}
+
+// chassisNO 自动补全输入框样式
+.chassis-autocomplete {
+  .el-input--default {
+    vertical-align: baseline;
+  }
+}
+
+//----------------待定----------------
+.custom-popover.el-popover--plain {
+  border-radius: 8px !important;
+  box-shadow: var(--el-box-shadow-light) !important;
+  background-color: #F1F0F0FF;
+}
+
+.address-autocomplete-box {
+  .el-input__wrapper {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .el-input--small {
+    padding-bottom: 2px;
+
+    .el-input__wrapper {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+}
+
+.a-link:hover {
+  opacity: 0.7;
+}

@@ -1,0 +1,28 @@
+import { UserInfo } from "#/index.ts"
+
+class UserService {
+  async signIn(data: any) {
+    return await httpClient.post<UserInfo>("/webapi/user/login", data, { disableLoading: true }).then(res => res.data)
+  }
+
+  async resetPasswordByPsd(data: any) {
+    return await httpClient.put("/webapi/user/change-psd", data).then(res => res.data)
+  }
+
+  async logout() {
+    return await httpClient.post("/webapi/user/logout", null, { disableLoading: true }).then(res => res.data)
+  }
+
+  async getUserInfo(startup?: boolean) {
+    if (startup) {
+      return await httpClient.get<UserInfo>("/webapi/user", { params: { startup: "true" } }).then(res => res.data)
+    }
+    return await httpClient.get<UserInfo>("/webapi/user").then(res => res.data)
+  }
+
+  async updateUserInfo(data: any) {
+    return await httpClient.put("/webapi/user", data).then(res => res.data)
+  }
+}
+
+export const userService = new UserService()
