@@ -6,6 +6,7 @@ import Components from "unplugin-vue-components/vite"
 import Icons from "unplugin-icons/vite"
 import IconsResolver from "unplugin-icons/resolver"
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
+import ElementPlus from "unplugin-element-plus/vite"
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -104,6 +105,9 @@ export default defineConfig({
           enabledCollections: ["mdi"]
         })
       ]
+    }),
+    ElementPlus({
+      useSource: process.env.NODE_ENV === "development"
     })
   ],
   server: {

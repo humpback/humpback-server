@@ -1,50 +1,53 @@
+@use "sass:list";
+
 $px-values: 0, 4px, 8px, 12px, 16px, 20px;
-@for $i from 1 through length($px-values) {
+$px-length: list.length($px-values);
+@for $i from 1 through $px-length {
   $index: $i - 1;
   .ma-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .mt-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .mr-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .mb-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .ml-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .mx-#{$index} {
-    margin: 0 nth($px-values, $i);
+    margin: 0 list.nth($px-values, $i);
   }
   .my-#{$index} {
-    margin: nth($px-values, $i) 0;
+    margin: list.nth($px-values, $i) 0;
   }
   .pa-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .pt-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .pr-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .pb-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .pl-#{$index} {
-    margin: nth($px-values, $i);
+    margin: list.nth($px-values, $i);
   }
   .px-#{$index} {
-    margin: 0 nth($px-values, $i);
+    margin: 0 list.nth($px-values, $i);
   }
   .py-#{$index} {
-    margin: nth($px-values, $i) 0;
+    margin: list.nth($px-values, $i) 0;
   }
   .gap-#{$index} {
-    gap: nth($px-values, $i);
+    gap: list.nth($px-values, $i);
   }
 }
 

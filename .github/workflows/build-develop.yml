@@ -8,42 +8,40 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20.x'
-
-    - name: Install dependencies and build front
-      working-directory: ./front
-      run: |
-        npm install -g pnpm
-        cd projects/web
-        pnpm install
-        cd ../../
-        npm run build
-
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.23'
-
-    - name: Install dependencies and build backend
-      working-directory: ./backend
-      run: |
-        go mod download
-        go build -o humpback
-
-    - name: 'Build and push image'
-      uses: azure/docker-login@v1
-      with:
-        login-server: jamesyyangapp.azurecr.io
-        username: jamesyyangapp
-        password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
-    - run: |
-        docker build . -t jamesyyangapp.azurecr.io/humpback-server:${{ github.sha }}
-        docker push jamesyyangapp.azurecr.io/humpback-server:${{ github.sha }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      
+      - name: Install dependencies and build front
+        working-directory: ./front
+        run: |
+          npm install -g pnpm
+          pnpm install
+          pnpm run build
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      
+      - name: Install dependencies and build backend
+        working-directory: ./backend
+        run: |
+          go mod download
+          CGO_ENABLED=0 go build -o humpback
+      
+      - name: 'Build and push image'
+        uses: azure/docker-login@v1
+        with:
+          login-server: jamesyyangapp.azurecr.io
+          username: jamesyyangapp
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+      - run: |
+          docker build . -t jamesyyangapp.azurecr.io/humpback-server:${{ github.sha }}
+          docker push jamesyyangapp.azurecr.io/humpback-server:${{ github.sha }}
