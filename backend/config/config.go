@@ -18,8 +18,9 @@ type NodeConfig struct {
 	BackendPort string `yaml:"backendPort" json:"backendPort" env:"BACKEND_PORT"`
 }
 
-type HtmlDirConfig struct {
-	Default string `yaml:"default" json:"default" env:"HTML_DEFAULT_DIR"`
+type HtmlConfig struct {
+	Dir  string `yaml:"dir" json:"dir" env:"STATIC_DIR"`
+	Load bool   `yaml:"load" json:"load" env:"STATIC_LOAD"`
 }
 
 type DBConfig struct {
@@ -28,11 +29,11 @@ type DBConfig struct {
 }
 
 type config struct {
-	Version  string        `yaml:"version" json:"version"`
-	Location string        `yaml:"location" json:"location" env:"LOCATION"`
-	HtmlDir  HtmlDirConfig `yaml:"htmlDir" json:"htmlDir"`
-	Node     NodeConfig    `yaml:"node" json:"node"`
-	DB       DBConfig      `yaml:"db" json:"db"`
+	Version  string     `yaml:"version" json:"version"`
+	Location string     `yaml:"location" json:"location" env:"LOCATION"`
+	Html     HtmlConfig `yaml:"html" json:"html"`
+	Node     NodeConfig `yaml:"node" json:"node"`
+	DB       DBConfig   `yaml:"db" json:"db"`
 }
 
 func InitConfig() error {
@@ -40,8 +41,8 @@ func InitConfig() error {
 	if err := readConfigFile("./config/config.yaml"); err != nil {
 		return err
 	}
-	location := getEnvLocation()
-	if location != "" {
+
+	if location := getEnvLocation(); location != "" {
 		if err := readConfigFile(fmt.Sprintf("./config/config_%s.yaml", strings.ToLower(location))); err != nil {
 			return err
 		}
@@ -78,8 +79,8 @@ func Location() string {
 	return configuration.Location
 }
 
-func HtmlDir() HtmlDirConfig {
-	return configuration.HtmlDir
+func HtmlArgs() HtmlConfig {
+	return configuration.Html
 }
 
 func NodeArgs() NodeConfig {

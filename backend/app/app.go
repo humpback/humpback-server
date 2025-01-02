@@ -13,10 +13,10 @@ type App struct {
 }
 
 func InitApp() *App {
-	app := &App{}
-	app.webSite = api.InitRouter()
-	app.scheduler = scheduler.NewHumpbackScheduler()
-	return app
+	return &App{
+		webSite:   api.InitRouter(),
+		scheduler: scheduler.NewHumpbackScheduler(),
+	}
 }
 
 func (app *App) Startup() {
@@ -28,11 +28,8 @@ func (app *App) Close(c context.Context) error {
 	if err := app.webSite.Close(c); err != nil {
 		return err
 	}
-
 	if err := app.scheduler.Close(c); err != nil {
 		return err
 	}
-
 	return nil
-
 }

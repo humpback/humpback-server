@@ -7,5 +7,6 @@ node:
 db:
   root: "../../humpback.db"
   timeout: 5s
-htmlDir:
-  default: "../front/projects/web/dist"
+html:
+  dir: "../front/projects/web/dist"
+  load: false

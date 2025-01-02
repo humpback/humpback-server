@@ -15,7 +15,6 @@ import (
 
 func init() {
 	glog.Open(glog.WithOutputSource(glog.OutputTypeStd), glog.WithOutputFormat(glog.OutputFormatDefault))
-
 	if err := config.InitConfig(); err != nil {
 		panic(err)
 	}
@@ -42,6 +41,6 @@ func main() {
 	if err := application.Close(ctx); err != nil {
 		slog.Error(err.Error())
 	}
-
+	glog.Close()
 	slog.Info("[App] quit...")
 }

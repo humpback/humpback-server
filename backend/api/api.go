@@ -14,12 +14,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// var Router RouterInterface
-
-// type RouterInterface interface {
-// 	Start() error
-// }
-
 type Router struct {
 	engine  *gin.Engine
 	httpSrv *http.Server
@@ -27,9 +21,8 @@ type Router struct {
 
 func InitRouter() *Router {
 	gin.SetMode(gin.ReleaseMode)
-	r := &Router{
-		engine: gin.New(),
-	}
+	gin.Default()
+	r := &Router{engine: gin.New()}
 	r.setMiddleware()
 	r.setRoute()
 	return r

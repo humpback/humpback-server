@@ -23,13 +23,13 @@ type staticResourceInfo struct {
 	Size         int64
 }
 
-var defaultCache = map[string]*staticResourceInfo{}
+var staticCache = map[string]*staticResourceInfo{}
 
 func InitStaticsResource() (err error) {
-	staticResourceDir := config.HtmlDir()
+	staticConfig := config.HtmlArgs()
 	if config.Location() != "local" {
 		slog.Info("[Api] init front static resource to cache start...")
-		if defaultCache, err = readFileToCache(staticResourceDir.Default); err != nil {
+		if staticCache, err = readFileToCache(staticConfig.Dir); err != nil {
 			return err
 		}
 		slog.Info("[Api] init front static resource to cache complted.")
@@ -75,7 +75,7 @@ func readFileToCache(htmlDir string) (map[string]*staticResourceInfo, error) {
 
 // web  每次从文件读取静态资源
 func web(c *gin.Context) {
-	htmlDir := config.HtmlDir()
+	htmlDir := config.HtmlArgs()
 	if c.Request.URL.String() != "/" && utils.FileExist(fmt.Sprintf("%s/%s", htmlDir, c.Request.URL.Path)) {
 		c.File(fmt.Sprintf("%s/%s", htmlDir, c.Request.URL.Path))
 	} else {
@@ -85,9 +85,9 @@ func web(c *gin.Context) {
 
 // Web  从缓存中读取静态资源
 func Web(c *gin.Context) {
-	resourceInfo := defaultCache["/index.html"]
-	if c.Request.URL.String() != "/" && defaultCache[c.Request.URL.Path] != nil {
-		resourceInfo = defaultCache[c.Request.URL.Path]
+	resourceInfo := staticCache["/index.html"]
+	if c.Request.URL.String() != "/" && staticCache[c.Request.URL.Path] != nil {
+		resourceInfo = staticCache[c.Request.URL.Path]
 	}
 	c.Header("Accept-Ranges", "bytes")
 	c.Header("Content-Type", resourceInfo.ContentType)

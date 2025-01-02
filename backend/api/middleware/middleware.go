@@ -33,10 +33,7 @@ func Log() gin.HandlerFunc {
 		}
 		startTime := time.Now()
 		c.Next()
-		if strings.HasPrefix(c.Request.URL.Path, "/webapi") ||
-			strings.HasPrefix(c.Request.URL.Path, "/platform-api") ||
-			strings.HasPrefix(c.Request.URL.Path, "/extern-api") ||
-			strings.HasPrefix(c.Request.URL.Path, "/object-api") {
+		if strings.HasPrefix(c.Request.URL.Path, "/webapi") {
 			slog.Info("request", c.Request.Method, c.Request.URL, "T", time.Now().Sub(startTime).String())
 			v, ok := c.Get("Body")
 			if ok {

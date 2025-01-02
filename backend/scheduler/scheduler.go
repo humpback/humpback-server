@@ -3,9 +3,10 @@ package scheduler
 import (
 	"context"
 	"fmt"
-	"humpback/config"
 	"log/slog"
 	"net/http"
+
+	"humpback/config"
 
 	"github.com/gin-gonic/gin"
 )
