@@ -21,10 +21,13 @@ jobs:
     - name: Install dependencies and build front
       working-directory: ./front
       run: |
+        pwd
         npm install -g pnpm
         cd projects/web
+        pwd
         pnpm install
         cd ../../
+        pwd
         npm run build
 
     - name: Set up Go
@@ -35,7 +38,7 @@ jobs:
     - name: Install dependencies and build backend
       working-directory: ./backend
       run: |
-        go mod download
+        pwd
         go build -o humpback
 
     - name: 'Build and push image'
@@ -45,5 +48,7 @@ jobs:
         username: jamesyyangapp
         password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
     - run: |
+        docker version
+        pwd
         docker build . -t jamesyyangapp.azurecr.io/humpback-server:${{ github.sha }}
         docker push jamesyyangapp.azurecr.io/humpback-server:${{ github.sha }}
