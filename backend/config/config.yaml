@@ -1,12 +1,12 @@
 version: 1.0.0
-location: local  # local / dev / prd
+location: local # local / dev / prd
 node:
   hostIp: 0.0.0.0
   sitePort: 8300
   backendPort: 8301
 db:
-  root: "../../humpback.db"
+  root: '../../humpback.db'
   timeout: 5s
 html:
-  dir: "../front/projects/web/dist"
+  dir: '../front/projects/web/dist'
   load: false

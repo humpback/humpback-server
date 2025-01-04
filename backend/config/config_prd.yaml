@@ -1,4 +1,4 @@
-location: prd  # local / dev / prd
+location: prd # local / dev / prd
 html:
-  dir: "./html/web"
+  dir: './html/web'
   load: true

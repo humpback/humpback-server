@@ -1,6 +1,6 @@
 {
-    "go.toolsEnvVars": {
-        "GOARCH": "amd64",
-        "GOOS": "windows"
-    },
+  "go.toolsEnvVars": {
+    "GOARCH": "amd64",
+    "GOOS": "windows"
+  },
 }
