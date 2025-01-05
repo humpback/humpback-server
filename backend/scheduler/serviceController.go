@@ -1,4 +1,7 @@
 package scheduler
 
-type ServiceControllerInter struct {
+type ServiceController struct {
+}
+
+type ServiceManager struct {
 }

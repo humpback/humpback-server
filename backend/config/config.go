@@ -13,9 +13,14 @@ import (
 var configuration *config
 
 type NodeConfig struct {
-	HostIp      string `yaml:"hostIp" json:"hostIp" env:"HOST_IP"`
-	SitePort    string `yaml:"sitePort" json:"sitePort" env:"SITE_PORT"`
-	BackendPort string `yaml:"backendPort" json:"backendPort" env:"BACKEND_PORT"`
+	HostIp   string `yaml:"hostIp" json:"hostIp" env:"HOST_IP"`
+	SitePort string `yaml:"sitePort" json:"sitePort" env:"SITE_PORT"`
+}
+
+type BackendConfig struct {
+	BackendPort    string `yaml:"backendPort" json:"backendPort" env:"BACKEND_PORT"`
+	CheckInterval  int    `yaml:"checkInterval" json:"checkInterval" env:"BACKEND_CHECKINTERVAL"`
+	CheckThreshold int    `yaml:"checkThreshold" json:"checkThreshold" env:"BACKEND_CHECKTHRESHOLD"`
 }
 
 type HtmlConfig struct {
@@ -29,11 +34,12 @@ type DBConfig struct {
 }
 
 type config struct {
-	Version  string     `yaml:"version" json:"version"`
-	Location string     `yaml:"location" json:"location" env:"LOCATION"`
-	Html     HtmlConfig `yaml:"html" json:"html"`
-	Node     NodeConfig `yaml:"node" json:"node"`
-	DB       DBConfig   `yaml:"db" json:"db"`
+	Version  string        `yaml:"version" json:"version"`
+	Location string        `yaml:"location" json:"location" env:"LOCATION"`
+	Html     HtmlConfig    `yaml:"html" json:"html"`
+	Node     NodeConfig    `yaml:"node" json:"node"`
+	DB       DBConfig      `yaml:"db" json:"db"`
+	Backend  BackendConfig `yaml:"backend" json:"backend"`
 }
 
 func InitConfig() error {
@@ -85,6 +91,10 @@ func HtmlArgs() HtmlConfig {
 
 func NodeArgs() NodeConfig {
 	return configuration.Node
+}
+
+func BackendArgs() BackendConfig {
+	return configuration.Backend
 }
 
 func DBArgs() DBConfig {

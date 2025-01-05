@@ -1,9 +1,12 @@
 version: 1.0.0
 location: local # local / dev / prd
+backend:
+  checkInterval: 30
+  checkThreshold: 3
+  backendPort: 8301
 node:
   hostIp: 0.0.0.0
   sitePort: 8300
-  backendPort: 8301
 db:
   root: '../../humpback.db'
   timeout: 5s
