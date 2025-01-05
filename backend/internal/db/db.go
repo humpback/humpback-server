@@ -18,6 +18,9 @@ templates: template_id, template_name, create_time, update_time, infos(json)
 
 Services: service_id, service_name, create_time, update_time, type, status, containers, infos(json)
 
+serviceId: {groupId}-{random-10}
+containerId: humback-{serviceId}-{random-5}
+
 
 */
 
