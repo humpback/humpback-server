@@ -36,6 +36,15 @@ type dbHelper struct {
 	boltDB *bolt.DB
 }
 
+const BucketUsers = "Users"
+const BucketGroups = "Groups"
+const BucketRegistries = "Registries"
+const BucketConfigs = "Configs"
+const BucketNodes = "Nodes"
+const BucketNodesGroups = "NodesGroups"
+const BucketTemplates = "Templates"
+const BucketServices = "Services"
+
 var db *dbHelper
 
 func InitDB() {
@@ -88,6 +97,56 @@ func GetDataByIds[T any](bucketName string, ids []string) ([]T, error) {
 			}
 			results = append(results, result)
 		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+func GetDataAll[T any](bucketName string) ([]T, error) {
+	var results []T
+	err := db.boltDB.View(func(tx *bolt.Tx) error {
+		bucket, bkErr := tx.CreateBucketIfNotExists([]byte(bucketName))
+		if bkErr != nil {
+			return fmt.Errorf("create bucket %s failed: %s", bucketName, bkErr)
+		}
+		bucket.ForEach(func(k, v []byte) error {
+			var result T
+			if err := json.Unmarshal(v, &result); err != nil {
+				return err
+			}
+			results = append(results, result)
+			return nil
+		})
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+type CustomFilterData func(key string, value interface{}) bool
+
+func GetDatabyQuery[T any](bucketName string, filter CustomFilterData) ([]T, error) {
+	var results []T
+	err := db.boltDB.View(func(tx *bolt.Tx) error {
+		bucket, bkErr := tx.CreateBucketIfNotExists([]byte(bucketName))
+		if bkErr != nil {
+			return fmt.Errorf("create bucket %s failed: %s", bucketName, bkErr)
+		}
+		bucket.ForEach(func(k, v []byte) error {
+			var result T
+			if err := json.Unmarshal(v, &result); err != nil {
+				return err
+			}
+			if filter(string(k), result) {
+				results = append(results, result)
+			}
+			return nil
+		})
 		return nil
 	})
 	if err != nil {

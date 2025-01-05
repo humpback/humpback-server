@@ -22,6 +22,9 @@ type ContainerStatus struct {
 	StartAt       int64  `json:"startAt"`
 }
 
+const NodeStatusOnline = "Online"
+const NodeStatusOffline = "Offline"
+
 const ServiceStatusNotReady = "NotReady"
 const ServiceStatusRunning = "Running"
 const ServiceStatusFailed = "Failed"
