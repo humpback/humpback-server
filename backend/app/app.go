@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"humpback/api"
+	"humpback/internal/db"
 	"humpback/scheduler"
 )
 
@@ -13,10 +14,13 @@ type App struct {
 }
 
 func InitApp() *App {
-	return &App{
+	app := &App{
 		webSite:   api.InitRouter(),
 		scheduler: scheduler.NewHumpbackScheduler(),
 	}
+
+	db.InitDB()
+	return app
 }
 
 func (app *App) Startup() {

@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"humpback/types"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -10,12 +11,12 @@ const (
 	UserCookieKey = "sessionId"
 )
 
-func GetUserInfo(c *gin.Context) *types.UserInfo {
+func GetUserInfo(c *gin.Context) *types.User {
 	info, _ := c.Get(UserInfoKey)
-	return info.(*types.UserInfo)
+	return info.(*types.User)
 }
 
-func SetUserInfo(c *gin.Context, usreInfo *types.UserInfo) {
+func SetUserInfo(c *gin.Context, usreInfo *types.User) {
 	c.Set(UserInfoKey, usreInfo)
 }
 
