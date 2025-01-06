@@ -11,15 +11,15 @@ Registries: registry_id, registry_name, url, user_name, password, isDefault, cre
 
 Configs: config_id, config_name, create_time, update_time, values(json)
 
-Nodes: node_id, node_name, host_ip, host_port, create_time, update_time, status, groups, infos(json)
+Nodes: node_id, node_name, host_ip, host_port, create_time, update_time, status, infos(json)
 NodesGroups: group_id, group_name, create_time, update_time, nodes
 
 templates: template_id, template_name, create_time, update_time, infos(json)
 
 Services: service_id, service_name, create_time, update_time, type, status, containers, infos(json)
 
-serviceId: {groupId}-{random-10}
-containerId: humback-{serviceId}-{random-5}
+serviceId: {random-8}
+containerId: humback-{serviceId}-{version-5}-{random-5}
 
 
 */

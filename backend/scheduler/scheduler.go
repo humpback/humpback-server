@@ -13,15 +13,23 @@ import (
 )
 
 type HumpbackScheduler struct {
-	httpSrv     *http.Server
-	nodeCtrl    *NodeController
-	serviceCtrl *ServiceController
+	httpSrv             *http.Server
+	nodeCtrl            *NodeController
+	serviceCtrl         *ServiceController
+	NodeHeartbeatChan   chan NodeSimpleInfo
+	ContainerChangeChan chan types.ContainerStatus
+	ServiceChangeChan   chan string
 }
 
 func NewHumpbackScheduler() *HumpbackScheduler {
-	return &HumpbackScheduler{
-		nodeCtrl: NewNodeController(),
-	}
+	hs := &HumpbackScheduler{}
+	hs.NodeHeartbeatChan = make(chan NodeSimpleInfo, 100)
+	hs.ContainerChangeChan = make(chan types.ContainerStatus, 100)
+	hs.ServiceChangeChan = make(chan string, 100)
+	hs.serviceCtrl = NewServiceController(hs.NodeHeartbeatChan, hs.ContainerChangeChan)
+	hs.nodeCtrl = NewNodeController(hs.NodeHeartbeatChan, hs.ContainerChangeChan)
+
+	return hs
 }
 
 func doHealth(c *gin.Context) {

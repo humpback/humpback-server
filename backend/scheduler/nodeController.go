@@ -20,19 +20,21 @@ type NodeSimpleInfo struct {
 }
 
 type NodeController struct {
-	NodesInfo         map[string]*NodeSimpleInfo
-	NodeHeartbeatChan chan NodeSimpleInfo
-	CheckInterval     int64
-	CheckThreshold    int
+	NodesInfo           map[string]*NodeSimpleInfo
+	NodeHeartbeatChan   chan NodeSimpleInfo
+	ContainerChangeChan chan types.ContainerStatus
+	CheckInterval       int64
+	CheckThreshold      int
 	sync.RWMutex
 }
 
-func NewNodeController() *NodeController {
+func NewNodeController(nodeChan chan NodeSimpleInfo, containerChan chan types.ContainerStatus) *NodeController {
 	nc := &NodeController{
-		NodesInfo:         make(map[string]*NodeSimpleInfo),
-		NodeHeartbeatChan: make(chan NodeSimpleInfo, 100),
-		CheckInterval:     int64(config.BackendArgs().CheckInterval),
-		CheckThreshold:    config.BackendArgs().CheckThreshold,
+		NodesInfo:           make(map[string]*NodeSimpleInfo),
+		NodeHeartbeatChan:   nodeChan,
+		ContainerChangeChan: containerChan,
+		CheckInterval:       int64(config.BackendArgs().CheckInterval),
+		CheckThreshold:      config.BackendArgs().CheckThreshold,
 	}
 
 	go nc.CheckNodes()
@@ -58,6 +60,7 @@ func (nc *NodeController) CheckNodesCore() {
 
 	currentTime := time.Now().Unix()
 
+	//Node 状态有变化时需要重新保存DB
 	for nodeId, nodeInfo := range nc.NodesInfo {
 
 		if nodeInfo.Status == types.NodeStatusOnline {
@@ -93,6 +96,7 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 			n.OnlineThreshold++
 		} else {
 			n.OnlineThreshold = 1
+			nc.CheckContainers(healthInfo)
 		}
 		n.LastHeartbeat = ts
 	} else {
@@ -106,5 +110,12 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 				OnlineThreshold: 1,
 			}
 		}
+	}
+}
+
+func (nc *NodeController) CheckContainers(healthInfo types.HealthInfo) {
+	for _, container := range healthInfo.ContainerList {
+		container.NodeId = healthInfo.NodeId
+		nc.ContainerChangeChan <- container
 	}
 }

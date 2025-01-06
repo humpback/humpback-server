@@ -18,9 +18,10 @@ type NodeConfig struct {
 }
 
 type BackendConfig struct {
-	BackendPort    string `yaml:"backendPort" json:"backendPort" env:"BACKEND_PORT"`
-	CheckInterval  int    `yaml:"checkInterval" json:"checkInterval" env:"BACKEND_CHECKINTERVAL"`
-	CheckThreshold int    `yaml:"checkThreshold" json:"checkThreshold" env:"BACKEND_CHECKTHRESHOLD"`
+	BackendPort          string `yaml:"backendPort" json:"backendPort" env:"BACKEND_PORT"`
+	CheckInterval        int    `yaml:"checkInterval" json:"checkInterval" env:"BACKEND_CHECKINTERVAL"`
+	ServiceCheckInterval int    `yaml:"serviceCheckInterval" json:"serviceCheckInterval" env:"BACKEND_SERVICECHECKINTERVAL"`
+	CheckThreshold       int    `yaml:"checkThreshold" json:"checkThreshold" env:"BACKEND_CHECKTHRESHOLD"`
 }
 
 type HtmlConfig struct {

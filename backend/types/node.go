@@ -9,7 +9,6 @@ type Node struct {
 	CreatedAt int64       `json:"createdAt"`
 	UpdatedAt int64       `json:"updatedAt"`
 	NodeInfo  interface{} `json:"nodeInfo"`
-	Groups    []string    `json:"groups"`
 }
 
 type NodesGroups struct {
