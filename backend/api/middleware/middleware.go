@@ -12,6 +12,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"humpback/config"
+	"humpback/internal/controller"
 
 	"humpback/common/response"
 )
@@ -104,23 +106,23 @@ func GetErrCodeMap(c *gin.Context) map[string]string {
 func CheckLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		startUp := strings.ToLower(c.Query("startup")) == "true"
-		sessionId, err := GetUserCookie(c)
+		sessionId, err := GetCookieSession(c)
 		if err != nil {
 			AbortErr(c, response.NewRespUnauthorized(startUp))
 			return
 		}
-		SetUserSessionId(c, sessionId)
-		//userInfo, expired, err := controller.CommonCtl().SessionCheckAndRefresh(sessionId)
-		//if err != nil {
-		//	AbortErr(c, err)
-		//	return
-		//}
-		//if expired {
-		//	SetUserCookie(c, sessionId, 0)
-		//	AbortErr(c, response.NewRespUnauthorized(startUp))
-		//	return
-		//}
-		//SetUserCookie(c, sessionId, int(config.RedisArgs().SessionTTL.Seconds()))
-		//SetUserInfo(c, userInfo)
+		SetSessionId(c, sessionId)
+		userInfo, expired, err := controller.SessionGetAndRefresh(sessionId)
+		if err != nil {
+			AbortErr(c, err)
+			return
+		}
+		if expired {
+			SetCookieSession(c, sessionId, 0)
+			AbortErr(c, response.NewRespUnauthorized(startUp))
+			return
+		}
+		SetCookieSession(c, sessionId, int(config.DBArgs().SessionTimeout.Seconds()))
+		SetUserInfo(c, userInfo)
 	}
 }

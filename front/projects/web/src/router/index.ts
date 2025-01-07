@@ -1,6 +1,7 @@
 import type { RouteRecordRaw } from "vue-router"
 import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNormalized } from "vue-router"
 import { configure, done, start } from "nprogress"
+import { GetI18nMessage } from "@/locales"
 import "nprogress/nprogress.css"
 
 configure({
@@ -50,13 +51,30 @@ router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, n
   if (to.name !== from.name) {
     start()
   }
+  const userStore = useUserStore()
+  if (!userStore.isLogged) {
+    if (to.meta?.loginLimit === PageLimitRole.Login) {
+      next({ name: "login" })
+      return
+    }
+    next()
+    return
+  }
+  if (to.meta?.loginLimit === PageLimitRole.Logout) {
+    next({ name: "workspace" })
+    return
+  }
+  if (to.meta?.onlyAdmin && !userStore.userInfo.isAdmin) {
+    next({ name: "401" })
+    return
+  }
   next()
 })
 
 router.afterEach((to: RouteLocationNormalized, from: RouteLocationNormalized) => {
   if (to.fullPath !== from.fullPath) {
-    // let titleKey = to.meta?.webTitleParam ? (to.params[to.meta.webTitleParam] as string) : (to.name as string)
-    // window.document.title = `${GetI18nMessage("webTitle." + titleKey)}`
+    let titleKey = to.meta?.webTitle?.params ? (to.params[to.meta?.webTitle?.params] as string) : (to.name as string)
+    window.document.title = `${GetI18nMessage("webTitle." + titleKey)}`
   }
 
   if (to.name !== from.name) {

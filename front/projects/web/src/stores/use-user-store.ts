@@ -3,12 +3,12 @@ import { NewUserEmptyInfo, UserInfo } from "#/index.ts"
 export default defineStore("user", () => {
   const userInfo = ref<UserInfo>(NewUserEmptyInfo())
 
-  const isLogined = computed(() => !!userInfo.value.userId)
+  const isLogged = computed(() => !!userInfo.value.userId)
 
   const init = async () => {
-    // return await userService.getUserInfo(true).then(data => {
-    //   userInfo.value = data
-    // })
+    return await userService.getUserInfo(true).then(data => {
+      userInfo.value = data
+    })
   }
 
   function setUserInfo(info: UserInfo) {
@@ -21,7 +21,7 @@ export default defineStore("user", () => {
 
   return {
     userInfo,
-    isLogined,
+    isLogged,
     init,
     setUserInfo,
     clearUserInfo

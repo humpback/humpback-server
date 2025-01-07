@@ -9,14 +9,30 @@ enum Menu {
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const pageStore = usePageStore()
 const userStore = useUserStore()
 
-const userMenu = computed<{ label: string; value: string; icon: any; color: string; component?: any; hide?: boolean }[]>(() => {
+const userMenu = computed<
+  {
+    label: string
+    value: string
+    icon: any
+    color: string
+    component?: any
+    hide?: boolean
+  }[]
+>(() => {
   return [
     { label: "menu.userProfile", value: Menu.UserProfile, icon: IconMdiAccount, color: "green" },
     { label: "menu.logout", value: Menu.Logout, icon: IconMdiLogoutVariant, color: "var(--el-color-info)" },
-    { label: "menu.help", value: Menu.Help, icon: IconMdiHelpCircle, color: "var(--el-color-default)", hide: !pageStore.isSmallScreen }
+    {
+      label: "menu.help",
+      value: Menu.Help,
+      icon: IconMdiHelpCircle,
+      color: "var(--el-color-default)",
+      hide: !pageStore.isSmallScreen
+    }
   ]
 })
 
@@ -25,6 +41,7 @@ function handleUserMenuClick(v: string) {
     case Menu.Logout:
       userService.logout().finally(() => {
         userStore.clearUserInfo()
+        router.push({ name: "login", query: { redirectURL: route.fullPath } })
         SendChannelMessage(ChangeEventType.Logout)
       })
       return
@@ -50,7 +67,7 @@ function handleUserMenuClick(v: string) {
           <el-icon :size="20">
             <IconMdiUserCircleOutline />
           </el-icon>
-          <span v-if="userStore.userInfo.name" class="username overflow_div"> {{ userStore.userInfo.name }}</span>
+          <span v-if="userStore.userInfo.userName" class="username overflow_div"> {{ userStore.userInfo.userName }}</span>
           <el-icon :size="20">
             <IconMdiChevronDown />
           </el-icon>

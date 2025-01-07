@@ -10,14 +10,16 @@ class UserService {
   }
 
   async logout() {
-    return await httpClient.post("/webapi/user/logout", null, { disableLoading: true }).then(res => res.data)
+    return await httpClient
+      .post("/webapi/user/logout", null, {
+        disableLoading: true,
+        disableErrMsg: true
+      })
+      .then(res => res.data)
   }
 
   async getUserInfo(startup?: boolean) {
-    if (startup) {
-      return await httpClient.get<UserInfo>("/webapi/user", { params: { startup: "true" } }).then(res => res.data)
-    }
-    return await httpClient.get<UserInfo>("/webapi/user").then(res => res.data)
+    return await httpClient.get<UserInfo>("/webapi/user", { params: startup ? { startup: "true" } : undefined }).then(res => res.data)
   }
 
   async updateUserInfo(data: any) {

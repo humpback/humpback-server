@@ -11,7 +11,7 @@ function clickLeftMenuBtn() {
 <template>
   <div class="aside">
     <div class="aside-header">
-      <v-logo v-if="!pageStore.menuIsCollapse" direction="horizontal" showText style="margin-left: -16px" />
+      <v-logo v-if="!pageStore.menuIsCollapse" direction="horizontal" showText />
       <el-button link type="info" @click="clickLeftMenuBtn()">
         <el-icon :size="20">
           <IconMdiFormatIndentIncrease v-if="pageStore.menuIsCollapse" />
