@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from "vue-router"
+import { PageLimitRole } from "@/models"
 
 export default <RouteRecordRaw[]>[
   {
@@ -17,7 +18,9 @@ export default <RouteRecordRaw[]>[
         path: "/ws/dashboard",
         name: "dashboard",
         component: () => import("@/views/dashboard/dashboard.vue"),
-        meta: {}
+        meta: {
+          loginLimit: PageLimitRole.Login
+        }
       }
     ]
   }

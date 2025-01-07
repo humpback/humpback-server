@@ -21,5 +21,8 @@ export default {
       "userProfile": "User Profile"
     }
   },
-  webTitle: {}
+  webTitle: {
+    "login": "Login",
+    "dashboard": "Dashboard"
+  }
 }

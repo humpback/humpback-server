@@ -1,6 +1,5 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from "axios"
 import { isEmpty } from "lodash"
-import useUserStore from "@/stores/use-user-store.ts"
 import { GetCurrentLocale, GetI18nMessage } from "@/locales"
 import { disposeStore } from "@/stores"
 import globalLoading from "@/utils/loading.ts"
@@ -47,16 +46,13 @@ class HttpClientService {
       let body = err.response.data
       if (!isEmpty(body)) {
         if (body.statusCode === 401) {
-          const userStore = useUserStore()
           switch (body.code) {
             case "R40101":
               ShowErrMsg(body.errMsg)
-              userStore.clearUserInfo()
               disposeStore()
-              window.location.href = "/pub/sign-in"
+              window.location.href = "/login"
               break
             case "R40102":
-              userStore.clearUserInfo()
               disposeStore()
               console.error(body.errMsg)
               break

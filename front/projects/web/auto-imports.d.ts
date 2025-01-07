@@ -21,24 +21,26 @@ declare global {
   const IconMdiTextBoxOutline: typeof import('~icons/mdi/text-box-outline')['default']
   const IconMdiViewDashboard: typeof import('~icons/mdi/view-dashboard')['default']
   const IncludesIgnoreCase: typeof import('./src/utils/common')['IncludesIgnoreCase']
-  const IsEmpty: typeof import('./src/utils/rules/rule')['IsEmpty']
-  const IsValidName: typeof import('./src/utils/rules/rule')['IsValidName']
-  const IsValidPassword: typeof import('./src/utils/rules/rule')['IsValidPassword']
-  const LimitEmail: typeof import('./src/models/rule')['LimitEmail']
-  const LimitPassword: typeof import('./src/models/rule')['LimitPassword']
+  const IsEmpty: typeof import('./src/utils/rule')['IsEmpty']
+  const IsValidEmail: typeof import('./src/utils/rule')['IsValidEmail']
+  const IsValidName: typeof import('./src/utils/rule')['IsValidName']
+  const IsValidPassword: typeof import('./src/utils/rule')['IsValidPassword']
   const LimitUserName: typeof import('./src/models/rule')['LimitUserName']
   const NewOperateUserInfo: typeof import('./src/types/types')['NewOperateUserInfo']
   const NewOrgEmptyInfo: typeof import('./src/types/user')['NewOrgEmptyInfo']
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
+  const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
   const RSAEncrypt: typeof import('./src/utils/rsa')['RSAEncrypt']
-  const RegularEnterpriseCode: typeof import('./src/utils/rules/rule')['RegularEnterpriseCode']
-  const RegularName: typeof import('./src/utils/rules/rule')['RegularName']
-  const RegularPassword: typeof import('./src/utils/rules/rule')['RegularPassword']
-  const RuleCannotBeEmpty: typeof import('./src/utils/rules/rule')['RuleCannotBeEmpty']
-  const RuleIsRequired: typeof import('./src/utils/rules/rule')['RuleIsRequired']
-  const RuleLimitMax: typeof import('./src/utils/rules/rule')['RuleLimitMax']
-  const RuleLimitRange: typeof import('./src/utils/rules/rule')['RuleLimitRange']
+  const RegularEmail: typeof import('./src/utils/rule')['RegularEmail']
+  const RegularName: typeof import('./src/utils/rule')['RegularName']
+  const RegularPassword: typeof import('./src/utils/rule')['RegularPassword']
+  const RuleCannotBeEmpty: typeof import('./src/utils/rule')['RuleCannotBeEmpty']
+  const RuleFormatErrEmail: typeof import('./src/utils/rule')['RuleFormatErrEmail']
+  const RuleIsRequired: typeof import('./src/utils/rule')['RuleIsRequired']
+  const RuleLimitMax: typeof import('./src/utils/rule')['RuleLimitMax']
+  const RuleLimitRange: typeof import('./src/utils/rule')['RuleLimitRange']
+  const RulePleaseEnter: typeof import('./src/utils/rule')['RulePleaseEnter']
   const SendChannelMessage: typeof import('./src/utils/event')['SendChannelMessage']
   const ShowErrMsg: typeof import('./src/utils/message')['ShowErrMsg']
   const ShowInfoMsg: typeof import('./src/utils/message')['ShowInfoMsg']
@@ -278,14 +280,12 @@ declare global {
   const usePreferredDark: typeof import('@vueuse/core')['usePreferredDark']
   const usePreferredLanguages: typeof import('@vueuse/core')['usePreferredLanguages']
   const usePreferredReducedMotion: typeof import('@vueuse/core')['usePreferredReducedMotion']
-  const usePreferredReducedTransparency: typeof import("@vueuse/core")["usePreferredReducedTransparency"]
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
   const useRoute: typeof import('vue-router')['useRoute']
   const useRouter: typeof import('vue-router')['useRouter']
-  const useSSRWidth: typeof import("@vueuse/core")["useSSRWidth"]
   const useScreenOrientation: typeof import('@vueuse/core')['useScreenOrientation']
   const useScreenSafeArea: typeof import('@vueuse/core')['useScreenSafeArea']
   const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
@@ -366,7 +366,7 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { SortType, SortType } from './src/models/enum'
+  export type { PageLimitRole, SortType, PageLimitRole, SortType } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
   export type { ColorBtn, TableSortEvent } from './src/types/common'
@@ -378,7 +378,7 @@ declare global {
   export type { QueryInfo, PageInfo, SortInfo, QueryList } from './src/types/query'
   import('./src/types/query')
   // @ts-ignore
-  export type { OrgInfo, UserInfo, UserBill } from './src/types/user'
+  export type { UserInfo } from './src/types/user'
   import('./src/types/user')
 }
 
@@ -402,24 +402,25 @@ declare module 'vue' {
     readonly IconMdiTextBoxOutline: UnwrapRef<typeof import('~icons/mdi/text-box-outline')['default']>
     readonly IconMdiViewDashboard: UnwrapRef<typeof import('~icons/mdi/view-dashboard')['default']>
     readonly IncludesIgnoreCase: UnwrapRef<typeof import('./src/utils/common')['IncludesIgnoreCase']>
-    readonly IsEmpty: UnwrapRef<typeof import('./src/utils/rules/rule')['IsEmpty']>
-    readonly IsValidName: UnwrapRef<typeof import('./src/utils/rules/rule')['IsValidName']>
-    readonly IsValidPassword: UnwrapRef<typeof import('./src/utils/rules/rule')['IsValidPassword']>
-    readonly LimitEmail: UnwrapRef<typeof import('./src/models/rule')['LimitEmail']>
-    readonly LimitPassword: UnwrapRef<typeof import('./src/models/rule')['LimitPassword']>
+    readonly IsEmpty: UnwrapRef<typeof import('./src/utils/rule')['IsEmpty']>
+    readonly IsValidEmail: UnwrapRef<typeof import('./src/utils/rule')['IsValidEmail']>
+    readonly IsValidName: UnwrapRef<typeof import('./src/utils/rule')['IsValidName']>
+    readonly IsValidPassword: UnwrapRef<typeof import('./src/utils/rule')['IsValidPassword']>
     readonly LimitUserName: UnwrapRef<typeof import('./src/models/rule')['LimitUserName']>
     readonly NewOperateUserInfo: UnwrapRef<typeof import('./src/types/types')['NewOperateUserInfo']>
-    readonly NewOrgEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewOrgEmptyInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
+    readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>
     readonly RSAEncrypt: UnwrapRef<typeof import('./src/utils/rsa')['RSAEncrypt']>
-    readonly RegularEnterpriseCode: UnwrapRef<typeof import('./src/utils/rules/rule')['RegularEnterpriseCode']>
-    readonly RegularName: UnwrapRef<typeof import('./src/utils/rules/rule')['RegularName']>
-    readonly RegularPassword: UnwrapRef<typeof import('./src/utils/rules/rule')['RegularPassword']>
-    readonly RuleCannotBeEmpty: UnwrapRef<typeof import('./src/utils/rules/rule')['RuleCannotBeEmpty']>
-    readonly RuleIsRequired: UnwrapRef<typeof import('./src/utils/rules/rule')['RuleIsRequired']>
-    readonly RuleLimitMax: UnwrapRef<typeof import('./src/utils/rules/rule')['RuleLimitMax']>
-    readonly RuleLimitRange: UnwrapRef<typeof import('./src/utils/rules/rule')['RuleLimitRange']>
+    readonly RegularEmail: UnwrapRef<typeof import('./src/utils/rule')['RegularEmail']>
+    readonly RegularName: UnwrapRef<typeof import('./src/utils/rule')['RegularName']>
+    readonly RegularPassword: UnwrapRef<typeof import('./src/utils/rule')['RegularPassword']>
+    readonly RuleCannotBeEmpty: UnwrapRef<typeof import('./src/utils/rule')['RuleCannotBeEmpty']>
+    readonly RuleFormatErrEmail: UnwrapRef<typeof import('./src/utils/rule')['RuleFormatErrEmail']>
+    readonly RuleIsRequired: UnwrapRef<typeof import('./src/utils/rule')['RuleIsRequired']>
+    readonly RuleLimitMax: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitMax']>
+    readonly RuleLimitRange: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitRange']>
+    readonly RulePleaseEnter: UnwrapRef<typeof import('./src/utils/rule')['RulePleaseEnter']>
     readonly SendChannelMessage: UnwrapRef<typeof import('./src/utils/event')['SendChannelMessage']>
     readonly ShowErrMsg: UnwrapRef<typeof import('./src/utils/message')['ShowErrMsg']>
     readonly ShowInfoMsg: UnwrapRef<typeof import('./src/utils/message')['ShowInfoMsg']>
@@ -427,7 +428,6 @@ declare module 'vue' {
     readonly ShowSystemErrMsg: UnwrapRef<typeof import('./src/utils/message')['ShowSystemErrMsg']>
     readonly ShowWarningMsg: UnwrapRef<typeof import('./src/utils/message')['ShowWarningMsg']>
     readonly SortType: UnwrapRef<typeof import('./src/models/enum')['SortType']>
-    readonly StorageKeyUserCompanyCode: UnwrapRef<typeof import('./src/models/local-storage')['StorageKeyUserCompanyCode']>
     readonly TableHeight: UnwrapRef<typeof import('./src/utils/common')['TableHeight']>
     readonly TimestampToTime: UnwrapRef<typeof import('./src/utils/time')['TimestampToTime']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>

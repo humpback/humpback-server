@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { CloseChannelMessage, GetChannelMessage, ChangeEventType } from "utils/index.ts"
+import { ChangeEventType, CloseChannelMessage, GetChannelMessage } from "utils/index.ts"
 import { GetUILocale } from "@/locales/index.ts"
 
 const { t } = useI18n()
@@ -23,7 +23,7 @@ const handleChannelMessage = (data: any) => {
 const handleFocus = () => {
   if (pageStore.refreshPage.needRefresh) {
     if (pageStore.refreshPage.type === ChangeEventType.Login) {
-      ShowWarningMsg(t("message.signInAccountChanged"))
+      ShowWarningMsg(t("message.loginUserChangeEvent"))
     }
     location.reload()
   }

@@ -30,8 +30,9 @@ type HtmlConfig struct {
 }
 
 type DBConfig struct {
-	Root    string        `yaml:"root" json:"root" env:"DB_ROOT"`
-	Timeout time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
+	Root           string        `yaml:"root" json:"root" env:"DB_ROOT"`
+	Timeout        time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
+	SessionTimeout time.Duration `yaml:"sessionTimeout" json:"sessionTimeout" env:"DB_SESSION_TIMEOUT"`
 }
 
 type AdminConfig struct {

@@ -40,7 +40,7 @@ type dbHelper struct {
 
 const BucketUsers = "Users"
 const BucketGroups = "Groups"
-const BucketSession = "Sessions"
+const BucketSessions = "Sessions"
 const BucketRegistries = "Registries"
 const BucketConfigs = "Configs"
 const BucketNodes = "Nodes"
@@ -49,7 +49,7 @@ const BucketTemplates = "Templates"
 const BucketServices = "Services"
 
 var (
-	Buckets = []string{BucketUsers, BucketGroups, BucketSession, BucketRegistries, BucketConfigs, BucketNodes, BucketNodesGroups, BucketTemplates, BucketServices}
+	Buckets = []string{BucketUsers, BucketGroups, BucketSessions, BucketRegistries, BucketConfigs, BucketNodes, BucketNodesGroups, BucketTemplates, BucketServices}
 )
 
 var (
@@ -218,6 +218,20 @@ func SaveData[T any](bucketName string, id string, data T) error {
 		return checkErr(err)
 	}
 	return nil
+}
+
+func DeleteData(bucketName string, id string) error {
+	if err := db.boltDB.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketName))
+		if bucket == nil {
+			return ErrBucketNotExist
+		}
+		return bucket.Delete([]byte(id))
+	}); err != nil {
+		return checkErr(err)
+	}
+	return nil
+
 }
 
 func checkErr(err error) error {

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { LimitPassword } from "@/models"
+
 const props = defineProps<{
   modelValue: string
   clearable?: boolean

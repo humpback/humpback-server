@@ -1,3 +1,9 @@
+export enum PageLimitRole {
+  Ingore = 0,
+  Login = 1,
+  Logout = -1
+}
+
 export enum SortType {
   Asc = "asc",
   Desc = "desc"
