@@ -55,6 +55,7 @@ func (nc *NodeController) CheckNodes() {
 	}
 }
 
+// 机器上下线时需要通知该机器所属的Group，去检查Group中所有service的状态
 func (nc *NodeController) CheckNodesCore() {
 	nc.Lock()
 	defer nc.Unlock()
@@ -114,6 +115,7 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 	}
 }
 
+// 对于在线的机器，检查容器状态
 func (nc *NodeController) CheckContainers(healthInfo types.HealthInfo) {
 	for _, container := range healthInfo.ContainerList {
 		container.NodeId = healthInfo.NodeId

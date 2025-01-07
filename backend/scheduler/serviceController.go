@@ -8,6 +8,7 @@ import (
 	"humpback/types"
 )
 
+// Service管理入口，每个service一个Manager
 type ServiceController struct {
 	ServiceCtrls        map[string]*ServiceManager
 	NodeChangeChan      chan NodeSimpleInfo
@@ -48,6 +49,7 @@ func (sc *ServiceController) HandleNodeChanged() {
 	}
 }
 
+// 机器上下线时需要通知该机器所属的Group，去检查Group中所有service的状态
 func (sc *ServiceController) HandleNodeStatusChanged(nodeInfo NodeSimpleInfo) {
 	groupIds := GetGroupByNodeId(nodeInfo.NodeId)
 	for _, gId := range groupIds {
