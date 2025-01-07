@@ -1,7 +1,7 @@
 import { UserInfo } from "#/index.ts"
 
 class UserService {
-  async signIn(data: any) {
+  async login(data: any) {
     return await httpClient.post<UserInfo>("/webapi/user/login", data, { disableLoading: true }).then(res => res.data)
   }
 

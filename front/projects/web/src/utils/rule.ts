@@ -1,8 +1,8 @@
 import { GetI18nMessage } from "@/locales"
 
 export const RegularName = /^[\u4e00-\u9fa5a-zA-Z0-9][\u4e00-\u9fa5a-zA-Z0-9\s_@,，-]{0,198}[\u4e00-\u9fa5a-zA-Z0-9]$/
-export const RegularPassword = /^[a-zA-Z0-9][a-zA-Z0-9_\-@#$%+=!]{7,15}$/
-export const RegularEnterpriseCode = /^[a-zA-Z]{4}$/
+export const RegularEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+export const RegularPassword = /^[a-zA-Z0-9][a-zA-Z0-9_\-@#$%+=!]{7,20}$/
 
 export function IsEmpty(value: any): boolean {
   return !value || !(value as string).trim()
@@ -10,6 +10,10 @@ export function IsEmpty(value: any): boolean {
 
 export function IsValidName(name: string): boolean {
   return RegularName.test(name)
+}
+
+export function IsValidEmail(email: string): boolean {
+  return RegularEmail.test(email)
 }
 
 export function IsValidPassword(psd: string): boolean {
@@ -20,6 +24,12 @@ export function IsValidPassword(psd: string): boolean {
 
 export function RuleCannotBeEmpty(rule: any, value: any, callback: any) {
   return IsEmpty(value) ? callback(new Error(GetI18nMessage("rules.cannotBeEmpty"))) : callback()
+}
+
+export function RulePleaseEnter(fieldI18nName: string) {
+  return (rule: any, value: any, callback: any) => {
+    return IsEmpty(value) ? callback(new Error(`${GetI18nMessage("rules.pleaseEnter")} ${GetI18nMessage(fieldI18nName)}`)) : callback()
+  }
 }
 
 export function RuleIsRequired(fieldI18nName: string) {
@@ -42,4 +52,10 @@ export function RuleLimitRange(min: number, max: number) {
     }
     callback()
   }
+}
+
+// --------------------特定规则定义-----------------------
+
+export function RuleFormatErrEmail(rule: any, value: any, callback: any) {
+  return IsValidEmail(value) ? callback() : callback(new Error(GetI18nMessage("rules.formatErrEmail")))
 }

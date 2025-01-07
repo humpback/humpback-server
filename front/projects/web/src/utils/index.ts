@@ -1,6 +1,6 @@
 export * from "./common"
 export * from "./loading.ts"
 export * from "./message"
-export * from "./rules/rule.ts"
+export * from "./rule.ts"
 export * from "./time"
 export * from "./event.ts"

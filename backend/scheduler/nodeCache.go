@@ -1,9 +1,10 @@
 package scheduler
 
 import (
+	"time"
+
 	"humpback/internal/db"
 	"humpback/types"
-	"time"
 
 	tlcache "github.com/JamesYYang/go-ttl-lru"
 )
@@ -19,7 +20,7 @@ func MatchNodeWithIpAddress(ipAddress string) string {
 		return v.(string)
 	}
 
-	n, err := db.GetDatabyQuery[types.Node](db.BucketNodes, func(key string, value interface{}) bool {
+	n, err := db.GetDataByQuery[types.Node](db.BucketNodes, func(key string, value interface{}) bool {
 		node := value.(types.Node)
 		return node.IpAddress == ipAddress
 	})

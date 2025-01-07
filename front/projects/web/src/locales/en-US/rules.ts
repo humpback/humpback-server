@@ -4,6 +4,7 @@ export default {
     "isRequired": "is required",
     "limitLengthMax": "Length limit is {max}",
     "limitLengthRange": "Length limit is {min} to {max}",
+    "pleaseEnter": "Please enter",
 
     "formatErrEmail": "Invalid email address.",
     "formatErrPhone": "Invalid phone number",

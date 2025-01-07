@@ -370,6 +370,9 @@
     "UserBill": true,
     "UserInfo": true,
     "usePreferredReducedTransparency": true,
-    "useSSRWidth": true
+    "useSSRWidth": true,
+    "LimitEmail": true,
+    "LimitPassword": true,
+    "LimitUserName": true
   }
 }

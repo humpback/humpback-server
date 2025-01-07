@@ -8,8 +8,13 @@ var baseMsg = map[string]string{
 	CodeNotLogin:             "Not logged in.",
 	CodeNoPermission:         "You don't have permission to operate.",
 
-	CodeUserIdNotEmpty:        "The user id cannot be empty.",
+	CodeUserNameIsInvalid:     "The user name is invalid",
+	CodeUserNameNotEmpty:      "The user name cannot be empty.",
 	CodeUserNotExist:          "The user does not exist.",
 	CodeUserStatusIsDeactived: "The user has been suspended.",
 	CodeUserIsInvalid:         "The user is invalid.",
+
+	CodeEmailIsInvalid:    "The email address is invalid",
+	CodePasswordIsInvalid: "The password is invalid",
+	CodePasswordIsWrong:   "Wrong password",
 }

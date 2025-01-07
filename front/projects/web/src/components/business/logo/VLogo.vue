@@ -1,33 +1,34 @@
 <script lang="ts" setup>
 import LogoSVG from "@/assets/logo.png"
 
-const props = defineProps<{
-  isHorizontal?: boolean
-  showText?: boolean
-  enableClick?: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    direction?: "horizontal" | "vertical"
+    showText?: boolean
+  }>(),
+  {
+    direction: "vertical"
+  }
+)
 
 const router = useRouter()
-const pageStore = usePageStore()
 
 const logoName = "Humpback"
 const logoImg = LogoSVG
 
 function clickLogo() {
-  if (props.enableClick) {
-    router.push({ name: "manage" })
-  }
+  router.push({ name: "workspace" })
 }
 </script>
 
 <template>
-  <div v-if="props.isHorizontal" :class="{ 'logo-click': props.enableClick, 'logo-box': true }" @click="clickLogo()">
+  <div v-if="props.direction === 'horizontal'" class="logo-box" @click="clickLogo()">
     <el-avatar :size="32" :src="logoImg" class="color-light" fit="fill" shape="square" />
-    <span v-if="!pageStore.menuIsCollapse || props.showText" class="gradient-text"> {{ logoName }} </span>
+    <span v-if="props.showText" class="gradient-text"> {{ logoName }} </span>
   </div>
-  <div v-else class="w-100 text-align-center mb-2">
+  <div v-if="props.direction === 'vertical'" class="w-100 text-align-center">
     <el-avatar :size="80" :src="logoImg" class="color-transparent" fit="fill" shape="square" />
-    <h3 class="gradient-text m-none"> {{ logoName }} </h3>
+    <div class="gradient-text mt-3"> {{ logoName }}</div>
   </div>
 </template>
 
@@ -38,17 +39,16 @@ function clickLogo() {
   display: flex;
   gap: 12px;
   align-items: center;
-  padding: 0 0 0 12px;
   justify-content: left;
   box-sizing: border-box;
 
   .color-light {
     background-color: #ffffff;
   }
-}
 
-.logo-click:hover {
-  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .el-avatar {

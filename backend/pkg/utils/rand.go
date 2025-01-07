@@ -12,8 +12,7 @@ func NewUUID() string {
 	return uuid.NewString()
 }
 
-// GetRandomString 获取随机字符串
-func GetRandomString() string {
+func NewGuidStr() string {
 	return strings.ReplaceAll(NewUUID(), "-", "")
 }
 

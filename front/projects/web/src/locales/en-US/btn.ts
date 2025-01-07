@@ -1,6 +1,7 @@
 export default {
   btn: {
-    "signIn": "Sign In",
+    "login": "Login",
+    "logging": "Login...",
     "logout": "Logout",
     "help": "Help"
   }

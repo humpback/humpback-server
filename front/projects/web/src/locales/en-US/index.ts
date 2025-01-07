@@ -1,5 +1,5 @@
 // @ts-ignore
-import en from "element-plus/dist/locale/en.mjs"
+import en from "element-plus/es/locale/lang/en"
 
 export default {
   name: "English",

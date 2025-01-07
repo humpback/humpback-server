@@ -30,9 +30,6 @@ func InitRouter() *Router {
 
 func (api *Router) Start() {
 	go func() {
-		if err := static.InitStaticsResource(); err != nil {
-			slog.Error(fmt.Sprintf("init front static resource to cache failed: %s", err))
-		}
 		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.NodeArgs().SitePort)
 		slog.Info("[Api] listening...", "Address", listeningAddress)
 		api.httpSrv = &http.Server{
@@ -50,7 +47,7 @@ func (api *Router) Close(c context.Context) error {
 }
 
 func (api *Router) setMiddleware() {
-	api.engine.Use(gin.Recovery(), middleware.Log(), middleware.CorsCheck(), middleware.HandleError())
+	api.engine.Use(middleware.Log(), middleware.CorsCheck(), middleware.HandleError())
 }
 
 func (api *Router) setRoute() {

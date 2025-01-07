@@ -8,8 +8,12 @@ node:
   hostIp: 0.0.0.0
   sitePort: 8300
 db:
-  root: '../../humpback.db'
+  root: './humpback.db'
   timeout: 5s
 html:
   dir: '../front/projects/web/dist'
   load: false
+admin:
+  id: 00000000000000000000000000000000
+  name: humpback   # 长度2-100
+  password: humpback # 长度8-20

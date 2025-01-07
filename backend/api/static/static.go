@@ -26,13 +26,13 @@ type staticResourceInfo struct {
 var staticCache = map[string]*staticResourceInfo{}
 
 func InitStaticsResource() (err error) {
-	staticConfig := config.HtmlArgs()
-	if config.Location() != "local" {
-		slog.Info("[Api] init front static resource to cache start...")
+	if config.HtmlArgs().Load {
+		staticConfig := config.HtmlArgs()
+		slog.Info("[Api] init static resource to cache start...")
 		if staticCache, err = readFileToCache(staticConfig.Dir); err != nil {
-			return err
+			return fmt.Errorf("init static resource failed: %s", err)
 		}
-		slog.Info("[Api] init front static resource to cache complted.")
+		slog.Info("[Api] init static resource to cache complted.")
 	}
 	return nil
 }

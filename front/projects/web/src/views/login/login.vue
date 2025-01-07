@@ -1,20 +1,65 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
+import { ChangeEventType, IsValidEmail, RulePleaseEnter, SendChannelMessage } from "@/utils"
+import { RSAEncrypt } from "utils/rsa.ts"
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
 
-const formRef = ref<FormInstance>()
+const isLogin = ref(false)
+const formRef = useTemplateRef<FormInstance>("formRef")
+const keyMax = computed(() => Math.max(LimitEmail.Max, LimitUserName.Max))
 const formData = reactive({
   name: "",
   password: ""
 })
 
 const formRules = reactive<FormRules>({
-  name: [{ required: true, trigger: "blur" }],
-  password: [{ required: true, trigger: "blur" }]
+  name: [
+    { required: true, validator: RulePleaseEnter("placeholder.nameOrEmail"), trigger: "blur" },
+    { validator: checkName, trigger: "blur" }
+  ],
+  password: [{ required: true, validator: RulePleaseEnter("placeholder.password"), trigger: "blur" }]
 })
 
-function login() {}
+const disabled = computed(() => formData.name.length < LimitUserName.Min || formData.password.length < LimitPassword.Min)
+
+function checkName(rule: any, value: any, callback: any) {
+  const str = value as string
+  if (str.includes("@")) {
+    if (!IsValidEmail(str)) {
+      return callback(new Error("rules.formatErrEmail"))
+    }
+  }
+  callback()
+}
+
+async function login() {
+  if (!(await formRef.value?.validate())) {
+    return
+  }
+  isLogin.value = true
+  const body = {
+    name: RSAEncrypt(formData.name),
+    password: RSAEncrypt(formData.password)
+  }
+
+  userService
+    .login(body)
+    .then(data => {
+      userStore.setUserInfo(data)
+      SendChannelMessage(ChangeEventType.Login, data)
+      ShowSuccessMsg(t("message.loginSuccess"))
+      if (route.query?.redirectUrl) {
+        router.push(route.query.redirectUrl as string)
+        return
+      }
+      router.push({ name: "workspace" })
+    })
+    .finally(() => (isLogin.value = false))
+}
 </script>
 
 <template>
@@ -25,17 +70,17 @@ function login() {}
       </template>
       <el-form ref="formRef" :model="formData" :rules="formRules" @submit.prevent="login">
         <el-form-item prop="name">
-          <v-name-input v-model="formData.name" :placeholder="t('placeholder.name')" size="large" />
+          <v-input v-model="formData.name" :maxlength="keyMax" :placeholder="t('placeholder.nameOrEmail')" size="large" />
         </el-form-item>
         <el-form-item prop="password">
           <v-password-input v-model="formData.password" :placeholder="t('placeholder.password')" size="large" />
         </el-form-item>
         <el-form-item>
-          <el-button class="w-100" native-type="submit" size="large" type="primary">
+          <el-button :disabled="disabled || isLogin" class="w-100 mt-3" native-type="submit" size="large" type="primary">
             <el-icon>
               <icon-mdi-login-variant />
             </el-icon>
-            {{ t("btn.signIn") }}
+            {{ isLogin ? t("logging") : t("btn.login") }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -46,7 +91,7 @@ function login() {}
       </template>
     </el-card>
     <div class="copy-right">
-      <el-text size="small" type="info">©2024 Humpback. {{ t("tips.allRightsReserved") }}</el-text>
+      <el-text size="small" type="info">{{ t("tips.allRightsReserved") }}</el-text>
     </div>
   </div>
 </template>
@@ -77,7 +122,7 @@ function login() {}
 
   .el-card__header {
     border: none;
-    padding: 0 0 40px 0;
+    padding: 0 0 30px 0;
   }
 
   .el-card__body {
@@ -85,7 +130,7 @@ function login() {}
   }
 
   .el-card__footer {
-    padding: 40px 0 0 0;
+    padding: 30px 0 0 0;
   }
 }
 

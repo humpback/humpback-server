@@ -1,10 +1,11 @@
 package scheduler
 
 import (
-	"humpback/internal/db"
-	"humpback/types"
 	"slices"
 	"strings"
+
+	"humpback/internal/db"
+	"humpback/types"
 )
 
 type ServiceController struct {
@@ -26,7 +27,7 @@ func NewServiceController(nodeChan chan NodeSimpleInfo, containerChan chan types
 	return sc
 }
 
-// 重启时恢复服务
+// RestoreServiceManager 重启时恢复服务
 func (sc *ServiceController) RestoreServiceManager() {
 	svcs, err := db.GetDataAll[types.Service](db.BucketServices)
 	if err != nil {
@@ -35,7 +36,7 @@ func (sc *ServiceController) RestoreServiceManager() {
 
 	for _, svc := range svcs {
 		if svc.IsEnabled {
-			sm := NewServiceManager(&svc)
+			sm := NewServiceManager(svc)
 			sc.ServiceCtrls[svc.ServiceId] = sm
 		}
 	}
@@ -60,7 +61,7 @@ func (sc *ServiceController) HandleNodeStatusChanged(nodeInfo NodeSimpleInfo) {
 
 func GetGroupByNodeId(nodeId string) []string {
 	groups := make([]string, 0)
-	ng, err := db.GetDatabyQuery[types.NodesGroups](db.BucketNodesGroups, func(key string, nodesGroups interface{}) bool {
+	ng, err := db.GetDataByQuery[types.NodesGroups](db.BucketNodesGroups, func(key string, nodesGroups interface{}) bool {
 		ngp := nodesGroups.(types.NodesGroups)
 		return slices.Contains(ngp.Nodes, nodeId)
 	})

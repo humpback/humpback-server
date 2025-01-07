@@ -23,7 +23,7 @@ type DockerEngine struct {
 	NetworkPlugins string `json:"networkPlugins"`
 }
 
-// DockerInfo 整体信息，包含主机信息、Docker 引擎信息和容器列表
+// HealthInfo 整体信息，包含主机信息、Docker 引擎信息和容器列表
 type HealthInfo struct {
 	NodeId        string
 	HostInfo      HostInfo          `json:"hostInfo"`

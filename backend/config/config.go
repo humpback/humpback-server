@@ -34,6 +34,12 @@ type DBConfig struct {
 	Timeout time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
 }
 
+type AdminConfig struct {
+	Id       string `yaml:"id" json:"id" env:"ADMIN_ID"`
+	Name     string `yaml:"name" json:"name" env:"ADMIN_NAME"`
+	Password string `yaml:"password" json:"password" env:"ADMIN_PASSWORD"`
+}
+
 type config struct {
 	Version  string        `yaml:"version" json:"version"`
 	Location string        `yaml:"location" json:"location" env:"LOCATION"`
@@ -41,6 +47,7 @@ type config struct {
 	Node     NodeConfig    `yaml:"node" json:"node"`
 	DB       DBConfig      `yaml:"db" json:"db"`
 	Backend  BackendConfig `yaml:"backend" json:"backend"`
+	Admin    AdminConfig   `yaml:"admin" json:"admin"`
 }
 
 func InitConfig() error {
@@ -61,6 +68,7 @@ func InitConfig() error {
 }
 
 func (c *config) check() error {
+	//todo 后续添加配置检查，检查不通过则退出程序
 	return nil
 }
 
@@ -100,6 +108,10 @@ func BackendArgs() BackendConfig {
 
 func DBArgs() DBConfig {
 	return configuration.DB
+}
+
+func AdminArgs() AdminConfig {
+	return configuration.Admin
 }
 
 func Config() any {

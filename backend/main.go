@@ -23,7 +23,10 @@ func init() {
 }
 
 func main() {
-	application := app.InitApp()
+	application, err := app.InitApp()
+	if err != nil {
+		panic(err)
+	}
 
 	slog.Info("[APP] new completed.")
 

@@ -24,6 +24,9 @@ declare global {
   const IsEmpty: typeof import('./src/utils/rules/rule')['IsEmpty']
   const IsValidName: typeof import('./src/utils/rules/rule')['IsValidName']
   const IsValidPassword: typeof import('./src/utils/rules/rule')['IsValidPassword']
+  const LimitEmail: typeof import('./src/models/rule')['LimitEmail']
+  const LimitPassword: typeof import('./src/models/rule')['LimitPassword']
+  const LimitUserName: typeof import('./src/models/rule')['LimitUserName']
   const NewOperateUserInfo: typeof import('./src/types/types')['NewOperateUserInfo']
   const NewOrgEmptyInfo: typeof import('./src/types/user')['NewOrgEmptyInfo']
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
@@ -275,14 +278,14 @@ declare global {
   const usePreferredDark: typeof import('@vueuse/core')['usePreferredDark']
   const usePreferredLanguages: typeof import('@vueuse/core')['usePreferredLanguages']
   const usePreferredReducedMotion: typeof import('@vueuse/core')['usePreferredReducedMotion']
-  const usePreferredReducedTransparency: typeof import('@vueuse/core')['usePreferredReducedTransparency']
+  const usePreferredReducedTransparency: typeof import("@vueuse/core")["usePreferredReducedTransparency"]
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
   const useRoute: typeof import('vue-router')['useRoute']
   const useRouter: typeof import('vue-router')['useRouter']
-  const useSSRWidth: typeof import('@vueuse/core')['useSSRWidth']
+  const useSSRWidth: typeof import("@vueuse/core")["useSSRWidth"]
   const useScreenOrientation: typeof import('@vueuse/core')['useScreenOrientation']
   const useScreenSafeArea: typeof import('@vueuse/core')['useScreenSafeArea']
   const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
@@ -402,6 +405,9 @@ declare module 'vue' {
     readonly IsEmpty: UnwrapRef<typeof import('./src/utils/rules/rule')['IsEmpty']>
     readonly IsValidName: UnwrapRef<typeof import('./src/utils/rules/rule')['IsValidName']>
     readonly IsValidPassword: UnwrapRef<typeof import('./src/utils/rules/rule')['IsValidPassword']>
+    readonly LimitEmail: UnwrapRef<typeof import('./src/models/rule')['LimitEmail']>
+    readonly LimitPassword: UnwrapRef<typeof import('./src/models/rule')['LimitPassword']>
+    readonly LimitUserName: UnwrapRef<typeof import('./src/models/rule')['LimitUserName']>
     readonly NewOperateUserInfo: UnwrapRef<typeof import('./src/types/types')['NewOperateUserInfo']>
     readonly NewOrgEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewOrgEmptyInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>

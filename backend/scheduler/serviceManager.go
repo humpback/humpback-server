@@ -1,10 +1,11 @@
 package scheduler
 
 import (
-	"humpback/config"
-	"humpback/types"
 	"log"
 	"time"
+
+	"humpback/config"
+	"humpback/types"
 
 	"golang.org/x/exp/rand"
 )
@@ -26,7 +27,7 @@ func NewServiceManager(svc *types.Service) *ServiceManager {
 func (sm *ServiceManager) Reconcile() {
 }
 
-// 如果容器状态有变化，就保存DB
+// UpdateContainerWhenChanged 如果容器状态有变化，就保存DB
 func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 
 }

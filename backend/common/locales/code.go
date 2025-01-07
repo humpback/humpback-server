@@ -9,8 +9,13 @@ const (
 	CodeNotLogin             = "R40102"
 	CodeNoPermission         = "RNoPermission-001"
 
-	CodeUserIdNotEmpty        = "R4User-001"
-	CodeUserNotExist          = "R4User-002"
-	CodeUserStatusIsDeactived = "R4User-003"
-	CodeUserIsInvalid         = "R4User-004"
+	CodeUserNameIsInvalid     = "R4User-001"
+	CodeUserNameNotEmpty      = "R4User-002"
+	CodeUserNotExist          = "R4User-003"
+	CodeUserStatusIsDeactived = "R4User-004"
+	CodeUserIsInvalid         = "R4User-005"
+
+	CodeEmailIsInvalid    = "R4Email-001"
+	CodePasswordIsInvalid = "R4Psd-001"
+	CodePasswordIsWrong   = "R4Psd-002"
 )

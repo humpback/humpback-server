@@ -1,3 +1,5 @@
 export default {
-  tips: {}
+  tips: {
+    "allRightsReserved": "©2024 Humpback. All Rights Reserved"
+  }
 }

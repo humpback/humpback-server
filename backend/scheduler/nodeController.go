@@ -1,12 +1,13 @@
 package scheduler
 
 import (
-	"humpback/config"
-	"humpback/internal/db"
-	"humpback/types"
 	"log"
 	"sync"
 	"time"
+
+	"humpback/config"
+	"humpback/internal/db"
+	"humpback/types"
 
 	"golang.org/x/exp/rand"
 )
