@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"slices"
 	"strings"
 
 	"humpback/internal/db"
@@ -13,24 +12,27 @@ type ServiceController struct {
 	ServiceCtrls        map[string]*ServiceManager
 	NodeChangeChan      chan NodeSimpleInfo
 	ContainerChangeChan chan types.ContainerStatus
+	ServiceChangeChan   chan string
 }
 
-func NewServiceController(nodeChan chan NodeSimpleInfo, containerChan chan types.ContainerStatus) *ServiceController {
+func NewServiceController(nodeChan chan NodeSimpleInfo, containerChan chan types.ContainerStatus, serviceChan chan string) *ServiceController {
 	sc := &ServiceController{
 		ServiceCtrls:        make(map[string]*ServiceManager),
 		NodeChangeChan:      nodeChan,
 		ContainerChangeChan: containerChan,
+		ServiceChangeChan:   serviceChan,
 	}
 
 	go sc.HandleNodeChanged()
 	go sc.HandleContainerChanged()
+	go sc.HandleServiceChange()
 
 	return sc
 }
 
 // RestoreServiceManager 重启时恢复服务
 func (sc *ServiceController) RestoreServiceManager() {
-	svcs, err := db.GetDataAll[types.Service](db.BucketServices)
+	svcs, err := db.GetAllService()
 	if err != nil {
 		panic(err)
 	}
@@ -43,6 +45,20 @@ func (sc *ServiceController) RestoreServiceManager() {
 	}
 }
 
+func (sc *ServiceController) HandleServiceChange() {
+	for serviceId := range sc.ServiceChangeChan {
+		if serviceManager, ok := sc.ServiceCtrls[serviceId]; ok {
+			serviceManager.IsNeedCheckAll.Store(true)
+		} else {
+			svc, err := db.GetServiceById(serviceId)
+			if err == nil && svc.IsEnabled {
+				sm := NewServiceManager(svc)
+				sc.ServiceCtrls[svc.ServiceId] = sm
+			}
+		}
+	}
+}
+
 func (sc *ServiceController) HandleNodeChanged() {
 	for nodeInfo := range sc.NodeChangeChan {
 		sc.HandleNodeStatusChanged(nodeInfo)
@@ -51,29 +67,14 @@ func (sc *ServiceController) HandleNodeChanged() {
 
 // 机器上下线时需要通知该机器所属的Group，去检查Group中所有service的状态
 func (sc *ServiceController) HandleNodeStatusChanged(nodeInfo NodeSimpleInfo) {
-	groupIds := GetGroupByNodeId(nodeInfo.NodeId)
+	groupIds := db.GetGroupByNodeId(nodeInfo.NodeId)
 	for _, gId := range groupIds {
 		for _, serviceManager := range sc.ServiceCtrls {
 			if serviceManager.ServiceInfo.GroupId == gId {
-				go serviceManager.Reconcile()
+				serviceManager.IsNeedCheckAll.Store(true)
 			}
 		}
 	}
-}
-
-func GetGroupByNodeId(nodeId string) []string {
-	groups := make([]string, 0)
-	ng, err := db.GetDataByQuery[types.NodesGroups](db.BucketNodesGroups, func(key string, nodesGroups interface{}) bool {
-		ngp := nodesGroups.(types.NodesGroups)
-		return slices.Contains(ngp.Nodes, nodeId)
-	})
-
-	if err == nil {
-		for _, v := range ng {
-			groups = append(groups, v.GroupID)
-		}
-	}
-	return groups
 }
 
 func (sc *ServiceController) HandleContainerChanged() {

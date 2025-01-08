@@ -26,7 +26,7 @@ func NewHumpbackScheduler() *HumpbackScheduler {
 	hs.NodeHeartbeatChan = make(chan NodeSimpleInfo, 100)
 	hs.ContainerChangeChan = make(chan types.ContainerStatus, 100)
 	hs.ServiceChangeChan = make(chan string, 100)
-	hs.serviceCtrl = NewServiceController(hs.NodeHeartbeatChan, hs.ContainerChangeChan)
+	hs.serviceCtrl = NewServiceController(hs.NodeHeartbeatChan, hs.ContainerChangeChan, hs.ServiceChangeChan)
 	hs.nodeCtrl = NewNodeController(hs.NodeHeartbeatChan, hs.ContainerChangeChan)
 
 	return hs

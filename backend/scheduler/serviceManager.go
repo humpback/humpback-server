@@ -2,17 +2,21 @@ package scheduler
 
 import (
 	"log"
+	"sync/atomic"
 	"time"
 
 	"humpback/config"
+	"humpback/internal/db"
 	"humpback/types"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/rand"
 )
 
 type ServiceManager struct {
-	ServiceInfo   *types.Service
-	CheckInterval int64
+	ServiceInfo    *types.Service
+	CheckInterval  int64
+	IsNeedCheckAll atomic.Value
 }
 
 func NewServiceManager(svc *types.Service) *ServiceManager {
@@ -20,6 +24,8 @@ func NewServiceManager(svc *types.Service) *ServiceManager {
 		ServiceInfo:   svc,
 		CheckInterval: int64(config.BackendArgs().ServiceCheckInterval),
 	}
+
+	sm.IsNeedCheckAll.Store(true)
 
 	go sm.CheckService()
 
@@ -33,6 +39,21 @@ func (sm *ServiceManager) Reconcile() {
 // UpdateContainerWhenChanged 如果容器状态有变化，就保存DB
 // 然后等定时检查起来后，重新Reconcile Service
 func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
+
+	ct, ok := lo.Find(sm.ServiceInfo.Containers, func(c *types.ContainerStatus) bool {
+		return c.ContainerId == cs.ContainerId
+	})
+
+	if ok && (ct.Status != cs.Status || ct.StartAt != cs.StartAt) {
+		ct.Status = cs.Status
+		ct.StartAt = cs.StartAt
+		db.SaveService(sm.ServiceInfo)
+	}
+
+	if !ok {
+		sm.ServiceInfo.Containers = append(sm.ServiceInfo.Containers, &cs)
+		db.SaveService(sm.ServiceInfo)
+	}
 
 }
 
@@ -50,5 +71,8 @@ func (sm *ServiceManager) CheckService() {
 }
 
 func (sm *ServiceManager) CheckServiceCore() {
-
+	if sm.IsNeedCheckAll.Load().(bool) {
+		sm.IsNeedCheckAll.Store(false)
+		sm.Reconcile()
+	}
 }

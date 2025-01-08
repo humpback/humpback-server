@@ -61,8 +61,7 @@ func (nc *NodeController) CheckNodesCore() {
 	defer nc.Unlock()
 
 	currentTime := time.Now().Unix()
-
-	//Node 状态有变化时需要重新保存DB
+	isNeedSave := false
 	for nodeId, nodeInfo := range nc.NodesInfo {
 
 		if nodeInfo.Status == types.NodeStatusOnline {
@@ -70,6 +69,7 @@ func (nc *NodeController) CheckNodesCore() {
 				log.Printf("Node %s is not responding. Last heartbeat: %d", nodeId, nodeInfo.LastHeartbeat)
 
 				nodeInfo.Status = types.NodeStatusOffline
+				isNeedSave = true
 				nc.NodeHeartbeatChan <- *nodeInfo
 			}
 		}
@@ -80,10 +80,17 @@ func (nc *NodeController) CheckNodesCore() {
 				log.Printf("need report online node [%s]", nodeId)
 
 				nodeInfo.Status = types.NodeStatusOnline
+				isNeedSave = true
 				nc.NodeHeartbeatChan <- *nodeInfo
 			}
 		}
 
+		if isNeedSave {
+			err := db.UpdateNodeStatus(nodeId, nodeInfo.Status, nodeInfo.LastHeartbeat)
+			if err != nil {
+				log.Printf("update node status failed: %s", err)
+			}
+		}
 	}
 }
 
@@ -102,7 +109,7 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 		}
 		n.LastHeartbeat = ts
 	} else {
-		n, err := db.GetDataById[types.Node](db.BucketNodes, nodeId)
+		n, err := db.GetNodeById(nodeId)
 		if err == nil {
 			nc.NodesInfo[nodeId] = &NodeSimpleInfo{
 				NodeId:          n.NodeID,
