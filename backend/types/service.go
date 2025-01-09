@@ -1,5 +1,25 @@
 package types
 
+const (
+	NodeStatusOnline  = "Online"
+	NodeStatusOffline = "Offline"
+)
+
+const (
+	ServiceStatusNotReady = "NotReady"
+	ServiceStatusRunning  = "Running"
+	ServiceStatusFailed   = "Failed"
+
+	ContainerStatusPending  = "Pending"
+	ContainerStatusStarting = "Starting"
+	ContainerStatusCreated  = "Created"
+	ContainerStatusRunning  = "Running"
+	ContainerStatusFailed   = "Failed"
+	ContainerStatusExited   = "Exited"
+	ContainerStatusRemoved  = "Removed"
+	ContainerStatusWarning  = "Warning"
+)
+
 type Service struct {
 	ServiceId   string             `json:"serviceId"`
 	ServiceName string             `json:"serviceName"`
@@ -7,6 +27,7 @@ type Service struct {
 	IsEnabled   bool               `json:"isEnabled"`
 	Status      string             `json:"status"`
 	Meta        interface{}        `json:"meta"`
+	Deployment  Deployment         `json:"deployment"`
 	Containers  []*ContainerStatus `json:"containers"`
 	GroupId     string             `json:"groupId"`
 	CreateAt    int64              `json:"createAt"`
@@ -24,18 +45,94 @@ type ContainerStatus struct {
 	StartAt       int64  `json:"startAt"`
 }
 
-const NodeStatusOnline = "Online"
-const NodeStatusOffline = "Offline"
+type Deployment struct {
+	Type       string           `json:"type"`
+	Deploy     DeployInfo       `json:"deploy"`
+	Placements []*PlacementInfo `json:"placements"`
+	Schedule   ScheduleInfo     `json:"schedule"`
+}
 
-const ServiceStatusNotReady = "NotReady"
-const ServiceStatusRunning = "Running"
-const ServiceStatusFailed = "Failed"
+type DeployMode string
 
-const ContainerStatusPending = "Pending"
-const ContainerStatusStarting = "Starting"
-const ContainerStatusCreated = "Created"
-const ContainerStatusRunning = "Running"
-const ContainerStatusFailed = "Failed"
-const ContainerStatusExited = "Exited"
-const ContainerStatusRemoved = "Removed"
-const ContainerStatusWarning = "Warning"
+var (
+	DeployModeGlobal    DeployMode = "global"
+	DeployModeReplicate DeployMode = "replicate"
+)
+
+type DeployInfo struct {
+	Mode     DeployMode `json:"mode"`
+	Replicas uint       `json:"replicas"`
+}
+
+type PlacementMode string
+
+var (
+	PlacementModeLabel PlacementMode = "label"
+	PlacementModeIP    PlacementMode = "ip"
+)
+
+type PlacementInfo struct {
+	Mode    PlacementMode `json:"mode"`
+	Key     string        `json:"key"`
+	Value   string        `json:"value"`
+	IsEqual bool          `json:"isEqual"`
+}
+
+type ScheduleInfo struct {
+	Timeout string          `json:"timeout"`
+	Rules   []*ScheduleRule `json:"rules"`
+}
+
+type ScheduleRule struct {
+	Id          string `json:"id"`
+	Enabled     bool   `json:"enabled"`
+	Mode        string `json:"mode"`
+	StartDateAt int64  `json:"startAt"`
+	EndDateAt   int64  `json:"endAt"`
+	StartTimeAt int64  `json:"startTimeAt"`
+}
+
+type ServiceMetaDocker struct {
+	Image         string            `json:"image"`
+	AlwaysPull    bool              `json:"alwaysPull"`
+	Command       string            `json:"command"`
+	Env           string            `json:"env"`
+	Labels        map[string]string `json:"labels"`
+	Network       NetworkInfo       `json:"network"`
+	RestartPolicy RestartPolicy     `json:"restartPolicy"`
+}
+
+type NetworkMode string
+
+var (
+	NetworkModeHost   NetworkMode = "host"
+	NetworkModeBridge NetworkMode = "bridge"
+	NetworkModeCustom NetworkMode = "custom"
+)
+
+type NetworkInfo struct {
+	Mode        NetworkMode `json:"mode"`        // custom模式需要创建网络
+	Hostname    string      `json:"hostname"`    // bridge及custom模式时可设置，用户容器的hostname
+	NetworkName string      `json:"networkName"` //custom模式使用
+	Ports       []*PortInfo `json:"ports"`
+}
+
+type PortInfo struct {
+	HostPort      uint   `json:"hostPort"`
+	ContainerPort uint   `json:"containerPort"`
+	Protocol      string `json:"protocol"`
+}
+
+type RestartPolicyMode string
+
+var (
+	RestartPolicyModeNo            RestartPolicyMode = "no"
+	RestartPolicyModeAlways        RestartPolicyMode = "always"
+	RestartPolicyModeOnFail        RestartPolicyMode = "on-failure"
+	RestartPolicyModeUnlessStopped RestartPolicyMode = "unless-stopped"
+)
+
+type RestartPolicy struct {
+	Mode          RestartPolicyMode `json:"mode"`
+	MaxRetryCount int               `json:"maxRetryCount"`
+}
