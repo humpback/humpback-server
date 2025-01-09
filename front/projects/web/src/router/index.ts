@@ -64,7 +64,7 @@ router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, n
     next({ name: "workspace" })
     return
   }
-  if (to.meta?.onlyAdmin && !userStore.userInfo.isAdmin) {
+  if (to.meta?.onlyAdmin && userStore.isNormal) {
     next({ name: "401" })
     return
   }

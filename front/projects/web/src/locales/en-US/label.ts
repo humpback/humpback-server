@@ -1,5 +1,12 @@
 export default {
   label: {
-    "city": "City"
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone",
+    "description": "Description",
+    "password": "Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm The New Password",
+    "createDate": "Create Date"
   }
 }

@@ -1,0 +1,27 @@
+<script lang="ts" setup>
+import { LimitEmail } from "@/models"
+
+const props = withDefaults(
+  defineProps<{
+    size?: "large" | "default" | "small"
+    placeholder?: string
+    showWordLimit?: boolean
+    clearable?: boolean
+  }>(),
+  { showWordLimit: true }
+)
+const email = defineModel<string>()
+</script>
+
+<template>
+  <v-input
+    v-model="email"
+    :clearable="props.clearable"
+    :maxlength="LimitEmail.Max"
+    :model-value="props.modelValue"
+    :placeholder="props.placeholder"
+    :show-word-limit="props.showWordLimit"
+    :size="size" />
+</template>
+
+<style scoped></style>

@@ -1,5 +1,6 @@
 export default {
   role: {
-    "admin": "Administrator"
+    "admin": "Administrator",
+    "supperAdmin": "Supper Administrator"
   }
 }

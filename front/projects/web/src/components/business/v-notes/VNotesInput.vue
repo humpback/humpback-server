@@ -1,46 +1,39 @@
 <script lang="ts" setup>
+import { LimitNotes } from "@/models"
+
 const props = withDefaults(
   defineProps<{
-    modelValue: string
     size?: "large" | "default" | "small"
     placeholder?: string
     row?: number
     autosize?: { minRows?: number; maxRows?: number } | boolean | undefined
     resize?: "none" | "both" | "horizontal" | "vertical" | undefined
+    showWordLimit?: boolean
   }>(),
   {
-    modelValue: "",
     row: 2,
     resize: "vertical",
+    showWordLimit: true,
     autosize: () => {
       return { minRows: 2, maxRows: 4 }
     }
   }
 )
-const emits = defineEmits<{
-  (e: "update:model-value", data: string): void
-}>()
 
-const notes = computed({
-  get() {
-    return props.modelValue
-  },
-  set(data) {
-    emits("update:model-value", data)
-  }
-})
+const notes = defineModel<string>()
 </script>
 
 <template>
   <v-input
     v-model="notes"
     :autosize="props.autosize"
+    :maxlength="LimitNotes.Max"
     :placeholder="props.placeholder"
     :resize="props.resize"
     :row="2"
+    :show-word-limit="props.showWordLimit"
     :size="props.size"
     clearable
-    show-word-limit
     type="textarea" />
 </template>
 

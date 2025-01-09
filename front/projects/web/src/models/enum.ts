@@ -4,6 +4,12 @@ export enum PageLimitRole {
   Logout = -1
 }
 
+export enum UserRole {
+  SupperAdmin = 1,
+  Admin = 2,
+  Normal = 3
+}
+
 export enum SortType {
   Asc = "asc",
   Desc = "desc"

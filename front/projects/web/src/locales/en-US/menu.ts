@@ -23,6 +23,7 @@ export default {
   },
   webTitle: {
     "login": "Login",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "userProfile": "User Profile"
   }
 }

@@ -1,14 +1,48 @@
 package controller
 
 import (
+	"fmt"
+	"log/slog"
+	"time"
+
 	"humpback/api/handle/models"
+	"humpback/config"
 	"humpback/internal/db"
 	"humpback/pkg/utils"
 	"humpback/types"
 )
 
+func InitAdminUser() error {
+	adminConfig := config.AdminArgs()
+	user, err := db.UserFindSupperAdmin()
+	if err != nil {
+		return fmt.Errorf("Check admin account failed: %s", err)
+	}
+	if user == nil {
+		var (
+			t  = time.Now().UnixMilli()
+			id = utils.NewGuidStr()
+		)
+		if err = db.UserUpdate(id, &types.User{
+			UserID:    id,
+			Username:  adminConfig.Username,
+			Email:     "",
+			Password:  adminConfig.Password,
+			Phone:     "",
+			Role:      types.UserRoleSupperAdmin,
+			CreatedAt: t,
+			UpdatedAt: t,
+			Groups:    nil,
+		}); err != nil {
+			return fmt.Errorf("Create admin account failed: %s", err)
+		}
+	}
+	slog.Info("Admin account check success")
+	return nil
+}
+
 func UserLogin(info *models.UserLoginReqInfo) (*types.User, string, error) {
-	userInfo, err := db.UserGetByNamePsd(info.Name, info.Password)
+	userInfo, err := db.UserGetByNamePsd(info.Username, info.Password)
 	if err != nil {
 		return nil, "", err
 	}

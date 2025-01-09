@@ -1,85 +1,104 @@
 <script lang="ts" setup>
-import BasicInfo from "./mode/basic-info.vue"
-import ChangePassword from "./mode/change-password.vue"
-import { TabPaneName } from "element-plus"
-import { find, toLower } from "lodash"
-
-enum UserMode {
-  BasicInfo = "basic-info",
-  ChangePsd = "change-psd"
-}
+import { RuleFormatErrEmailOption, RuleFormatErrPhone, RulePleaseEnter } from "@/utils"
+import { LimitEmail, LimitNotes } from "@/models"
+import { FormInstance } from "element-plus"
 
 const { t } = useI18n()
-const route = useRoute()
-const router = useRouter()
-const pageStore = usePageStore()
+const userStore = useUserStore()
 
-const activeTab = ref<TabPaneName | undefined>()
+const userInfo = ref<UserInfo>(NewUserEmptyInfo())
+const tableRef = useTemplateRef<FormInstance>("tableRef")
 
-async function changeTab(name: TabPaneName) {
-  await router.replace({ params: { "mode": name.toString() } })
-  activeTab.value = name
+const rules = {
+  username: [
+    { required: true, validator: RulePleaseEnter("label.username"), trigger: "blur" },
+    { required: true, validator: RuleLimitRange(LimitUserName.Min, LimitUserName.Max), trigger: "blur" }
+  ],
+  email: [
+    { validator: RuleLimitMax(LimitEmail.Max), trigger: "blur" },
+    { validator: RuleFormatErrEmailOption(), trigger: "blur" }
+  ],
+  phone: [
+    { validator: RuleLimitMax(LimitEmail.Max), trigger: "blur" },
+    { validator: RuleFormatErrPhone(), trigger: "blur" }
+  ],
+  description: [{ validator: RuleLimitMax(LimitNotes.Max), trigger: "blur" }]
 }
 
-const modeList = reactive<{ name: UserMode; label: string; component: any }[]>([
-  { name: UserMode.BasicInfo, label: "header.basicInfo", component: shallowRef(BasicInfo) },
-  { name: UserMode.ChangePsd, label: "header.changePassword", component: shallowRef(ChangePassword) }
-])
+async function getUserInfo() {
+  return await userService.getUserInfo().then(data => {
+    userInfo.value = data
+    userStore.setUserInfo(data)
+  })
+}
 
-onMounted(() => {
-  const configType = toLower(route.params["mode"] as string)
-  const tabInfo = find(modeList, x => configType === x.name)
-  changeTab(tabInfo ? tabInfo.name : UserMode.BasicInfo)
+async function save() {
+  if (!(await tableRef.value?.validate())) {
+    return
+  }
+  await userService.updateUserInfo({
+    username: userInfo.value.username,
+    email: userInfo.value.email,
+    phone: userInfo.value.phone,
+    description: userInfo.value.description
+  })
+  await getUserInfo()
+  ShowSuccessMsg(t("message.saveSuccess"))
+}
+
+onMounted(async () => {
+  await getUserInfo()
 })
 </script>
 
 <template>
   <v-card>
-    <el-tabs
-      :class="pageStore.isSmallScreen ? '' : 'user-page-tab'"
-      :modelValue="activeTab"
-      :stretch="!pageStore.isSmallScreen"
-      :tab-position="pageStore.isSmallScreen ? 'top' : 'left'"
-      @update:modelValue="changeTab">
-      <el-tab-pane v-for="item in modeList" :key="item.name" :label="t(item.label)" :name="item.name">
-        <h3 v-if="!pageStore.isSmallScreen" style="margin-top: 0">{{ t(item.label) }}</h3>
-        <div :class="pageStore.isSmallScreen ? '' : 'content-box'">
-          <keep-alive>
-            <component :is="item.component" />
-          </keep-alive>
+    <div>
+      <v-role-admin :role="userInfo.role" />
+      <div class="mt-1 pl-1">
+        <el-text size="small" type="info">
+          {{ t("label.createDate") }}:
+          <v-date-view :timestamp="userInfo.createdAt" />
+        </el-text>
+      </div>
+    </div>
+    <div class="mb-3 mt-2">
+      <el-alert :closable="false" class="alert" show-icon type="info">{{ t("tips.usernameChangeTips") }}</el-alert>
+    </div>
+    <el-form ref="tableRef" :model="userInfo" :rules="rules" label-position="top" label-width="auto">
+      <el-form-item :label="t('label.username')" prop="username">
+        <v-username-input v-model="userInfo.username" />
+      </el-form-item>
+      <el-form-item :label="t('label.description')" prop="description">
+        <v-notes-input v-model="userInfo.description" />
+      </el-form-item>
+      <el-form-item :label="t('label.email')" prop="email">
+        <v-email-input v-model="userInfo.email" />
+      </el-form-item>
+      <el-form-item :label="t('label.phone')" prop="phone">
+        <v-phone-input v-model="userInfo.phone" />
+      </el-form-item>
+      <el-form-item>
+        <div class="text-align-right w-100">
+          <el-button type="primary" @click="save()">{{ t("btn.save") }}</el-button>
         </div>
-      </el-tab-pane>
-    </el-tabs>
+      </el-form-item>
+    </el-form>
   </v-card>
 </template>
 
 <style lang="scss" scoped>
-.user-page-tab {
-  :deep(.el-tabs__content) {
-    padding: 0 10px;
+:deep(.alert) {
+  &.el-alert {
+    padding: 4px 8px;
   }
 
-  :deep(.el-tabs__nav) {
-    min-height: 600px;
-
-    .el-tabs__active-bar.is-left {
-      background-color: rgba(64, 158, 255, 0.1);
-      width: 100%;
-      border-right: 2px solid var(--el-color-primary);
-    }
-
-    .el-tabs__item {
-      justify-content: left;
-      width: 200px;
-    }
+  .el-alert__icon {
+    font-size: 20px;
+    width: 20px;
+    margin-right: 8px;
   }
-}
 
-.content-box {
-  padding: 10px 60px 0 60px;
-}
-
-.notify-box {
-  font-size: 16px;
+  font-size: 12px;
 }
 </style>

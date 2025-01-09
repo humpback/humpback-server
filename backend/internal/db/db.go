@@ -231,6 +231,24 @@ func DeleteData(bucketName string, id string) error {
 		return checkErr(err)
 	}
 	return nil
+}
+
+func BatchDelete(bucketName string, ids []string) error {
+	if err := db.boltDB.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketName))
+		if bucket == nil {
+			return ErrBucketNotExist
+		}
+		for _, id := range ids {
+			if err := bucket.Delete([]byte(id)); err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
+		return checkErr(err)
+	}
+	return nil
 
 }
 

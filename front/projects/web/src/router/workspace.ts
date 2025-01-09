@@ -9,7 +9,7 @@ export default <RouteRecordRaw[]>[
     component: () => import("@/views/layout/layout.vue"),
     children: [
       {
-        path: "/ws/user-profile/:mode",
+        path: "/ws/user-profile",
         name: "userProfile",
         component: () => import("@/views/user-profile/user-profile.vue"),
         meta: {}

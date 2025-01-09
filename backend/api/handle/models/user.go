@@ -7,20 +7,20 @@ import (
 )
 
 type UserLoginReqInfo struct {
-	Name     string `json:"name"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 func (u *UserLoginReqInfo) Check() error {
-	u.Name = utils.RSADecrypt(u.Name)
+	u.Username = utils.RSADecrypt(u.Username)
 	u.Password = utils.RSADecrypt(u.Password)
-	if err := verify.CheckIsEmpty(u.Name, locales.CodeUserNameNotEmpty); err != nil {
+	if err := verify.CheckIsEmpty(u.Username, locales.CodeUserNameNotEmpty); err != nil {
 		return err
 	}
 	if err := verify.CheckIsEmpty(u.Password, locales.CodePasswordNotEmpty); err != nil {
 		return err
 	}
-	if err := verify.CheckName(u.Name); err != nil {
+	if err := verify.CheckUsername(u.Username); err != nil {
 		return err
 	}
 	if err := verify.CheckPassword(u.Password); err != nil {

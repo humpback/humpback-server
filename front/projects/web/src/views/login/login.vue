@@ -2,7 +2,7 @@
 import type { FormInstance, FormRules } from "element-plus"
 import { ChangeEventType, RulePleaseEnter, SendChannelMessage } from "@/utils"
 import { RSAEncrypt } from "utils/rsa.ts"
-import { LimitUserName } from "@/models"
+import VUsernameInput from "@/components/business/v-name/VUsernameInput.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -11,12 +11,12 @@ const userStore = useUserStore()
 
 const formRef = useTemplateRef<FormInstance>("formRef")
 const formData = reactive({
-  name: "",
+  username: "",
   password: ""
 })
 
 const formRules = reactive<FormRules>({
-  name: [{ required: true, validator: RulePleaseEnter("placeholder.name"), trigger: "blur" }],
+  username: [{ required: true, validator: RulePleaseEnter("placeholder.username"), trigger: "blur" }],
   password: [{ required: true, validator: RulePleaseEnter("placeholder.password"), trigger: "blur" }]
 })
 
@@ -25,7 +25,7 @@ async function login() {
     return
   }
   const body = {
-    name: RSAEncrypt(formData.name),
+    username: RSAEncrypt(formData.username),
     password: RSAEncrypt(formData.password)
   }
   loading.show(t("message.loggingIn"))
@@ -54,8 +54,8 @@ async function login() {
         <v-logo />
       </template>
       <el-form ref="formRef" :model="formData" :rules="formRules" @submit.prevent="login()">
-        <el-form-item prop="name">
-          <v-input v-model="formData.name" :maxlength="LimitUserName.Max" :placeholder="t('placeholder.name')" size="large" />
+        <el-form-item prop="username">
+          <v-username-input v-model="formData.username" :clearable="false" :placeholder="t('placeholder.username')" :show-word-limit="false" size="large" />
         </el-form-item>
         <el-form-item prop="password">
           <v-password-input v-model="formData.password" :placeholder="t('placeholder.password')" size="large" />

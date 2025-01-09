@@ -44,7 +44,7 @@ func CheckIsEmpty(value string, code string) error {
 	return nil
 }
 
-func CheckName(name string) error {
+func CheckUsername(name string) error {
 	if !isValidName(name) {
 		return response.NewBadRequestErr(locales.CodeUserNameIsInvalid)
 	}

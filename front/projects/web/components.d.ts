@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ElAlert: typeof import('element-plus/es')['ElAlert']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
@@ -28,6 +29,7 @@ declare module 'vue' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
+    ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
     IconMdiChevronDown: typeof import('~icons/mdi/chevron-down')['default']
     IconMdiFormatIndentDecrease: typeof import('~icons/mdi/format-indent-decrease')['default']
@@ -42,19 +44,24 @@ declare module 'vue' {
     VCopyPopover: typeof import('./src/components/common/v-copy/VCopyPopover.vue')['default']
     VCopyText: typeof import('./src/components/common/v-copy/VCopyText.vue')['default']
     VDatePicker: typeof import('./src/components/common/v-date/VDatePicker.vue')['default']
+    VDateView: typeof import('./src/components/common/v-date/VDateView.vue')['default']
     VDialog: typeof import('./src/components/common/v-dialog/VDialog.vue')['default']
     VDivider: typeof import('./src/components/common/v-divider/VDivider.vue')['default']
     VDrawer: typeof import('./src/components/common/v-drawer/VDrawer.vue')['default']
+    VEmailInput: typeof import('./src/components/business/v-email/VEmailInput.vue')['default']
     VExpand: typeof import('./src/components/common/v-expand/VExpand.vue')['default']
     VExpandButton: typeof import('./src/components/common/v-expand/VExpandButton.vue')['default']
     VInput: typeof import('./src/components/common/v-input/VInput.vue')['default']
     VInputNumber: typeof import('./src/components/common/v-input/VInputNumber.vue')['default']
     VLogo: typeof import('./src/components/business/logo/VLogo.vue')['default']
-    VNameInput: typeof import('./src/components/business/v-name/VNameInput.vue')['default']
+    VNameInput: typeof import('@/components/business/v-name/VUsernameInput.vue')['default']
     VNotesInput: typeof import('./src/components/business/v-notes/VNotesInput.vue')['default']
     VNotesView: typeof import('./src/components/business/v-notes/VNotesView.vue')['default']
     VPasswordInput: typeof import('./src/components/business/v-password/VPasswordInput.vue')['default']
+    VPhoneInput: typeof import('./src/components/business/v-phone/VPhoneInput.vue')['default']
+    VRoleAdmin: typeof import('./src/components/business/v-role/VRoleAdmin.vue')['default']
     VSearch: typeof import('./src/components/business/v-search/VSearch.vue')['default']
     VTooltip: typeof import('./src/components/common/v-tooltip/VTooltip.vue')['default']
+    VUsernameInput: typeof import('./src/components/business/v-name/VUsernameInput.vue')['default']
   }
 }

@@ -2,27 +2,25 @@ package app
 
 import (
 	"context"
-	"fmt"
-	"log/slog"
-	"time"
 
 	"humpback/api"
 	"humpback/api/static"
-	"humpback/config"
+	"humpback/internal/controller"
 	"humpback/internal/db"
 	"humpback/scheduler"
-	"humpback/types"
 )
 
 type App struct {
 	webSite   *api.Router
 	scheduler *scheduler.HumpbackScheduler
+	stopCh    chan struct{}
 }
 
 func InitApp() (*App, error) {
 	app := &App{
 		webSite:   api.InitRouter(),
 		scheduler: scheduler.NewHumpbackScheduler(),
+		stopCh:    make(chan struct{}),
 	}
 	if err := db.InitDB(); err != nil {
 		return nil, err
@@ -30,7 +28,7 @@ func InitApp() (*App, error) {
 	if err := static.InitStaticsResource(); err != nil {
 		return nil, err
 	}
-	if err := initAccount(); err != nil {
+	if err := controller.InitAdminUser(); err != nil {
 		return nil, err
 	}
 	return app, nil
@@ -39,40 +37,16 @@ func InitApp() (*App, error) {
 func (app *App) Startup() {
 	app.scheduler.Start()
 	app.webSite.Start()
+	controller.Start(app.stopCh)
 }
 
 func (app *App) Close(c context.Context) error {
+	close(app.stopCh)
 	if err := app.webSite.Close(c); err != nil {
 		return err
 	}
 	if err := app.scheduler.Close(c); err != nil {
 		return err
 	}
-	return nil
-}
-
-func initAccount() error {
-	adminConfig := config.AdminArgs()
-	_, err := db.UserGetById(adminConfig.Id)
-	if err != nil {
-		if err != db.ErrKeyNotExist {
-			return fmt.Errorf("Check admin account failed: %s", err)
-		}
-		t := time.Now().Unix()
-		if err = db.UserUpdate(adminConfig.Id, &types.User{
-			UserID:    adminConfig.Id,
-			UserName:  adminConfig.Name,
-			Email:     "",
-			Password:  adminConfig.Password,
-			Phone:     "",
-			IsAdmin:   true,
-			CreatedAt: t,
-			UpdatedAt: t,
-			Groups:    nil,
-		}); err != nil {
-			return fmt.Errorf("Create admin account failed: %s", err)
-		}
-	}
-	slog.Info("Admin account check success")
 	return nil
 }

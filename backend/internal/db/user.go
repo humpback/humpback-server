@@ -6,6 +6,23 @@ import (
 	"humpback/types"
 )
 
+func UserFindSupperAdmin() (*types.User, error) {
+	users, err := GetDataAll[types.User](BucketUsers)
+	if err != nil {
+		return nil, err
+	}
+	for _, user := range users {
+		if types.IsSupperAdmin(user.Role) {
+			return user, nil
+		}
+	}
+	return nil, nil
+}
+
+func UserGetAll() ([]*types.User, error) {
+	return GetDataAll[types.User](BucketUsers)
+}
+
 func UserGetById(id string) (*types.User, error) {
 	info, err := GetDataById[types.User](BucketUsers, id)
 	if err != nil {
@@ -23,7 +40,7 @@ func UserGetByNamePsd(name string, psd string) (*types.User, error) {
 		return nil, response.NewRespServerErr(err.Error())
 	}
 	for _, user := range users {
-		if user.UserName == name {
+		if user.Username == name {
 			if user.Password == psd {
 				return user, nil
 			}

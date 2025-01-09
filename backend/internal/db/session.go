@@ -7,6 +7,14 @@ import (
 	"humpback/types"
 )
 
+func SessionGetAll() ([]*types.Session, error) {
+	return GetDataAll[types.Session](BucketSessions)
+}
+
+func SessionGCByIds(ids []string) error {
+	return BatchDelete(BucketSessions, ids)
+}
+
 func SessionGetById(sessionId string) (*types.Session, bool, error) {
 	sessionInfo, err := GetDataById[types.Session](BucketSessions, sessionId)
 	if err != nil {

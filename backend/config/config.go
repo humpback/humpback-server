@@ -30,14 +30,14 @@ type HtmlConfig struct {
 }
 
 type DBConfig struct {
-	Root           string        `yaml:"root" json:"root" env:"DB_ROOT"`
-	Timeout        time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
-	SessionTimeout time.Duration `yaml:"sessionTimeout" json:"sessionTimeout" env:"DB_SESSION_TIMEOUT"`
+	Root              string        `yaml:"root" json:"root" env:"DB_ROOT"`
+	Timeout           time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
+	SessionTimeout    time.Duration `yaml:"sessionTimeout" json:"sessionTimeout" env:"DB_SESSION_TIMEOUT"`
+	SessionGCInterval time.Duration `yaml:"sessionGCInterval" json:"sessionGCInterval" env:"DB_SESSION_GC_INTERVAL"`
 }
 
 type AdminConfig struct {
-	Id       string `yaml:"id" json:"id" env:"ADMIN_ID"`
-	Name     string `yaml:"name" json:"name" env:"ADMIN_NAME"`
+	Username string `yaml:"username" json:"name" env:"ADMIN_USERNAME"`
 	Password string `yaml:"password" json:"password" env:"ADMIN_PASSWORD"`
 }
 

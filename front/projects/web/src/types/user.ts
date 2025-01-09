@@ -1,10 +1,11 @@
 export interface UserInfo {
   userId: string
-  userName: string
+  username: string
   email: string
   password: string
+  description: string
   phone: string
-  isAdmin: boolean
+  role: number
   createdAt: number
   updatedAt: number
   groups: string[]
@@ -13,11 +14,12 @@ export interface UserInfo {
 export function NewUserEmptyInfo(): UserInfo {
   return {
     userId: "",
-    userName: "",
+    username: "",
     email: "",
     password: "",
+    description: "",
     phone: "",
-    isAdmin: false,
+    role: 0,
     createdAt: 0,
     updatedAt: 0,
     groups: []

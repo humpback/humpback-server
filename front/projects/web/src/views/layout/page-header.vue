@@ -46,6 +46,7 @@ function handleUserMenuClick(v: string) {
       })
       return
     case Menu.UserProfile:
+      router.push({ name: "userProfile" })
   }
 }
 </script>
@@ -60,6 +61,7 @@ function handleUserMenuClick(v: string) {
       <div class="d-flex gap-5 mr-5">
         <el-button v-if="!pageStore.isSmallScreen" link> {{ t("btn.help") }}</el-button>
         <Language show-type="icon" trigger="hover" />
+        <v-role-admin v-if="!pageStore.isSmallScreen" :role="userStore.userInfo.role" />
       </div>
 
       <el-dropdown :show-timeout="0" placement="bottom-end" trigger="hover" @command="handleUserMenuClick">
@@ -67,7 +69,7 @@ function handleUserMenuClick(v: string) {
           <el-icon :size="20">
             <IconMdiUserCircleOutline />
           </el-icon>
-          <span v-if="userStore.userInfo.userName" class="username overflow_div"> {{ userStore.userInfo.userName }}</span>
+          <span v-if="userStore.userInfo.username" class="username overflow_div"> {{ userStore.userInfo.username }}</span>
           <el-icon :size="20">
             <IconMdiChevronDown />
           </el-icon>

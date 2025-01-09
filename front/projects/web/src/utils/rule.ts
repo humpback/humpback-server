@@ -1,6 +1,7 @@
 import { GetI18nMessage } from "@/locales"
 
-export const RegularName = /^[\u4e00-\u9fa5a-zA-Z0-9][\u4e00-\u9fa5a-zA-Z0-9\s_@,，-]{0,198}[\u4e00-\u9fa5a-zA-Z0-9]$/
+export const RegularUsername = /^[\u4e00-\u9fa5a-zA-Z0-9][\u4e00-\u9fa5a-zA-Z0-9\s_@,，-]{0,198}[\u4e00-\u9fa5a-zA-Z0-9]$/
+export const RegularPhone = /^\d+$/
 export const RegularEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 export const RegularPassword = /^[a-zA-Z0-9][a-zA-Z0-9_\-@#$%+=!]{7,20}$/
 
@@ -8,8 +9,8 @@ export function IsEmpty(value: any): boolean {
   return !value || !(value as string).trim()
 }
 
-export function IsValidName(name: string): boolean {
-  return RegularName.test(name)
+export function IsValidUsername(name: string): boolean {
+  return RegularUsername.test(name)
 }
 
 export function IsValidEmail(email: string): boolean {
@@ -56,6 +57,20 @@ export function RuleLimitRange(min: number, max: number) {
 
 // --------------------特定规则定义-----------------------
 
-export function RuleFormatErrEmail(rule: any, value: any, callback: any) {
-  return IsValidEmail(value) ? callback() : callback(new Error(GetI18nMessage("rules.formatErrEmail")))
+export function RuleFormatErrPhone(isRequired?: boolean) {
+  return (rule: any, value: any, callback: any) => {
+    if (!isRequired && IsEmpty(value)) {
+      return callback()
+    }
+    return RegularPhone.test(value) ? callback() : callback(new Error(GetI18nMessage("rules.formatErrPhone")))
+  }
+}
+
+export function RuleFormatErrEmailOption(isRequired?: boolean) {
+  return (rule: any, value: any, callback: any) => {
+    if (!isRequired && IsEmpty(value)) {
+      return callback()
+    }
+    return IsValidEmail(value) ? callback() : callback(new Error(GetI18nMessage("rules.formatErrEmail")))
+  }
 }
