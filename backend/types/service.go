@@ -23,10 +23,10 @@ const (
 type Service struct {
 	ServiceId   string             `json:"serviceId"`
 	ServiceName string             `json:"serviceName"`
-	Type        string             `json:"type"`
+	Version     string             `json:"version"`
 	IsEnabled   bool               `json:"isEnabled"`
 	Status      string             `json:"status"`
-	Meta        interface{}        `json:"meta"`
+	Meta        ServiceMetaDocker  `json:"meta"`
 	Deployment  Deployment         `json:"deployment"`
 	Containers  []*ContainerStatus `json:"containers"`
 	GroupId     string             `json:"groupId"`
@@ -46,23 +46,25 @@ type ContainerStatus struct {
 }
 
 type Deployment struct {
-	Type       string           `json:"type"`
-	Deploy     DeployInfo       `json:"deploy"`
+	Type       DeployType       `json:"type"`
+	Mode       DeployMode       `json:"mode"`
+	Replicas   uint             `json:"replicas"`
 	Placements []*PlacementInfo `json:"placements"`
 	Schedule   ScheduleInfo     `json:"schedule"`
 }
 
 type DeployMode string
+type DeployType string
 
 var (
 	DeployModeGlobal    DeployMode = "global"
 	DeployModeReplicate DeployMode = "replicate"
 )
 
-type DeployInfo struct {
-	Mode     DeployMode `json:"mode"`
-	Replicas uint       `json:"replicas"`
-}
+var (
+	DeployTypeSchedule   DeployType = "schedule"
+	DeployTypeBackground DeployType = "background"
+)
 
 type PlacementMode string
 
@@ -78,25 +80,26 @@ type PlacementInfo struct {
 	IsEqual bool          `json:"isEqual"`
 }
 
+// Rule is cron string
 type ScheduleInfo struct {
-	Timeout string          `json:"timeout"`
-	Rules   []*ScheduleRule `json:"rules"`
+	Timeout string   `json:"timeout"`
+	Rules   []string `json:"rules"`
 }
 
-type ScheduleRule struct {
-	Id          string `json:"id"`
-	Enabled     bool   `json:"enabled"`
-	Mode        string `json:"mode"`
-	StartDateAt int64  `json:"startAt"`
-	EndDateAt   int64  `json:"endAt"`
-	StartTimeAt int64  `json:"startTimeAt"`
-}
+// type ScheduleRule struct {
+// 	Id          string `json:"id"`
+// 	Enabled     bool   `json:"enabled"`
+// 	Mode        string `json:"mode"`
+// 	StartDateAt int64  `json:"startAt"`
+// 	EndDateAt   int64  `json:"endAt"`
+// 	StartTimeAt int64  `json:"startTimeAt"`
+// }
 
 type ServiceMetaDocker struct {
 	Image         string            `json:"image"`
 	AlwaysPull    bool              `json:"alwaysPull"`
 	Command       string            `json:"command"`
-	Env           string            `json:"env"`
+	Envs          []string          `json:"env"`
 	Labels        map[string]string `json:"labels"`
 	Network       NetworkInfo       `json:"network"`
 	RestartPolicy RestartPolicy     `json:"restartPolicy"`
