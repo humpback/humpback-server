@@ -6,6 +6,10 @@ import (
 	"humpback/types"
 )
 
+func UserInit(id string, data *types.User) error {
+	return SaveData[*types.User](BucketUsers, id, data)
+}
+
 func UserFindSupperAdmin() (*types.User, error) {
 	users, err := GetDataAll[types.User](BucketUsers)
 	if err != nil {
@@ -51,5 +55,8 @@ func UserGetByNamePsd(name string, psd string) (*types.User, error) {
 }
 
 func UserUpdate(id string, data *types.User) error {
-	return SaveData[*types.User](BucketUsers, id, data)
+	if err := SaveData[*types.User](BucketUsers, id, data); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	return nil
 }

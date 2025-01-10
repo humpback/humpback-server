@@ -12,6 +12,7 @@ declare global {
   const EffectScope: typeof import('vue')['EffectScope']
   const GenerateUUID: typeof import('./src/utils/event')['GenerateUUID']
   const GetChannelMessage: typeof import('./src/utils/event')['GetChannelMessage']
+  const GetUserRole: typeof import('./src/utils/common')['GetUserRole']
   const IconMdiAccount: typeof import('~icons/mdi/account')['default']
   const IconMdiAlphaCBoxOutline: typeof import('~icons/mdi/alpha-c-box-outline')['default']
   const IconMdiCogOutline: typeof import('~icons/mdi/cog-outline')['default']
@@ -21,10 +22,14 @@ declare global {
   const IconMdiTextBoxOutline: typeof import('~icons/mdi/text-box-outline')['default']
   const IconMdiViewDashboard: typeof import('~icons/mdi/view-dashboard')['default']
   const IncludesIgnoreCase: typeof import('./src/utils/common')['IncludesIgnoreCase']
+  const IsAdmin: typeof import('./src/utils/common')['IsAdmin']
   const IsEmpty: typeof import('./src/utils/rule')['IsEmpty']
+  const IsNormal: typeof import('./src/utils/common')['IsNormal']
+  const IsSupperAdmin: typeof import('./src/utils/common')['IsSupperAdmin']
   const IsValidEmail: typeof import('./src/utils/rule')['IsValidEmail']
-  const IsValidName: typeof import('./src/utils/rule')['IsValidName']
+  const IsValidName: (typeof import("./src/utils/rule"))["IsValidName"]
   const IsValidPassword: typeof import('./src/utils/rule')['IsValidPassword']
+  const IsValidUsername: typeof import('./src/utils/rule')['IsValidUsername']
   const LimitUserName: typeof import('./src/models/rule')['LimitUserName']
   const NewOperateUserInfo: typeof import('./src/types/types')['NewOperateUserInfo']
   const NewOrgEmptyInfo: (typeof import("./src/types/user"))["NewOrgEmptyInfo"]
@@ -33,10 +38,14 @@ declare global {
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
   const RSAEncrypt: typeof import('./src/utils/rsa')['RSAEncrypt']
   const RegularEmail: typeof import('./src/utils/rule')['RegularEmail']
-  const RegularName: typeof import('./src/utils/rule')['RegularName']
+  const RegularName: (typeof import("./src/utils/rule"))["RegularName"]
   const RegularPassword: typeof import('./src/utils/rule')['RegularPassword']
+  const RegularPhone: typeof import('./src/utils/rule')['RegularPhone']
+  const RegularUsername: typeof import('./src/utils/rule')['RegularUsername']
   const RuleCannotBeEmpty: typeof import('./src/utils/rule')['RuleCannotBeEmpty']
-  const RuleFormatErrEmail: typeof import('./src/utils/rule')['RuleFormatErrEmail']
+  const RuleFormatErrEmail: (typeof import("./src/utils/rule"))["RuleFormatErrEmail"]
+  const RuleFormatErrEmailOption: typeof import('./src/utils/rule')['RuleFormatErrEmailOption']
+  const RuleFormatErrPhone: typeof import('./src/utils/rule')['RuleFormatErrPhone']
   const RuleIsRequired: typeof import('./src/utils/rule')['RuleIsRequired']
   const RuleLimitMax: typeof import('./src/utils/rule')['RuleLimitMax']
   const RuleLimitRange: typeof import('./src/utils/rule')['RuleLimitRange']
@@ -51,6 +60,7 @@ declare global {
   const StorageKeyUserCompanyCode: (typeof import("./src/models/local-storage"))["StorageKeyUserCompanyCode"]
   const TableHeight: typeof import('./src/utils/common')['TableHeight']
   const TimestampToTime: typeof import('./src/utils/time')['TimestampToTime']
+  const UserRole: typeof import('./src/models/enum')['UserRole']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
@@ -84,6 +94,7 @@ declare global {
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const globalLoading: typeof import('./src/utils/global-loading')['globalLoading']
   const h: typeof import('vue')['h']
   const httpClient: typeof import('./src/services/http-client')['httpClient']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
@@ -366,7 +377,7 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { PageLimitRole, SortType, PageLimitRole, SortType } from './src/models/enum'
+  export type { PageLimitRole, UserRole, SortType, PageLimitRole, UserRole, SortType } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
   export type { ColorBtn, TableSortEvent } from './src/types/common'
@@ -393,6 +404,7 @@ declare module 'vue' {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly GenerateUUID: UnwrapRef<typeof import('./src/utils/event')['GenerateUUID']>
     readonly GetChannelMessage: UnwrapRef<typeof import('./src/utils/event')['GetChannelMessage']>
+    readonly GetUserRole: UnwrapRef<typeof import('./src/utils/common')['GetUserRole']>
     readonly IconMdiAccount: UnwrapRef<typeof import('~icons/mdi/account')['default']>
     readonly IconMdiAlphaCBoxOutline: UnwrapRef<typeof import('~icons/mdi/alpha-c-box-outline')['default']>
     readonly IconMdiCogOutline: UnwrapRef<typeof import('~icons/mdi/cog-outline')['default']>
@@ -402,10 +414,13 @@ declare module 'vue' {
     readonly IconMdiTextBoxOutline: UnwrapRef<typeof import('~icons/mdi/text-box-outline')['default']>
     readonly IconMdiViewDashboard: UnwrapRef<typeof import('~icons/mdi/view-dashboard')['default']>
     readonly IncludesIgnoreCase: UnwrapRef<typeof import('./src/utils/common')['IncludesIgnoreCase']>
+    readonly IsAdmin: UnwrapRef<typeof import('./src/utils/common')['IsAdmin']>
     readonly IsEmpty: UnwrapRef<typeof import('./src/utils/rule')['IsEmpty']>
+    readonly IsNormal: UnwrapRef<typeof import('./src/utils/common')['IsNormal']>
+    readonly IsSupperAdmin: UnwrapRef<typeof import('./src/utils/common')['IsSupperAdmin']>
     readonly IsValidEmail: UnwrapRef<typeof import('./src/utils/rule')['IsValidEmail']>
-    readonly IsValidName: UnwrapRef<typeof import('./src/utils/rule')['IsValidName']>
     readonly IsValidPassword: UnwrapRef<typeof import('./src/utils/rule')['IsValidPassword']>
+    readonly IsValidUsername: UnwrapRef<typeof import('./src/utils/rule')['IsValidUsername']>
     readonly LimitUserName: UnwrapRef<typeof import('./src/models/rule')['LimitUserName']>
     readonly NewOperateUserInfo: UnwrapRef<typeof import('./src/types/types')['NewOperateUserInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
@@ -413,10 +428,12 @@ declare module 'vue' {
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>
     readonly RSAEncrypt: UnwrapRef<typeof import('./src/utils/rsa')['RSAEncrypt']>
     readonly RegularEmail: UnwrapRef<typeof import('./src/utils/rule')['RegularEmail']>
-    readonly RegularName: UnwrapRef<typeof import('./src/utils/rule')['RegularName']>
     readonly RegularPassword: UnwrapRef<typeof import('./src/utils/rule')['RegularPassword']>
+    readonly RegularPhone: UnwrapRef<typeof import('./src/utils/rule')['RegularPhone']>
+    readonly RegularUsername: UnwrapRef<typeof import('./src/utils/rule')['RegularUsername']>
     readonly RuleCannotBeEmpty: UnwrapRef<typeof import('./src/utils/rule')['RuleCannotBeEmpty']>
-    readonly RuleFormatErrEmail: UnwrapRef<typeof import('./src/utils/rule')['RuleFormatErrEmail']>
+    readonly RuleFormatErrEmailOption: UnwrapRef<typeof import('./src/utils/rule')['RuleFormatErrEmailOption']>
+    readonly RuleFormatErrPhone: UnwrapRef<typeof import('./src/utils/rule')['RuleFormatErrPhone']>
     readonly RuleIsRequired: UnwrapRef<typeof import('./src/utils/rule')['RuleIsRequired']>
     readonly RuleLimitMax: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitMax']>
     readonly RuleLimitRange: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitRange']>
@@ -430,6 +447,7 @@ declare module 'vue' {
     readonly SortType: UnwrapRef<typeof import('./src/models/enum')['SortType']>
     readonly TableHeight: UnwrapRef<typeof import('./src/utils/common')['TableHeight']>
     readonly TimestampToTime: UnwrapRef<typeof import('./src/utils/time')['TimestampToTime']>
+    readonly UserRole: UnwrapRef<typeof import('./src/models/enum')['UserRole']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
@@ -463,6 +481,7 @@ declare module 'vue' {
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly globalLoading: UnwrapRef<typeof import('./src/utils/global-loading')['globalLoading']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly httpClient: UnwrapRef<typeof import('./src/services/http-client')['httpClient']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
@@ -474,7 +493,6 @@ declare module 'vue' {
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
-    readonly loading: UnwrapRef<typeof import('./src/utils/loading')['default']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly mapActions: UnwrapRef<typeof import('pinia')['mapActions']>
     readonly mapGetters: UnwrapRef<typeof import('pinia')['mapGetters']>

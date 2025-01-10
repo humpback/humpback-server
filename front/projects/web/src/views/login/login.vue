@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
-import { ChangeEventType, RulePleaseEnter, SendChannelMessage } from "@/utils"
+import { ChangeEventType, globalLoading, RulePleaseEnter, SendChannelMessage } from "@/utils"
 import { RSAEncrypt } from "utils/rsa.ts"
 import VUsernameInput from "@/components/business/v-name/VUsernameInput.vue"
 
@@ -28,7 +28,7 @@ async function login() {
     username: RSAEncrypt(formData.username),
     password: RSAEncrypt(formData.password)
   }
-  loading.show(t("message.loggingIn"))
+  globalLoading.show(t("message.loggingIn"))
   userService
     .login(body)
     .then(data => {
@@ -42,7 +42,7 @@ async function login() {
       router.push({ name: "workspace" })
     })
     .finally(() => {
-      loading.close()
+      globalLoading.close()
     })
 }
 </script>

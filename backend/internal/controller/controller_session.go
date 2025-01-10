@@ -57,7 +57,6 @@ func SessionGetAndRefresh(sessionId string) (*types.User, bool, error) {
 	if err != nil {
 		return nil, false, err
 	}
-	userInfo.Password = ""
 	if err = SessionUpdate(sessionInfo); err != nil {
 		return nil, false, err
 	}

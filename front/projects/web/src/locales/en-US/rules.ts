@@ -7,6 +7,7 @@ export default {
     "pleaseEnter": "Please enter",
     "formatErrEmail": "Invalid email address.",
     "formatErrPhone": "Invalid phone number",
+    "inconsistentNewPassword": "Inconsistent with the new password",
 
     "formatErrLinkURL": "The link URL format is incorrect",
     "formatErrPassword": "Starts with letters or numbers, supports letters、numbers、'-'、'_'、'+'、'='、'!'、'{'@'}'、'#'、'$'、'%'.",

@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"humpback/api/handle/models"
+	"humpback/common/locales"
+	"humpback/common/response"
 	"humpback/config"
 	"humpback/internal/db"
 	"humpback/pkg/utils"
@@ -23,7 +25,7 @@ func InitAdminUser() error {
 			t  = time.Now().UnixMilli()
 			id = utils.NewGuidStr()
 		)
-		if err = db.UserUpdate(id, &types.User{
+		if err = db.UserInit(id, &types.User{
 			UserID:    id,
 			Username:  adminConfig.Username,
 			Email:     "",
@@ -54,4 +56,24 @@ func UserLogin(info *models.UserLoginReqInfo) (*types.User, string, error) {
 		return nil, "", err
 	}
 	return userInfo, sessionInfo.SessionId, nil
+}
+
+func UserUpdate(userInfo *types.User) error {
+	if err := db.UserUpdate(userInfo.UserID, userInfo); err != nil {
+		return err
+	}
+	return nil
+}
+
+func UserChangePassword(userInfo *types.User, reqInfo *models.UserChangePasswordReqInfo) error {
+	if userInfo.Password != reqInfo.OldPassword {
+		return response.NewBadRequestErr(locales.CodeOldPasswordIsWrong)
+	}
+	userInfo.Password = reqInfo.NewPassword
+	userInfo.UpdatedAt = time.Now().UnixMilli()
+	if err := db.UserUpdate(userInfo.UserID, userInfo); err != nil {
+		return err
+	}
+	return nil
+
 }

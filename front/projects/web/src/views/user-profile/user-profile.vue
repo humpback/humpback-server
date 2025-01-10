@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import ChangePassword from "./change-password.vue"
 import { RuleFormatErrEmailOption, RuleFormatErrPhone, RulePleaseEnter } from "@/utils"
-import { LimitEmail, LimitNotes } from "@/models"
-import { FormInstance } from "element-plus"
+import { LimitDescription, LimitEmail } from "@/models"
+import { FormInstance, FormRules } from "element-plus"
+import { cloneDeep } from "lodash"
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -9,7 +11,7 @@ const userStore = useUserStore()
 const userInfo = ref<UserInfo>(NewUserEmptyInfo())
 const tableRef = useTemplateRef<FormInstance>("tableRef")
 
-const rules = {
+const rules = ref<FormRules>({
   username: [
     { required: true, validator: RulePleaseEnter("label.username"), trigger: "blur" },
     { required: true, validator: RuleLimitRange(LimitUserName.Min, LimitUserName.Max), trigger: "blur" }
@@ -22,13 +24,13 @@ const rules = {
     { validator: RuleLimitMax(LimitEmail.Max), trigger: "blur" },
     { validator: RuleFormatErrPhone(), trigger: "blur" }
   ],
-  description: [{ validator: RuleLimitMax(LimitNotes.Max), trigger: "blur" }]
-}
+  description: [{ validator: RuleLimitMax(LimitDescription.Max), trigger: "blur" }]
+})
 
 async function getUserInfo() {
   return await userService.getUserInfo().then(data => {
     userInfo.value = data
-    userStore.setUserInfo(data)
+    userStore.setUserInfo(cloneDeep(data))
   })
 }
 
@@ -54,23 +56,26 @@ onMounted(async () => {
 <template>
   <v-card>
     <div>
-      <v-role-admin :role="userInfo.role" />
-      <div class="mt-1 pl-1">
+      <v-role-admin :role="userInfo.role" size="default" />
+      <div class="d-flex gap-1 mt-2 pl-1 mb-3">
         <el-text size="small" type="info">
           {{ t("label.createDate") }}:
           <v-date-view :timestamp="userInfo.createdAt" />
         </el-text>
+        <el-divider direction="vertical" />
+        <change-password />
       </div>
     </div>
-    <div class="mb-3 mt-2">
-      <el-alert :closable="false" class="alert" show-icon type="info">{{ t("tips.usernameChangeTips") }}</el-alert>
+
+    <div class="mb-5 mt-2">
+      <v-alert> {{ t("tips.usernameChangeTips") }} </v-alert>
     </div>
     <el-form ref="tableRef" :model="userInfo" :rules="rules" label-position="top" label-width="auto">
       <el-form-item :label="t('label.username')" prop="username">
         <v-username-input v-model="userInfo.username" />
       </el-form-item>
       <el-form-item :label="t('label.description')" prop="description">
-        <v-notes-input v-model="userInfo.description" />
+        <v-description-input v-model="userInfo.description" />
       </el-form-item>
       <el-form-item :label="t('label.email')" prop="email">
         <v-email-input v-model="userInfo.email" />
@@ -87,18 +92,4 @@ onMounted(async () => {
   </v-card>
 </template>
 
-<style lang="scss" scoped>
-:deep(.alert) {
-  &.el-alert {
-    padding: 4px 8px;
-  }
-
-  .el-alert__icon {
-    font-size: 20px;
-    width: 20px;
-    margin-right: 8px;
-  }
-
-  font-size: 12px;
-}
-</style>
+<style lang="scss" scoped></style>

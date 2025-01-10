@@ -2,7 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from 
 import { isEmpty } from "lodash"
 import { GetCurrentLocale, GetI18nMessage } from "@/locales"
 import { disposeStore } from "@/stores"
-import globalLoading from "@/utils/loading.ts"
+import { globalLoading } from "utils/index.ts"
 
 export interface HttpRequestOptions extends AxiosRequestConfig {
   disableLoading?: boolean | false
@@ -111,7 +111,7 @@ class HttpClientService {
 
     if (!options || !options.disableLoading) {
       loading.value = true
-      if (!loading.value) {
+      if (loading.value) {
         globalLoading.show(options.loadingMessage)
       }
     }

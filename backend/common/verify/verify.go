@@ -1,40 +1,15 @@
 package verify
 
 import (
-	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"humpback/common/locales"
 	"humpback/common/response"
 )
 
-var (
-	RegularName     = regexp.MustCompile(`^[\p{Han}a-zA-Z0-9][\p{Han}a-zA-Z0-9\s_@,，-]{0,98}[\p{Han}a-zA-Z0-9]$`)
-	RegularEmail    = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-	RegularPassword = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_\-@#$%+=!]{7,19}$`)
-)
-
-type LengthLimit struct {
-	Min int
-	Max int
-}
-
-var (
-	LimitUserName = LengthLimit{Min: 2, Max: 100}
-	LimitEmail    = LengthLimit{Min: 0, Max: 254}
-	LimitPassword = LengthLimit{Min: 8, Max: 20}
-)
-
-func isValidName(name string) bool {
-	return RegularName.MatchString(name)
-}
-
 func IsValidEmail(email string) bool {
-	return RegularEmail.MatchString(email)
-}
-
-func IsValidPassword(psd string) bool {
-	return RegularPassword.MatchString(psd)
+	return locales.RegularEmail.MatchString(email)
 }
 
 func CheckIsEmpty(value string, code string) error {
@@ -44,9 +19,16 @@ func CheckIsEmpty(value string, code string) error {
 	return nil
 }
 
-func CheckUsername(name string) error {
-	if !isValidName(name) {
-		return response.NewBadRequestErr(locales.CodeUserNameIsInvalid)
+func CheckRequiredAndLengthLimit(v string, min, max int, requiredCode, lengthCode string) error {
+	if err := CheckIsEmpty(v, requiredCode); err != nil {
+		return err
+	}
+	return CheckLengthLimit(v, min, max, lengthCode)
+}
+
+func CheckLengthLimit(v string, min, max int, lengthCode string) error {
+	if (min > 0 && utf8.RuneCountInString(v) < min) || (max > 0 && utf8.RuneCountInString(v) > max) {
+		return response.NewBadRequestErr(lengthCode)
 	}
 	return nil
 }
@@ -58,9 +40,9 @@ func CheckEmail(email string) error {
 	return nil
 }
 
-func CheckPassword(psd string) error {
-	if !IsValidPassword(psd) {
-		return response.NewBadRequestErr(locales.CodePasswordIsInvalid)
+func CheckPhone(phone string) error {
+	if !locales.RegularPhone.MatchString(phone) {
+		return response.NewBadRequestErr(locales.CodePhoneIsInvalid)
 	}
 	return nil
 }

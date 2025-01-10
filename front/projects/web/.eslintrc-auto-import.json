@@ -373,6 +373,17 @@
     "IconMdiLogoutVariant": true,
     "IconMdiTextBoxOutline": true,
     "IconMdiViewDashboard": true,
-    "PageLimitRole": true
+    "PageLimitRole": true,
+    "GetUserRole": true,
+    "IsAdmin": true,
+    "IsNormal": true,
+    "IsSupperAdmin": true,
+    "IsValidUsername": true,
+    "RegularPhone": true,
+    "RegularUsername": true,
+    "RuleFormatErrEmailOption": true,
+    "RuleFormatErrPhone": true,
+    "UserRole": true,
+    "globalLoading": true
   }
 }
