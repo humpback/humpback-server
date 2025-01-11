@@ -13,7 +13,7 @@ func parseVersionByContainerId(containerId string) string {
 	return parts[2]
 }
 
-func parseServiceIdByContainerId(containerId string) string {
+func ParseServiceIdByContainerId(containerId string) string {
 	parts := strings.Split(containerId, "-")
 	if len(parts) < 4 {
 		return ""

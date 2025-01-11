@@ -37,7 +37,7 @@ func MatchNodeWithIpAddress(ipAddress string) string {
 }
 
 func GetNodeInfo(nodeId string) *types.Node {
-	if v, ok := cache.Get(nodeId); ok {
+	if v, ok := nodeCache.Get(nodeId); ok {
 		return v.(*types.Node)
 	}
 
@@ -46,7 +46,7 @@ func GetNodeInfo(nodeId string) *types.Node {
 		return nil
 	}
 
-	cache.Add(nodeId, n)
+	nodeCache.Add(nodeId, n)
 
 	return n
 }
