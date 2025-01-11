@@ -34,6 +34,14 @@ func NewServiceManager(svc *types.Service) *ServiceManager {
 
 // Reconcile 服务状态变化时，调用该方法，让服务逐步趋于预期状态
 func (sm *ServiceManager) Reconcile() {
+	if sm.IsNeedCheckAll.Load().(bool) {
+		sm.IsNeedCheckAll.Store(false)
+		// check node status
+
+		// check service version
+	} else {
+		// check container status
+	}
 }
 
 // UpdateContainerWhenChanged 如果容器状态有变化，就保存DB
@@ -66,13 +74,6 @@ func (sm *ServiceManager) CheckService() {
 
 	for range ticker.C {
 		log.Printf("check service [%s]......", sm.ServiceInfo.ServiceId)
-		sm.CheckServiceCore()
-	}
-}
-
-func (sm *ServiceManager) CheckServiceCore() {
-	if sm.IsNeedCheckAll.Load().(bool) {
-		sm.IsNeedCheckAll.Store(false)
 		sm.Reconcile()
 	}
 }
