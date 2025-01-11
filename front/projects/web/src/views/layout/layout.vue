@@ -2,7 +2,6 @@
 import PageHeader from "./page-header.vue"
 import PageAside from "./page-aside.vue"
 
-const route = useRoute()
 const pageStore = usePageStore()
 
 const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-collapse-width)" : "var(--hp-aside-width)"))
@@ -17,7 +16,11 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
       <page-aside />
     </div>
     <div id="page-main">
-      <router-view :key="route.name as string" />
+      <router-view v-slot="{ Component, route }">
+        <Transition mode="out-in" name="drawer">
+          <component :is="Component" :key="route.name" />
+        </Transition>
+      </router-view>
     </div>
   </div>
 </template>
@@ -58,5 +61,29 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
     padding: calc(var(--hp-header-height) + 8px) 10px 0 10px;
     max-width: 100%;
   }
+}
+
+.drawer-enter-active {
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease 0.2s;
+}
+
+.drawer-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.drawer-enter-from {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.drawer-enter-to {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.drawer-leave-to {
+  opacity: 0;
 }
 </style>

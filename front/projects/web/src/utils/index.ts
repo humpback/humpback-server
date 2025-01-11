@@ -1,5 +1,5 @@
 export * from "./common"
-export * from "./loading.ts"
+export * from "./global-loading.ts"
 export * from "./message"
 export * from "./rule.ts"
 export * from "./time"

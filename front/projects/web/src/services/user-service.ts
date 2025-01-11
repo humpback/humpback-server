@@ -5,7 +5,7 @@ class UserService {
     return await httpClient.post<UserInfo>("/webapi/user/login", data, { disableLoading: true }).then(res => res.data)
   }
 
-  async resetPasswordByPsd(data: any) {
+  async changePassword(data: any) {
     return await httpClient.put("/webapi/user/change-psd", data).then(res => res.data)
   }
 

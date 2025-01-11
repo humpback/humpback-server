@@ -1,9 +1,12 @@
 package models
 
 import (
+	"time"
+
 	"humpback/common/locales"
 	"humpback/common/verify"
 	"humpback/pkg/utils"
+	"humpback/types"
 )
 
 type UserLoginReqInfo struct {
@@ -14,16 +17,70 @@ type UserLoginReqInfo struct {
 func (u *UserLoginReqInfo) Check() error {
 	u.Username = utils.RSADecrypt(u.Username)
 	u.Password = utils.RSADecrypt(u.Password)
-	if err := verify.CheckIsEmpty(u.Username, locales.CodeUserNameNotEmpty); err != nil {
+
+	if err := verify.CheckRequiredAndLengthLimit(u.Username, locales.LimitUserName.Min, locales.LimitUserName.Max, locales.CodeUserNameNotEmpty, locales.CodeUserNameLimitLength); err != nil {
 		return err
 	}
-	if err := verify.CheckIsEmpty(u.Password, locales.CodePasswordNotEmpty); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(u.Password, locales.LimitPassword.Min, locales.LimitPassword.Max, locales.CodePasswordNotEmpty, locales.CodePasswordLimitLength); err != nil {
 		return err
 	}
-	if err := verify.CheckUsername(u.Username); err != nil {
+	return nil
+}
+
+type UserUpdateReqInfo struct {
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+	Description string `json:"description"`
+}
+
+func (u *UserUpdateReqInfo) Check() error {
+	if err := verify.CheckRequiredAndLengthLimit(u.Username, locales.LimitUserName.Min, locales.LimitUserName.Max, locales.CodeUserNameNotEmpty, locales.CodeUserNameLimitLength); err != nil {
 		return err
 	}
-	if err := verify.CheckPassword(u.Password); err != nil {
+	if err := verify.CheckLengthLimit(u.Email, 0, locales.LimitEmail.Max, locales.CodeEmailLimitLength); err != nil {
+		return err
+	}
+	if u.Email != "" {
+		if err := verify.CheckEmail(u.Email); err != nil {
+			return err
+		}
+	}
+	if err := verify.CheckLengthLimit(u.Phone, 0, locales.LimitPhone.Max, locales.CodePhoneLimitLength); err != nil {
+		return err
+	}
+	if u.Phone != "" {
+		if err := verify.CheckPhone(u.Phone); err != nil {
+			return err
+		}
+	}
+	if err := verify.CheckLengthLimit(u.Description, 0, locales.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserUpdateReqInfo) NewUserInfo(userInfo *types.User) *types.User {
+	userInfo.Username = u.Username
+	userInfo.Email = u.Email
+	userInfo.Phone = u.Phone
+	userInfo.Description = u.Description
+	userInfo.UpdatedAt = time.Now().UnixMilli()
+	return userInfo
+}
+
+type UserChangePasswordReqInfo struct {
+	OldPassword string `json:"oldPassword"`
+	NewPassword string `json:"newPassword"`
+}
+
+func (u *UserChangePasswordReqInfo) Check() error {
+	u.OldPassword = utils.RSADecrypt(u.OldPassword)
+	u.NewPassword = utils.RSADecrypt(u.NewPassword)
+	if err := verify.CheckRequiredAndLengthLimit(u.OldPassword, locales.LimitPassword.Min, locales.LimitPassword.Max, locales.CodeOldPasswordNotEmpty, locales.CodeOldPasswordLimitLength); err != nil {
+		return err
+	}
+	if err := verify.CheckRequiredAndLengthLimit(u.NewPassword, locales.LimitPassword.Min, locales.LimitPassword.Max, locales.CodeNewPasswordNotEmpty, locales.CodeNewPasswordLimitLength); err != nil {
 		return err
 	}
 	return nil

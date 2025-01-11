@@ -28,7 +28,7 @@ func SessionGetById(sessionId string) (*types.Session, bool, error) {
 
 func SessionUpdate(data *types.Session) error {
 	if err := SaveData[*types.Session](BucketSessions, data.SessionId, data); err != nil {
-		return response.NewBadRequestErr(err.Error())
+		return response.NewRespServerErr(err.Error())
 	}
 	return nil
 }

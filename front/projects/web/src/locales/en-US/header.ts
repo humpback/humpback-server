@@ -1,3 +1,5 @@
 export default {
-  header: {}
+  header: {
+    "changePassword": "Change Password"
+  }
 }

@@ -4,9 +4,9 @@ export default {
     "email": "Email",
     "phone": "Phone",
     "description": "Description",
-    "password": "Password",
+    "oldPassword": "Old Password",
     "newPassword": "New Password",
-    "confirmNewPassword": "Confirm The New Password",
+    "confirmTheNewPassword": "Confirm The New Password",
     "createDate": "Create Date"
   }
 }

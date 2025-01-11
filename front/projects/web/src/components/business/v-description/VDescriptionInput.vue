@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { LimitNotes } from "@/models"
+import { LimitDescription } from "@/models"
 
 const props = withDefaults(
   defineProps<{
@@ -27,7 +27,7 @@ const notes = defineModel<string>()
   <v-input
     v-model="notes"
     :autosize="props.autosize"
-    :maxlength="LimitNotes.Max"
+    :maxlength="LimitDescription.Max"
     :placeholder="props.placeholder"
     :resize="props.resize"
     :row="2"

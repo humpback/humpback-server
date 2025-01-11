@@ -20,4 +20,4 @@ class GlobalLoading {
   }
 }
 
-export default new GlobalLoading()
+export const globalLoading = new GlobalLoading()
