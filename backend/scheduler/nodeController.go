@@ -112,7 +112,7 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 		n, err := db.GetNodeById(nodeId)
 		if err == nil {
 			nc.NodesInfo[nodeId] = &NodeSimpleInfo{
-				NodeId:          n.NodeID,
+				NodeId:          n.NodeId,
 				IpAddress:       n.IpAddress,
 				Status:          types.NodeStatusOffline,
 				LastHeartbeat:   ts,

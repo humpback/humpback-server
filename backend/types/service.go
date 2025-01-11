@@ -39,6 +39,7 @@ type ContainerStatus struct {
 	ContainerName string `json:"containerName"`
 	NodeId        string `json:"nodeId"`
 	Status        string `json:"status"`
+	ErrorMsg      string `json:"errorMsg"`
 	Image         string `json:"image"`
 	Command       string `json:"command"`
 	CreateAt      int64  `json:"createAt"`
@@ -48,7 +49,7 @@ type ContainerStatus struct {
 type Deployment struct {
 	Type       DeployType       `json:"type"`
 	Mode       DeployMode       `json:"mode"`
-	Replicas   uint             `json:"replicas"`
+	Replicas   int              `json:"replicas"`
 	Placements []*PlacementInfo `json:"placements"`
 	Schedule   ScheduleInfo     `json:"schedule"`
 }

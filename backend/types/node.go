@@ -1,7 +1,7 @@
 package types
 
 type Node struct {
-	NodeID    string      `json:"nodeId"`
+	NodeId    string      `json:"nodeId"`
 	Name      string      `json:"name"`
 	IpAddress string      `json:"ipAddress"`
 	Port      int         `json:"port"`
@@ -12,7 +12,7 @@ type Node struct {
 }
 
 type NodesGroups struct {
-	GroupID   string   `json:"groupId"`
+	GroupId   string   `json:"groupId"`
 	GroupName string   `json:"groupName"`
 	CreatedAt string   `json:"createdAt"`
 	UpdatedAt string   `json:"updatedAt"`

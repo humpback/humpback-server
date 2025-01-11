@@ -10,9 +10,11 @@ import (
 )
 
 var cache *tlcache.Cache
+var nodeCache *tlcache.Cache
 
 func NewCacheManager() {
 	cache = tlcache.NewLRUWithTTLCache(1000, 60*time.Minute)
+	nodeCache = tlcache.NewLRUWithTTLCache(1000, 60*time.Minute)
 }
 
 func MatchNodeWithIpAddress(ipAddress string) string {
@@ -27,9 +29,24 @@ func MatchNodeWithIpAddress(ipAddress string) string {
 
 	id := ""
 	if err == nil || len(n) > 0 {
-		id = n[0].NodeID
+		id = n[0].NodeId
 	}
 	cache.Add(ipAddress, id)
 
 	return id
+}
+
+func GetNodeInfo(nodeId string) *types.Node {
+	if v, ok := cache.Get(nodeId); ok {
+		return v.(*types.Node)
+	}
+
+	n, err := db.GetNodeById(nodeId)
+	if err != nil {
+		return nil
+	}
+
+	cache.Add(nodeId, n)
+
+	return n
 }

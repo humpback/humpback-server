@@ -11,5 +11,5 @@ func GetServiceById(serviceId string) (*types.Service, error) {
 }
 
 func SaveService(data *types.Service) error {
-	return SaveData[*types.Service](BucketServices, data.ServiceId, data)
+	return SaveData(BucketServices, data.ServiceId, data)
 }
