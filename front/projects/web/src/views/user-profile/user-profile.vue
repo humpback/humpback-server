@@ -58,7 +58,7 @@ onMounted(async () => {
     <div>
       <v-role-admin :role="userInfo.role" size="default" />
       <div class="d-flex gap-1 mt-2 pl-1 mb-3">
-        <el-text size="small" type="info">
+        <el-text type="info">
           {{ t("label.createDate") }}:
           <v-date-view :timestamp="userInfo.createdAt" />
         </el-text>
@@ -68,7 +68,7 @@ onMounted(async () => {
     </div>
 
     <div class="mb-5 mt-2">
-      <v-alert> {{ t("tips.usernameChangeTips") }} </v-alert>
+      <v-alert> {{ t("tips.usernameChangeTips") }}</v-alert>
     </div>
     <el-form ref="tableRef" :model="userInfo" :rules="rules" label-position="top" label-width="auto">
       <el-form-item :label="t('label.username')" prop="username">
