@@ -32,6 +32,7 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
+    IconClose: typeof import('./src/components/custom/icon/IconClose.vue')['default']
     IconMdiChevronDown: typeof import('~icons/mdi/chevron-down')['default']
     IconMdiFormatIndentDecrease: typeof import('~icons/mdi/format-indent-decrease')['default']
     IconMdiFormatIndentIncrease: typeof import('~icons/mdi/format-indent-increase')['default']

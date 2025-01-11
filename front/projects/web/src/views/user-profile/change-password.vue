@@ -58,7 +58,7 @@ async function save() {
 </script>
 
 <template>
-  <el-button class="fw-500" link size="small" type="primary" @click="showDialog()">{{ t("btn.changePassword") }} </el-button>
+  <el-button class="fw-500" link type="primary" @click="showDialog()">{{ t("btn.changePassword") }}</el-button>
   <v-dialog v-model="show" :title="t('header.changePassword')" width="600px">
     <v-alert> {{ t("tips.changePasswordTips") }}</v-alert>
     <el-form ref="tableRef" :model="psdInfo" :rules="rules" class="mt-5" label-position="top" label-width="auto">
