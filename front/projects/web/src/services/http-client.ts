@@ -1,5 +1,5 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from "axios"
-import { isEmpty } from "lodash"
+import { isEmpty } from "lodash-es"
 import { GetCurrentLocale, GetI18nMessage } from "@/locales"
 import { disposeStore } from "@/stores"
 import { globalLoading } from "utils/index.ts"

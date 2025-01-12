@@ -1,4 +1,4 @@
-import { includes, toLower } from "lodash"
+import { includes, toLower } from "lodash-es"
 import { UserRole } from "@/models"
 
 export function TableHeight(invalidHeight: number, minHeight = 500): number {

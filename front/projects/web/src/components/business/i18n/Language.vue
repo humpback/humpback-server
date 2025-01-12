@@ -1,28 +1,27 @@
 <script lang="ts" setup>
-import { ChangeLanguage, GetCurrentLanguageName, GetLanguageOptions } from "@/locales"
+import { ChangeLanguage, GetLanguageOptions } from "@/locales"
 
-const props = withDefaults(defineProps<{ showType?: "icon" | "text" | "all"; trigger?: "hover" | "click" | "contextmenu" }>(), {
-  trigger: "click",
-  showType: "all"
-})
+const props = withDefaults(
+  defineProps<{
+    trigger?: "hover" | "click" | "contextmenu"
+    iconSize?: number
+  }>(),
+  {
+    trigger: "hover",
+    iconSize: 16
+  }
+)
 
 const languageOptions = computed(() => GetLanguageOptions())
-
-const style = computed(() => {
-  return props.showType === "text" ? {} : { "margin-left": "2px" }
-})
 </script>
 
 <template>
   <el-dropdown :show-timeout="0" :trigger="props.trigger" @command="ChangeLanguage">
-    <el-button link>
-      <el-icon v-if="props.showType === 'icon' || props.showType === 'all'" :size="16">
+    <div class="lang-content">
+      <el-icon :size="props.iconSize">
         <IconMdiLanguage />
       </el-icon>
-      <span v-if="props.showType === 'text' || props.showType === 'all'" :style="style">
-        {{ GetCurrentLanguageName() }}
-      </span>
-    </el-button>
+    </div>
     <template #dropdown>
       <el-dropdown-menu>
         <template v-for="item in languageOptions" :key="item.value">
@@ -35,4 +34,19 @@ const style = computed(() => {
   </el-dropdown>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.lang-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.7;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+</style>

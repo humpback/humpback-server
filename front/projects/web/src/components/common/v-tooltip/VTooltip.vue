@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { ElTooltipProps } from "element-plus"
-import { omit } from "lodash"
+import { ElTooltipProps } from "element-plus"
+import { omit } from "lodash-es"
 
 type Props = Partial<
   ElTooltipProps & {
@@ -8,7 +8,13 @@ type Props = Partial<
     maxWidth?: string
   }
 >
-const props = withDefaults(defineProps<Props>(), { effect: "light", placement: "top", teleported: true, showArrow: true, persistent: false })
+const props = withDefaults(defineProps<Props>(), {
+  effect: "light",
+  placement: "top",
+  teleported: true,
+  showArrow: true,
+  persistent: false
+})
 const slots = useSlots()
 
 const attrs = computed(() => {

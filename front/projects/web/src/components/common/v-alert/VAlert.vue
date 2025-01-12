@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { AlertProps } from "element-plus"
-import { omit } from "lodash"
+import { omit } from "lodash-es"
 
 type Props = Partial<
   AlertProps & {

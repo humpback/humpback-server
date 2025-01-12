@@ -35,7 +35,7 @@ const slots = useSlots()
     <div v-if="props.msg">
       <slot v-if="!!slots.message" name="message"></slot>
       <div v-else>{{ props.msg }}</div>
-      <v-divider border-style="dashed" class="divider" direction="horizontal" />
+      <el-divider border-style="dashed" class="divider" />
       <el-button link type="success" @click="CopyToClipboard(props.msg)">
         <el-icon size="14">
           <IconMdiContentCopy />

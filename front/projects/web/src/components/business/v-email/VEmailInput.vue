@@ -18,7 +18,6 @@ const email = defineModel<string>()
     v-model="email"
     :clearable="props.clearable"
     :maxlength="LimitEmail.Max"
-    :model-value="props.modelValue"
     :placeholder="props.placeholder"
     :show-word-limit="props.showWordLimit"
     :size="size" />

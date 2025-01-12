@@ -1,5 +1,3 @@
-import { SortType } from "@/models"
-
 export interface QueryInfo {
   keywords: string
   mode: number
@@ -17,7 +15,7 @@ export interface PageInfo {
 
 export interface SortInfo {
   field: string
-  order: SortType | string
+  order: "asc" | "desc" | ""
 }
 
 export interface QueryList<T> {

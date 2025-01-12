@@ -6,9 +6,7 @@ export interface MenuInfo {
   params?: any
   query?: any
   path?: string
-  showTips?: boolean
   children?: MenuInfo[]
-  ignoreUserInfoComplete?: boolean
   rolesLimit?: number[]
 }
 
@@ -26,6 +24,7 @@ export const menuList: MenuInfo[] = [
   {
     icon: shallowRef(IconMdiCogOutline),
     name: "administration",
+    rolesLimit: [UserRole.SupperAdmin, UserRole.Admin],
     children: [
       {
         icon: shallowRef(IconMdiAlphaCBoxOutline),

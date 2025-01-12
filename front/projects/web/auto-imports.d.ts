@@ -17,9 +17,9 @@ declare global {
   const IconMdiAlphaCBoxOutline: typeof import('~icons/mdi/alpha-c-box-outline')['default']
   const IconMdiCogOutline: typeof import('~icons/mdi/cog-outline')['default']
   const IconMdiCompany: typeof import('~icons/mdi/company')['default']
-  const IconMdiHelpCircle: typeof import('~icons/mdi/help-circle')['default']
   const IconMdiLogoutVariant: typeof import('~icons/mdi/logout-variant')['default']
   const IconMdiTextBoxOutline: typeof import('~icons/mdi/text-box-outline')['default']
+  const IconMdiUserOutline: typeof import('~icons/mdi/user-outline')['default']
   const IconMdiViewDashboard: typeof import('~icons/mdi/view-dashboard')['default']
   const IncludesIgnoreCase: typeof import('./src/utils/common')['IncludesIgnoreCase']
   const IsAdmin: typeof import('./src/utils/common')['IsAdmin']
@@ -27,23 +27,19 @@ declare global {
   const IsNormal: typeof import('./src/utils/common')['IsNormal']
   const IsSupperAdmin: typeof import('./src/utils/common')['IsSupperAdmin']
   const IsValidEmail: typeof import('./src/utils/rule')['IsValidEmail']
-  const IsValidName: (typeof import("./src/utils/rule"))["IsValidName"]
   const IsValidPassword: typeof import('./src/utils/rule')['IsValidPassword']
   const IsValidUsername: typeof import('./src/utils/rule')['IsValidUsername']
   const LimitUserName: typeof import('./src/models/rule')['LimitUserName']
   const NewOperateUserInfo: typeof import('./src/types/types')['NewOperateUserInfo']
-  const NewOrgEmptyInfo: (typeof import("./src/types/user"))["NewOrgEmptyInfo"]
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
   const RSAEncrypt: typeof import('./src/utils/rsa')['RSAEncrypt']
   const RegularEmail: typeof import('./src/utils/rule')['RegularEmail']
-  const RegularName: (typeof import("./src/utils/rule"))["RegularName"]
   const RegularPassword: typeof import('./src/utils/rule')['RegularPassword']
   const RegularPhone: typeof import('./src/utils/rule')['RegularPhone']
   const RegularUsername: typeof import('./src/utils/rule')['RegularUsername']
   const RuleCannotBeEmpty: typeof import('./src/utils/rule')['RuleCannotBeEmpty']
-  const RuleFormatErrEmail: (typeof import("./src/utils/rule"))["RuleFormatErrEmail"]
   const RuleFormatErrEmailOption: typeof import('./src/utils/rule')['RuleFormatErrEmailOption']
   const RuleFormatErrPhone: typeof import('./src/utils/rule')['RuleFormatErrPhone']
   const RuleIsRequired: typeof import('./src/utils/rule')['RuleIsRequired']
@@ -57,7 +53,6 @@ declare global {
   const ShowSystemErrMsg: typeof import('./src/utils/message')['ShowSystemErrMsg']
   const ShowWarningMsg: typeof import('./src/utils/message')['ShowWarningMsg']
   const SortType: typeof import('./src/models/enum')['SortType']
-  const StorageKeyUserCompanyCode: (typeof import("./src/models/local-storage"))["StorageKeyUserCompanyCode"]
   const TableHeight: typeof import('./src/utils/common')['TableHeight']
   const TimestampToTime: typeof import('./src/utils/time')['TimestampToTime']
   const UserRole: typeof import('./src/models/enum')['UserRole']
@@ -106,7 +101,6 @@ declare global {
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
-  const loading: typeof import('./src/utils/loading')['default']
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const mapActions: typeof import('pinia')['mapActions']
   const mapGetters: typeof import('pinia')['mapGetters']
@@ -123,6 +117,7 @@ declare global {
   const onBeforeUpdate: typeof import('vue')['onBeforeUpdate']
   const onClickOutside: typeof import('@vueuse/core')['onClickOutside']
   const onDeactivated: typeof import('vue')['onDeactivated']
+  const onElementRemoval: typeof import('@vueuse/core')['onElementRemoval']
   const onErrorCaptured: typeof import('vue')['onErrorCaptured']
   const onKeyStroke: typeof import('@vueuse/core')['onKeyStroke']
   const onLongPress: typeof import('@vueuse/core')['onLongPress']
@@ -291,12 +286,14 @@ declare global {
   const usePreferredDark: typeof import('@vueuse/core')['usePreferredDark']
   const usePreferredLanguages: typeof import('@vueuse/core')['usePreferredLanguages']
   const usePreferredReducedMotion: typeof import('@vueuse/core')['usePreferredReducedMotion']
+  const usePreferredReducedTransparency: typeof import('@vueuse/core')['usePreferredReducedTransparency']
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
   const useRoute: typeof import('vue-router')['useRoute']
   const useRouter: typeof import('vue-router')['useRouter']
+  const useSSRWidth: typeof import('@vueuse/core')['useSSRWidth']
   const useScreenOrientation: typeof import('@vueuse/core')['useScreenOrientation']
   const useScreenSafeArea: typeof import('@vueuse/core')['useScreenSafeArea']
   const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
@@ -409,9 +406,9 @@ declare module 'vue' {
     readonly IconMdiAlphaCBoxOutline: UnwrapRef<typeof import('~icons/mdi/alpha-c-box-outline')['default']>
     readonly IconMdiCogOutline: UnwrapRef<typeof import('~icons/mdi/cog-outline')['default']>
     readonly IconMdiCompany: UnwrapRef<typeof import('~icons/mdi/company')['default']>
-    readonly IconMdiHelpCircle: UnwrapRef<typeof import('~icons/mdi/help-circle')['default']>
     readonly IconMdiLogoutVariant: UnwrapRef<typeof import('~icons/mdi/logout-variant')['default']>
     readonly IconMdiTextBoxOutline: UnwrapRef<typeof import('~icons/mdi/text-box-outline')['default']>
+    readonly IconMdiUserOutline: UnwrapRef<typeof import('~icons/mdi/user-outline')['default']>
     readonly IconMdiViewDashboard: UnwrapRef<typeof import('~icons/mdi/view-dashboard')['default']>
     readonly IncludesIgnoreCase: UnwrapRef<typeof import('./src/utils/common')['IncludesIgnoreCase']>
     readonly IsAdmin: UnwrapRef<typeof import('./src/utils/common')['IsAdmin']>
@@ -509,6 +506,7 @@ declare module 'vue' {
     readonly onBeforeUpdate: UnwrapRef<typeof import('vue')['onBeforeUpdate']>
     readonly onClickOutside: UnwrapRef<typeof import('@vueuse/core')['onClickOutside']>
     readonly onDeactivated: UnwrapRef<typeof import('vue')['onDeactivated']>
+    readonly onElementRemoval: UnwrapRef<typeof import('@vueuse/core')['onElementRemoval']>
     readonly onErrorCaptured: UnwrapRef<typeof import('vue')['onErrorCaptured']>
     readonly onKeyStroke: UnwrapRef<typeof import('@vueuse/core')['onKeyStroke']>
     readonly onLongPress: UnwrapRef<typeof import('@vueuse/core')['onLongPress']>
@@ -677,12 +675,14 @@ declare module 'vue' {
     readonly usePreferredDark: UnwrapRef<typeof import('@vueuse/core')['usePreferredDark']>
     readonly usePreferredLanguages: UnwrapRef<typeof import('@vueuse/core')['usePreferredLanguages']>
     readonly usePreferredReducedMotion: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedMotion']>
+    readonly usePreferredReducedTransparency: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedTransparency']>
     readonly usePrevious: UnwrapRef<typeof import('@vueuse/core')['usePrevious']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>
     readonly useRefHistory: UnwrapRef<typeof import('@vueuse/core')['useRefHistory']>
     readonly useResizeObserver: UnwrapRef<typeof import('@vueuse/core')['useResizeObserver']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
+    readonly useSSRWidth: UnwrapRef<typeof import('@vueuse/core')['useSSRWidth']>
     readonly useScreenOrientation: UnwrapRef<typeof import('@vueuse/core')['useScreenOrientation']>
     readonly useScreenSafeArea: UnwrapRef<typeof import('@vueuse/core')['useScreenSafeArea']>
     readonly useScriptTag: UnwrapRef<typeof import('@vueuse/core')['useScriptTag']>

@@ -8,7 +8,7 @@ export default {
     "nodes": "Nodes",
     "configs": "Configs",
     "help": "Help",
-    "userProfile": "User Profile",
+    "myAccount": "My Account",
     "logout": "Logout",
     header: {
       "dashboard": "Dashboard",
@@ -18,12 +18,13 @@ export default {
       "nodes": "Nodes",
       "configs": "Configs",
       "help": "Help",
-      "userProfile": "User Profile"
+      "myAccount": "My Account"
     }
   },
   webTitle: {
     "login": "Login",
     "dashboard": "Dashboard",
-    "userProfile": "User Profile"
+    "myAccount": "My Account",
+    "userRelated": "User Related"
   }
 }

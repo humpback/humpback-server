@@ -39,3 +39,22 @@ func SessionDelete(sessionId string) error {
 	}
 	return nil
 }
+
+func SessionBatchDeleteBuUserId(userId string) error {
+	sessions, err := SessionGetAll()
+	if err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	var ids []string
+	for _, session := range sessions {
+		if session.UserId == userId {
+			ids = append(ids, session.SessionId)
+		}
+	}
+	if len(ids) > 0 {
+		if err = BatchDelete(BucketSessions, ids); err != nil {
+			return response.NewRespServerErr(err.Error())
+		}
+	}
+	return nil
+}

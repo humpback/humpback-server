@@ -1,6 +1,6 @@
 import { type App } from "vue"
 import { createI18n, I18nOptions } from "vue-i18n"
-import { find, map } from "lodash"
+import { find, map } from "lodash-es"
 
 export interface I18nOption {
   value: string
@@ -91,6 +91,7 @@ export function GetLanguageOptions() {
     }
   })
 }
+
 const localeInfo = readLanguageFiles()
 const lastLanguage = getLastLanguage(localeInfo.options)
 const languageOptions: I18nOption[] = localeInfo.options

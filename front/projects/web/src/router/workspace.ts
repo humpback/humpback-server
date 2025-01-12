@@ -9,9 +9,9 @@ export default <RouteRecordRaw[]>[
     component: () => import("@/views/layout/layout.vue"),
     children: [
       {
-        path: "/ws/user-profile",
-        name: "userProfile",
-        component: () => import("@/views/user-profile/user-profile.vue"),
+        path: "/ws/my-account",
+        name: "myAccount",
+        component: () => import("@/views/my-account/my-account.vue"),
         meta: {}
       },
       {
@@ -21,6 +21,12 @@ export default <RouteRecordRaw[]>[
         meta: {
           loginLimit: PageLimitRole.Login
         }
+      },
+      {
+        path: "/ws/user-related",
+        name: "userRelated",
+        component: () => import("@/views/user-related/user-related.vue"),
+        meta: {}
       }
     ]
   }

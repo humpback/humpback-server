@@ -26,7 +26,7 @@ func InitAdminUser() error {
 			id = utils.NewGuidStr()
 		)
 		if err = db.UserInit(id, &types.User{
-			UserID:    id,
+			UserId:    id,
 			Username:  adminConfig.Username,
 			Email:     "",
 			Password:  adminConfig.Password,
@@ -50,7 +50,7 @@ func UserLogin(info *models.UserLoginReqInfo) (*types.User, string, error) {
 	}
 	sessionInfo := &types.Session{
 		SessionId: utils.NewGuidStr(),
-		UserId:    userInfo.UserID,
+		UserId:    userInfo.UserId,
 	}
 	if err = SessionUpdate(sessionInfo); err != nil {
 		return nil, "", err
@@ -59,7 +59,7 @@ func UserLogin(info *models.UserLoginReqInfo) (*types.User, string, error) {
 }
 
 func UserUpdate(userInfo *types.User) error {
-	if err := db.UserUpdate(userInfo.UserID, userInfo); err != nil {
+	if err := db.UserUpdate(userInfo.UserId, userInfo); err != nil {
 		return err
 	}
 	return nil
@@ -71,9 +71,11 @@ func UserChangePassword(userInfo *types.User, reqInfo *models.UserChangePassword
 	}
 	userInfo.Password = reqInfo.NewPassword
 	userInfo.UpdatedAt = time.Now().UnixMilli()
-	if err := db.UserUpdate(userInfo.UserID, userInfo); err != nil {
+	if err := db.UserUpdate(userInfo.UserId, userInfo); err != nil {
+		return err
+	}
+	if err := db.SessionBatchDeleteBuUserId(userInfo.UserId); err != nil {
 		return err
 	}
 	return nil
-
 }

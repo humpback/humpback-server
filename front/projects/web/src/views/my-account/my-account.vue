@@ -3,7 +3,7 @@ import ChangePassword from "./change-password.vue"
 import { RuleFormatErrEmailOption, RuleFormatErrPhone, RulePleaseEnter } from "@/utils"
 import { LimitDescription, LimitEmail } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
-import { cloneDeep } from "lodash"
+import { cloneDeep } from "lodash-es"
 
 const { t } = useI18n()
 const userStore = useUserStore()
