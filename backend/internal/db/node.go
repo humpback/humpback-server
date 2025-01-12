@@ -5,13 +5,15 @@ import (
 	"slices"
 )
 
-func UpdateNodeStatus(nodeId string, status string, lastUpdate int64) error {
+func UpdateNodeStatus(nodeId string, status string, lastUpdate int64, cpuUsage float32, memoryUsage float32) error {
 	node, err := GetDataById[types.Node](BucketNodes, nodeId)
 	if err != nil {
 		return err
 	}
 	node.Status = status
 	node.UpdatedAt = lastUpdate
+	node.CPUUsage = cpuUsage
+	node.MemoryUsage = memoryUsage
 	return SaveData(BucketNodes, nodeId, node)
 }
 
@@ -44,6 +46,22 @@ func GetOfflineNodesByGroupId(groupId string) ([]string, error) {
 			node, err := GetDataById[types.Node](BucketNodes, v)
 			if err == nil && node.Status == types.NodeStatusOffline {
 				nodes = append(nodes, node.NodeId)
+			}
+		}
+		return nodes, nil
+	}
+}
+
+func GetOnlineNodesByGroupId(groupId string) ([]*types.Node, error) {
+	ng, err := GetDataById[types.NodesGroups](BucketNodesGroups, groupId)
+	if err != nil {
+		return nil, err
+	} else {
+		nodes := make([]*types.Node, 0)
+		for _, v := range ng.Nodes {
+			node, err := GetDataById[types.Node](BucketNodes, v)
+			if err == nil && node.Status == types.NodeStatusOnline {
+				nodes = append(nodes, node)
 			}
 		}
 		return nodes, nil

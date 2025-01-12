@@ -1,13 +1,14 @@
 package scheduler
 
 import (
-	"log"
 	"sync"
 	"time"
 
 	"humpback/config"
 	"humpback/internal/db"
 	"humpback/types"
+
+	"log/slog"
 
 	"golang.org/x/exp/rand"
 )
@@ -18,6 +19,8 @@ type NodeSimpleInfo struct {
 	Status          string
 	LastHeartbeat   int64
 	OnlineThreshold int
+	CPUUsage        float32
+	MemoryUsage     float32
 }
 
 type NodeController struct {
@@ -50,7 +53,7 @@ func (nc *NodeController) CheckNodes() {
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 
 	for range ticker.C {
-		log.Println("check nodes......")
+		slog.Info("check nodes......")
 		nc.CheckNodesCore()
 	}
 }
@@ -61,15 +64,12 @@ func (nc *NodeController) CheckNodesCore() {
 	defer nc.Unlock()
 
 	currentTime := time.Now().Unix()
-	isNeedSave := false
 	for nodeId, nodeInfo := range nc.NodesInfo {
 
 		if nodeInfo.Status == types.NodeStatusOnline {
 			if currentTime-nodeInfo.LastHeartbeat > nc.CheckInterval {
-				log.Printf("Node %s is not responding. Last heartbeat: %d", nodeId, nodeInfo.LastHeartbeat)
-
+				slog.Info("[Node Controller] Node is not responding.", "nodeId", nodeId, "Last heartbeat", nodeInfo.LastHeartbeat)
 				nodeInfo.Status = types.NodeStatusOffline
-				isNeedSave = true
 				nc.NodeHeartbeatChan <- *nodeInfo
 			}
 		}
@@ -77,19 +77,15 @@ func (nc *NodeController) CheckNodesCore() {
 		if nodeInfo.Status == types.NodeStatusOffline {
 			if currentTime-nodeInfo.LastHeartbeat < nc.CheckInterval &&
 				nodeInfo.OnlineThreshold >= nc.CheckThreshold {
-				log.Printf("need report online node [%s]", nodeId)
-
+				slog.Info("[Node Controller] need report online node", "nodeId", nodeId)
 				nodeInfo.Status = types.NodeStatusOnline
-				isNeedSave = true
 				nc.NodeHeartbeatChan <- *nodeInfo
 			}
 		}
 
-		if isNeedSave {
-			err := db.UpdateNodeStatus(nodeId, nodeInfo.Status, nodeInfo.LastHeartbeat)
-			if err != nil {
-				log.Printf("update node status failed: %s", err)
-			}
+		err := db.UpdateNodeStatus(nodeId, nodeInfo.Status, nodeInfo.LastHeartbeat, nodeInfo.CPUUsage, nodeInfo.MemoryUsage)
+		if err != nil {
+			slog.Info("[Node Controller] update node status to DB failed", "error", err)
 		}
 	}
 }
@@ -101,6 +97,8 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 	nodeId := healthInfo.NodeId
 	ts := time.Now().Unix()
 	if n, ok := nc.NodesInfo[nodeId]; ok {
+		n.CPUUsage = healthInfo.HostInfo.CPUUsage
+		n.MemoryUsage = healthInfo.HostInfo.MemoryUsage
 		if n.Status == types.NodeStatusOffline && ts-n.LastHeartbeat < nc.CheckInterval {
 			n.OnlineThreshold++
 		} else {
@@ -117,6 +115,8 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 				Status:          types.NodeStatusOffline,
 				LastHeartbeat:   ts,
 				OnlineThreshold: 1,
+				CPUUsage:        healthInfo.HostInfo.CPUUsage,
+				MemoryUsage:     healthInfo.HostInfo.MemoryUsage,
 			}
 		}
 	}

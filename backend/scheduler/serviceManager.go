@@ -24,6 +24,15 @@ type ServiceManager struct {
 	sync.RWMutex
 }
 
+type NodesScore struct {
+	NodeId      string
+	DeployCount int
+	DeployUsage float32
+	CPUUsage    float32
+	MemoryUsage float32
+	Score       float32
+}
+
 func NewServiceManager(svc *types.Service) *ServiceManager {
 	sm := &ServiceManager{
 		ServiceInfo:   svc,
@@ -91,13 +100,16 @@ func (sm *ServiceManager) Reconcile() {
 			err := RemoveNodeContainer(nodeId, containerId)
 			if err != nil {
 				c.ErrorMsg = err.Error()
-				db.SaveService(sm.ServiceInfo)
-				return
+			} else {
+				// 再选一个节点做调度
+				sm.StartNextContainer(c)
 			}
-
-			// 再选一个节点做调度
-			sm.StartNextContainer(c)
+		} else if sm.ServiceInfo.Deployment.Replicas > len(sm.ServiceInfo.Containers) {
+			sm.StartNextContainer(nil)
+		} else {
+			sm.ServiceInfo.Status = types.ServiceStatusRunning
 		}
+		db.SaveService(sm.ServiceInfo)
 	}
 
 }
@@ -169,7 +181,7 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 				return c, true
 			}
 		}
-		if isContainerFailed(c.Status) {
+		if isContainerFailed(c.Status) || isContainerRemoved(c.Status) {
 			return c, true
 		}
 	}
@@ -180,6 +192,83 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
 func (sm *ServiceManager) StartNextContainer(rmc *types.ContainerStatus) {
 
+	groupId := sm.ServiceInfo.GroupId
+	nodes, err := db.GetOnlineNodesByGroupId(groupId)
+
+	if err != nil {
+		log.Printf("[Service Manager] Start Service [%s] error: %s", sm.ServiceInfo.ServiceId, err.Error())
+		return
+	}
+
+	if len(nodes) == 0 {
+		log.Printf("[Service Manager] Start Service [%s] error: No available nodes", sm.ServiceInfo.ServiceId)
+		return
+	}
+
+	nodeId := sm.ChooseNextNodes(nodes)
+
+	if nodeId == "" {
+		log.Printf("[Service Manager] Start Service [%s] error: No available nodes", sm.ServiceInfo.ServiceId)
+		return
+	}
+
+	cerr := StartNewContainer(nodeId, sm.ServiceInfo)
+	if cerr != nil {
+		log.Printf("[Service Manager] Start New Container [%s] error: %s", sm.ServiceInfo.ServiceId, cerr.Error())
+		return
+	}
+
+	db.SaveService(sm.ServiceInfo)
+
+}
+
+func (sm *ServiceManager) ChooseNextNodes(nodes []*types.Node) (nodeId string) {
+
+	if sm.ServiceInfo.Deployment.Mode == types.DeployModeGlobal {
+
+		deployedNodes := lo.Map(sm.ServiceInfo.Containers, func(c *types.ContainerStatus, index int) string {
+			return c.NodeId
+		})
+
+		for _, n := range nodes {
+			if !slices.Contains(deployedNodes, n.NodeId) {
+				nodeId = n.NodeId
+				break
+			}
+		}
+
+	} else {
+		totalReplicas := sm.ServiceInfo.Deployment.Replicas
+
+		nodeUsage := make(map[string]*NodesScore)
+		for _, n := range nodes {
+			nu := &NodesScore{
+				NodeId:      n.NodeId,
+				CPUUsage:    n.CPUUsage,
+				MemoryUsage: n.MemoryUsage,
+				DeployCount: 0,
+			}
+			nodeUsage[n.NodeId] = nu
+		}
+
+		for _, c := range sm.ServiceInfo.Containers {
+			if n, ok := nodeUsage[c.NodeId]; ok {
+				n.DeployCount++
+			}
+		}
+
+		var maxScore float32
+
+		for nId, nu := range nodeUsage {
+			nu.DeployUsage = float32(nu.DeployCount) / float32(totalReplicas)
+			nu.Score = (1-nu.CPUUsage)*100*0.3 + (1-nu.MemoryUsage)*100*0.2 + (1-nu.DeployUsage)*100*0.5
+			if nu.Score > maxScore {
+				maxScore = nu.Score
+				nodeId = nId
+			}
+		}
+	}
+	return
 }
 
 // UpdateContainerWhenChanged 如果容器状态有变化，就保存DB

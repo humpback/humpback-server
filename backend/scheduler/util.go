@@ -29,6 +29,10 @@ func isContainerExited(status string) bool {
 	return status == types.ContainerStatusExited
 }
 
+func isContainerRemoved(status string) bool {
+	return status == types.ContainerStatusRemoved
+}
+
 func isContainerStarting(status string) bool {
 	return status == types.ContainerStatusPending ||
 		status == types.ContainerStatusStarting ||

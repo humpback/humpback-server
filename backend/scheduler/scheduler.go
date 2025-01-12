@@ -63,13 +63,13 @@ func (scheduler *HumpbackScheduler) Start() {
 		e.POST("/health", doHealth)
 
 		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.BackendArgs().BackendPort)
-		slog.Info("[Api] listening...", "Address", listeningAddress)
+		slog.Info("[Scheduler] listening...", "Address", listeningAddress)
 		scheduler.httpSrv = &http.Server{
 			Addr:    listeningAddress,
 			Handler: e,
 		}
 		if err := scheduler.httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error(fmt.Sprintf("listening %s failed: %s", listeningAddress, err))
+			slog.Error("[Scheduler] start failed", "Address", listeningAddress, "error", err)
 		}
 	}()
 }

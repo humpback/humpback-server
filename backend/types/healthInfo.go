@@ -2,14 +2,16 @@ package types
 
 // HostInfo 主机基础信息
 type HostInfo struct {
-	Hostname      string `json:"hostname"`
-	IpAddress     string `json:"ipAddress"`
-	OsInformation string `json:"osInformation"`
-	KernelVersion string `json:"kernelVersion"`
-	TotalCPU      int    `json:"totalCPU"`
-	UsedCPU       int    `json:"usedCPU"`
-	TotalMemoryGB string `json:"totalMemoryGB"`
-	UsedMemoryGB  string `json:"usedMemoryGB"`
+	Hostname      string  `json:"hostname"`
+	IpAddress     string  `json:"ipAddress"`
+	OsInformation string  `json:"osInformation"`
+	KernelVersion string  `json:"kernelVersion"`
+	TotalCPU      int     `json:"totalCPU"`
+	UsedCPU       int     `json:"usedCPU"`
+	CPUUsage      float32 `json:"cpuUsage"`
+	TotalMemoryGB string  `json:"totalMemoryGB"`
+	UsedMemoryGB  string  `json:"usedMemoryGB"`
+	MemoryUsage   float32 `json:"memoryUsage"`
 }
 
 // DockerEngine Docker 基础信息
