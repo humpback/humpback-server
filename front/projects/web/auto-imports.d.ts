@@ -24,13 +24,17 @@ declare global {
   const IncludesIgnoreCase: typeof import('./src/utils/common')['IncludesIgnoreCase']
   const IsAdmin: typeof import('./src/utils/common')['IsAdmin']
   const IsEmpty: typeof import('./src/utils/rule')['IsEmpty']
-  const IsNormal: typeof import('./src/utils/common')['IsNormal']
+  const IsNormal: (typeof import("./src/utils/common"))["IsUser"]
   const IsSupperAdmin: typeof import('./src/utils/common')['IsSupperAdmin']
+  const IsUser: typeof import('./src/utils/common')['IsUser']
   const IsValidEmail: typeof import('./src/utils/rule')['IsValidEmail']
   const IsValidPassword: typeof import('./src/utils/rule')['IsValidPassword']
   const IsValidUsername: typeof import('./src/utils/rule')['IsValidUsername']
   const LimitUserName: typeof import('./src/models/rule')['LimitUserName']
+  const NewGroupEmptyInfo: typeof import('./src/types/group')['NewGroupEmptyInfo']
   const NewOperateUserInfo: typeof import('./src/types/types')['NewOperateUserInfo']
+  const NewPageInfo: typeof import('./src/types/query')['NewPageInfo']
+  const NewSortInfo: typeof import('./src/types/query')['NewSortInfo']
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
@@ -380,6 +384,9 @@ declare global {
   export type { ColorBtn, TableSortEvent } from './src/types/common'
   import('./src/types/common')
   // @ts-ignore
+  export type { GroupInfo } from './src/types/group'
+  import('./src/types/group')
+  // @ts-ignore
   export type { ResponseSuccess, OperateUserBaseInfo, OperateUserInfo } from './src/types/types'
   import('./src/types/types')
   // @ts-ignore
@@ -413,13 +420,16 @@ declare module 'vue' {
     readonly IncludesIgnoreCase: UnwrapRef<typeof import('./src/utils/common')['IncludesIgnoreCase']>
     readonly IsAdmin: UnwrapRef<typeof import('./src/utils/common')['IsAdmin']>
     readonly IsEmpty: UnwrapRef<typeof import('./src/utils/rule')['IsEmpty']>
-    readonly IsNormal: UnwrapRef<typeof import('./src/utils/common')['IsNormal']>
     readonly IsSupperAdmin: UnwrapRef<typeof import('./src/utils/common')['IsSupperAdmin']>
+    readonly IsUser: UnwrapRef<typeof import('./src/utils/common')['IsUser']>
     readonly IsValidEmail: UnwrapRef<typeof import('./src/utils/rule')['IsValidEmail']>
     readonly IsValidPassword: UnwrapRef<typeof import('./src/utils/rule')['IsValidPassword']>
     readonly IsValidUsername: UnwrapRef<typeof import('./src/utils/rule')['IsValidUsername']>
     readonly LimitUserName: UnwrapRef<typeof import('./src/models/rule')['LimitUserName']>
+    readonly NewGroupEmptyInfo: UnwrapRef<typeof import('./src/types/group')['NewGroupEmptyInfo']>
     readonly NewOperateUserInfo: UnwrapRef<typeof import('./src/types/types')['NewOperateUserInfo']>
+    readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
+    readonly NewSortInfo: UnwrapRef<typeof import('./src/types/query')['NewSortInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>

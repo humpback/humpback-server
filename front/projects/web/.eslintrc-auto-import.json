@@ -379,6 +379,11 @@
     "IconMdiCogOutline": true,
     "IconMdiCompany": true,
     "IconMdiTextBoxOutline": true,
-    "IconMdiViewDashboard": true
+    "IconMdiViewDashboard": true,
+    "GroupInfo": true,
+    "IsUser": true,
+    "NewGroupEmptyInfo": true,
+    "NewPageInfo": true,
+    "NewSortInfo": true
   }
 }

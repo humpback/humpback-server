@@ -1,9 +1,13 @@
 import { includes, toLower } from "lodash-es"
 import { UserRole } from "@/models"
 
-export function TableHeight(invalidHeight: number, minHeight = 500): number {
+export function TableHeight(invalidHeight: number, minHeight = 500) {
   const pageStore = usePageStore()
-  return Math.max(pageStore.screenHeight - invalidHeight, minHeight)
+  const height = pageStore.screenHeight - invalidHeight
+  if (height < minHeight) {
+    return "auto"
+  }
+  return height
 }
 
 export function IncludesIgnoreCase(str?: string, subStr?: string): boolean {
@@ -21,8 +25,8 @@ export function IsAdmin(role: number) {
   return role === UserRole.Admin
 }
 
-export function IsNormal(role: number) {
-  return role === UserRole.Normal
+export function IsUser(role: number) {
+  return role === UserRole.User
 }
 
 export function GetUserRole(role: number) {
@@ -32,6 +36,6 @@ export function GetUserRole(role: number) {
     case UserRole.Admin:
       return UserRole.Admin
     default:
-      return UserRole.Normal
+      return UserRole.User
   }
 }
