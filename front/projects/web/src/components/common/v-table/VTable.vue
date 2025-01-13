@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { Sort, TableProps } from "element-plus"
-import { omit } from "lodash-es"
+import type { Sort, TableInstance, TableProps } from "element-plus"
+import { cloneDeep, omit } from "lodash-es"
 
 type Props = Partial<
   TableProps<any> & {
@@ -12,12 +12,14 @@ type Props = Partial<
 >
 
 const props = withDefaults(defineProps<Props>(), {
-  data: [],
   stripe: false,
   fit: true,
   showHeader: true,
   selectOnIndeterminate: true,
-  allowDragLastColumn: true
+  allowDragLastColumn: true,
+  showOverflowTooltip: true,
+  scrollbarAlwaysOn: true,
+  headerCellClassName: "table-header"
 })
 
 const emits = defineEmits<{
@@ -33,6 +35,8 @@ const pageStore = usePageStore()
 
 const pageSizeOptions = [10, 20, 30, 50, 100]
 
+const tableRef = useTemplateRef<TableInstance>("tableRef")
+
 const defaultSort = ref<Sort | undefined>(
   props.sortInfo
     ? {
@@ -41,16 +45,12 @@ const defaultSort = ref<Sort | undefined>(
       }
     : undefined
 )
+
 const tableAttrs = computed(() => {
-  const attrs = omit(props, ["pageInfo", "total"])
+  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total", "selectedData"]))
   attrs.defaultSort = defaultSort.value
-  defaultSort.value = props.sortInfo
-    ? {
-        prop: props.sortInfo.field,
-        order: props.sortInfo.order === "desc" ? "descending" : "ascending"
-      }
-    : undefined
-  return Object.keys(omit(props, ["pageInfo", "total"])).reduce((acc, key) => {
+
+  return Object.keys(attrs).reduce((acc, key) => {
     if (typeof attrs[key] !== "undefined") {
       acc[key] = props[key]
     }
@@ -78,7 +78,13 @@ function selectionChangeEvent(selectedData: any[]) {
 </script>
 
 <template>
-  <el-table v-bind="tableAttrs" @select="selectionChangeEvent($event.selection)" @sort-change="sortChangeEvent" @select-all="selectionChangeEvent">
+  <el-table
+    ref="tableRef"
+    class-name="v-table"
+    v-bind="tableAttrs"
+    @select="selectionChangeEvent($event.selection)"
+    @sort-change="sortChangeEvent"
+    @select-all="selectionChangeEvent">
     <template v-if="!!slots.default" #default>
       <slot name="default" />
     </template>
@@ -89,11 +95,11 @@ function selectionChangeEvent(selectedData: any[]) {
       <slot name="empty" />
     </template>
   </el-table>
-  <div v-if="props.pageInfo" class="mt-5 text-align-right">
+  <div v-if="props.pageInfo" class="mt-5 pagination">
     <el-pagination
       :background="true"
       :current-page="props.pageInfo.index"
-      :layout="pageStore.isSmallScreen ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next, jumper'"
+      :layout="pageStore.isSmallScreen ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next'"
       :page-size="props.pageInfo.size"
       :page-sizes="pageSizeOptions"
       :pager-count="pageStore.isSmallScreen ? 3 : 5"
@@ -103,4 +109,24 @@ function selectionChangeEvent(selectedData: any[]) {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.v-table {
+  :deep(.table-header) {
+    background-color: var(--hp-table-header-bg-color);
+  }
+
+  :deep(.el-table-fixed-column--left.table-header) {
+    background-color: var(--hp-table-header-bg-color);
+  }
+
+  :deep(.el-table-fixed-column--right.table-header) {
+    background-color: var(--hp-table-header-bg-color);
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+</style>

@@ -7,7 +7,7 @@ export enum PageLimitRole {
 export enum UserRole {
   SupperAdmin = 1,
   Admin = 2,
-  Normal = 3
+  User = 3
 }
 
 export enum SortType {

@@ -5,6 +5,10 @@ export default {
     "help": "Help",
     "save": "Save",
     "cancel": "Cancel",
-    "changePassword": "Change Password"
+    "changePassword": "Change Password",
+    "search": "Search",
+    "createUser": "Create User",
+    "edit": "Edit",
+    "delete": "Delete"
   }
 }

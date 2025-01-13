@@ -26,7 +26,9 @@ export default <RouteRecordRaw[]>[
         path: "/ws/user-related",
         name: "userRelated",
         component: () => import("@/views/user-related/user-related.vue"),
-        meta: {}
+        meta: {
+          onlyAdmin: true
+        }
       }
     ]
   }
