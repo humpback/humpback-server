@@ -1,7 +1,7 @@
 package scheduler
 
 import (
-	"log"
+	"log/slog"
 	"slices"
 	"sync"
 	"sync/atomic"
@@ -121,7 +121,7 @@ func (sm *ServiceManager) CheckNodeStatus() {
 	nodes, err := db.GetOfflineNodesByGroupId(groupId)
 
 	if err != nil {
-		log.Printf("[Service Manager] Check Service [%s] offline nodes error: %s", sm.ServiceInfo.ServiceId, err.Error())
+		slog.Error("[Service Manager] Get offline nodes error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())
 		return
 	}
 
@@ -196,25 +196,25 @@ func (sm *ServiceManager) StartNextContainer(rmc *types.ContainerStatus) {
 	nodes, err := db.GetOnlineNodesByGroupId(groupId)
 
 	if err != nil {
-		log.Printf("[Service Manager] Start Service [%s] error: %s", sm.ServiceInfo.ServiceId, err.Error())
+		slog.Error("[Service Manager] Start Service error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())
 		return
 	}
 
 	if len(nodes) == 0 {
-		log.Printf("[Service Manager] Start Service [%s] error: No available nodes", sm.ServiceInfo.ServiceId)
+		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
 		return
 	}
 
 	nodeId := sm.ChooseNextNodes(nodes)
 
 	if nodeId == "" {
-		log.Printf("[Service Manager] Start Service [%s] error: No available nodes", sm.ServiceInfo.ServiceId)
+		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
 		return
 	}
 
 	cerr := StartNewContainer(nodeId, sm.ServiceInfo)
 	if cerr != nil {
-		log.Printf("[Service Manager] Start New Container [%s] error: %s", sm.ServiceInfo.ServiceId, cerr.Error())
+		slog.Error("[Service Manager] Start New Container error", "ServiceId", sm.ServiceInfo.ServiceId, "error", cerr.Error())
 		return
 	}
 
@@ -303,16 +303,16 @@ func (sm *ServiceManager) CheckService() {
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 
 	for range ticker.C {
-		log.Printf("check service [%s]......", sm.ServiceInfo.ServiceId)
+		slog.Info("[Service Manager] Check service......", "ServiceId", sm.ServiceInfo.ServiceId)
 		if sm.isNeedQuit {
 			ticker.Stop()
-			log.Printf("service [%s] is disabled", sm.ServiceInfo.ServiceId)
+			slog.Info("[Service Manager] Service is disabled", "ServiceId", sm.ServiceInfo.ServiceId)
 			return
 		}
 		if !sm.isReconcile {
 			sm.Reconcile()
 		} else {
-			log.Printf("service [%s] is busy", sm.ServiceInfo.ServiceId)
+			slog.Info("[Service Manager] Service is busy", "ServiceId", sm.ServiceInfo.ServiceId)
 		}
 	}
 }

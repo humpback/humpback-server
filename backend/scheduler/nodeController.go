@@ -53,7 +53,7 @@ func (nc *NodeController) CheckNodes() {
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 
 	for range ticker.C {
-		slog.Info("check nodes......")
+		slog.Info("[Node Controller] Check nodes......")
 		nc.CheckNodesCore()
 	}
 }

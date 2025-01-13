@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"slices"
 	"time"
 
 	"humpback/internal/db"
@@ -17,21 +18,23 @@ func NewCacheManager() {
 	nodeCache = tlcache.NewLRUWithTTLCache(1000, 60*time.Minute)
 }
 
-func MatchNodeWithIpAddress(ipAddress string) string {
-	if v, ok := cache.Get(ipAddress); ok {
-		return v.(string)
+func MatchNodeWithIpAddress(ipAddress []string) string {
+	for _, ip := range ipAddress {
+		if v, ok := cache.Get(ip); ok {
+			return v.(string)
+		}
 	}
 
 	n, err := db.GetDataByQuery[types.Node](db.BucketNodes, func(key string, value interface{}) bool {
 		node := value.(types.Node)
-		return node.IpAddress == ipAddress
+		return slices.Contains(ipAddress, node.IpAddress)
 	})
 
 	id := ""
 	if err == nil || len(n) > 0 {
 		id = n[0].NodeId
 	}
-	cache.Add(ipAddress, id)
+	cache.Add(n[0].IpAddress, id)
 
 	return id
 }

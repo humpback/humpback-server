@@ -38,7 +38,7 @@ type ContainerStatus struct {
 	ContainerId   string `json:"containerId"`
 	ContainerName string `json:"containerName"`
 	NodeId        string `json:"nodeId"`
-	Status        string `json:"status"`
+	Status        string `json:"state"`
 	ErrorMsg      string `json:"errorMsg"`
 	Image         string `json:"image"`
 	Command       string `json:"command"`
