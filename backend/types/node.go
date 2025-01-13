@@ -15,7 +15,7 @@ type Node struct {
 type NodesGroups struct {
 	GroupId   string   `json:"groupId"`
 	GroupName string   `json:"groupName"`
-	CreatedAt string   `json:"createdAt"`
-	UpdatedAt string   `json:"updatedAt"`
+	CreatedAt int64    `json:"createdAt"`
+	UpdatedAt int64    `json:"updatedAt"`
 	Nodes     []string `json:"nodes"`
 }

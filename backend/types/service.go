@@ -26,8 +26,8 @@ type Service struct {
 	Version     string             `json:"version"`
 	IsEnabled   bool               `json:"isEnabled"`
 	Status      string             `json:"status"`
-	Meta        ServiceMetaDocker  `json:"meta"`
-	Deployment  Deployment         `json:"deployment"`
+	Meta        *ServiceMetaDocker `json:"meta"`
+	Deployment  *Deployment        `json:"deployment"`
 	Containers  []*ContainerStatus `json:"containers"`
 	GroupId     string             `json:"groupId"`
 	CreateAt    int64              `json:"createAt"`
@@ -51,7 +51,7 @@ type Deployment struct {
 	Mode       DeployMode       `json:"mode"`
 	Replicas   int              `json:"replicas"`
 	Placements []*PlacementInfo `json:"placements"`
-	Schedule   ScheduleInfo     `json:"schedule"`
+	Schedule   *ScheduleInfo    `json:"schedule"`
 }
 
 type DeployMode string
@@ -102,8 +102,8 @@ type ServiceMetaDocker struct {
 	Command       string            `json:"command"`
 	Envs          []string          `json:"env"`
 	Labels        map[string]string `json:"labels"`
-	Network       NetworkInfo       `json:"network"`
-	RestartPolicy RestartPolicy     `json:"restartPolicy"`
+	Network       *NetworkInfo      `json:"network"`
+	RestartPolicy *RestartPolicy    `json:"restartPolicy"`
 }
 
 type NetworkMode string

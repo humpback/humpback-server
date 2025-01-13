@@ -1,0 +1,2 @@
+GET http://localhost:8301/mock/nodes
+Accept: application/json

@@ -62,6 +62,12 @@ func (scheduler *HumpbackScheduler) Start() {
 
 		e.POST("/health", doHealth)
 
+		e.GET("/mock/nodes", mockNodes)
+
+		e.GET("/nodes", getAllNodes)
+
+		e.GET("/mock/service/gateway", mockGatewayServices)
+
 		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.BackendArgs().BackendPort)
 		slog.Info("[Scheduler] listening...", "Address", listeningAddress)
 		scheduler.httpSrv = &http.Server{
