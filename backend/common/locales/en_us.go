@@ -16,6 +16,14 @@ var baseMsg = map[string]string{
 	CodeUserNameIsInvalid:   "The user name is invalid",
 	CodeUserNameNotEmpty:    "The user name cannot be empty.",
 	CodeUserNotExist:        "The user does not exist.",
+	CodeUserIdNotEmpty:      "The user ID cannot be empty.",
+
+	CodeUserRoleIsInvalid: "The user role is invalid",
+
+	CodeTeamNameNotEmpty:    "The team name cannot be empty.",
+	CodeTeamNameLimitLength: fmt.Sprintf("The team name length limit is %d to %d.", LimitTeamName.Min, LimitTeamName.Max),
+	CodeTeamIdNotEmpty:      "The team ID cannot be empty.",
+	CodeTeamNotExist:        "The team does not exist.",
 
 	CodeEmailIsInvalid:   "The email address is invalid",
 	CodeEmailLimitLength: fmt.Sprintf("The email address length limit is %d.", LimitEmail.Max),

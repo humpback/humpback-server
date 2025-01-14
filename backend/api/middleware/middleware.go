@@ -12,8 +12,10 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"humpback/common/locales"
 	"humpback/config"
 	"humpback/internal/controller"
+	"humpback/types"
 
 	"humpback/common/response"
 )
@@ -124,5 +126,15 @@ func CheckLogin() gin.HandlerFunc {
 		}
 		SetCookieSession(c, sessionId, int(config.DBArgs().SessionTimeout.Seconds()))
 		SetUserInfo(c, userInfo)
+	}
+}
+
+func CheckAdminPermissions() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userInfo := GetUserInfo(c)
+		if userInfo.Role != types.UserRoleAdmin && userInfo.Role != types.UserRoleSupperAdmin {
+			AbortErr(c, response.NewBadRequestErr(locales.CodeNoPermission))
+			return
+		}
 	}
 }

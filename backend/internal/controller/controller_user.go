@@ -65,7 +65,7 @@ func UserUpdate(userInfo *types.User) error {
 	return nil
 }
 
-func UserChangePassword(userInfo *types.User, reqInfo *models.UserChangePasswordReqInfo) error {
+func UserChangePassword(userInfo *types.User, reqInfo *models.MeChangePasswordReqInfo) error {
 	if userInfo.Password != reqInfo.OldPassword {
 		return response.NewBadRequestErr(locales.CodeOldPasswordIsWrong)
 	}

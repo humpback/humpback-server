@@ -38,6 +38,7 @@ declare global {
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
+  const ParseNumber: typeof import('./src/utils/common')['ParseNumber']
   const RSAEncrypt: typeof import('./src/utils/rsa')['RSAEncrypt']
   const RegularEmail: typeof import('./src/utils/rule')['RegularEmail']
   const RegularPassword: typeof import('./src/utils/rule')['RegularPassword']
@@ -137,6 +138,7 @@ declare global {
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
   const provide: typeof import('vue')['provide']
   const provideLocal: typeof import('@vueuse/core')['provideLocal']
+  const query: typeof import('./src/types/query')['default']
   const reactify: typeof import('@vueuse/core')['reactify']
   const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
   const reactive: typeof import('vue')['reactive']
@@ -434,6 +436,7 @@ declare module 'vue' {
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>
+    readonly ParseNumber: UnwrapRef<typeof import('./src/utils/common')['ParseNumber']>
     readonly RSAEncrypt: UnwrapRef<typeof import('./src/utils/rsa')['RSAEncrypt']>
     readonly RegularEmail: UnwrapRef<typeof import('./src/utils/rule')['RegularEmail']>
     readonly RegularPassword: UnwrapRef<typeof import('./src/utils/rule')['RegularPassword']>
@@ -533,6 +536,7 @@ declare module 'vue' {
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
+    readonly query: UnwrapRef<typeof import('./src/types/query')['default']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
