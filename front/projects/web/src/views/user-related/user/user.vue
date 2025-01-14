@@ -4,29 +4,18 @@ import { TableHeight } from "@/utils"
 import UserDelete from "./user-delete.vue"
 import UserEdit from "./user-edit.vue"
 import UserViewTeams from "./user-view-teams.vue"
+import { QueryUserInfo } from "./common.ts"
 
 import { Action } from "@/models"
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
 const userStore = useUserStore()
 
 const tableHeight = computed(() => TableHeight(258))
 
-const queryInfo = ref<QueryInfo>({
-  keywords: "",
-  mode: "username",
-  pageInfo: {
-    index: 1,
-    size: 20
-  },
-  filter: {
-    role: 0
-  },
-  sortInfo: {
-    field: "username",
-    order: "asc"
-  }
-})
+const queryInfo = ref<QueryUserInfo>(new QueryUserInfo(route.query))
 
 const tableList = ref({
   total: 0,
@@ -41,18 +30,15 @@ function showActionBtn(info: UserInfo) {
   if (info.userId === userStore.userInfo.userId) {
     return false
   }
-
   if (IsSupperAdmin(info.role)) {
     return false
   }
-
-  if (IsAdmin(info.role) && !userStore.isSupperAdmin) {
-    return false
-  }
-  return true
+  return !IsAdmin(info.role) || userStore.isSupperAdmin
 }
 
-function search() {}
+function search() {
+  router.replace(queryInfo.value.getQuery())
+}
 
 function openAction(action: string, info?: UserInfo) {
   switch (action) {

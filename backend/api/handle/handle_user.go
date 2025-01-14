@@ -14,9 +14,16 @@ import (
 func RouteUser(router *gin.RouterGroup) {
 	router.POST("/login", login)
 	router.POST("/logout", middleware.CheckLogin(), logout)
-	router.GET("", middleware.CheckLogin(), user)
-	router.PUT("", middleware.CheckLogin(), userUpdate)
-	router.PUT("/change-psd", middleware.CheckLogin(), userChangePassword)
+	router.GET("/me", middleware.CheckLogin(), me)
+	router.PUT("/me", middleware.CheckLogin(), meUpdate)
+	router.PUT("/me/change-psd", middleware.CheckLogin(), meChangePassword)
+
+	router.POST("", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userCreate)
+	router.PUT("", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userUpdate)
+	router.GET("/info/:id", middleware.CheckLogin(), middleware.CheckAdminPermissions(), user)
+	router.POST("/query", middleware.CheckLogin(), middleware.CheckAdminPermissions(), users)
+	router.GET("/query-by-team/:teamId", middleware.CheckLogin(), middleware.CheckAdminPermissions(), usersByTeamId)
+	router.DELETE("/:id", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userDelete)
 }
 
 func login(c *gin.Context) {
@@ -44,14 +51,14 @@ func logout(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-func user(c *gin.Context) {
+func me(c *gin.Context) {
 	userInfo := middleware.GetUserInfo(c)
 	userInfo.Password = ""
 	c.JSON(http.StatusOK, userInfo)
 }
 
-func userUpdate(c *gin.Context) {
-	body := new(models.UserUpdateReqInfo)
+func meUpdate(c *gin.Context) {
+	body := new(models.MeUpdateReqInfo)
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
@@ -64,8 +71,8 @@ func userUpdate(c *gin.Context) {
 	c.JSON(http.StatusOK, response.NewRespSucceed())
 }
 
-func userChangePassword(c *gin.Context) {
-	body := new(models.UserChangePasswordReqInfo)
+func meChangePassword(c *gin.Context) {
+	body := new(models.MeChangePasswordReqInfo)
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
@@ -77,4 +84,28 @@ func userChangePassword(c *gin.Context) {
 	sessionId := middleware.GetSessionId(c)
 	middleware.SetCookieSession(c, sessionId, 0)
 	c.JSON(http.StatusOK, response.NewRespSucceed())
+}
+
+func userCreate(c *gin.Context) {
+
+}
+
+func userUpdate(c *gin.Context) {
+
+}
+
+func user(c *gin.Context) {
+
+}
+
+func users(c *gin.Context) {
+
+}
+
+func usersByTeamId(c *gin.Context) {
+
+}
+
+func userDelete(c *gin.Context) {
+
 }

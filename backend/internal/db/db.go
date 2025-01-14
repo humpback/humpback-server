@@ -40,6 +40,7 @@ type dbHelper struct {
 }
 
 const BucketUsers = "Users"
+const BucketTeams = "Teams"
 const BucketGroups = "Groups"
 const BucketSessions = "Sessions"
 const BucketRegistries = "Registries"
@@ -50,7 +51,7 @@ const BucketTemplates = "Templates"
 const BucketServices = "Services"
 
 var (
-	Buckets = []string{BucketUsers, BucketGroups, BucketSessions, BucketRegistries, BucketConfigs, BucketNodes, BucketNodesGroups, BucketTemplates, BucketServices}
+	Buckets = []string{BucketUsers, BucketTeams, BucketGroups, BucketSessions, BucketRegistries, BucketConfigs, BucketNodes, BucketNodesGroups, BucketTemplates, BucketServices}
 )
 
 var (

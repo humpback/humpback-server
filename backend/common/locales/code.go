@@ -13,6 +13,14 @@ const (
 	CodeUserNameIsInvalid   = "R4User-002"
 	CodeUserNameLimitLength = "R4User-003"
 	CodeUserNotExist        = "R4User-004"
+	CodeUserIdNotEmpty      = "R4User-005"
+
+	CodeUserRoleIsInvalid = "R4Role-001"
+
+	CodeTeamNameNotEmpty    = "R4Team-001"
+	CodeTeamNameLimitLength = "R4Team-002"
+	CodeTeamIdNotEmpty      = "R4Team-003"
+	CodeTeamNotExist        = "R4Team-004"
 
 	CodeEmailIsInvalid   = "R4Email-001"
 	CodeEmailLimitLength = "R4Email-002"

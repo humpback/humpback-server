@@ -17,6 +17,7 @@ type LengthLimit struct {
 
 var (
 	LimitUserName    = LengthLimit{Min: 2, Max: 100}
+	LimitTeamName    = LengthLimit{Min: 2, Max: 100}
 	LimitEmail       = LengthLimit{Min: 0, Max: 200}
 	LimitPassword    = LengthLimit{Min: 8, Max: 20}
 	LimitPhone       = LengthLimit{Min: 0, Max: 11}

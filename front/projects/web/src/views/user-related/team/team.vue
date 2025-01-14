@@ -5,26 +5,15 @@ import { Action } from "@/models"
 import TeamEdit from "./team-edit.vue"
 import TeamDelete from "./team-delete.vue"
 import TeamViewUsers from "./team-view-users.vue"
+import { QueryTeamInfo } from "@/views/user-related/team/common.ts"
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
 
 const tableHeight = computed(() => TableHeight(258))
 
-const queryInfo = ref<QueryInfo>({
-  keywords: "",
-  mode: "name",
-  pageInfo: {
-    index: 1,
-    size: 20
-  },
-  filter: {
-    role: 0
-  },
-  sortInfo: {
-    field: "name",
-    order: "asc"
-  }
-})
+const queryInfo = ref<QueryTeamInfo>(new QueryTeamInfo(route.query))
 
 const tableList = ref({
   total: 0,
@@ -35,7 +24,9 @@ const teamEditRef = useTemplateRef<InstanceType<typeof TeamEdit>>("teamEditRef")
 const teamDeleteRef = useTemplateRef<InstanceType<typeof TeamDelete>>("teamDeleteRef")
 const teamViewUsersRef = useTemplateRef<InstanceType<typeof TeamViewUsers>>("teamViewUsersRef")
 
-function search() {}
+function search() {
+  router.replace(queryInfo.value.getQuery())
+}
 
 function openAction(action: string, info?: TeamInfo) {
   switch (action) {
