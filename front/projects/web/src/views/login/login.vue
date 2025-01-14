@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
-import { ChangeEventType, globalLoading, RulePleaseEnter, SendChannelMessage } from "@/utils"
+import { ChangeEventType, RulePleaseEnter, SendChannelMessage } from "@/utils"
 import { RSAEncrypt } from "utils/rsa.ts"
-import VUsernameInput from "@/components/business/v-name/VUsernameInput.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+
+const loginStep = ref(0)
 
 const formRef = useTemplateRef<FormInstance>("formRef")
 const formData = reactive({
@@ -21,17 +22,18 @@ const formRules = reactive<FormRules>({
 })
 
 async function login() {
-  if (!(await formRef.value?.validate())) {
+  if (loginStep.value !== 0 || !(await formRef.value?.validate())) {
     return
   }
   const body = {
     username: RSAEncrypt(formData.username),
     password: RSAEncrypt(formData.password)
   }
-  globalLoading.show(t("message.loggingIn"))
+  loginStep.value = 1
   userService
     .login(body)
     .then(data => {
+      loginStep.value = 2
       userStore.setUserInfo(data)
       SendChannelMessage(ChangeEventType.Login, data)
       ShowSuccessMsg(t("message.loginSuccess"))
@@ -41,8 +43,8 @@ async function login() {
       }
       router.push({ name: "workspace" })
     })
-    .finally(() => {
-      globalLoading.close()
+    .catch(() => {
+      loginStep.value = 0
     })
 }
 </script>
@@ -61,11 +63,17 @@ async function login() {
           <v-password-input v-model="formData.password" :placeholder="t('placeholder.password')" size="large" />
         </el-form-item>
         <el-form-item>
-          <el-button class="w-100 mt-3" native-type="submit" size="large" type="primary">
+          <el-button v-if="loginStep === 0" class="w-100 mt-3" native-type="submit" size="large" type="primary">
             <el-icon>
               <icon-mdi-login-variant />
             </el-icon>
             {{ t("btn.login") }}
+          </el-button>
+          <el-button v-if="loginStep === 1" class="w-100 mt-3" disabled size="large" type="primary">
+            {{ t("btn.loggingIn") }}
+          </el-button>
+          <el-button v-if="loginStep === 2" class="w-100 mt-3" disabled size="large" type="primary">
+            {{ t("btn.redirecting") }}
           </el-button>
         </el-form-item>
       </el-form>

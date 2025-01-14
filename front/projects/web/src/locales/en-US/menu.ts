@@ -25,6 +25,8 @@ export default {
     "login": "Login",
     "dashboard": "Dashboard",
     "myAccount": "My Account",
-    "userRelated": "User Related"
+    "userRelated": "User Related",
+    "users": "Users",
+    "teams": "Teams"
   }
 }

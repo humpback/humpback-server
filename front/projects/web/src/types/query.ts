@@ -1,3 +1,5 @@
+import { ParseNumber } from "@/utils"
+
 export interface QueryInfo {
   keywords: string
   mode: string
@@ -6,6 +8,30 @@ export interface QueryInfo {
   }
   pageInfo?: PageInfo
   sortInfo?: SortInfo
+}
+
+export default class Query {
+  keywords: string
+  mode: string
+  filter: {
+    [key: string]: any
+  }
+  pageInfo: PageInfo
+  sortInfo: SortInfo
+
+  constructor(queryInfo: any) {
+    this.keywords = queryInfo["keywords"] ? queryInfo["keywords"] : ""
+    this.mode = queryInfo["mode"] ? queryInfo["mode"] : ""
+    this.filter = {}
+    this.pageInfo = {
+      index: ParseNumber(queryInfo["pageIndex"], 1)!,
+      size: ParseNumber(queryInfo["pageIndex"], 20)!
+    }
+    this.sortInfo = {
+      field: queryInfo["field"] ? queryInfo["field"] : "",
+      order: ParseQueryOrder(queryInfo["order"])
+    }
+  }
 }
 
 export interface PageInfo {
@@ -36,4 +62,12 @@ export interface QueryList<T> {
   total: number
   pageInfo: PageInfo
   objects: T[]
+}
+
+function ParseQueryOrder(value: any, defaultValue: "desc" | "asc" = "asc") {
+  const result = toString(value).trim()
+  if (["desc", "asc"].indexOf(result) === -1) {
+    return defaultValue
+  }
+  return result
 }

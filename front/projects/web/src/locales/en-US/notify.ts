@@ -1,6 +1,8 @@
 export default {
   notify: {
     "noPermission": "No permission",
-    "notFound": "Not Found"
+    "notFound": "Not Found",
+    "deleteUser": "Are you sure you want to delete user <span class='keywords-danger'>{name}</span> ?",
+    "deleteTeam": "Are you sure you want to delete team <span class='keywords-danger'>{name}</span> ?"
   }
 }

@@ -2,7 +2,7 @@ import { UserInfo } from "#/index.ts"
 
 class UserService {
   async login(data: any) {
-    return await httpClient.post<UserInfo>("/webapi/user/login", data, { disableLoading: true }).then(res => res.data)
+    return await httpClient.post<UserInfo>("/webapi/user/login", data).then(res => res.data)
   }
 
   async changePassword(data: any) {
@@ -10,12 +10,7 @@ class UserService {
   }
 
   async logout() {
-    return await httpClient
-      .post("/webapi/user/logout", null, {
-        disableLoading: true,
-        disableErrMsg: true
-      })
-      .then(res => res.data)
+    return await httpClient.post("/webapi/user/logout", null, { disableErrMsg: true }).then(res => res.data)
   }
 
   async getUserInfo(startup?: boolean) {

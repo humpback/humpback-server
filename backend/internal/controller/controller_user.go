@@ -34,7 +34,7 @@ func InitAdminUser() error {
 			Role:      types.UserRoleSupperAdmin,
 			CreatedAt: t,
 			UpdatedAt: t,
-			Groups:    nil,
+			Teams:     nil,
 		}); err != nil {
 			return fmt.Errorf("Create admin account failed: %s", err)
 		}

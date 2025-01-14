@@ -24,7 +24,6 @@ declare global {
   const IncludesIgnoreCase: typeof import('./src/utils/common')['IncludesIgnoreCase']
   const IsAdmin: typeof import('./src/utils/common')['IsAdmin']
   const IsEmpty: typeof import('./src/utils/rule')['IsEmpty']
-  const IsNormal: (typeof import("./src/utils/common"))["IsUser"]
   const IsSupperAdmin: typeof import('./src/utils/common')['IsSupperAdmin']
   const IsUser: typeof import('./src/utils/common')['IsUser']
   const IsValidEmail: typeof import('./src/utils/rule')['IsValidEmail']
@@ -35,6 +34,7 @@ declare global {
   const NewOperateUserInfo: typeof import('./src/types/types')['NewOperateUserInfo']
   const NewPageInfo: typeof import('./src/types/query')['NewPageInfo']
   const NewSortInfo: typeof import('./src/types/query')['NewSortInfo']
+  const NewTeamEmptyInfo: typeof import('./src/types/user')['NewTeamEmptyInfo']
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
@@ -393,7 +393,7 @@ declare global {
   export type { QueryInfo, PageInfo, SortInfo, QueryList } from './src/types/query'
   import('./src/types/query')
   // @ts-ignore
-  export type { UserInfo } from './src/types/user'
+  export type { UserInfo, TeamInfo } from './src/types/user'
   import('./src/types/user')
 }
 
@@ -430,6 +430,7 @@ declare module 'vue' {
     readonly NewOperateUserInfo: UnwrapRef<typeof import('./src/types/types')['NewOperateUserInfo']>
     readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
     readonly NewSortInfo: UnwrapRef<typeof import('./src/types/query')['NewSortInfo']>
+    readonly NewTeamEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewTeamEmptyInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>

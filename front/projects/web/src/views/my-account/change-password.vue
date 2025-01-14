@@ -8,6 +8,7 @@ const { t } = useI18n()
 const router = useRouter()
 
 const show = ref(false)
+const loading = ref(false)
 const psdInfo = ref<any>()
 const tableRef = useTemplateRef<FormInstance>("tableRef")
 
@@ -46,10 +47,15 @@ async function save() {
   if (!(await tableRef.value?.validate())) {
     return
   }
-  await userService.changePassword({
-    oldPassword: RSAEncrypt(psdInfo.value.oldPassword),
-    newPassword: RSAEncrypt(psdInfo.value.newPassword)
-  })
+  loading.value = true
+  await userService
+    .changePassword({
+      oldPassword: RSAEncrypt(psdInfo.value.oldPassword),
+      newPassword: RSAEncrypt(psdInfo.value.newPassword)
+    })
+    .finally(() => {
+      loading.value = false
+    })
   ShowSuccessMsg(t("message.changePasswordSuccess"))
   show.value = false
   disposeStore()
@@ -76,7 +82,7 @@ async function save() {
     </el-form>
     <template #footer>
       <el-button @click="show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button type="primary" @click="save">{{ t("btn.save") }}</el-button>
+      <el-button v-loading="loading" type="primary" @click="save">{{ t("btn.save") }}</el-button>
     </template>
   </v-dialog>
 </template>

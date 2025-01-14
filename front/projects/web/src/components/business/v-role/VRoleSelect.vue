@@ -1,12 +1,15 @@
 <script lang="ts" setup>
+import { find } from "lodash-es"
+
 const props = withDefaults(
   defineProps<{
     modelValue: number
     size?: "large" | "default" | "small"
     clearable?: boolean
     placeholder?: string
+    onlyShowRoles?: number[]
   }>(),
-  { size: "default", clearable: true, placeholder: "" }
+  { size: "default", clearable: false, placeholder: "" }
 )
 const emits = defineEmits<{
   (e: "update:modelValue", data: number): void
@@ -16,17 +19,23 @@ const emits = defineEmits<{
 const { t } = useI18n()
 
 const role = computed({
-  get: () => props.modelValue || 0,
+  get: () => props.modelValue,
   set: (v: number) => {
-    emits("update:modelValue", v || 0)
+    emits("update:modelValue", v)
   }
 })
 
-const options = computed(() => [
-  { label: "role.user", value: UserRole.User },
-  { label: "role.admin", value: UserRole.Admin },
-  { label: "role.supperAdmin", value: UserRole.SupperAdmin }
-])
+const options = computed(() => {
+  const data = [
+    { label: "role.user", value: UserRole.User },
+    { label: "role.admin", value: UserRole.Admin },
+    { label: "role.supperAdmin", value: UserRole.SupperAdmin }
+  ]
+  if (Array.isArray(props.onlyShowRoles) && props.onlyShowRoles.length > 0) {
+    return data.filter(x => find(props.onlyShowRoles, r => r === x.value))
+  }
+  return data
+})
 
 function change() {
   emits("change", role.value)
@@ -34,37 +43,9 @@ function change() {
 </script>
 
 <template>
-  <div class="d-flex role-select">
-    <div class="label">{{ t("label.role") }}</div>
-    <el-select v-model="role" :clearable="props.clearable" :placeholder="props.placeholder" class="role-content-select" @change="change()">
-      <el-option :label="t('label.all')" :value="0" />
-      <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value" />
-    </el-select>
-  </div>
+  <el-select v-model="role" :clearable="props.clearable" :placeholder="props.placeholder" @change="change()">
+    <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value" />
+  </el-select>
 </template>
 
-<style lang="scss" scoped>
-.role-select {
-  min-width: 260px;
-
-  .label {
-    width: 80px;
-    background-color: var(--el-fill-color-light);
-    height: 32px;
-    color: var(--el-text-color-regular);
-    border: 1px solid var(--el-border-color);
-    box-sizing: border-box;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-right: none;
-    padding: 0 12px;
-  }
-
-  .role-content-select {
-    :deep(.el-select__wrapper) {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-    }
-  }
-}
-</style>
+<style lang="scss" scoped></style>

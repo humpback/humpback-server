@@ -1,14 +1,20 @@
 export default {
   btn: {
     "login": "Login",
+    "loggingIn": "Logging in...",
+    "redirecting": "Redirecting...",
     "logout": "Logout",
     "help": "Help",
     "save": "Save",
     "cancel": "Cancel",
     "changePassword": "Change Password",
     "search": "Search",
-    "createUser": "Create User",
+    "addUser": "Add User",
+    "addTeam": "Add Team",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "goToAddUser": "Go to add user",
+    "goToAddTeam": "Go to add team"
   }
 }

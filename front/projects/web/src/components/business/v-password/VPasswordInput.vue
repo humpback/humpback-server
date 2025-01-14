@@ -11,6 +11,7 @@ const props = defineProps<{
   minlength?: number | string
   label?: string
 }>()
+
 const emits = defineEmits<{ (e: "update:model-value", v: string): void }>()
 
 const slots = useSlots()

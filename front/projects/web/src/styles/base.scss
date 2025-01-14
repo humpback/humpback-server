@@ -56,6 +56,7 @@ $keywords: (
   'success':var(--el-color-success),
   'primary':var(--el-color-primary),
   'info':var(--el-color-info),
+  'warning':var(--el-color-warning),
   'default':var(--el-color-default),
 );
 @each $name, $color in $keywords {

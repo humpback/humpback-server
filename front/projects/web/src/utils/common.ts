@@ -1,4 +1,4 @@
-import { includes, toLower } from "lodash-es"
+import { includes, isNumber, isString, toLower } from "lodash-es"
 import { UserRole } from "@/models"
 
 export function TableHeight(invalidHeight: number, minHeight = 500) {
@@ -38,4 +38,12 @@ export function GetUserRole(role: number) {
     default:
       return UserRole.User
   }
+}
+
+export function ParseNumber(number: any, defaultValue?: number) {
+  if (isNumber(number)) {
+    return number
+  }
+  const result = isString(number) ? Number(number) : NaN
+  return isNaN(result) ? defaultValue : result
 }

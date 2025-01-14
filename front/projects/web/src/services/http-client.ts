@@ -5,7 +5,7 @@ import { disposeStore } from "@/stores"
 import { globalLoading } from "utils/index.ts"
 
 export interface HttpRequestOptions extends AxiosRequestConfig {
-  disableLoading?: boolean | false
+  showLoading?: boolean | false
   disableErrMsg?: boolean | false
   loadingMessage?: string
   isFile?: boolean
@@ -109,7 +109,7 @@ class HttpClientService {
       }
     }
 
-    if (!options || !options.disableLoading) {
+    if (options?.showLoading) {
       loading.value = true
       if (loading.value) {
         globalLoading.show(options.loadingMessage)
@@ -128,7 +128,7 @@ class HttpClientService {
       })
       .catch<AxiosResponse<T>>(this.handleInnerErr(options))
       .finally(() => {
-        if (!options || !options.disableLoading) {
+        if (options?.showLoading) {
           loading.value = false
           if (!loading.value) {
             globalLoading.close()

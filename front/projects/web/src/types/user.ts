@@ -2,13 +2,13 @@ export interface UserInfo {
   userId: string
   username: string
   email: string
-  password?: string
+  password: string
   description: string
   phone: string
   role: number
   createdAt: number
   updatedAt: number
-  groups: string[]
+  teams: string[]
 }
 
 export function NewUserEmptyInfo(): UserInfo {
@@ -19,9 +19,29 @@ export function NewUserEmptyInfo(): UserInfo {
     password: "",
     description: "",
     phone: "",
-    role: 0,
+    role: UserRole.User,
     createdAt: 0,
     updatedAt: 0,
-    groups: []
+    teams: []
+  }
+}
+
+export interface TeamInfo {
+  teamId: string
+  name: string
+  description: string
+  createdAt: number
+  updatedAt: number
+  users: string[]
+}
+
+export function NewTeamEmptyInfo(): TeamInfo {
+  return {
+    teamId: "",
+    name: "",
+    description: "",
+    createdAt: 0,
+    updatedAt: 0,
+    users: []
   }
 }

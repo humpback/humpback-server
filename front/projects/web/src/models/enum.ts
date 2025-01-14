@@ -16,3 +16,10 @@ export enum SortType {
 }
 
 export const PageSizeOptions = [10, 20, 30, 50, 100]
+
+export enum Action {
+  Add = "add",
+  Edit = "edit",
+  Delete = "delete",
+  View = "view"
+}

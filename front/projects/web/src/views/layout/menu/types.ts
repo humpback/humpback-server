@@ -40,7 +40,8 @@ export const menuList: MenuInfo[] = [
       },
       {
         icon: shallowRef(IconMdiAccount),
-        name: "userRelated"
+        name: "userRelated",
+        params: { mode: "users" }
       }
     ]
   }

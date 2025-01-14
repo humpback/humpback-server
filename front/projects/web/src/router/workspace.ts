@@ -23,11 +23,14 @@ export default <RouteRecordRaw[]>[
         }
       },
       {
-        path: "/ws/user-related",
+        path: "/ws/user-related/:mode",
         name: "userRelated",
         component: () => import("@/views/user-related/user-related.vue"),
         meta: {
-          onlyAdmin: true
+          onlyAdmin: true,
+          webTitle: {
+            params: "mode"
+          }
         }
       }
     ]

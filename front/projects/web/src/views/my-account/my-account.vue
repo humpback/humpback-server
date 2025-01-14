@@ -8,6 +8,7 @@ import { cloneDeep } from "lodash-es"
 const { t } = useI18n()
 const userStore = useUserStore()
 
+const loading = ref(false)
 const userInfo = ref<UserInfo>(NewUserEmptyInfo())
 const tableRef = useTemplateRef<FormInstance>("tableRef")
 
@@ -28,10 +29,16 @@ const rules = ref<FormRules>({
 })
 
 async function getUserInfo() {
-  return await userService.getUserInfo().then(data => {
-    userInfo.value = data
-    userStore.setUserInfo(cloneDeep(data))
-  })
+  loading.value = true
+  return await userService
+    .getUserInfo()
+    .then(data => {
+      userInfo.value = data
+      userStore.setUserInfo(cloneDeep(data))
+    })
+    .finally(() => {
+      loading.value = false
+    })
 }
 
 async function save() {
@@ -54,7 +61,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-card>
+  <v-card v-loading="loading">
     <div>
       <v-role-admin :role="userInfo.role" size="default" />
       <div class="d-flex gap-1 mt-2 pl-1 mb-3">
@@ -71,23 +78,35 @@ onMounted(async () => {
       <v-alert> {{ t("tips.usernameChangeTips") }}</v-alert>
     </div>
     <el-form ref="tableRef" :model="userInfo" :rules="rules" label-position="top" label-width="auto">
-      <el-form-item :label="t('label.username')" prop="username">
-        <v-username-input v-model="userInfo.username" />
-      </el-form-item>
-      <el-form-item :label="t('label.description')" prop="description">
-        <v-description-input v-model="userInfo.description" />
-      </el-form-item>
-      <el-form-item :label="t('label.email')" prop="email">
-        <v-email-input v-model="userInfo.email" />
-      </el-form-item>
-      <el-form-item :label="t('label.phone')" prop="phone">
-        <v-phone-input v-model="userInfo.phone" />
-      </el-form-item>
-      <el-form-item>
-        <div class="text-align-right w-100">
-          <el-button type="primary" @click="save()">{{ t("btn.save") }}</el-button>
-        </div>
-      </el-form-item>
+      <el-row :gutter="12">
+        <el-col>
+          <el-form-item :label="t('label.username')" prop="username">
+            <v-username-input v-model="userInfo.username" />
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-form-item :label="t('label.description')" prop="description">
+            <v-description-input v-model="userInfo.description" />
+          </el-form-item>
+        </el-col>
+        <el-col :md="12" :span="24">
+          <el-form-item :label="t('label.email')" prop="email">
+            <v-email-input v-model="userInfo.email" />
+          </el-form-item>
+        </el-col>
+        <el-col :md="12" :span="24">
+          <el-form-item :label="t('label.phone')" prop="phone">
+            <v-phone-input v-model="userInfo.phone" />
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-form-item>
+            <div class="text-align-right w-100">
+              <el-button type="primary" @click="save()">{{ t("btn.save") }}</el-button>
+            </div>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
   </v-card>
 </template>
