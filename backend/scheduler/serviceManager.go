@@ -19,8 +19,8 @@ type ServiceManager struct {
 	ServiceInfo    *types.Service
 	CheckInterval  int64
 	IsNeedCheckAll atomic.Value
-	isNeedQuit     bool
-	isReconcile    bool
+	isNeedQuit     atomic.Value
+	isReconcile    atomic.Value
 	sync.RWMutex
 }
 
@@ -39,6 +39,8 @@ func NewServiceManager(svc *types.Service) *ServiceManager {
 		CheckInterval: int64(config.BackendArgs().ServiceCheckInterval),
 	}
 
+	sm.isNeedQuit.Store(false)
+	sm.isReconcile.Store(false)
 	sm.IsNeedCheckAll.Store(true)
 
 	go sm.CheckService()
@@ -51,17 +53,20 @@ func (sm *ServiceManager) Reconcile() {
 	sm.Lock()
 	defer sm.Unlock()
 
-	sm.isReconcile = true
+	sm.isReconcile.Store(true)
 	defer func() {
-		sm.isReconcile = false
+		sm.isReconcile.Store(false)
 	}()
 
 	if sm.IsNeedCheckAll.Load().(bool) {
 		sm.IsNeedCheckAll.Store(false)
-		if svc, err := db.GetServiceById(sm.ServiceInfo.ServiceId); err == nil {
-			sm.ServiceInfo = svc
+		svc, err := db.GetServiceById(sm.ServiceInfo.ServiceId)
+		if err != nil {
+			slog.Error("[Service Manager] Get service error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())
+			return
 		}
 
+		sm.ServiceInfo = svc
 		sm.CheckNodeStatus()
 	}
 
@@ -76,7 +81,7 @@ func (sm *ServiceManager) Reconcile() {
 			}
 			db.SaveService(sm.ServiceInfo)
 		}
-		sm.isNeedQuit = true
+		sm.isNeedQuit.Store(true)
 		return
 	}
 
@@ -90,6 +95,7 @@ func (sm *ServiceManager) Reconcile() {
 
 		// 如果有容器正在启动，就不再继续
 		if sm.HasPendingContainer() {
+			slog.Info("[Service Manager] Wait pending container......", "ServiceId", sm.ServiceInfo.ServiceId)
 			return
 		}
 
@@ -102,10 +108,10 @@ func (sm *ServiceManager) Reconcile() {
 				c.ErrorMsg = err.Error()
 			} else {
 				// 再选一个节点做调度
-				sm.StartNextContainer(c)
+				sm.StartNextContainer()
 			}
 		} else if sm.ServiceInfo.Deployment.Replicas > len(sm.ServiceInfo.Containers) {
-			sm.StartNextContainer(nil)
+			sm.StartNextContainer()
 		} else {
 			sm.ServiceInfo.Status = types.ServiceStatusRunning
 		}
@@ -118,11 +124,15 @@ func (sm *ServiceManager) CheckNodeStatus() {
 	groupId := sm.ServiceInfo.GroupId
 
 	isNeedSave := false
-	nodes, err := db.GetOfflineNodesByGroupId(groupId)
+	nodes, totalNodes, err := db.GetOfflineNodesByGroupId(groupId)
 
 	if err != nil {
 		slog.Error("[Service Manager] Get offline nodes error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())
 		return
+	}
+
+	if sm.ServiceInfo.Deployment.Mode == types.DeployModeGlobal {
+		sm.ServiceInfo.Deployment.Replicas = totalNodes
 	}
 
 	for _, c := range sm.ServiceInfo.Containers {
@@ -190,7 +200,7 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
 }
 
-func (sm *ServiceManager) StartNextContainer(rmc *types.ContainerStatus) {
+func (sm *ServiceManager) StartNextContainer() {
 
 	groupId := sm.ServiceInfo.GroupId
 	nodes, err := db.GetOnlineNodesByGroupId(groupId)
@@ -279,7 +289,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 	defer sm.Unlock()
 
 	ct, ok := lo.Find(sm.ServiceInfo.Containers, func(c *types.ContainerStatus) bool {
-		return c.ContainerId == cs.ContainerId
+		return c.ContainerName == cs.ContainerName
 	})
 
 	if ok && (ct.Status != cs.Status || ct.StartAt != cs.StartAt) {
@@ -304,12 +314,12 @@ func (sm *ServiceManager) CheckService() {
 
 	for range ticker.C {
 		slog.Info("[Service Manager] Check service......", "ServiceId", sm.ServiceInfo.ServiceId)
-		if sm.isNeedQuit {
+		if sm.isNeedQuit.Load().(bool) {
 			ticker.Stop()
 			slog.Info("[Service Manager] Service is disabled", "ServiceId", sm.ServiceInfo.ServiceId)
 			return
 		}
-		if !sm.isReconcile {
+		if !sm.isReconcile.Load().(bool) {
 			sm.Reconcile()
 		} else {
 			slog.Info("[Service Manager] Service is busy", "ServiceId", sm.ServiceInfo.ServiceId)

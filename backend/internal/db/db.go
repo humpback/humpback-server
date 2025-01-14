@@ -19,7 +19,7 @@ templates: template_id, template_name, create_time, update_time, infos(json)
 Services: service_id, service_name, create_time, update_time, type, status, containers, infos(json)
 
 serviceId: {random-8}
-containerId: humpback-{serviceId}-{version-5}-{random-5}
+containerName: humpback-{serviceId}-{version-5}-{random-5}
 
 
 */
@@ -30,8 +30,9 @@ import (
 	"errors"
 	"fmt"
 
-	bolt "go.etcd.io/bbolt"
 	"humpback/config"
+
+	bolt "go.etcd.io/bbolt"
 )
 
 type dbHelper struct {

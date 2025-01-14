@@ -1,2 +1,14 @@
 GET http://localhost:8301/mock/nodes
 Accept: application/json
+
+###
+GET http://localhost:8301/nodes
+Accept: application/json
+
+###
+GET http://localhost:8301/mock/service/gateway
+Accept: application/json
+
+###
+GET http://localhost:8301/services
+Accept: application/json

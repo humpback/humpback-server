@@ -79,7 +79,7 @@ func (sc *ServiceController) HandleNodeStatusChanged(nodeInfo NodeSimpleInfo) {
 
 func (sc *ServiceController) HandleContainerChanged() {
 	for containerStatus := range sc.ContainerChangeChan {
-		serviceId := getServiceIdByContainerId(containerStatus.ContainerId)
+		serviceId := getServiceIdByContainerId(containerStatus.ContainerName)
 		if serviceId != "" {
 			serviceManager, ok := sc.ServiceCtrls[serviceId]
 			if ok {
@@ -89,9 +89,9 @@ func (sc *ServiceController) HandleContainerChanged() {
 	}
 }
 
-func getServiceIdByContainerId(containerId string) string {
+func getServiceIdByContainerId(containerName string) string {
 	serviceId := ""
-	splits := strings.Split(containerId, "-")
+	splits := strings.Split(containerName, "-")
 	if len(splits) == 4 {
 		serviceId = splits[1]
 	}

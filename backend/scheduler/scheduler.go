@@ -29,6 +29,8 @@ func NewHumpbackScheduler() *HumpbackScheduler {
 	hs.serviceCtrl = NewServiceController(hs.NodeHeartbeatChan, hs.ContainerChangeChan, hs.ServiceChangeChan)
 	hs.nodeCtrl = NewNodeController(hs.NodeHeartbeatChan, hs.ContainerChangeChan)
 
+	NewCacheManager()
+
 	return hs
 }
 
@@ -52,6 +54,7 @@ func doHealth(c *gin.Context) {
 }
 
 func (scheduler *HumpbackScheduler) Start() {
+	scheduler.serviceCtrl.RestoreServiceManager()
 	go func() {
 		e := gin.Default()
 
@@ -65,6 +68,8 @@ func (scheduler *HumpbackScheduler) Start() {
 		e.GET("/mock/nodes", mockNodes)
 
 		e.GET("/nodes", getAllNodes)
+
+		e.GET("/services", getAllServices)
 
 		e.GET("/mock/service/gateway", mockGatewayServices)
 

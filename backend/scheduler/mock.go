@@ -29,7 +29,7 @@ func mockNodes(c *gin.Context) {
 		Name:      "hb001",
 		IpAddress: "172.16.41.21",
 		Port:      8301,
-		Status:    "online",
+		Status:    "Online",
 		CreatedAt: time.Now().Unix(),
 	}
 
@@ -40,7 +40,7 @@ func mockNodes(c *gin.Context) {
 		Name:      "hb002",
 		IpAddress: "172.16.41.22",
 		Port:      8301,
-		Status:    "online",
+		Status:    "Online",
 		CreatedAt: time.Now().Unix(),
 	}
 
@@ -51,7 +51,7 @@ func mockNodes(c *gin.Context) {
 		Name:      "hb003",
 		IpAddress: "172.16.41.23",
 		Port:      8301,
-		Status:    "online",
+		Status:    "Online",
 		CreatedAt: time.Now().Unix(),
 	}
 
@@ -67,6 +67,17 @@ func mockNodes(c *gin.Context) {
 	db.SaveData(db.BucketNodesGroups, group1.GroupId, group1)
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
+func getAllServices(c *gin.Context) {
+
+	svcs, err := db.GetDataAll[types.Service](db.BucketServices)
+
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+	} else {
+		c.JSON(http.StatusOK, svcs)
+	}
 }
 
 func mockGatewayServices(c *gin.Context) {
@@ -86,6 +97,10 @@ func mockGatewayServices(c *gin.Context) {
 	}
 
 	db.SaveData(db.BucketServices, svc.ServiceId, svc)
+
+	sc := c.MustGet("scheduler").(*HumpbackScheduler)
+
+	sc.ServiceChangeChan <- svc.ServiceId
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }

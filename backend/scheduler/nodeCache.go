@@ -26,7 +26,7 @@ func MatchNodeWithIpAddress(ipAddress []string) string {
 	}
 
 	n, err := db.GetDataByQuery[types.Node](db.BucketNodes, func(key string, value interface{}) bool {
-		node := value.(types.Node)
+		node := value.(*types.Node)
 		return slices.Contains(ipAddress, node.IpAddress)
 	})
 

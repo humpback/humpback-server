@@ -22,7 +22,7 @@ type DockerEngine struct {
 	StorageDriver  string   `json:"storageDriver"`
 	LoggingDriver  string   `json:"loggingDriver"`
 	VolumePlugins  []string `json:"volumePlugins"`
-	NetworkPlugins string   `json:"networkPlugins"`
+	NetworkPlugins []string `json:"networkPlugins"`
 }
 
 // HealthInfo 整体信息，包含主机信息、Docker 引擎信息和容器列表

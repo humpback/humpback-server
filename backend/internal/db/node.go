@@ -36,10 +36,10 @@ func GetGroupByNodeId(nodeId string) []string {
 	return groups
 }
 
-func GetOfflineNodesByGroupId(groupId string) ([]string, error) {
+func GetOfflineNodesByGroupId(groupId string) ([]string, int, error) {
 	ng, err := GetDataById[types.NodesGroups](BucketNodesGroups, groupId)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	} else {
 		nodes := make([]string, 0)
 		for _, v := range ng.Nodes {
@@ -48,7 +48,7 @@ func GetOfflineNodesByGroupId(groupId string) ([]string, error) {
 				nodes = append(nodes, node.NodeId)
 			}
 		}
-		return nodes, nil
+		return nodes, len(ng.Nodes), nil
 	}
 }
 

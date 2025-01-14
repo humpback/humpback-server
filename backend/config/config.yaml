@@ -2,6 +2,7 @@ version: 1.0.0
 location: local # local / dev / prd
 backend:
   checkInterval: 30
+  serviceCheckInterval: 45
   checkThreshold: 3
   backendPort: 8301
 node:
