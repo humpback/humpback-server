@@ -24,7 +24,7 @@ func GetNodeById(nodeId string) (*types.Node, error) {
 func GetGroupByNodeId(nodeId string) []string {
 	groups := make([]string, 0)
 	ng, err := GetDataByQuery[types.NodesGroups](BucketNodesGroups, func(key string, nodesGroups interface{}) bool {
-		ngp := nodesGroups.(types.NodesGroups)
+		ngp := nodesGroups.(*types.NodesGroups)
 		return slices.Contains(ngp.Nodes, nodeId)
 	})
 
