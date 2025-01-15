@@ -83,11 +83,11 @@ func MeChangePassword(userInfo *types.User, reqInfo *models.MeChangePasswordReqI
 }
 
 func UserCreate(info *models.UserCreateReqInfo) (string, error) {
-	oldInfo, err := db.UserGetByName(info.Username)
+	oldUser, err := db.UserGetByName(info.Username)
 	if err != nil {
 		return "", err
 	}
-	if oldInfo != nil {
+	if oldUser != nil {
 		return "", response.NewBadRequestErr(locales.CodeUserAlreadyExist)
 	}
 	var (
@@ -95,7 +95,7 @@ func UserCreate(info *models.UserCreateReqInfo) (string, error) {
 		userInfo = info.NewUserInfo()
 	)
 	if len(info.Teams) > 0 {
-		teams, err = db.TeamsByIds(info.Teams, false)
+		teams, err = db.TeamsQueryByIds(info.Teams, false)
 		if err != nil {
 			return "", err
 		}
@@ -111,15 +111,15 @@ func UserCreate(info *models.UserCreateReqInfo) (string, error) {
 }
 
 func UserUpdate(info *models.UserUpdateReqInfo, operator *types.User) (string, error) {
-	oldUserInfo, err := db.UserGetById(info.UserId)
+	oldUser, err := db.UserGetById(info.UserId)
 	if err != nil {
 		return "", err
 	}
-	if oldUserInfo.Role == types.UserRoleAdmin && operator.Role != types.UserRoleSupperAdmin {
+	if oldUser.Role == types.UserRoleAdmin && operator.Role != types.UserRoleSupperAdmin {
 		return "", response.NewRespServerErr(locales.CodeNoPermission)
 	}
-	newUserInfo, clearSession := info.NewUserInfo(oldUserInfo)
-	updateTeams, err := userUpdateCheckTeams(oldUserInfo.Teams, newUserInfo.Teams, newUserInfo.UserId)
+	newUserInfo, clearSession := info.NewUserInfo(oldUser)
+	updateTeams, err := userUpdateCheckTeams(oldUser.Teams, newUserInfo.Teams, newUserInfo.UserId)
 	if err != nil {
 		return "", err
 	}
@@ -153,7 +153,7 @@ func userUpdateCheckTeams(oldTeams, newTeams []string, userId string) ([]*types.
 			teamIdMap[teamId] = 1
 		}
 	}
-	teamList, err := db.TeamsByIds(maps.Keys(teamIdMap), false)
+	teamList, err := db.TeamsQueryByIds(maps.Keys(teamIdMap), false)
 	if err != nil {
 		return nil, err
 	}
@@ -174,28 +174,7 @@ func userUpdateCheckTeams(oldTeams, newTeams []string, userId string) ([]*types.
 			resultTeams = append(resultTeams, team)
 		}
 	}
-
 	return resultTeams, nil
-}
-
-func UserQuery(queryInfo *models.UserQueryReqInfo) (*types.QueryResult[types.User], error) {
-	users, err := db.UserGetAll()
-	if err != nil {
-		return nil, response.NewRespServerErr(err.Error())
-	}
-	result := make([]*types.User, 0)
-	for _, user := range users {
-		user.Password = ""
-		if queryInfo.QueryFilter(user) {
-			result = append(result, user)
-		}
-	}
-	queryInfo.QuerySort(result)
-	return types.NewQueryResult[types.User](
-		len(result),
-		types.QueryPagination[types.User](queryInfo.PageInfo, result),
-	), nil
-
 }
 
 func User(id string) (*types.User, error) {
@@ -204,6 +183,33 @@ func User(id string) (*types.User, error) {
 		return nil, err
 	}
 	return info, nil
+}
+
+func UserQuery(queryInfo *models.UserQueryReqInfo) (*response.QueryResult[types.User], error) {
+	users, err := db.UserGetAll()
+	if err != nil {
+		return nil, response.NewRespServerErr(err.Error())
+	}
+	result := queryInfo.QueryFilter(users)
+	return response.NewQueryResult[types.User](
+		len(result),
+		types.QueryPagination[types.User](queryInfo.PageInfo, result),
+	), nil
+}
+
+func UsersByTeamId(teamId string) ([]*types.User, error) {
+	teamInfo, err := db.TeamGetById(teamId)
+	if err != nil {
+		return nil, err
+	}
+	users, err := db.UsersQueryByIds(teamInfo.Users, true)
+	if err != nil {
+		return nil, err
+	}
+	for _, user := range users {
+		user.Password = ""
+	}
+	return users, nil
 }
 
 func UserDelete(id string, operator *types.User) error {
@@ -239,7 +245,7 @@ func userDeleteCheckTeams(teams []string, userId string) ([]*types.Team, error) 
 	if len(teams) == 0 {
 		return nil, nil
 	}
-	teamList, err := db.TeamsByIds(teams, true)
+	teamList, err := db.TeamsQueryByIds(teams, true)
 	if err != nil {
 		return nil, err
 	}
@@ -251,16 +257,4 @@ func userDeleteCheckTeams(teams []string, userId string) ([]*types.Team, error) 
 		}
 	}
 	return result, nil
-}
-
-func UsersByTeamId(teamId string) ([]*types.User, error) {
-	teamInfo, err := db.TeamById(teamId)
-	if err != nil {
-		return nil, err
-	}
-	users, err := db.UsersByIds(teamInfo.Users, true)
-	for _, user := range users {
-		user.Password = ""
-	}
-	return users, nil
 }

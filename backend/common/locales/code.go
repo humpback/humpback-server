@@ -23,6 +23,7 @@ const (
 	CodeTeamNameLimitLength = "R4Team-002"
 	CodeTeamIdNotEmpty      = "R4Team-003"
 	CodeTeamNotExist        = "R4Team-004"
+	CodeTeamAlreadyExist    = "R4Team-005"
 
 	CodeEmailIsInvalid   = "R4Email-001"
 	CodeEmailLimitLength = "R4Email-002"

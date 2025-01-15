@@ -105,7 +105,7 @@ func GetDataById[T any](bucketName string, id string) (*T, error) {
 	return &result, nil
 }
 
-func GetDataByIds[T any](bucketName string, ids []string, ingonreNotExist bool) ([]*T, error) {
+func GetDataByIds[T any](bucketName string, ids []string, ignoreNotExist bool) ([]*T, error) {
 	var results []*T
 	err := db.boltDB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
@@ -115,7 +115,7 @@ func GetDataByIds[T any](bucketName string, ids []string, ingonreNotExist bool) 
 		for _, id := range ids {
 			data := bucket.Get([]byte(id))
 			if data == nil {
-				if !ingonreNotExist {
+				if !ignoreNotExist {
 					return ErrKeyNotExist
 				}
 				continue

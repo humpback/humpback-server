@@ -31,7 +31,7 @@ const rules = ref<FormRules>({
 async function getUserInfo() {
   loading.value = true
   return await userService
-    .getUserInfo()
+    .getMe()
     .then(data => {
       userInfo.value = data
       userStore.setUserInfo(cloneDeep(data))
@@ -45,7 +45,7 @@ async function save() {
   if (!(await tableRef.value?.validate())) {
     return
   }
-  await userService.updateUserInfo({
+  await userService.updateMeInfo({
     username: userInfo.value.username,
     email: userInfo.value.email,
     phone: userInfo.value.phone,

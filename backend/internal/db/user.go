@@ -71,8 +71,8 @@ func UserGetByNamePsd(name string, psd string) (*types.User, error) {
 	return nil, response.NewBadRequestErr(locales.CodeUserNotExist)
 }
 
-func UsersByIds(ids []string, ingonreNotExist bool) ([]*types.User, error) {
-	users, err := GetDataByIds[types.User](BucketUsers, ids, ingonreNotExist)
+func UsersQueryByIds(ids []string, ignoreNotExist bool) ([]*types.User, error) {
+	users, err := GetDataByIds[types.User](BucketUsers, ids, ignoreNotExist)
 	if err != nil {
 		if err == ErrKeyNotExist {
 			return nil, response.NewBadRequestErr(locales.CodeUserNotExist)

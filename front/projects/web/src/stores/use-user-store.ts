@@ -11,7 +11,7 @@ export default defineStore("user", () => {
   const isUser = computed(() => IsUser(userInfo.value.role))
 
   const init = async () => {
-    return await userService.getUserInfo(true).then(data => {
+    return await userService.getMe(true).then(data => {
       userInfo.value = data
     })
   }

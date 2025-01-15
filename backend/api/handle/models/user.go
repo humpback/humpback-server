@@ -1,7 +1,6 @@
 package models
 
 import (
-	"cmp"
 	"encoding/json"
 	"slices"
 	"strings"
@@ -226,7 +225,7 @@ type UserQueryReqInfo struct {
 
 func (u *UserQueryReqInfo) Check() error {
 	u.CheckBase()
-	if err := u.parseFilter(); err != nil {
+	if err := u.parseFilterInfo(); err != nil {
 		return err
 	}
 	if u.Keywords != "" {
@@ -241,7 +240,19 @@ func (u *UserQueryReqInfo) Modes() []string {
 	return []string{"username", "email", "phone"}
 }
 
-func (u *UserQueryReqInfo) QueryFilter(info *types.User) bool {
+func (u *UserQueryReqInfo) QueryFilter(users []*types.User) []*types.User {
+	result := make([]*types.User, 0)
+	for _, user := range users {
+		user.Password = ""
+		if u.filter(user) {
+			result = append(result, user)
+		}
+	}
+	u.sort(result)
+	return result
+}
+
+func (u *UserQueryReqInfo) filter(info *types.User) bool {
 	if u.FilterInfo != nil && u.FilterInfo.Role != 0 && int(info.Role) != u.FilterInfo.Role {
 		return false
 	}
@@ -258,7 +269,7 @@ func (u *UserQueryReqInfo) QueryFilter(info *types.User) bool {
 	return true
 }
 
-func (u *UserQueryReqInfo) QuerySort(list []*types.User) []*types.User {
+func (u *UserQueryReqInfo) sort(list []*types.User) []*types.User {
 	var sortField = []string{"username", "updatedAt", "createdAt"}
 	if u.SortInfo == nil || u.SortInfo.Field == "" || slices.Index(sortField, u.SortInfo.Field) == -1 {
 		return list
@@ -266,27 +277,18 @@ func (u *UserQueryReqInfo) QuerySort(list []*types.User) []*types.User {
 	slices.SortFunc(list, func(a, b *types.User) int {
 		switch u.SortInfo.Field {
 		case "username":
-			if u.SortInfo.Order == types.SortOrderAsc {
-				return cmp.Compare(strings.ToLower(a.Username), strings.ToLower(b.Username))
-			}
-			return cmp.Compare(strings.ToLower(b.Username), strings.ToLower(a.Username))
+			return types.QuerySortOrder(u.SortInfo.Order, strings.ToLower(a.Username), strings.ToLower(b.Username))
 		case "updatedAt":
-			if u.SortInfo.Order == types.SortOrderAsc {
-				return cmp.Compare(a.UpdatedAt, b.UpdatedAt)
-			}
-			return cmp.Compare(b.UpdatedAt, a.UpdatedAt)
+			return types.QuerySortOrder(u.SortInfo.Order, a.UpdatedAt, b.UpdatedAt)
 		case "createdAt":
-			if u.SortInfo.Order == types.SortOrderAsc {
-				return cmp.Compare(a.CreatedAt, b.CreatedAt)
-			}
-			return cmp.Compare(b.CreatedAt, a.CreatedAt)
+			return types.QuerySortOrder(u.SortInfo.Order, a.CreatedAt, b.CreatedAt)
 		}
 		return 1
 	})
 	return list
 }
 
-func (u *UserQueryReqInfo) parseFilter() error {
+func (u *UserQueryReqInfo) parseFilterInfo() error {
 	if len(u.Filter) == 0 {
 		return nil
 	}

@@ -26,6 +26,7 @@ var baseMsg = map[string]string{
 	CodeTeamNameLimitLength: fmt.Sprintf("The team name length limit is %d to %d.", LimitTeamName.Min, LimitTeamName.Max),
 	CodeTeamIdNotEmpty:      "The team ID cannot be empty.",
 	CodeTeamNotExist:        "The team does not exist.",
+	CodeTeamAlreadyExist:    "The team already exists.",
 
 	CodeEmailIsInvalid:   "The email address is invalid",
 	CodeEmailLimitLength: fmt.Sprintf("The email address length limit is %d.", LimitEmail.Max),

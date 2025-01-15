@@ -1,5 +1,9 @@
 package types
 
+import (
+	"cmp"
+)
+
 var (
 	SortOrderAsc  = "asc"
 	SortOrderDesc = "desc"
@@ -59,12 +63,9 @@ func QueryPagination[T any](pageInfo *PageInfo, list []*T) []*T {
 	return list[start:end]
 }
 
-type QueryResult[T any] struct {
-	Total int  `json:"total"`
-	Data  []*T `json:"data"`
-}
-
-func NewQueryResult[T any](total int, list []*T) *QueryResult[T] {
-	return &QueryResult[T]{Total: total, Data: list}
-
+func QuerySortOrder[T cmp.Ordered](order string, a, b T) int {
+	if order == SortOrderAsc {
+		return cmp.Compare(a, b)
+	}
+	return cmp.Compare(b, a)
 }

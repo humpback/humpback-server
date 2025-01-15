@@ -15,3 +15,12 @@ func NewRespSucceed() *SucceedMsg {
 		Msg:        "Succeed",
 	}
 }
+
+type QueryResult[T any] struct {
+	Total int  `json:"total"`
+	List  []*T `json:"list"`
+}
+
+func NewQueryResult[T any](total int, list []*T) *QueryResult[T] {
+	return &QueryResult[T]{Total: total, List: list}
+}

@@ -1,4 +1,4 @@
-import { UserInfo } from "#/index.ts"
+import { ResponseQuery, ResponseSuccess, UserInfo } from "#/index.ts"
 
 class UserService {
   async login(data: any) {
@@ -13,12 +13,36 @@ class UserService {
     return await httpClient.put("/webapi/user/me/change-psd", data).then(res => res.data)
   }
 
-  async getUserInfo(startup?: boolean) {
+  async getMe(startup?: boolean) {
     return await httpClient.get<UserInfo>("/webapi/user/me", { params: startup ? { startup: "true" } : undefined }).then(res => res.data)
   }
 
-  async updateUserInfo(data: any) {
+  async updateMeInfo(data: any) {
     return await httpClient.put("/webapi/user/me", data).then(res => res.data)
+  }
+
+  async info(id: string) {
+    return await httpClient.get<string>(`/webapi/user/info/${id}`).then(res => res.data)
+  }
+
+  async query(data: any) {
+    return await httpClient.post<ResponseQuery<UserInfo>>("/webapi/user/query", data).then(res => res.data)
+  }
+
+  async queryByTeamId(teamId: string) {
+    return await httpClient.get<ResponseQuery<UserInfo>>(`/webapi/user/query-by-team/${teamId}`).then(res => res.data)
+  }
+
+  async create(data: any) {
+    return await httpClient.post<string>("/webapi/user", data).then(res => res.data)
+  }
+
+  async update(data: any) {
+    return await httpClient.put<string>("/webapi/user", data).then(res => res.data)
+  }
+
+  async delete(id: string) {
+    return await httpClient.delete<ResponseSuccess>(`/webapi/user/${id}`).then(res => res.data)
   }
 }
 
