@@ -14,6 +14,8 @@ const (
 	CodeUserNameLimitLength = "R4User-003"
 	CodeUserNotExist        = "R4User-004"
 	CodeUserIdNotEmpty      = "R4User-005"
+	CodeUserAlreadyExist    = "R4User-006"
+	CodeUserIsOwner         = "R4User-007"
 
 	CodeUserRoleIsInvalid = "R4Role-001"
 

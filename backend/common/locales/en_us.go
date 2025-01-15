@@ -17,6 +17,8 @@ var baseMsg = map[string]string{
 	CodeUserNameNotEmpty:    "The user name cannot be empty.",
 	CodeUserNotExist:        "The user does not exist.",
 	CodeUserIdNotEmpty:      "The user ID cannot be empty.",
+	CodeUserAlreadyExist:    "The user already exists.",
+	CodeUserIsOwner:         "Can't update yourself.",
 
 	CodeUserRoleIsInvalid: "The user role is invalid",
 

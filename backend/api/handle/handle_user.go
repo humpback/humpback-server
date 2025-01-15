@@ -64,7 +64,7 @@ func meUpdate(c *gin.Context) {
 	}
 	userInfo := middleware.GetUserInfo(c)
 	userInfo = body.NewUserInfo(userInfo)
-	if err := controller.UserUpdate(userInfo); err != nil {
+	if err := controller.MeUpdate(userInfo); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}
@@ -77,7 +77,7 @@ func meChangePassword(c *gin.Context) {
 		return
 	}
 	userInfo := middleware.GetUserInfo(c)
-	if err := controller.UserChangePassword(userInfo, body); err != nil {
+	if err := controller.MeChangePassword(userInfo, body); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}
@@ -87,25 +87,84 @@ func meChangePassword(c *gin.Context) {
 }
 
 func userCreate(c *gin.Context) {
-
+	body := new(models.UserCreateReqInfo)
+	if !middleware.BindAndCheckBody(c, body) {
+		return
+	}
+	userInfo := middleware.GetUserInfo(c)
+	if err := body.CheckCreateRole(userInfo); err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	id, err := controller.UserCreate(body)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, id)
 }
 
 func userUpdate(c *gin.Context) {
-
+	body := new(models.UserUpdateReqInfo)
+	if !middleware.BindAndCheckBody(c, body) {
+		return
+	}
+	userInfo := middleware.GetUserInfo(c)
+	if err := body.CheckUpdateRole(userInfo); err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	id, err := controller.UserUpdate(body, userInfo)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, id)
 }
 
 func user(c *gin.Context) {
-
+	id := c.Param("id")
+	includePassword := c.Query("p")
+	userInfo, err := controller.User(id)
+	if includePassword != "true" {
+		userInfo.Password = ""
+	}
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, userInfo)
 }
 
 func users(c *gin.Context) {
-
+	querInfo := new(models.UserQueryReqInfo)
+	if !middleware.BindAndCheckBody(c, querInfo) {
+		return
+	}
+	users, err := controller.UserQuery(querInfo)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, users)
 }
 
 func usersByTeamId(c *gin.Context) {
-
+	teamId := c.Param("teamId")
+	users, err := controller.UsersByTeamId(teamId)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, users)
 }
 
 func userDelete(c *gin.Context) {
-
+	id := c.Param("id")
+	userInfo := middleware.GetUserInfo(c)
+	if err := controller.UserDelete(id, userInfo); err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, response.NewRespSucceed())
 }

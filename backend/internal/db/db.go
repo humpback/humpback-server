@@ -105,7 +105,7 @@ func GetDataById[T any](bucketName string, id string) (*T, error) {
 	return &result, nil
 }
 
-func GetDataByIds[T any](bucketName string, ids []string) ([]*T, error) {
+func GetDataByIds[T any](bucketName string, ids []string, ingonreNotExist bool) ([]*T, error) {
 	var results []*T
 	err := db.boltDB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
@@ -115,7 +115,10 @@ func GetDataByIds[T any](bucketName string, ids []string) ([]*T, error) {
 		for _, id := range ids {
 			data := bucket.Get([]byte(id))
 			if data == nil {
-				return ErrKeyNotExist
+				if !ingonreNotExist {
+					return ErrKeyNotExist
+				}
+				continue
 			}
 			result := new(T)
 			if err := json.Unmarshal(data, result); err != nil {
@@ -222,6 +225,15 @@ func SaveData[T any](bucketName string, id string, data T) error {
 	return nil
 }
 
+type fn func(tx *bolt.Tx) error
+
+func TransactionUpdates(f fn) error {
+	if err := db.boltDB.Update(f); err != nil {
+		return checkErr(err)
+	}
+	return nil
+}
+
 func DeleteData(bucketName string, id string) error {
 	if err := db.boltDB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
@@ -251,7 +263,6 @@ func BatchDelete(bucketName string, ids []string) error {
 		return checkErr(err)
 	}
 	return nil
-
 }
 
 func checkErr(err error) error {

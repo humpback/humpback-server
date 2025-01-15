@@ -1,7 +1,10 @@
 package models
 
 import (
+	"cmp"
 	"encoding/json"
+	"slices"
+	"strings"
 	"time"
 
 	"humpback/common/locales"
@@ -127,6 +130,7 @@ func (u *UserCreateReqInfo) Check() error {
 	if err := verify.CheckRequiredAndLengthLimit(u.Password, locales.LimitPassword.Min, locales.LimitPassword.Max, locales.CodePasswordNotEmpty, locales.CodePasswordLimitLength); err != nil {
 		return err
 	}
+
 	if u.Role != types.UserRoleAdmin && u.Role != types.UserRoleUser {
 		return response.NewBadRequestErr(locales.CodeUserRoleIsInvalid)
 	}
@@ -136,11 +140,27 @@ func (u *UserCreateReqInfo) Check() error {
 	return nil
 }
 
-func (u *UserCreateReqInfo) CheckRole(role types.UserRole) error {
-	if role == types.UserRoleAdmin && u.Role != types.UserRoleUser {
+func (u *UserCreateReqInfo) CheckCreateRole(operator *types.User) error {
+	if operator.Role == types.UserRoleAdmin && u.Role != types.UserRoleUser {
 		return response.NewBadRequestErr(locales.CodeUserRoleIsInvalid)
 	}
 	return nil
+}
+
+func (u *UserCreateReqInfo) NewUserInfo() *types.User {
+	t := time.Now().UnixMilli()
+	return &types.User{
+		UserId:      utils.NewGuidStr(),
+		Username:    u.Username,
+		Password:    u.Password,
+		Role:        u.Role,
+		Email:       u.Email,
+		Phone:       u.Phone,
+		Description: u.Description,
+		CreatedAt:   t,
+		UpdatedAt:   t,
+		Teams:       u.Teams,
+	}
 }
 
 type UserUpdateReqInfo struct {
@@ -153,6 +173,46 @@ func (u *UserUpdateReqInfo) Check() error {
 		return err
 	}
 	return u.UserCreateReqInfo.Check()
+}
+
+func (u *UserUpdateReqInfo) CheckUpdateRole(operator *types.User) error {
+	if u.UserId == operator.UserId {
+		return response.NewBadRequestErr(locales.CodeUserIsOwner)
+	}
+	if operator.Role == types.UserRoleAdmin && u.Role != types.UserRoleUser {
+		return response.NewBadRequestErr(locales.CodeUserRoleIsInvalid)
+	}
+	return nil
+}
+
+func (u *UserUpdateReqInfo) NewUserInfo(oldUserInfo *types.User) (*types.User, bool) {
+	userInfo := &types.User{
+		UserId:      u.UserId,
+		Username:    u.Username,
+		Password:    u.Password,
+		Role:        u.Role,
+		Email:       u.Email,
+		Phone:       u.Phone,
+		Description: u.Description,
+		CreatedAt:   oldUserInfo.CreatedAt,
+		UpdatedAt:   time.Now().UnixMilli(),
+		Teams:       u.Teams,
+	}
+	if u.Username != oldUserInfo.Username ||
+		u.Password != oldUserInfo.Password ||
+		u.Email != oldUserInfo.Email ||
+		u.Phone != oldUserInfo.Phone ||
+		u.Description != oldUserInfo.Description ||
+		u.Role != oldUserInfo.Role ||
+		len(u.Teams) != len(oldUserInfo.Teams) {
+		return userInfo, true
+	}
+	for _, teamId := range u.Teams {
+		if index := slices.Index(oldUserInfo.Teams, teamId); index == -1 {
+			return userInfo, true
+		}
+	}
+	return userInfo, false
 }
 
 type UserQueryFilterInfo struct {
@@ -169,7 +229,61 @@ func (u *UserQueryReqInfo) Check() error {
 	if err := u.parseFilter(); err != nil {
 		return err
 	}
+	if u.Keywords != "" {
+		if slices.Index(u.Modes(), u.Mode) == -1 {
+			return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+		}
+	}
 	return nil
+}
+
+func (u *UserQueryReqInfo) Modes() []string {
+	return []string{"username", "email", "phone"}
+}
+
+func (u *UserQueryReqInfo) QueryFilter(info *types.User) bool {
+	if u.FilterInfo != nil && u.FilterInfo.Role != 0 && int(info.Role) != u.FilterInfo.Role {
+		return false
+	}
+	if u.Keywords != "" {
+		switch u.Mode {
+		case "username":
+			return strings.Contains(strings.ToLower(info.Username), strings.ToLower(u.Keywords))
+		case "email":
+			return strings.Contains(strings.ToLower(info.Email), strings.ToLower(u.Keywords))
+		case "phone":
+			return strings.Contains(strings.ToLower(info.Phone), strings.ToLower(u.Keywords))
+		}
+	}
+	return true
+}
+
+func (u *UserQueryReqInfo) QuerySort(list []*types.User) []*types.User {
+	var sortField = []string{"username", "updatedAt", "createdAt"}
+	if u.SortInfo == nil || u.SortInfo.Field == "" || slices.Index(sortField, u.SortInfo.Field) == -1 {
+		return list
+	}
+	slices.SortFunc(list, func(a, b *types.User) int {
+		switch u.SortInfo.Field {
+		case "username":
+			if u.SortInfo.Order == types.SortOrderAsc {
+				return cmp.Compare(strings.ToLower(a.Username), strings.ToLower(b.Username))
+			}
+			return cmp.Compare(strings.ToLower(b.Username), strings.ToLower(a.Username))
+		case "updatedAt":
+			if u.SortInfo.Order == types.SortOrderAsc {
+				return cmp.Compare(a.UpdatedAt, b.UpdatedAt)
+			}
+			return cmp.Compare(b.UpdatedAt, a.UpdatedAt)
+		case "createdAt":
+			if u.SortInfo.Order == types.SortOrderAsc {
+				return cmp.Compare(a.CreatedAt, b.CreatedAt)
+			}
+			return cmp.Compare(b.CreatedAt, a.CreatedAt)
+		}
+		return 1
+	})
+	return list
 }
 
 func (u *UserQueryReqInfo) parseFilter() error {

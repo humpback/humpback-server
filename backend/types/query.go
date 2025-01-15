@@ -1,5 +1,10 @@
 package types
 
+var (
+	SortOrderAsc  = "asc"
+	SortOrderDesc = "desc"
+)
+
 type QueryInfo struct {
 	Keywords string         `json:"keywords"`
 	Mode     string         `json:"mode"`
@@ -23,8 +28,8 @@ func (q *QueryInfo) CheckBase() {
 	if q.SortInfo == nil {
 		if q.SortInfo.Field == "" {
 			q.SortInfo = nil
-		} else if q.SortInfo.Order != "asc" && q.SortInfo.Order != "desc" {
-			q.SortInfo.Order = "asc"
+		} else if q.SortInfo.Order != SortOrderAsc && q.SortInfo.Order != SortOrderDesc {
+			q.SortInfo.Order = SortOrderAsc
 		}
 	}
 }
@@ -39,7 +44,27 @@ type PageInfo struct {
 	Size  int `json:"size"`
 }
 
+func QueryPagination[T any](pageInfo *PageInfo, list []*T) []*T {
+	if pageInfo == nil {
+		return list
+	}
+	start := (pageInfo.Index - 1) * pageInfo.Size
+	if start >= len(list) {
+		return []*T{}
+	}
+	end := start + pageInfo.Size
+	if end > len(list) {
+		end = len(list)
+	}
+	return list[start:end]
+}
+
 type QueryResult[T any] struct {
 	Total int  `json:"total"`
 	Data  []*T `json:"data"`
+}
+
+func NewQueryResult[T any](total int, list []*T) *QueryResult[T] {
+	return &QueryResult[T]{Total: total, Data: list}
+
 }

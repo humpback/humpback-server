@@ -39,6 +39,7 @@ declare global {
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
   const ParseNumber: typeof import('./src/utils/common')['ParseNumber']
+  const QueryInfo: typeof import('./src/types/query')['QueryInfo']
   const RSAEncrypt: typeof import('./src/utils/rsa')['RSAEncrypt']
   const RegularEmail: typeof import('./src/utils/rule')['RegularEmail']
   const RegularPassword: typeof import('./src/utils/rule')['RegularPassword']
@@ -392,7 +393,7 @@ declare global {
   export type { ResponseSuccess, OperateUserBaseInfo, OperateUserInfo } from './src/types/types'
   import('./src/types/types')
   // @ts-ignore
-  export type { QueryInfo, PageInfo, SortInfo, QueryList } from './src/types/query'
+  export type { QueryInfo, PageInfo, SortInfo, QueryList, QueryInfo } from './src/types/query'
   import('./src/types/query')
   // @ts-ignore
   export type { UserInfo, TeamInfo } from './src/types/user'
@@ -437,6 +438,7 @@ declare module 'vue' {
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>
     readonly ParseNumber: UnwrapRef<typeof import('./src/utils/common')['ParseNumber']>
+    readonly QueryInfo: UnwrapRef<typeof import('./src/types/query')['QueryInfo']>
     readonly RSAEncrypt: UnwrapRef<typeof import('./src/utils/rsa')['RSAEncrypt']>
     readonly RegularEmail: UnwrapRef<typeof import('./src/utils/rule')['RegularEmail']>
     readonly RegularPassword: UnwrapRef<typeof import('./src/utils/rule')['RegularPassword']>
@@ -536,7 +538,6 @@ declare module 'vue' {
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
-    readonly query: UnwrapRef<typeof import('./src/types/query')['default']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>

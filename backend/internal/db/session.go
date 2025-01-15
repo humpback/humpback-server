@@ -40,7 +40,7 @@ func SessionDelete(sessionId string) error {
 	return nil
 }
 
-func SessionBatchDeleteBuUserId(userId string) error {
+func SessionBatchDeleteByUserId(userId string) error {
 	sessions, err := SessionGetAll()
 	if err != nil {
 		return response.NewRespServerErr(err.Error())
