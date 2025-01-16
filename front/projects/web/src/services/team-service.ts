@@ -10,7 +10,7 @@ class TeamService {
   }
 
   async queryByUserId(userId: string) {
-    return await httpClient.get<ResponseQuery<TeamInfo>>(`/webapi/team/query-by-user/${userId}`).then(res => res.data)
+    return await httpClient.get<TeamInfo[]>(`/webapi/team/query-by-user/${userId}`).then(res => res.data)
   }
 
   async create(data: any) {

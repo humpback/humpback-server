@@ -31,13 +31,13 @@ func InitRouter() *Router {
 func (api *Router) Start() {
 	go func() {
 		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.NodeArgs().SitePort)
-		slog.Info("[Api] listening...", "Address", listeningAddress)
+		slog.Info("[Api] Listening...", "Address", listeningAddress)
 		api.httpSrv = &http.Server{
 			Addr:    listeningAddress,
 			Handler: api.engine,
 		}
 		if err := api.httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error(fmt.Sprintf("listening %s failed: %s", listeningAddress, err))
+			slog.Error(fmt.Sprintf("[Api] Listening %s failed: %s", listeningAddress, err))
 		}
 	}()
 }
@@ -54,7 +54,7 @@ func (api *Router) setRoute() {
 	var routes = map[string]map[string][]any{
 		"/webapi": {
 			"/user": {handle.RouteUser},
-			"/team": {middleware.CheckLogin(), middleware.CheckAdminPermissions(), handle.RouteTeam},
+			"/team": {middleware.CheckLogin(), handle.RouteTeam},
 		},
 	}
 

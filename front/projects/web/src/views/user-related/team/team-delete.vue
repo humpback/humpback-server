@@ -7,6 +7,8 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+const isAction = ref(false)
 const dialogInfo = ref({
   show: false,
   info: {} as TeamInfo
@@ -17,7 +19,17 @@ function open(info: TeamInfo) {
   dialogInfo.value.show = true
 }
 
-function confirmDelete() {}
+async function confirmDelete() {
+  isAction.value = true
+  return await teamService
+    .delete(dialogInfo.value.info.teamId)
+    .then(() => {
+      ShowSuccessMsg(t("message.deleteSuccess"))
+      dialogInfo.value.show = false
+      emits("refresh")
+    })
+    .finally(() => (isAction.value = false))
+}
 
 defineExpose({ open })
 </script>

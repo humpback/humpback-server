@@ -1,5 +1,5 @@
 import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
-import { find } from "lodash-es"
+import { find, omitBy } from "lodash-es"
 
 export const sortOptions = ["username", "updatedAt", "createdAt"]
 
@@ -18,5 +18,9 @@ export class QueryUserInfo extends QueryInfo {
     return {
       query: Object.assign({}, this.filter.role !== defaultFilter.role ? { role: this.filter.role } : {}, this.getBaseQuery())
     }
+  }
+
+  getSearch() {
+    return omitBy(this, (value, key) => key.startsWith("_"))
   }
 }

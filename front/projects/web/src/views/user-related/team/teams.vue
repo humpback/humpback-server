@@ -13,6 +13,7 @@ const router = useRouter()
 
 const tableHeight = computed(() => TableHeight(258))
 
+const isLoading = ref(false)
 const queryInfo = ref<QueryTeamInfo>(new QueryTeamInfo(route.query))
 
 const tableList = ref({
@@ -24,8 +25,16 @@ const teamEditRef = useTemplateRef<InstanceType<typeof TeamEdit>>("teamEditRef")
 const teamDeleteRef = useTemplateRef<InstanceType<typeof TeamDelete>>("teamDeleteRef")
 const teamViewUsersRef = useTemplateRef<InstanceType<typeof TeamViewUsers>>("teamViewUsersRef")
 
-function search() {
-  router.replace(queryInfo.value.getQuery())
+async function search() {
+  await router.replace(queryInfo.value.getQuery())
+  isLoading.value = true
+  return await teamService
+    .query(queryInfo.value.getSearch())
+    .then(res => {
+      tableList.value.data = res.list
+      tableList.value.total = res.total
+    })
+    .finally(() => (isLoading.value = false))
 }
 
 function openAction(action: string, info?: TeamInfo) {
@@ -43,38 +52,7 @@ function openAction(action: string, info?: TeamInfo) {
   }
 }
 
-onMounted(() => {
-  const data: Array<TeamInfo> = [
-    {
-      teamId: "supper admin",
-      name: "John Doe",
-      description: "Developer",
-      createdAt: 1736744969984,
-      updatedAt: 1736744969984,
-      users: []
-    },
-    {
-      teamId: "admin",
-      name: "John Doe",
-      description: "Developer",
-      createdAt: 1736744969984,
-      updatedAt: 1736744969984,
-      users: []
-    },
-    {
-      teamId: "user",
-      name: "John Doe",
-      description: "Developer",
-      createdAt: 1736744969984,
-      updatedAt: 1736744969984,
-      users: ["sfljsf", "flsjfls"]
-    }
-  ]
-  for (let i = 0; i < 10; i++) {
-    tableList.value.data.push(...data)
-  }
-  tableList.value.total = tableList.value.data.length
-})
+onMounted(() => search())
 </script>
 
 <template>
@@ -102,11 +80,13 @@ onMounted(() => {
       </div>
     </el-form-item>
   </el-form>
+
   <v-table
+    v-loading="isLoading"
     v-model:page-info="queryInfo.pageInfo"
     v-model:sort-info="queryInfo.sortInfo"
     :data="tableList.data"
-    :max-height="tableHeight"
+    :height="tableHeight"
     :total="tableList.total"
     @page-change="search"
     @sort-change="search">

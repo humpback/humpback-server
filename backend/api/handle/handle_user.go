@@ -21,7 +21,7 @@ func RouteUser(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userCreate)
 	router.PUT("", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userUpdate)
 	router.GET("/info/:id", middleware.CheckLogin(), middleware.CheckAdminPermissions(), user)
-	router.POST("/query", middleware.CheckLogin(), middleware.CheckAdminPermissions(), usersQuery)
+	router.POST("/query", middleware.CheckLogin(), usersQuery)
 	router.GET("/query-by-team/:teamId", middleware.CheckLogin(), middleware.CheckAdminPermissions(), usersByTeamId)
 	router.DELETE("/:id", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userDelete)
 }

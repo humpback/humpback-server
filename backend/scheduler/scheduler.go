@@ -74,13 +74,13 @@ func (scheduler *HumpbackScheduler) Start() {
 		e.GET("/mock/service/gateway", mockGatewayServices)
 
 		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.BackendArgs().BackendPort)
-		slog.Info("[Scheduler] listening...", "Address", listeningAddress)
+		slog.Info("[Scheduler] Listening...", "Address", listeningAddress)
 		scheduler.httpSrv = &http.Server{
 			Addr:    listeningAddress,
 			Handler: e,
 		}
 		if err := scheduler.httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error("[Scheduler] start failed", "Address", listeningAddress, "error", err)
+			slog.Error("[Scheduler] Start failed", "Address", listeningAddress, "error", err)
 		}
 	}()
 }

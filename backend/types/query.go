@@ -21,7 +21,7 @@ func (q *QueryInfo) CheckBase() {
 	if q.Filter == nil {
 		q.Filter = make(map[string]any)
 	}
-	if q.PageInfo == nil {
+	if q.PageInfo != nil {
 		if q.PageInfo.Index < 1 {
 			q.PageInfo.Index = 1
 		}
@@ -29,7 +29,7 @@ func (q *QueryInfo) CheckBase() {
 			q.PageInfo.Size = 20
 		}
 	}
-	if q.SortInfo == nil {
+	if q.SortInfo != nil {
 		if q.SortInfo.Field == "" {
 			q.SortInfo = nil
 		} else if q.SortInfo.Order != SortOrderAsc && q.SortInfo.Order != SortOrderDesc {

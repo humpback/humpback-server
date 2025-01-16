@@ -28,12 +28,12 @@ func main() {
 		panic(err)
 	}
 
-	slog.Info("[APP] new completed.")
+	slog.Info("[APP] The init app is completed, next step startup.")
 
 	// Start server
 	application.Startup()
 
-	slog.Info("[APP] startup completed.")
+	slog.Info("[APP] Startup completed.")
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()

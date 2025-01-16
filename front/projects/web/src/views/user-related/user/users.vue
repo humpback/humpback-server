@@ -15,6 +15,7 @@ const userStore = useUserStore()
 
 const tableHeight = computed(() => TableHeight(258))
 
+const isLoading = ref(false)
 const queryInfo = ref<QueryUserInfo>(new QueryUserInfo(route.query))
 
 const tableList = ref({
@@ -36,8 +37,16 @@ function showActionBtn(info: UserInfo) {
   return !IsAdmin(info.role) || userStore.isSupperAdmin
 }
 
-function search() {
-  router.replace(queryInfo.value.getQuery())
+async function search() {
+  await router.replace(queryInfo.value.getQuery())
+  isLoading.value = true
+  return await userService
+    .query(queryInfo.value.getSearch())
+    .then(res => {
+      tableList.value.data = res.list
+      tableList.value.total = res.total
+    })
+    .finally(() => (isLoading.value = false))
 }
 
 function openAction(action: string, info?: UserInfo) {
@@ -54,50 +63,7 @@ function openAction(action: string, info?: UserInfo) {
   }
 }
 
-onMounted(() => {
-  const data: Array<UserInfo> = [
-    {
-      userId: "supper admin",
-      username: "John Doe",
-      email: "john@example.com",
-      phone: "17721865797",
-      description: "Developer",
-      teams: [],
-      password: "",
-      role: 1,
-      createdAt: 1736744969984,
-      updatedAt: 1736744969984
-    },
-    {
-      userId: "admin",
-      username: "John Doe",
-      email: "john@example.com",
-      phone: "17721865797",
-      description: "Developer",
-      teams: [],
-      password: "",
-      role: 2,
-      createdAt: 1736744969984,
-      updatedAt: 1736744969984
-    },
-    {
-      userId: "user",
-      username: "John Doe",
-      email: "john@example.com",
-      phone: "17721865797",
-      description: "Developer",
-      teams: ["sfljsf", "flsjfls"],
-      password: "",
-      role: 3,
-      createdAt: 1736744969984,
-      updatedAt: 1736744969984
-    }
-  ]
-  for (let i = 0; i < 10; i++) {
-    tableList.value.data.push(...data)
-  }
-  tableList.value.total = tableList.value.data.length
-})
+onMounted(() => search())
 </script>
 
 <template>
@@ -132,11 +98,13 @@ onMounted(() => {
       </div>
     </el-form-item>
   </el-form>
+
   <v-table
+    v-loading="isLoading"
     v-model:page-info="queryInfo.pageInfo"
     v-model:sort-info="queryInfo.sortInfo"
     :data="tableList.data"
-    :max-height="tableHeight"
+    :height="tableHeight"
     :total="tableList.total"
     @page-change="search"
     @sort-change="search">

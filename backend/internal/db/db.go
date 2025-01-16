@@ -29,6 +29,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"humpback/config"
 
@@ -63,6 +64,7 @@ var (
 var db *dbHelper
 
 func InitDB() error {
+	slog.Info("[Init DB] Check all buckets start...")
 	db = &dbHelper{}
 	boltDB, err := bolt.Open(config.DBArgs().Root, 0600, nil)
 	if err != nil {
@@ -79,6 +81,7 @@ func InitDB() error {
 	}); err != nil {
 		return fmt.Errorf("Init Buckets failed: %s", err)
 	}
+	slog.Info("[Init DB] Check all buckets completed.")
 	return nil
 }
 

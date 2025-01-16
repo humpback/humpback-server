@@ -46,5 +46,5 @@ export function ShowErrMsg(message: string, title: string = GetI18nMessage("mess
 
 export function ShowSystemErrMsg() {
   // showMessage("error", GetI18nMessage("err.systemError"), true)
-  notifyMsg("error", GetI18nMessage("err.systemError"), GetI18nMessage("header.systemErr"), true)
+  notifyMsg("error", GetI18nMessage("err.systemError"), GetI18nMessage("message.error"), true)
 }

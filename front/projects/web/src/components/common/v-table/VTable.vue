@@ -78,34 +78,36 @@ function selectionChangeEvent(selectedData: any[]) {
 </script>
 
 <template>
-  <el-table
-    ref="tableRef"
-    class-name="v-table"
-    v-bind="tableAttrs"
-    @select="selectionChangeEvent($event.selection)"
-    @sort-change="sortChangeEvent"
-    @select-all="selectionChangeEvent">
-    <template v-if="!!slots.default" #default>
-      <slot name="default" />
-    </template>
-    <template v-if="!!slots.append" #append>
-      <slot name="append" />
-    </template>
-    <template v-if="!!slots.empty" #empty>
-      <slot name="empty" />
-    </template>
-  </el-table>
-  <div v-if="props.pageInfo" class="mt-5 pagination">
-    <el-pagination
-      :background="true"
-      :current-page="props.pageInfo.index"
-      :layout="pageStore.isSmallScreen ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next'"
-      :page-size="props.pageInfo.size"
-      :page-sizes="pageSizeOptions"
-      :pager-count="pageStore.isSmallScreen ? 3 : 5"
-      :total="props.total"
-      @currentChange="pageChangeEvent($event, props.pageInfo.size)"
-      @size-change="pageChangeEvent(props.pageInfo.index, $event)" />
+  <div>
+    <el-table
+      ref="tableRef"
+      class-name="v-table"
+      v-bind="tableAttrs"
+      @select="selectionChangeEvent($event.selection)"
+      @sort-change="sortChangeEvent"
+      @select-all="selectionChangeEvent">
+      <template v-if="!!slots.default" #default>
+        <slot name="default" />
+      </template>
+      <template v-if="!!slots.append" #append>
+        <slot name="append" />
+      </template>
+      <template v-if="!!slots.empty" #empty>
+        <slot name="empty" />
+      </template>
+    </el-table>
+    <div v-if="props.pageInfo" class="mt-5 pagination">
+      <el-pagination
+        :background="true"
+        :current-page="props.pageInfo.index"
+        :layout="pageStore.isSmallScreen ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next'"
+        :page-size="props.pageInfo.size"
+        :page-sizes="pageSizeOptions"
+        :pager-count="pageStore.isSmallScreen ? 3 : 5"
+        :total="props.total"
+        @currentChange="pageChangeEvent($event, props.pageInfo.size)"
+        @size-change="pageChangeEvent(props.pageInfo.index, $event)" />
+    </div>
   </div>
 </template>
 

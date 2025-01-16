@@ -4,6 +4,7 @@ import { FormInstance, FormRules } from "element-plus"
 import { RuleFormatErrEmailOption, RuleFormatErrPhone, RulePleaseEnter } from "@/utils"
 import { LimitDescription, LimitEmail, LimitPassword } from "@/models"
 import { TeamInfo, UserInfo } from "@/types"
+import { RSAEncrypt } from "utils/rsa.ts"
 
 const emits = defineEmits<{
   (e: "refresh"): void
@@ -12,6 +13,8 @@ const emits = defineEmits<{
 const { t } = useI18n()
 const userStore = useUserStore()
 
+const isLoading = ref(false)
+const isAction = ref(false)
 const dialogInfo = ref({
   show: false,
   info: {} as UserInfo
@@ -49,14 +52,63 @@ function checkRole(rule: any, value: any, callback: any) {
   callback()
 }
 
-function open(info?: UserInfo) {
+async function open(info?: UserInfo) {
   dialogInfo.value.info = info ? cloneDeep(info) : NewUserEmptyInfo()
   dialogInfo.value.show = true
+  isLoading.value = true
+  await Promise.all([dialogInfo.value.info.userId ? getUserInfo() : undefined, getTeams()])
+    .catch(() => {
+      dialogInfo.value.show = false
+    })
+    .finally(() => (isLoading.value = false))
+}
+
+async function getUserInfo() {
+  return await userService.info(dialogInfo.value.info.userId, true).then(info => {
+    dialogInfo.value.info = info
+  })
+}
+
+async function getTeams() {
+  return await teamService.query({ sortInfo: { field: "name", order: "asc" } }).then(res => {
+    teamsOptions.value = res.list
+    return res
+  })
 }
 
 async function save() {
   if (!(await formRef.value?.validate())) {
     return
+  }
+  const body: any = {
+    username: dialogInfo.value.info.username,
+    email: dialogInfo.value.info.email,
+    password: RSAEncrypt(dialogInfo.value.info.password),
+    description: dialogInfo.value.info.description,
+    phone: dialogInfo.value.info.phone,
+    role: dialogInfo.value.info.role,
+    teams: dialogInfo.value.info.teams
+  }
+  isAction.value = true
+  if (dialogInfo.value.info.userId) {
+    body.userId = dialogInfo.value.info.userId
+    userService
+      .update(body)
+      .then(() => {
+        ShowSuccessMsg(t("message.saveSuccess"))
+        dialogInfo.value.show = false
+        emits("refresh")
+      })
+      .finally(() => (isAction.value = false))
+  } else {
+    userService
+      .create(body)
+      .then(() => {
+        ShowSuccessMsg(t("message.addSuccess"))
+        dialogInfo.value.show = false
+        emits("refresh")
+      })
+      .finally(() => (isAction.value = false))
   }
 }
 
@@ -69,7 +121,7 @@ defineExpose({ open })
       {{ dialogInfo.info.userId ? t("header.editUser") : t("header.addUser") }}
     </template>
     <div class="my-3">
-      <el-form ref="formRef" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
+      <el-form ref="formRef" v-loading="isLoading" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
         <el-row :gutter="12">
           <el-col>
             <el-form-item :label="t('label.username')" prop="username">
@@ -115,7 +167,7 @@ defineExpose({ open })
     </div>
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button type="primary" @click="save">{{ t("btn.save") }}</el-button>
+      <el-button :disabled="isLoading" :loading="isAction" type="primary" @click="save">{{ t("btn.save") }}</el-button>
     </template>
   </v-dialog>
 </template>

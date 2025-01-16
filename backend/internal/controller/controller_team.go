@@ -13,12 +13,9 @@ import (
 )
 
 func TeamCreate(info *models.TeamCreateReqInfo) (string, error) {
-	oldTeam, err := db.TeamGetByName(info.Name)
+	err := teamCreateCheckName(info)
 	if err != nil {
 		return "", err
-	}
-	if oldTeam != nil {
-		return "", response.NewBadRequestErr(locales.CodeTeamAlreadyExist)
 	}
 	var (
 		users    = make([]*types.User, 0)
@@ -40,11 +37,27 @@ func TeamCreate(info *models.TeamCreateReqInfo) (string, error) {
 	return id, nil
 }
 
+func teamCreateCheckName(info *models.TeamCreateReqInfo) error {
+	sameNameTeams, err := db.TeamsGetByName(info.Name)
+	if err != nil {
+		return err
+	}
+	if len(sameNameTeams) > 0 {
+		return response.NewBadRequestErr(locales.CodeTeamAlreadyExist)
+	}
+	return nil
+}
+
 func TeamUpdate(info *models.TeamUpdateReqInfo) (string, error) {
+	if err := teamUpdateCheckName(info); err != nil {
+		return "", err
+	}
+
 	oldTeam, err := db.TeamGetById(info.TeamId)
 	if err != nil {
 		return "", err
 	}
+
 	newTeamInfo := info.NewTeamInfo(oldTeam)
 	updateUsers, err := teamUpdateCheckUsers(oldTeam.Users, newTeamInfo.Users, newTeamInfo.TeamId)
 	if err != nil {
@@ -56,6 +69,18 @@ func TeamUpdate(info *models.TeamUpdateReqInfo) (string, error) {
 		return "", err
 	}
 	return id, nil
+}
+
+func teamUpdateCheckName(info *models.TeamUpdateReqInfo) error {
+	sameNameTeams, err := db.TeamsGetByName(info.Name)
+	if err != nil {
+		return err
+	}
+
+	if len(sameNameTeams) > 1 || len(sameNameTeams) == 1 && sameNameTeams[0].TeamId != info.TeamId {
+		return response.NewBadRequestErr(locales.CodeTeamAlreadyExist)
+	}
+	return nil
 }
 
 func teamUpdateCheckUsers(oldUsers, newUsers []string, teamId string) ([]*types.User, error) {

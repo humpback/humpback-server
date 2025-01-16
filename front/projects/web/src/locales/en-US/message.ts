@@ -4,6 +4,8 @@ export default {
     "uploading": "Uploading...",
     "deleting": "Deleting...",
     "saveSuccess": "Save Successful",
+    "addSuccess": "Added successfully",
+    "deleteSuccess": "Delete Successfully",
     "uploadSuccess": "Upload Successful",
     "loginSuccess": "Login Successful",
     "succeed": "Succeed",

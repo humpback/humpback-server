@@ -387,6 +387,8 @@
     "IconMdiUserOutline": true,
     "IconMdiViewDashboard": true,
     "ParseNumber": true,
-    "query": true
+    "query": true,
+    "ResponseQuery": true,
+    "teamService": true
   }
 }

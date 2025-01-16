@@ -42,17 +42,18 @@ func UserGetById(id string) (*types.User, error) {
 	return info, nil
 }
 
-func UserGetByName(name string) (*types.User, error) {
+func UsersGetByName(name string) ([]*types.User, error) {
 	users, err := GetDataAll[types.User](BucketUsers)
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
 	}
+	var result []*types.User
 	for _, user := range users {
 		if user.Username == name {
-			return user, nil
+			result = append(result, user)
 		}
 	}
-	return nil, nil
+	return result, nil
 }
 
 func UserGetByNamePsd(name string, psd string) (*types.User, error) {

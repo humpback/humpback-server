@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { TabPaneName } from "element-plus"
-import TeamPage from "./team/team.vue"
-import UserPage from "./user/user.vue"
+import TeamPage from "./team/teams.vue"
+import UserPage from "./user/users.vue"
 import { find, toLower } from "lodash-es"
 
 enum UserRelatedType {
@@ -42,9 +42,7 @@ onBeforeMount(async () => {
           <template #label>
             <strong>{{ t(item.label) }}</strong>
           </template>
-          <KeepAlive>
-            <component :is="item.component" v-if="item.name === activeTab" />
-          </KeepAlive>
+          <component :is="item.component" v-if="item.name === activeTab" />
         </el-tab-pane>
       </template>
     </el-tabs>

@@ -17,6 +17,7 @@ import (
 )
 
 func InitAdminUser() error {
+	slog.Info("[Supper Admin] Account check start...")
 	adminConfig := config.AdminArgs()
 	user, err := db.UserFindSupperAdmin()
 	if err != nil {
@@ -41,7 +42,7 @@ func InitAdminUser() error {
 			return fmt.Errorf("Create admin account failed: %s", err)
 		}
 	}
-	slog.Info("Admin account check success")
+	slog.Info("[Supper Admin] Account check completed.")
 	return nil
 }
 
@@ -83,12 +84,9 @@ func MeChangePassword(userInfo *types.User, reqInfo *models.MeChangePasswordReqI
 }
 
 func UserCreate(info *models.UserCreateReqInfo) (string, error) {
-	oldUser, err := db.UserGetByName(info.Username)
+	err := userCreateCheckName(info)
 	if err != nil {
 		return "", err
-	}
-	if oldUser != nil {
-		return "", response.NewBadRequestErr(locales.CodeUserAlreadyExist)
 	}
 	var (
 		teams    = make([]*types.Team, 0)
@@ -110,13 +108,21 @@ func UserCreate(info *models.UserCreateReqInfo) (string, error) {
 	return id, nil
 }
 
+func userCreateCheckName(info *models.UserCreateReqInfo) error {
+	sameNameUsers, err := db.UsersGetByName(info.Username)
+	if err != nil {
+		return err
+	}
+	if len(sameNameUsers) > 0 {
+		return response.NewBadRequestErr(locales.CodeUserNameAlreadyExist)
+	}
+	return nil
+}
+
 func UserUpdate(info *models.UserUpdateReqInfo, operator *types.User) (string, error) {
-	oldUser, err := db.UserGetById(info.UserId)
+	oldUser, err := userUpdateCheckRoleAndName(info, operator)
 	if err != nil {
 		return "", err
-	}
-	if oldUser.Role == types.UserRoleAdmin && operator.Role != types.UserRoleSupperAdmin {
-		return "", response.NewRespServerErr(locales.CodeNoPermission)
 	}
 	newUserInfo, clearSession := info.NewUserInfo(oldUser)
 	updateTeams, err := userUpdateCheckTeams(oldUser.Teams, newUserInfo.Teams, newUserInfo.UserId)
@@ -135,6 +141,24 @@ func UserUpdate(info *models.UserUpdateReqInfo, operator *types.User) (string, e
 		}
 	}
 	return id, nil
+}
+
+func userUpdateCheckRoleAndName(info *models.UserUpdateReqInfo, operator *types.User) (*types.User, error) {
+	userInfo, err := db.UserGetById(info.UserId)
+	if err != nil {
+		return nil, err
+	}
+	if userInfo.Role == types.UserRoleAdmin && operator.Role != types.UserRoleSupperAdmin {
+		return nil, response.NewRespServerErr(locales.CodeNoPermission)
+	}
+	sameNameUsers, err := db.UsersGetByName(info.Username)
+	if err != nil {
+		return nil, err
+	}
+	if len(sameNameUsers) > 1 || len(sameNameUsers) == 1 && sameNameUsers[0].UserId != info.UserId {
+		return nil, response.NewBadRequestErr(locales.CodeUserNameAlreadyExist)
+	}
+	return userInfo, nil
 }
 
 func userUpdateCheckTeams(oldTeams, newTeams []string, userId string) ([]*types.Team, error) {
@@ -236,7 +260,7 @@ func UserDelete(id string, operator *types.User) error {
 		return err
 	}
 	if err = db.SessionBatchDeleteByUserId(id); err != nil {
-		slog.Warn("[User Delete] clear session failed.", "UserId", id, "UserName", info.Username, "Error", err.Error())
+		slog.Warn("[User Delete] Clear session failed.", "UserId", id, "UserName", info.Username, "Error", err.Error())
 	}
 	return nil
 }

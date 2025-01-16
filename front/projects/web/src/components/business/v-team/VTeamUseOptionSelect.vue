@@ -16,7 +16,7 @@ const selectOptions = computed(() => map(props.options, x => ({ label: x.name, v
 <template>
   <el-select-v2 v-model="teams" :filterable="props.filterable" :multiple="props.multiple" :options="selectOptions" :placeholder="props.placeholder">
     <template #footer>
-      <el-link href="/ws/user-related/team" target="_blank" type="primary">
+      <el-link href="/ws/user-related/teams" target="_blank" type="primary">
         <strong>{{ t("btn.goToAddTeam") }}</strong>
       </el-link>
     </template>

@@ -36,17 +36,18 @@ func TeamGetById(id string) (*types.Team, error) {
 	return info, nil
 }
 
-func TeamGetByName(name string) (*types.Team, error) {
+func TeamsGetByName(name string) ([]*types.Team, error) {
 	teams, err := GetDataAll[types.Team](BucketTeams)
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
 	}
+	var result []*types.Team
 	for _, team := range teams {
 		if team.Name == name {
-			return team, nil
+			result = append(result, team)
 		}
 	}
-	return nil, nil
+	return result, nil
 }
 
 func TeamUpdateAndUsers(teamInfo *types.Team, users []*types.User) (string, error) {

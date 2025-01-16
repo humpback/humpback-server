@@ -5,5 +5,5 @@ export interface ResponseSuccess {
 
 export interface ResponseQuery<T> {
   total: number
-  List: T[]
+  list: T[]
 }

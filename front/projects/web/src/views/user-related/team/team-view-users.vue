@@ -7,18 +7,21 @@ const dialogInfo = ref({
   show: false,
   info: {} as TeamInfo
 })
-const list = ref({
-  total: 0,
-  data: [] as Array<UserInfo>
-})
+
+const isLoading = ref(false)
+const list = ref<Array<UserInfo>>([])
 
 function open(info: TeamInfo) {
-  list.value = {
-    total: 0,
-    data: [] as Array<UserInfo>
-  }
+  list.value = []
   dialogInfo.value.info = info
   dialogInfo.value.show = true
+  isLoading.value = true
+  userService
+    .queryByTeamId(info.teamId)
+    .then(data => {
+      list.value = data
+    })
+    .finally(() => (isLoading.value = false))
 }
 
 defineExpose({ open })
@@ -29,7 +32,7 @@ defineExpose({ open })
     <template #header>
       <span v-html="t('header.teamUsers', { teamName: dialogInfo.info.name })"></span>
     </template>
-    <v-table :data="list.data" :max-height="600" :show-header="false" :total="list.total">
+    <v-table v-loading="isLoading" :data="list" :max-height="600" :show-header="true" :total="list.length">
       <el-table-column :label="t('label.username')" min-width="140" prop="username" />
       <el-table-column :label="t('label.description')" min-width="140" prop="description">
         <template #default="scope">
@@ -52,6 +55,9 @@ defineExpose({ open })
         </template>
       </el-table-column>
     </v-table>
+    <div class="mt-5">
+      <el-text v-if="list.length > 0">{{ t("label.totalUsers", { total: list.length }) }}</el-text>
+    </div>
   </v-dialog>
 </template>
 

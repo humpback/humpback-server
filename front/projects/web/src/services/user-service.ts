@@ -21,8 +21,9 @@ class UserService {
     return await httpClient.put("/webapi/user/me", data).then(res => res.data)
   }
 
-  async info(id: string) {
-    return await httpClient.get<string>(`/webapi/user/info/${id}`).then(res => res.data)
+  async info(id: string, includePassword?: boolean) {
+    let url = includePassword ? `/webapi/user/info/${id}?p=true` : `/webapi/user/info/${id}`
+    return await httpClient.get<UserInfo>(url).then(res => res.data)
   }
 
   async query(data: any) {
@@ -30,7 +31,7 @@ class UserService {
   }
 
   async queryByTeamId(teamId: string) {
-    return await httpClient.get<ResponseQuery<UserInfo>>(`/webapi/user/query-by-team/${teamId}`).then(res => res.data)
+    return await httpClient.get<UserInfo[]>(`/webapi/user/query-by-team/${teamId}`).then(res => res.data)
   }
 
   async create(data: any) {

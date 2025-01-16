@@ -41,6 +41,7 @@ declare module 'vue' {
     ElText: typeof import('element-plus/es')['ElText']
     IconMdiAdd: typeof import('~icons/mdi/add')['default']
     IconMdiChevronDown: typeof import('~icons/mdi/chevron-down')['default']
+    IconMdiEyeOutline: typeof import('~icons/mdi/eye-outline')['default']
     IconMdiFormatIndentDecrease: typeof import('~icons/mdi/format-indent-decrease')['default']
     IconMdiFormatIndentIncrease: typeof import('~icons/mdi/format-indent-increase')['default']
     IconMdiLanguage: typeof import('~icons/mdi/language')['default']

@@ -11,12 +11,12 @@ import (
 )
 
 func RouteTeam(router *gin.RouterGroup) {
-	router.POST("", teamCreate)
-	router.PUT("", teamUpdate)
-	router.GET("/info/:id", team)
+	router.POST("", middleware.CheckAdminPermissions(), teamCreate)
+	router.PUT("", middleware.CheckAdminPermissions(), teamUpdate)
+	router.GET("/info/:id", middleware.CheckAdminPermissions(), team)
 	router.POST("/query", teamsQuery)
-	router.GET("/query-by-user/:userId", teamsByUserId)
-	router.DELETE("/:id", teamDelete)
+	router.GET("/query-by-user/:userId", middleware.CheckAdminPermissions(), teamsByUserId)
+	router.DELETE("/:id", middleware.CheckAdminPermissions(), teamDelete)
 }
 
 func teamCreate(c *gin.Context) {

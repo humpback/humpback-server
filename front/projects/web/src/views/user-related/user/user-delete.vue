@@ -7,6 +7,8 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+const isAction = ref(false)
 const dialogInfo = ref({
   show: false,
   info: {} as UserInfo
@@ -17,7 +19,17 @@ function open(info: UserInfo) {
   dialogInfo.value.show = true
 }
 
-function confirmDelete() {}
+async function confirmDelete() {
+  isAction.value = true
+  return await userService
+    .delete(dialogInfo.value.info.userId)
+    .then(() => {
+      ShowSuccessMsg(t("message.deleteSuccess"))
+      dialogInfo.value.show = false
+      emits("refresh")
+    })
+    .finally(() => (isAction.value = false))
+}
 
 defineExpose({ open })
 </script>
@@ -30,7 +42,7 @@ defineExpose({ open })
     </div>
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button type="danger" @click="confirmDelete">{{ t("btn.delete") }}</el-button>
+      <el-button :loading="isAction" type="danger" @click="confirmDelete">{{ t("btn.delete") }}</el-button>
     </template>
   </v-dialog>
 </template>

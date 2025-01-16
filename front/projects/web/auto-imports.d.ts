@@ -165,6 +165,7 @@ declare global {
   const stores: typeof import('./src/stores/index')['default']
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']
+  const teamService: typeof import('./src/services/team-service')['teamService']
   const templateRef: typeof import('@vueuse/core')['templateRef']
   const throttledRef: typeof import('@vueuse/core')['throttledRef']
   const throttledWatch: typeof import('@vueuse/core')['throttledWatch']
@@ -384,14 +385,11 @@ declare global {
   export type { PageLimitRole, UserRole, SortType, PageLimitRole, UserRole, SortType } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
-  export type { ColorBtn, TableSortEvent } from './src/types/common'
-  import('./src/types/common')
-  // @ts-ignore
   export type { GroupInfo } from './src/types/group'
   import('./src/types/group')
   // @ts-ignore
-  export type { ResponseSuccess, OperateUserBaseInfo, OperateUserInfo } from './src/types/types'
-  import('./src/types/types')
+  export type { ResponseSuccess, ResponseQuery } from './src/types/reponse'
+  import('./src/types/reponse')
   // @ts-ignore
   export type { QueryInfo, PageInfo, SortInfo, QueryList, QueryInfo } from './src/types/query'
   import('./src/types/query')
@@ -430,7 +428,6 @@ declare module 'vue' {
     readonly IsValidUsername: UnwrapRef<typeof import('./src/utils/rule')['IsValidUsername']>
     readonly LimitUserName: UnwrapRef<typeof import('./src/models/rule')['LimitUserName']>
     readonly NewGroupEmptyInfo: UnwrapRef<typeof import('./src/types/group')['NewGroupEmptyInfo']>
-    readonly NewOperateUserInfo: UnwrapRef<typeof import('./src/types/types')['NewOperateUserInfo']>
     readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
     readonly NewSortInfo: UnwrapRef<typeof import('./src/types/query')['NewSortInfo']>
     readonly NewTeamEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewTeamEmptyInfo']>
@@ -563,6 +560,7 @@ declare module 'vue' {
     readonly stores: UnwrapRef<typeof import('./src/stores/index')['default']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
+    readonly teamService: UnwrapRef<typeof import('./src/services/team-service')['teamService']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
     readonly throttledRef: UnwrapRef<typeof import('@vueuse/core')['throttledRef']>
     readonly throttledWatch: UnwrapRef<typeof import('@vueuse/core')['throttledWatch']>
