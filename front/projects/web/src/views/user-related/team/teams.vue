@@ -90,7 +90,7 @@ onMounted(() => search())
     :total="tableList.total"
     @page-change="search"
     @sort-change="search">
-    <el-table-column :label="t('label.name')" fixed="left" min-width="140" prop="name" sortable="custom" />
+    <el-table-column :label="t('label.team')" fixed="left" min-width="140" prop="name" sortable="custom" />
     <el-table-column :label="t('label.description')" min-width="140" prop="description">
       <template #default="scope">
         <v-table-column-none :text="scope.row.description" />

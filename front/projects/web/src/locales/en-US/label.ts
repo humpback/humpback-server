@@ -17,6 +17,13 @@ export default {
     "teams": "Teams",
     "users": "Users",
     "totalTeams": "{total} Teams",
-    "totalUsers": "{total} Users"
+    "totalUsers": "{total} Users",
+    "type": "Type",
+    "value": "Value",
+    "static": "Static",
+    "volume": "Volume",
+    "team": "Team",
+    "user": "User",
+    "config": "Config"
   }
 }

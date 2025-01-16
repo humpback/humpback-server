@@ -27,6 +27,7 @@ export default {
     "myAccount": "My Account",
     "userRelated": "User Related",
     "users": "Users",
-    "teams": "Teams"
+    "teams": "Teams",
+    "configs": "Configs"
   }
 }

@@ -23,6 +23,14 @@ export default <RouteRecordRaw[]>[
         }
       },
       {
+        path: "/ws/configs",
+        name: "configs",
+        component: () => import("@/views/configs/configs.vue"),
+        meta: {
+          onlyAdmin: true
+        }
+      },
+      {
         path: "/ws/user-related/:mode",
         name: "userRelated",
         component: () => import("@/views/user-related/user-related.vue"),

@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { find } from "lodash-es"
+import { ConfigType } from "@/models"
 
-const props = defineProps<{ role: number }>()
+const props = defineProps<{ configType: number }>()
 const { t } = useI18n()
 
 const str = computed<{ label: string; value: number; color?: "primary" | "success" | "warning" | "danger" | "info" } | undefined>(() =>
   find(
     [
-      { label: "role.user", value: UserRole.User },
-      { label: "role.admin", value: UserRole.Admin, color: "warning" },
-      { label: "role.supperAdmin", value: UserRole.SupperAdmin, color: "success" }
+      { label: "label.static", value: ConfigType.Static },
+      { label: "label.volume", value: ConfigType.Volume, color: "warning" }
     ],
     x => x.value === props.configType
   )

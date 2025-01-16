@@ -10,6 +10,11 @@ export enum UserRole {
   User = 3
 }
 
+export enum ConfigType {
+  Static = 1,
+  Volume = 2
+}
+
 export enum SortType {
   Asc = "asc",
   Desc = "desc"

@@ -15,6 +15,7 @@ export default {
     "delete": "Delete",
     "confirm": "Confirm",
     "goToAddUser": "Go to add user",
-    "goToAddTeam": "Go to add team"
+    "goToAddTeam": "Go to add team",
+    "addConfig": "Add Config"
   }
 }
