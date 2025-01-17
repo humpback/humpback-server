@@ -8,6 +8,7 @@ export {}
 declare global {
   const ChangeEventType: typeof import('./src/utils/event')['ChangeEventType']
   const CloseChannelMessage: typeof import('./src/utils/event')['CloseChannelMessage']
+  const ConfigType: typeof import('./src/models/enum')['ConfigType']
   const Debounce: typeof import('./src/utils/time')['Debounce']
   const EffectScope: typeof import('vue')['EffectScope']
   const GenerateUUID: typeof import('./src/utils/event')['GenerateUUID']
@@ -30,6 +31,7 @@ declare global {
   const IsValidPassword: typeof import('./src/utils/rule')['IsValidPassword']
   const IsValidUsername: typeof import('./src/utils/rule')['IsValidUsername']
   const LimitUserName: typeof import('./src/models/rule')['LimitUserName']
+  const NewConfigEmptyInfo: typeof import('./src/types/setting')['NewConfigEmptyInfo']
   const NewGroupEmptyInfo: typeof import('./src/types/group')['NewGroupEmptyInfo']
   const NewOperateUserInfo: typeof import('./src/types/types')['NewOperateUserInfo']
   const NewPageInfo: typeof import('./src/types/query')['NewPageInfo']
@@ -382,7 +384,7 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { PageLimitRole, UserRole, SortType, PageLimitRole, UserRole, SortType } from './src/models/enum'
+  export type { PageLimitRole, UserRole, ConfigType, SortType, PageLimitRole, UserRole, ConfigType, SortType } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
   export type { GroupInfo } from './src/types/group'
@@ -396,6 +398,9 @@ declare global {
   // @ts-ignore
   export type { UserInfo, TeamInfo } from './src/types/user'
   import('./src/types/user')
+  // @ts-ignore
+  export type { ConfigInfo } from './src/types/setting'
+  import('./src/types/setting')
 }
 
 // for vue template auto import
@@ -405,6 +410,7 @@ declare module 'vue' {
   interface ComponentCustomProperties {
     readonly ChangeEventType: UnwrapRef<typeof import('./src/utils/event')['ChangeEventType']>
     readonly CloseChannelMessage: UnwrapRef<typeof import('./src/utils/event')['CloseChannelMessage']>
+    readonly ConfigType: UnwrapRef<typeof import('./src/models/enum')['ConfigType']>
     readonly Debounce: UnwrapRef<typeof import('./src/utils/time')['Debounce']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly GenerateUUID: UnwrapRef<typeof import('./src/utils/event')['GenerateUUID']>
@@ -427,6 +433,7 @@ declare module 'vue' {
     readonly IsValidPassword: UnwrapRef<typeof import('./src/utils/rule')['IsValidPassword']>
     readonly IsValidUsername: UnwrapRef<typeof import('./src/utils/rule')['IsValidUsername']>
     readonly LimitUserName: UnwrapRef<typeof import('./src/models/rule')['LimitUserName']>
+    readonly NewConfigEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewConfigEmptyInfo']>
     readonly NewGroupEmptyInfo: UnwrapRef<typeof import('./src/types/group')['NewGroupEmptyInfo']>
     readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
     readonly NewSortInfo: UnwrapRef<typeof import('./src/types/query')['NewSortInfo']>

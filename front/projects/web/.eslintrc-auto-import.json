@@ -389,6 +389,9 @@
     "ParseNumber": true,
     "query": true,
     "ResponseQuery": true,
-    "teamService": true
+    "teamService": true,
+    "ConfigInfo": true,
+    "ConfigType": true,
+    "NewConfigEmptyInfo": true
   }
 }

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { TeamInfo } from "@/types"
+import { ConfigInfo } from "@/types"
 import { TableHeight } from "@/utils"
 import { Action, ConfigType } from "@/models"
 import ConfigEdit from "./config-edit.vue"
 import ConfigDelete from "./config-delete.vue"
 import ConfigView from "./config-view.vue"
-import { QueryTeamInfo } from "@/views/user-related/team/common.ts"
+import { QueryConfigsInfo } from "./common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -14,11 +14,11 @@ const router = useRouter()
 const tableHeight = computed(() => TableHeight(209))
 
 const isLoading = ref(false)
-const queryInfo = ref<QueryTeamInfo>(new QueryTeamInfo(route.query))
+const queryInfo = ref<QueryConfigsInfo>(new QueryConfigsInfo(route.query))
 
 const tableList = ref({
   total: 0,
-  data: [] as Array<TeamInfo>
+  data: [] as Array<ConfigInfo>
 })
 
 const editRef = useTemplateRef<InstanceType<typeof ConfigEdit>>("editRef")
@@ -27,21 +27,21 @@ const viewValueRef = useTemplateRef<InstanceType<typeof ConfigView>>("viewValueR
 
 async function search() {
   await router.replace(queryInfo.value.getQuery())
-  isLoading.value = true
-  return await teamService
-    .query(queryInfo.value.getSearch())
-    .then(res => {
-      tableList.value.data = res.list
-      tableList.value.total = res.total
-    })
-    .finally(() => (isLoading.value = false))
+  // isLoading.value = true
+  // return await teamService
+  //   .query(queryInfo.value.getSearch())
+  //   .then(res => {
+  //     tableList.value.data = res.list
+  //     tableList.value.total = res.total
+  //   })
+  //   .finally(() => (isLoading.value = false))
 }
 
-function openAction(action: string, info?: TeamInfo) {
+function openAction(action: string, info?: ConfigInfo) {
   switch (action) {
     case Action.Add:
     case Action.Edit:
-      editRef.value?.open()
+      editRef.value?.open(info)
       break
     case Action.Delete:
       deleteRef.value?.open()
@@ -102,7 +102,7 @@ onMounted(() => search())
       </el-table-column>
       <el-table-column :label="t('label.type')" min-width="120">
         <template #default="scope">
-          <v-config-type-view :type="scope.row.configType" />
+          <v-config-type-view :configType="scope.row.configType" />
         </template>
       </el-table-column>
       <el-table-column :label="t('label.value')" min-width="120">

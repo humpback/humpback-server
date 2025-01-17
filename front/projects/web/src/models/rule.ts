@@ -4,3 +4,4 @@ export const LimitEmail = { Min: 0, Max: 200 }
 export const LimitPhone = { Min: 0, Max: 11 }
 export const LimitPassword = { Min: 8, Max: 20 }
 export const LimitDescription = { Min: 0, Max: 500 }
+export const LimitConfigValue = { Min: 1, Max: 10000 }

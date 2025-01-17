@@ -10,6 +10,9 @@ export default {
     "addTeam": "Add Team",
     "editTeam": "Edit Team",
     "userTeams": "User Teams <span class='keywords-warning'>( {username} )</span>",
-    "teamUsers": "Team Users <span class='keywords-warning'>( {teamName} )</span>"
+    "teamUsers": "Team Users <span class='keywords-warning'>( {teamName} )</span>",
+    "addConfig": "Add Config",
+    "editConfig": "Edit Config",
+    "deleteConfig": "Delete Config"
   }
 }
