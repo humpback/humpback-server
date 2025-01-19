@@ -30,11 +30,12 @@ function open(info?: ConfigInfo) {
 }
 
 function save() {}
+
 defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialogInfo.show" :close-on-press-escape="true">
+  <v-dialog v-model="dialogInfo.show" :close-on-press-escape="false">
     <template #header>{{ dialogInfo.info.configId ? t("header.editConfig") : t("header.addConfig") }}</template>
     <div class="my-3">
       <el-form ref="formRef" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
@@ -64,7 +65,7 @@ defineExpose({ open })
         </el-form-item>
 
         <el-form-item v-if="dialogInfo.info.configType === ConfigType.Volume" prop="configType">
-          <div style="width: 100%; height: 600px">
+          <div style="width: 100%; height: 400px">
             <v-monaco-edit />
           </div>
         </el-form-item>
