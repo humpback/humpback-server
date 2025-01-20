@@ -36,23 +36,7 @@ func GetGroupByNodeId(nodeId string) []string {
 	return groups
 }
 
-func GetOfflineNodesByGroupId(groupId string) ([]string, int, error) {
-	ng, err := GetDataById[types.NodesGroups](BucketNodesGroups, groupId)
-	if err != nil {
-		return nil, 0, err
-	} else {
-		nodes := make([]string, 0)
-		for _, v := range ng.Nodes {
-			node, err := GetDataById[types.Node](BucketNodes, v)
-			if err == nil && node.Status == types.NodeStatusOffline {
-				nodes = append(nodes, node.NodeId)
-			}
-		}
-		return nodes, len(ng.Nodes), nil
-	}
-}
-
-func GetOnlineNodesByGroupId(groupId string) ([]*types.Node, error) {
+func GetNodesByGroupId(groupId string) ([]*types.Node, error) {
 	ng, err := GetDataById[types.NodesGroups](BucketNodesGroups, groupId)
 	if err != nil {
 		return nil, err
@@ -60,10 +44,21 @@ func GetOnlineNodesByGroupId(groupId string) ([]*types.Node, error) {
 		nodes := make([]*types.Node, 0)
 		for _, v := range ng.Nodes {
 			node, err := GetDataById[types.Node](BucketNodes, v)
-			if err == nil && node.Status == types.NodeStatusOnline {
+			if err == nil {
 				nodes = append(nodes, node)
 			}
 		}
 		return nodes, nil
 	}
+}
+
+func GetNodesByIds(nodeIds []string) ([]*types.Node, error) {
+	nodes := make([]*types.Node, 0)
+	for _, v := range nodeIds {
+		node, err := GetDataById[types.Node](BucketNodes, v)
+		if err == nil {
+			nodes = append(nodes, node)
+		}
+	}
+	return nodes, nil
 }

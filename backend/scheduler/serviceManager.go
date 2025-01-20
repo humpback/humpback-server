@@ -16,11 +16,13 @@ import (
 )
 
 type ServiceManager struct {
-	ServiceInfo    *types.Service
-	CheckInterval  int64
-	IsNeedCheckAll atomic.Value
-	isNeedQuit     atomic.Value
-	isReconcile    atomic.Value
+	ServiceInfo      *types.Service
+	availableNodes   []string
+	unavailableNodes []string
+	CheckInterval    int64
+	IsNeedCheckAll   atomic.Value
+	isNeedQuit       atomic.Value
+	isReconcile      atomic.Value
 	sync.RWMutex
 }
 
@@ -70,6 +72,13 @@ func (sm *ServiceManager) Reconcile() {
 		sm.CheckNodeStatus()
 	}
 
+	if sm.ServiceInfo.Status == types.ServiceStatusRunning &&
+		sm.ServiceInfo.Deployment.Replicas != len(sm.ServiceInfo.Containers) {
+
+		slog.Info("[Service Manager] Service change status to NotReady......", "ServiceId", sm.ServiceInfo.ServiceId)
+		sm.ServiceInfo.Status = types.ServiceStatusNotReady
+	}
+
 	// service被disabled后就删除全部容器
 	if !sm.ServiceInfo.IsEnabled {
 		for _, c := range sm.ServiceInfo.Containers {
@@ -115,6 +124,7 @@ func (sm *ServiceManager) Reconcile() {
 		} else if sm.ServiceInfo.Deployment.Replicas > len(sm.ServiceInfo.Containers) {
 			sm.StartNextContainer()
 		} else {
+			slog.Info("[Service Manager] Service change status to running......", "ServiceId", sm.ServiceInfo.ServiceId)
 			sm.ServiceInfo.Status = types.ServiceStatusRunning
 		}
 		db.SaveService(sm.ServiceInfo)
@@ -137,19 +147,21 @@ func (sm *ServiceManager) CheckNodeStatus() {
 	groupId := sm.ServiceInfo.GroupId
 
 	isNeedSave := false
-	nodes, totalNodes, err := db.GetOfflineNodesByGroupId(groupId)
+	nodes, err := db.GetNodesByGroupId(groupId)
 
 	if err != nil {
 		slog.Error("[Service Manager] Get offline nodes error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())
 		return
 	}
 
+	sm.GetMatchedNodes(nodes)
+
 	if sm.ServiceInfo.Deployment.Mode == types.DeployModeGlobal {
-		sm.ServiceInfo.Deployment.Replicas = totalNodes
+		sm.ServiceInfo.Deployment.Replicas = len(sm.availableNodes)
 	}
 
 	for _, c := range sm.ServiceInfo.Containers {
-		if slices.Contains(nodes, c.NodeId) {
+		if slices.Contains(sm.unavailableNodes, c.NodeId) {
 			isNeedSave = true
 			c.Status = types.ContainerStatusWarning
 			c.ErrorMsg = "Node is offline"
@@ -158,6 +170,29 @@ func (sm *ServiceManager) CheckNodeStatus() {
 
 	if isNeedSave {
 		db.SaveService(sm.ServiceInfo)
+	}
+}
+
+func (sm *ServiceManager) GetMatchedNodes(nodes []*types.Node) {
+	sm.availableNodes = make([]string, 0)
+	sm.unavailableNodes = make([]string, 0)
+
+	for _, n := range nodes {
+		if sm.ServiceInfo.Deployment.Placements != nil {
+			for _, p := range sm.ServiceInfo.Deployment.Placements {
+				if isPlacementMatched(n, p) && n.Status == types.NodeStatusOnline {
+					sm.availableNodes = append(sm.availableNodes, n.NodeId)
+				} else {
+					sm.unavailableNodes = append(sm.unavailableNodes, n.NodeId)
+				}
+			}
+		} else {
+			if n.Status == types.NodeStatusOnline {
+				sm.availableNodes = append(sm.availableNodes, n.NodeId)
+			} else {
+				sm.unavailableNodes = append(sm.unavailableNodes, n.NodeId)
+			}
+		}
 	}
 }
 
@@ -194,6 +229,8 @@ func (sm *ServiceManager) HasPendingContainer() bool {
 
 func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
+	nodeDeployed := make(map[string]bool)
+
 	for _, c := range sm.ServiceInfo.Containers {
 		version := parseVersionByContainerId(c.ContainerName)
 		if version != sm.ServiceInfo.Version {
@@ -207,6 +244,14 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 		if isContainerFailed(c.Status) || isContainerRemoved(c.Status) {
 			return c, true
 		}
+
+		if sm.ServiceInfo.Deployment.Mode == types.DeployModeGlobal {
+			if _, ok := nodeDeployed[c.NodeId]; ok {
+				return c, true
+			} else {
+				nodeDeployed[c.NodeId] = true
+			}
+		}
 	}
 
 	return nil, false
@@ -215,8 +260,7 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
 func (sm *ServiceManager) StartNextContainer() {
 
-	groupId := sm.ServiceInfo.GroupId
-	nodes, err := db.GetOnlineNodesByGroupId(groupId)
+	nodes, err := db.GetNodesByIds(sm.availableNodes)
 
 	if err != nil {
 		slog.Error("[Service Manager] Start Service error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())

@@ -43,3 +43,24 @@ func isContainerFailed(status string) bool {
 	return status == types.ContainerStatusFailed ||
 		status == types.ContainerStatusWarning
 }
+
+func isPlacementMatched(node *types.Node, p *types.PlacementInfo) bool {
+	if p.Mode == types.PlacementModeIP {
+		if p.IsEqual {
+			return node.IpAddress == p.Value
+		} else {
+			return node.IpAddress != p.Value
+		}
+	} else {
+		label := p.Key
+		if l, ok := node.Labels[label]; ok {
+			if p.IsEqual {
+				return l == p.Value
+			} else {
+				return l != p.Value
+			}
+		} else {
+			return false
+		}
+	}
+}
