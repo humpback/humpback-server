@@ -29,6 +29,7 @@ type NodeController struct {
 	ContainerChangeChan chan types.ContainerStatus
 	CheckInterval       int64
 	CheckThreshold      int
+	ThresholdInvterval  int64
 	sync.RWMutex
 }
 
@@ -39,11 +40,35 @@ func NewNodeController(nodeChan chan NodeSimpleInfo, containerChan chan types.Co
 		ContainerChangeChan: containerChan,
 		CheckInterval:       int64(config.BackendArgs().CheckInterval),
 		CheckThreshold:      config.BackendArgs().CheckThreshold,
+		ThresholdInvterval:  int64(config.BackendArgs().CheckInterval) * int64(config.BackendArgs().CheckThreshold),
 	}
 
 	go nc.CheckNodes()
 
 	return nc
+}
+
+func (nc *NodeController) RestoreNodes() {
+	nc.Lock()
+	defer nc.Unlock()
+
+	nodes, err := db.GetAllEnabledNodes()
+	if err != nil {
+		slog.Info("[Node Controller] restore nodes failed", "error", err)
+		return
+	}
+
+	for _, node := range nodes {
+		nc.NodesInfo[node.NodeId] = &NodeSimpleInfo{
+			NodeId:          node.NodeId,
+			IpAddress:       node.IpAddress,
+			Status:          node.Status,
+			LastHeartbeat:   node.UpdatedAt,
+			OnlineThreshold: 1,
+			CPUUsage:        node.CPUUsage,
+			MemoryUsage:     node.MemoryUsage,
+		}
+	}
 }
 
 func (nc *NodeController) CheckNodes() {
@@ -67,7 +92,7 @@ func (nc *NodeController) CheckNodesCore() {
 	for nodeId, nodeInfo := range nc.NodesInfo {
 
 		if nodeInfo.Status == types.NodeStatusOnline {
-			if currentTime-nodeInfo.LastHeartbeat > nc.CheckInterval {
+			if currentTime-nodeInfo.LastHeartbeat > nc.ThresholdInvterval {
 				slog.Info("[Node Controller] Node is not responding.", "nodeId", nodeId, "Last heartbeat", nodeInfo.LastHeartbeat)
 				nodeInfo.Status = types.NodeStatusOffline
 				nc.NodeHeartbeatChan <- *nodeInfo
@@ -75,7 +100,7 @@ func (nc *NodeController) CheckNodesCore() {
 		}
 
 		if nodeInfo.Status == types.NodeStatusOffline {
-			if currentTime-nodeInfo.LastHeartbeat < nc.CheckInterval &&
+			if currentTime-nodeInfo.LastHeartbeat < nc.ThresholdInvterval &&
 				nodeInfo.OnlineThreshold >= nc.CheckThreshold {
 				slog.Info("[Node Controller] need report online node", "nodeId", nodeId)
 				nodeInfo.Status = types.NodeStatusOnline
@@ -99,7 +124,7 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 	if n, ok := nc.NodesInfo[nodeId]; ok {
 		n.CPUUsage = healthInfo.HostInfo.CPUUsage
 		n.MemoryUsage = healthInfo.HostInfo.MemoryUsage
-		if n.Status == types.NodeStatusOffline && ts-n.LastHeartbeat < nc.CheckInterval {
+		if n.Status == types.NodeStatusOffline && ts-n.LastHeartbeat < nc.ThresholdInvterval {
 			n.OnlineThreshold++
 		} else {
 			n.OnlineThreshold = 1

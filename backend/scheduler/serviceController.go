@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"log/slog"
 	"strings"
 
 	"humpback/internal/db"
@@ -83,6 +84,7 @@ func (sc *ServiceController) HandleContainerChanged() {
 		if serviceId != "" {
 			serviceManager, ok := sc.ServiceCtrls[serviceId]
 			if ok {
+				slog.Error("[Service Controller] Handler Service Container Changed", "ServiceId", serviceId, "ContainerName", containerStatus.ContainerName)
 				go serviceManager.UpdateContainerWhenChanged(containerStatus)
 			}
 		}

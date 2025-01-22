@@ -55,6 +55,7 @@ func doHealth(c *gin.Context) {
 
 func (scheduler *HumpbackScheduler) Start() {
 	scheduler.serviceCtrl.RestoreServiceManager()
+	scheduler.nodeCtrl.RestoreNodes()
 	go func() {
 		e := gin.Default()
 
@@ -72,6 +73,8 @@ func (scheduler *HumpbackScheduler) Start() {
 		e.GET("/services", getAllServices)
 
 		e.GET("/mock/service/gateway", mockGatewayServices)
+
+		e.GET("/mock/service/web", mockWebServices)
 
 		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.BackendArgs().BackendPort)
 		slog.Info("[Scheduler] Listening...", "Address", listeningAddress)

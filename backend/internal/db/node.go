@@ -21,6 +21,14 @@ func GetNodeById(nodeId string) (*types.Node, error) {
 	return GetDataById[types.Node](BucketNodes, nodeId)
 }
 
+func GetAllEnabledNodes() ([]*types.Node, error) {
+	nodes, err := GetDataByQuery[types.Node](BucketNodes, func(key string, node interface{}) bool {
+		return node.(*types.Node).IsEnable
+	})
+
+	return nodes, err
+}
+
 func GetGroupByNodeId(nodeId string) []string {
 	groups := make([]string, 0)
 	ng, err := GetDataByQuery[types.NodesGroups](BucketNodesGroups, func(key string, nodesGroups interface{}) bool {

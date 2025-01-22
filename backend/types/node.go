@@ -6,6 +6,7 @@ type Node struct {
 	IpAddress   string            `json:"ipAddress"`
 	Port        int               `json:"port"`
 	Status      string            `json:"status"`
+	IsEnable    bool              `json:"isEnable"`
 	CreatedAt   int64             `json:"createdAt"`
 	UpdatedAt   int64             `json:"updatedAt"`
 	CPUUsage    float32           `json:"cpuUsage"`

@@ -30,6 +30,7 @@ func mockNodes(c *gin.Context) {
 		IpAddress: "172.16.41.21",
 		Port:      8301,
 		Status:    "Online",
+		IsEnable:  true,
 		CreatedAt: time.Now().Unix(),
 	}
 
@@ -41,6 +42,7 @@ func mockNodes(c *gin.Context) {
 		IpAddress: "172.16.41.22",
 		Port:      8301,
 		Status:    "Online",
+		IsEnable:  true,
 		CreatedAt: time.Now().Unix(),
 	}
 
@@ -52,6 +54,7 @@ func mockNodes(c *gin.Context) {
 		IpAddress: "172.16.41.23",
 		Port:      8301,
 		Status:    "Online",
+		IsEnable:  true,
 		CreatedAt: time.Now().Unix(),
 	}
 
@@ -93,6 +96,32 @@ func mockGatewayServices(c *gin.Context) {
 		Deployment: &types.Deployment{
 			Type: types.DeployTypeBackground,
 			Mode: types.DeployModeGlobal,
+		},
+	}
+
+	db.SaveData(db.BucketServices, svc.ServiceId, svc)
+
+	sc := c.MustGet("scheduler").(*HumpbackScheduler)
+
+	sc.ServiceChangeChan <- svc.ServiceId
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
+func mockWebServices(c *gin.Context) {
+
+	svc := &types.Service{
+		ServiceId:   utils.GenerateRandomStringWithLength(8),
+		ServiceName: "Http Web Service",
+		Version:     utils.GenerateRandomStringWithLength(5),
+		IsEnabled:   true,
+		Status:      types.ServiceStatusNotReady,
+		GroupId:     "GroupTest",
+		CreateAt:    time.Now().Unix(),
+		Deployment: &types.Deployment{
+			Type:     types.DeployTypeBackground,
+			Mode:     types.DeployModeReplicate,
+			Replicas: 2,
 		},
 	}
 

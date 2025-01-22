@@ -117,16 +117,16 @@ func (sm *ServiceManager) Reconcile() {
 			err := sm.DeleteContainer(nodeId, containerId)
 			if err != nil {
 				c.ErrorMsg = err.Error()
-			} else {
-				// 再选一个节点做调度
-				sm.StartNextContainer()
 			}
-		} else if sm.ServiceInfo.Deployment.Replicas > len(sm.ServiceInfo.Containers) {
+		}
+
+		if sm.ServiceInfo.Deployment.Replicas > len(sm.ServiceInfo.Containers) {
 			sm.StartNextContainer()
 		} else {
 			slog.Info("[Service Manager] Service change status to running......", "ServiceId", sm.ServiceInfo.ServiceId)
 			sm.ServiceInfo.Status = types.ServiceStatusRunning
 		}
+
 		db.SaveService(sm.ServiceInfo)
 	}
 
@@ -213,6 +213,7 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 		break
 	}
 	if !result {
+		slog.Info("[Service Manager] Service change status to NotReady......", "ServiceId", sm.ServiceInfo.ServiceId)
 		sm.ServiceInfo.Status = types.ServiceStatusNotReady
 	}
 	return result
