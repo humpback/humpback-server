@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
 	"humpback/common/verify"
@@ -19,10 +20,10 @@ type TeamCreateReqInfo struct {
 }
 
 func (t *TeamCreateReqInfo) Check() error {
-	if err := verify.CheckRequiredAndLengthLimit(t.Name, locales.LimitTeamName.Min, locales.LimitTeamName.Max, locales.CodeTeamNameNotEmpty, locales.CodeTeamNameLimitLength); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(t.Name, enum.LimitTeamName.Min, enum.LimitTeamName.Max, locales.CodeTeamNameNotEmpty, locales.CodeTeamNameLimitLength); err != nil {
 		return err
 	}
-	if err := verify.CheckLengthLimit(t.Description, 0, locales.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
+	if err := verify.CheckLengthLimit(t.Description, 0, enum.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
 		return err
 	}
 	if len(t.Users) == 0 {

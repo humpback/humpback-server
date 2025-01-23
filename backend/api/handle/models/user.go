@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
 	"humpback/common/verify"
@@ -22,10 +23,10 @@ func (u *UserLoginReqInfo) Check() error {
 	u.Username = utils.RSADecrypt(u.Username)
 	u.Password = utils.RSADecrypt(u.Password)
 
-	if err := verify.CheckRequiredAndLengthLimit(u.Username, locales.LimitUserName.Min, locales.LimitUserName.Max, locales.CodeUserNameNotEmpty, locales.CodeUserNameLimitLength); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(u.Username, enum.LimitUsername.Min, enum.LimitUsername.Max, locales.CodeUserNameNotEmpty, locales.CodeUserNameLimitLength); err != nil {
 		return err
 	}
-	if err := verify.CheckRequiredAndLengthLimit(u.Password, locales.LimitPassword.Min, locales.LimitPassword.Max, locales.CodePasswordNotEmpty, locales.CodePasswordLimitLength); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(u.Password, enum.LimitPassword.Min, enum.LimitPassword.Max, locales.CodePasswordNotEmpty, locales.CodePasswordLimitLength); err != nil {
 		return err
 	}
 	return nil
@@ -39,10 +40,10 @@ type MeUpdateReqInfo struct {
 }
 
 func (u *MeUpdateReqInfo) Check() error {
-	if err := verify.CheckRequiredAndLengthLimit(u.Username, locales.LimitUserName.Min, locales.LimitUserName.Max, locales.CodeUserNameNotEmpty, locales.CodeUserNameLimitLength); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(u.Username, enum.LimitUsername.Min, enum.LimitUsername.Max, locales.CodeUserNameNotEmpty, locales.CodeUserNameLimitLength); err != nil {
 		return err
 	}
-	if err := verify.CheckLengthLimit(u.Email, 0, locales.LimitEmail.Max, locales.CodeEmailLimitLength); err != nil {
+	if err := verify.CheckLengthLimit(u.Email, 0, enum.LimitEmail.Max, locales.CodeEmailLimitLength); err != nil {
 		return err
 	}
 	if u.Email != "" {
@@ -50,7 +51,7 @@ func (u *MeUpdateReqInfo) Check() error {
 			return err
 		}
 	}
-	if err := verify.CheckLengthLimit(u.Phone, 0, locales.LimitPhone.Max, locales.CodePhoneLimitLength); err != nil {
+	if err := verify.CheckLengthLimit(u.Phone, 0, enum.LimitPhone.Max, locales.CodePhoneLimitLength); err != nil {
 		return err
 	}
 	if u.Phone != "" {
@@ -58,7 +59,7 @@ func (u *MeUpdateReqInfo) Check() error {
 			return err
 		}
 	}
-	if err := verify.CheckLengthLimit(u.Description, 0, locales.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
+	if err := verify.CheckLengthLimit(u.Description, 0, enum.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
 		return err
 	}
 	return nil
@@ -81,10 +82,10 @@ type MeChangePasswordReqInfo struct {
 func (u *MeChangePasswordReqInfo) Check() error {
 	u.OldPassword = utils.RSADecrypt(u.OldPassword)
 	u.NewPassword = utils.RSADecrypt(u.NewPassword)
-	if err := verify.CheckRequiredAndLengthLimit(u.OldPassword, locales.LimitPassword.Min, locales.LimitPassword.Max, locales.CodeOldPasswordNotEmpty, locales.CodeOldPasswordLimitLength); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(u.OldPassword, enum.LimitPassword.Min, enum.LimitPassword.Max, locales.CodeOldPasswordNotEmpty, locales.CodeOldPasswordLimitLength); err != nil {
 		return err
 	}
-	if err := verify.CheckRequiredAndLengthLimit(u.NewPassword, locales.LimitPassword.Min, locales.LimitPassword.Max, locales.CodeNewPasswordNotEmpty, locales.CodeNewPasswordLimitLength); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(u.NewPassword, enum.LimitPassword.Min, enum.LimitPassword.Max, locales.CodeNewPasswordNotEmpty, locales.CodeNewPasswordLimitLength); err != nil {
 		return err
 	}
 	return nil
@@ -103,10 +104,10 @@ type UserCreateReqInfo struct {
 func (u *UserCreateReqInfo) Check() error {
 	u.Password = utils.RSADecrypt(u.Password)
 
-	if err := verify.CheckRequiredAndLengthLimit(u.Username, locales.LimitUserName.Min, locales.LimitUserName.Max, locales.CodeUserNameNotEmpty, locales.CodeUserNameLimitLength); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(u.Username, enum.LimitUsername.Min, enum.LimitUsername.Max, locales.CodeUserNameNotEmpty, locales.CodeUserNameLimitLength); err != nil {
 		return err
 	}
-	if err := verify.CheckLengthLimit(u.Email, 0, locales.LimitEmail.Max, locales.CodeEmailLimitLength); err != nil {
+	if err := verify.CheckLengthLimit(u.Email, 0, enum.LimitEmail.Max, locales.CodeEmailLimitLength); err != nil {
 		return err
 	}
 	if u.Email != "" {
@@ -114,7 +115,7 @@ func (u *UserCreateReqInfo) Check() error {
 			return err
 		}
 	}
-	if err := verify.CheckLengthLimit(u.Phone, 0, locales.LimitPhone.Max, locales.CodePhoneLimitLength); err != nil {
+	if err := verify.CheckLengthLimit(u.Phone, 0, enum.LimitPhone.Max, locales.CodePhoneLimitLength); err != nil {
 		return err
 	}
 	if u.Phone != "" {
@@ -122,11 +123,11 @@ func (u *UserCreateReqInfo) Check() error {
 			return err
 		}
 	}
-	if err := verify.CheckLengthLimit(u.Description, 0, locales.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
+	if err := verify.CheckLengthLimit(u.Description, 0, enum.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
 		return err
 	}
 
-	if err := verify.CheckRequiredAndLengthLimit(u.Password, locales.LimitPassword.Min, locales.LimitPassword.Max, locales.CodePasswordNotEmpty, locales.CodePasswordLimitLength); err != nil {
+	if err := verify.CheckRequiredAndLengthLimit(u.Password, enum.LimitPassword.Min, enum.LimitPassword.Max, locales.CodePasswordNotEmpty, locales.CodePasswordLimitLength); err != nil {
 		return err
 	}
 

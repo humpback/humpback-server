@@ -1,15 +1,17 @@
 package verify
 
 import (
+	"regexp"
 	"strings"
 	"unicode/utf8"
 
+	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
 )
 
 func IsValidEmail(email string) bool {
-	return locales.RegularEmail.MatchString(email)
+	return regexp.MustCompile(enum.RegularEmail).MatchString(email)
 }
 
 func CheckIsEmpty(value string, code string) error {
@@ -41,7 +43,7 @@ func CheckEmail(email string) error {
 }
 
 func CheckPhone(phone string) error {
-	if !locales.RegularPhone.MatchString(phone) {
+	if !regexp.MustCompile(enum.RegularPhone).MatchString(phone) {
 		return response.NewBadRequestErr(locales.CodePhoneIsInvalid)
 	}
 	return nil

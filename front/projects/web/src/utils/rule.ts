@@ -1,24 +1,14 @@
 import { GetI18nMessage } from "@/locales"
 
-export const RegularUsername = /^[\u4e00-\u9fa5a-zA-Z0-9][\u4e00-\u9fa5a-zA-Z0-9\s_@,，-]{0,198}[\u4e00-\u9fa5a-zA-Z0-9]$/
 export const RegularPhone = /^\d+$/
 export const RegularEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-export const RegularPassword = /^[a-zA-Z0-9][a-zA-Z0-9_\-@#$%+=!]{7,20}$/
 
 export function IsEmpty(value: any): boolean {
   return !value || !(value as string).trim()
 }
 
-export function IsValidUsername(name: string): boolean {
-  return RegularUsername.test(name)
-}
-
 export function IsValidEmail(email: string): boolean {
   return RegularEmail.test(email)
-}
-
-export function IsValidPassword(psd: string): boolean {
-  return RegularPassword.test(psd)
 }
 
 // --------------------通用规则定义-----------------------
