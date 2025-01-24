@@ -387,6 +387,9 @@
     "IconMdiTextBoxOutline": true,
     "IconMdiViewDashboard": true,
     "CopyToClipboard": true,
-    "configService": true
+    "configService": true,
+    "NewRegistryEmptyInfo": true,
+    "RegistryInfo": true,
+    "registryService": true
   }
 }

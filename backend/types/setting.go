@@ -1,12 +1,19 @@
 package types
 
+type QueryRegistry struct {
+	HasAuth bool `json:"hasAuth"`
+	*Registry
+}
+
 type Registry struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	URL       string `json:"url"`
-	IsDefault string `json:"isDefault"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
+	RegistryId   string `json:"registryId"`
+	RegistryName string `json:"registryName"`
+	URL          string `json:"url"`
+	IsDefault    bool   `json:"isDefault"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	CreatedAt    int64  `json:"createdAt"`
+	UpdatedAt    int64  `json:"updatedAt"`
 }
 
 type ConfigType int

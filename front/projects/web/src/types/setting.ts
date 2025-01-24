@@ -21,3 +21,28 @@ export function NewConfigEmptyInfo(): ConfigInfo {
     updatedAt: 0
   }
 }
+
+export interface RegistryInfo {
+  registryId: string
+  registryName: string
+  url: string
+  isDefault: boolean
+  username: string
+  password: string
+  createdAt: number
+  updatedAt: number
+  hasAuth?: boolean
+}
+
+export function NewRegistryEmptyInfo(): RegistryInfo {
+  return {
+    registryId: "",
+    registryName: "",
+    url: "",
+    isDefault: false,
+    username: "",
+    password: "",
+    createdAt: 0,
+    updatedAt: 0
+  }
+}

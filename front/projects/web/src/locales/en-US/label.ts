@@ -24,6 +24,11 @@ export default {
     "volume": "Volume",
     "team": "Team",
     "user": "User",
-    "config": "Config"
+    "config": "Config",
+    "registry": "Registry",
+    "url": "Url",
+    "isDefault": "Is Default",
+    "default": "Default",
+    "authentication": "Authentication"
   }
 }

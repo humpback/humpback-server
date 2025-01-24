@@ -5,7 +5,7 @@ import { Action } from "@/models"
 import TeamEdit from "./team-edit.vue"
 import TeamDelete from "./team-delete.vue"
 import TeamViewUsers from "./team-view-users.vue"
-import { QueryTeamInfo } from "@/views/user-related/team/common.ts"
+import { QueryTeamInfo } from "@/views/administration/user-related/team/common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -86,7 +86,7 @@ onMounted(() => search())
     v-model:page-info="queryInfo.pageInfo"
     v-model:sort-info="queryInfo.sortInfo"
     :data="tableList.data"
-    :height="tableHeight"
+    :max-height="tableHeight"
     :total="tableList.total"
     @page-change="search"
     @sort-change="search">

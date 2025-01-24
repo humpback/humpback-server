@@ -28,6 +28,8 @@ export default {
     "userRelated": "User Related",
     "users": "Users",
     "teams": "Teams",
-    "configs": "Configs"
+    "configs": "Configs",
+    "nodes": "Nodes",
+    "registries": "Registries"
   }
 }

@@ -23,9 +23,25 @@ export default <RouteRecordRaw[]>[
         }
       },
       {
+        path: "/ws/registries",
+        name: "registries",
+        component: () => import("@/views/administration/registries/registries.vue"),
+        meta: {
+          onlyAdmin: true
+        }
+      },
+      {
+        path: "/ws/nodes",
+        name: "nodes",
+        component: () => import("@/views/administration/nodes/nodes.vue"),
+        meta: {
+          onlyAdmin: true
+        }
+      },
+      {
         path: "/ws/configs",
         name: "configs",
-        component: () => import("@/views/configs/configs.vue"),
+        component: () => import("@/views/administration/configs/configs.vue"),
         meta: {
           onlyAdmin: true
         }
@@ -33,7 +49,7 @@ export default <RouteRecordRaw[]>[
       {
         path: "/ws/user-related/:mode",
         name: "userRelated",
-        component: () => import("@/views/user-related/user-related.vue"),
+        component: () => import("@/views/administration/user-related/user-related.vue"),
         meta: {
           onlyAdmin: true,
           webTitle: {

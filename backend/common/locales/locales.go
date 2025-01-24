@@ -67,4 +67,15 @@ const (
 	CodeConfigVolumeValueLimitLength = "R4Cfg-007"
 	CodeConfigTypeIsInvlaid          = "R4Cfg-008"
 	CodeConfigIdNotEmpty             = "R4Cfg-009"
+
+	CodeRegistryNameNotEmpty        = "R4Registry-001"
+	CodeRegistryNameLimitLength     = "R4Registry-002"
+	CodeRegistryNameAlreadyExist    = "R4Registry-003"
+	CodeRegistryNotExist            = "R4Registry-004"
+	CodeRegistryIdNotEmpty          = "R4Registry-005"
+	CodeRegistryUrlNotEmpty         = "R4Registry-006"
+	CodeRegistryUrlLimitLength      = "R4Registry-007"
+	CodeRegistryUrlAlreadyExist     = "R4Registry-008"
+	CodeRegistryUsernameLimitLength = "R4Registry-009"
+	CodeRegistryPasswordLimitLength = "R4Registry-010"
 )

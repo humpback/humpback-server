@@ -85,7 +85,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialogInfo.show" :close-on-press-escape="false">
+  <v-dialog v-model="dialogInfo.show" :close-on-press-escape="false" width="1200px">
     <template #header>{{ dialogInfo.info.configId ? t("header.editConfig") : t("header.addConfig") }}</template>
     <div class="my-3">
       <el-form ref="formRef" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">

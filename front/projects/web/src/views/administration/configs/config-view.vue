@@ -18,7 +18,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialogInfo.show" :close-on-press-escape="false">
+  <v-dialog v-model="dialogInfo.show">
     <template #header>
       <span v-html="t('header.viewConfig', { configName: dialogInfo.info.configName })" />
     </template>

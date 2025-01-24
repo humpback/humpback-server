@@ -14,6 +14,12 @@ export default {
     "addConfig": "Add Config",
     "editConfig": "Edit Config",
     "deleteConfig": "Delete Config",
-    "viewConfig": "View Config — <span class='keywords-warning'>{configName}</span>"
+    "viewConfig": "View Config — <span class='keywords-warning'>{configName}</span>",
+    "addNode": "Add Node",
+    "editNode": "Edit Node",
+    "addRegistry": "Add Registry",
+    "editRegistry": "Edit Registry",
+    "deleteRegistry": "Delete Registry",
+    "viewRegistry": "View Registry — <span class='keywords-warning'>{registryName}</span>"
   }
 }

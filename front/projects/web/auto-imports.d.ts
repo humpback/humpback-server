@@ -32,6 +32,7 @@ declare global {
   const NewConfigEmptyInfo: typeof import('./src/types/setting')['NewConfigEmptyInfo']
   const NewGroupEmptyInfo: typeof import('./src/types/group')['NewGroupEmptyInfo']
   const NewPageInfo: typeof import('./src/types/query')['NewPageInfo']
+  const NewRegistryEmptyInfo: typeof import('./src/types/setting')['NewRegistryEmptyInfo']
   const NewSortInfo: typeof import('./src/types/query')['NewSortInfo']
   const NewTeamEmptyInfo: typeof import('./src/types/user')['NewTeamEmptyInfo']
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
@@ -154,6 +155,7 @@ declare global {
   const refDefault: typeof import('@vueuse/core')['refDefault']
   const refThrottled: typeof import('@vueuse/core')['refThrottled']
   const refWithControl: typeof import('@vueuse/core')['refWithControl']
+  const registryService: typeof import('./src/services/registry-service')['registryService']
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
@@ -398,7 +400,7 @@ declare global {
   export type { UserInfo, TeamInfo } from './src/types/user'
   import('./src/types/user')
   // @ts-ignore
-  export type { ConfigInfo } from './src/types/setting'
+  export type { ConfigInfo, RegistryInfo } from './src/types/setting'
   import('./src/types/setting')
 }
 
@@ -433,6 +435,7 @@ declare module 'vue' {
     readonly NewConfigEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewConfigEmptyInfo']>
     readonly NewGroupEmptyInfo: UnwrapRef<typeof import('./src/types/group')['NewGroupEmptyInfo']>
     readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
+    readonly NewRegistryEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewRegistryEmptyInfo']>
     readonly NewSortInfo: UnwrapRef<typeof import('./src/types/query')['NewSortInfo']>
     readonly NewTeamEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewTeamEmptyInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
@@ -555,6 +558,7 @@ declare module 'vue' {
     readonly refDefault: UnwrapRef<typeof import('@vueuse/core')['refDefault']>
     readonly refThrottled: UnwrapRef<typeof import('@vueuse/core')['refThrottled']>
     readonly refWithControl: UnwrapRef<typeof import('@vueuse/core')['refWithControl']>
+    readonly registryService: UnwrapRef<typeof import('./src/services/registry-service')['registryService']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>

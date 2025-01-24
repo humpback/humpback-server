@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ConfigInfo } from "@/types"
+import { RegistryInfo } from "@/types"
 import { TableHeight } from "@/utils"
-import { Action, ConfigType } from "@/models"
-import ConfigEdit from "./config-edit.vue"
-import ConfigDelete from "./config-delete.vue"
-import ConfigView from "./config-view.vue"
-import { QueryConfigsInfo } from "./common.ts"
+import { Action } from "@/models"
+import RegistryEdit from "./registry-edit.vue"
+import RegistryDelete from "./registry-delete.vue"
+import RegistryView from "./registry-view.vue"
+import { QueryRegistryInfo } from "./common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -14,21 +14,21 @@ const router = useRouter()
 const tableHeight = computed(() => TableHeight(209))
 
 const isLoading = ref(false)
-const queryInfo = ref<QueryConfigsInfo>(new QueryConfigsInfo(route.query))
+const queryInfo = ref<QueryRegistryInfo>(new QueryRegistryInfo(route.query))
 
 const tableList = ref({
   total: 0,
-  data: [] as Array<ConfigInfo>
+  data: [] as Array<RegistryInfo>
 })
 
-const editRef = useTemplateRef<InstanceType<typeof ConfigEdit>>("editRef")
-const deleteRef = useTemplateRef<InstanceType<typeof ConfigDelete>>("deleteRef")
-const viewValueRef = useTemplateRef<InstanceType<typeof ConfigView>>("viewValueRef")
+const registryEditRef = useTemplateRef<InstanceType<typeof RegistryEdit>>("registryEditRef")
+const registryDeleteRef = useTemplateRef<InstanceType<typeof RegistryDelete>>("registryDeleteRef")
+const registryViewRef = useTemplateRef<InstanceType<typeof RegistryView>>("registryViewRef")
 
 async function search() {
   await router.replace(queryInfo.value.getQuery())
   isLoading.value = true
-  return await configService
+  return await registryService
     .query(queryInfo.value.getSearch())
     .then(res => {
       tableList.value.data = res.list
@@ -37,17 +37,17 @@ async function search() {
     .finally(() => (isLoading.value = false))
 }
 
-function openAction(action: string, info?: ConfigInfo) {
+function openAction(action: string, info?: RegistryInfo) {
   switch (action) {
     case Action.Add:
     case Action.Edit:
-      editRef.value?.open(info)
+      registryEditRef.value?.open(info)
       break
     case Action.Delete:
-      deleteRef.value?.open(info!)
+      registryDeleteRef.value?.open(info!)
       break
     case Action.View:
-      viewValueRef.value?.open(info!)
+      registryViewRef.value?.open(info!)
       break
   }
 }
@@ -60,9 +60,6 @@ onMounted(() => search())
     <el-form @submit.prevent="search">
       <el-form-item>
         <div class="d-flex gap-3 w-100 flex-wrap">
-          <div>
-            <v-config-type-query-select v-model="queryInfo.filter.configType" :placeholder="t('placeholder.all')" @change="search()" />
-          </div>
           <div class="flex-1" style="min-width: 300px">
             <v-input v-model="queryInfo.keywords">
               <template #prepend>
@@ -78,7 +75,7 @@ onMounted(() => search())
                   <IconMdiAdd />
                 </el-icon>
               </template>
-              {{ t("btn.addConfig") }}
+              {{ t("btn.addRegistry") }}
             </el-button>
           </div>
         </div>
@@ -90,27 +87,12 @@ onMounted(() => search())
       v-model:page-info="queryInfo.pageInfo"
       v-model:sort-info="queryInfo.sortInfo"
       :data="tableList.data"
-      :height="tableHeight"
+      :max-height="tableHeight"
       :total="tableList.total"
       @page-change="search"
       @sort-change="search">
-      <el-table-column :label="t('label.config')" fixed="left" min-width="140" prop="configName" sortable="custom" />
-      <el-table-column :label="t('label.description')" min-width="140" prop="description">
-        <template #default="scope">
-          <v-table-column-none :text="scope.row.description" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.type')" min-width="120">
-        <template #default="scope">
-          <v-config-type-view :configType="scope.row.configType" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.value')" min-width="200">
-        <template #default="scope">
-          <span v-if="scope.row.configType === ConfigType.Static">{{ scope.row.configValue }}</span>
-          <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column :label="t('label.registry')" fixed="left" min-width="200" prop="registryName" sortable="custom" />
+      <el-table-column :label="t('label.url')" min-width="200" prop="url" />
       <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
         <template #default="scope">
           <v-date-view :timestamp="scope.row.updatedAt" />
@@ -121,6 +103,20 @@ onMounted(() => search())
           <v-date-view :timestamp="scope.row.createdAt" />
         </template>
       </el-table-column>
+      <el-table-column :label="t('label.authentication')" align="center" width="140">
+        <template #default="scope">
+          <el-button v-if="scope.row?.hasAuth" link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
+          <span v-else>--</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('label.isDefault')" align="center" width="140">
+        <template #default="scope">
+          <el-tag v-if="scope.row.isDefault" effect="dark" round size="small" type="warning">
+            {{ t("label.default") }}
+          </el-tag>
+          <span v-else>--</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
         <template #default="scope">
           <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
@@ -129,11 +125,11 @@ onMounted(() => search())
       </el-table-column>
     </v-table>
   </v-card>
-  <config-delete ref="deleteRef" @refresh="search()" />
+  <registry-delete ref="registryDeleteRef" @refresh="search()" />
 
-  <config-edit ref="editRef" @refresh="search()" />
+  <registry-edit ref="registryEditRef" @refresh="search()" />
 
-  <config-view ref="viewValueRef" />
+  <registry-view ref="registryViewRef" />
 </template>
 
 <style lang="scss" scoped></style>

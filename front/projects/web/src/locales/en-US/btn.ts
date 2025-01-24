@@ -21,6 +21,8 @@ export default {
     "copy": "Copy",
     "fullScreen": "Full Screen",
     "close": "Close",
-    "view": "View"
+    "view": "View",
+    "addNode": "Add Node",
+    "addRegistry": "Add Registry"
   }
 }
