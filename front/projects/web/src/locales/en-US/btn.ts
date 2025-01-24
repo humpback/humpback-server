@@ -16,6 +16,9 @@ export default {
     "confirm": "Confirm",
     "goToAddUser": "Go to add user",
     "goToAddTeam": "Go to add team",
-    "addConfig": "Add Config"
+    "addConfig": "Add Config",
+    "format": "Format",
+    "copy": "Copy",
+    "fullScreen": "Full Screen"
   }
 }

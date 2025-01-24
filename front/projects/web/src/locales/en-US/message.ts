@@ -8,6 +8,8 @@ export default {
     "deleteSuccess": "Delete Successfully",
     "uploadSuccess": "Upload Successful",
     "loginSuccess": "Login Successful",
+    "copySucceed": "Copy successful",
+    "copyFailed": "Copy failed",
     "succeed": "Succeed",
     "warning": "Warning",
     "error": "Error",

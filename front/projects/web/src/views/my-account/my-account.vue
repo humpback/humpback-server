@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import ChangePassword from "./change-password.vue"
 import { RuleFormatErrEmailOption, RuleFormatErrPhone, RulePleaseEnter } from "@/utils"
-import { LimitDescription, LimitEmail } from "@/models"
+import { RuleLength } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
 import { cloneDeep } from "lodash-es"
 
@@ -15,17 +15,17 @@ const tableRef = useTemplateRef<FormInstance>("tableRef")
 const rules = ref<FormRules>({
   username: [
     { required: true, validator: RulePleaseEnter("label.username"), trigger: "blur" },
-    { required: true, validator: RuleLimitRange(LimitUserName.Min, LimitUserName.Max), trigger: "blur" }
+    { required: true, validator: RuleLimitRange(RuleLength.Username.Min, RuleLength.Username.Max), trigger: "blur" }
   ],
   email: [
-    { validator: RuleLimitMax(LimitEmail.Max), trigger: "blur" },
+    { validator: RuleLimitMax(RuleLength.Email.Max), trigger: "blur" },
     { validator: RuleFormatErrEmailOption(), trigger: "blur" }
   ],
   phone: [
-    { validator: RuleLimitMax(LimitEmail.Max), trigger: "blur" },
+    { validator: RuleLimitMax(RuleLength.Email.Max), trigger: "blur" },
     { validator: RuleFormatErrPhone(), trigger: "blur" }
   ],
-  description: [{ validator: RuleLimitMax(LimitDescription.Max), trigger: "blur" }]
+  description: [{ validator: RuleLimitMax(RuleLength.Description.Max), trigger: "blur" }]
 })
 
 async function getUserInfo() {

@@ -6,6 +6,32 @@ import JsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker"
 import CssWorker from "monaco-editor/esm/vs/language/css/css.worker?worker"
 import HtmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker"
 import TSWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker"
+import YamlWorker from "./yaml.worker.js?worker"
+import { configureMonacoYaml } from "monaco-yaml"
+import xmlFormatter from "xml-formatter"
+import * as ini from "ini"
+
+configureMonacoYaml(monaco, {
+  enableSchemaRequest: true,
+  schemas: [
+    {
+      fileMatch: ["**/.prettierrc.*"],
+      uri: "https://json.schemastore.org/prettierrc.json"
+    }
+  ]
+})
+
+import { CopyToClipboard } from "@/utils/index.ts"
+
+const props = withDefaults(defineProps<{ readOnly?: boolean; language?: string; maxSize?: number }>(), {
+  readOnly: false,
+  language: "text",
+  maxSize: RuleLength.ConfigValue.Max
+})
+
+const editContent = defineModel<string>()
+
+const { t } = useI18n()
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -23,15 +49,47 @@ self.MonacoEnvironment = {
       case "typescript":
       case "javascript":
         return new TSWorker()
+      case "yaml":
+        return new YamlWorker()
       default:
         return new EditorWorker()
     }
   }
 }
 
+monaco.languages.registerDocumentFormattingEditProvider("xml", {
+  provideDocumentFormattingEdits(model) {
+    const content = model.getValue()
+    const formatted = xmlFormatter(content, {
+      indentation: "  ",
+      lineSeparator: "\n"
+    })
+    return [
+      {
+        range: model.getFullModelRange(),
+        text: formatted
+      }
+    ]
+  }
+})
+
+monaco.languages.registerDocumentFormattingEditProvider("ini", {
+  provideDocumentFormattingEdits(model) {
+    const content = model.getValue()
+    const formatted = ini.stringify(ini.parse(content), { whitespace: true })
+    return [
+      {
+        range: model.getFullModelRange(),
+        text: formatted
+      }
+    ]
+  }
+})
+
 monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
 
 let monacoCtl: monaco.editor.IStandaloneCodeEditor
+let listeningContent: monaco.IDisposable
 const monacoRef = useTemplateRef("monacoRef")
 
 const boxRef = useTemplateRef<any>("boxRef")
@@ -42,14 +100,31 @@ function fullScreen() {
   }
 }
 
+function formatLang(lang: string) {
+  if (monacoCtl) {
+    monaco.editor.setModelLanguage(monacoCtl.getModel()!, lang)
+    setTimeout(() => {
+      monacoCtl.getAction("editor.action.formatDocument")!.run()
+    }, 100)
+  }
+}
+
+function getValue() {
+  return monacoCtl?.getValue() || ""
+}
+
+function copy() {
+  CopyToClipboard(getValue())
+}
+
 onMounted(() => {
   monacoCtl = monaco.editor.create(monacoRef.value!, {
-    value: "",
-    language: "json",
+    value: editContent.value || "",
+    language: props.language,
     theme: "vs-dark", //官方自带三种主题vs, hc-black, hc-light, or vs-dark
     selectOnLineNumbers: true, //显示行号
     roundedSelection: false,
-    readOnly: false, // 只读
+    readOnly: props.readOnly, // 只读
     cursorStyle: "line", //光标样式
     automaticLayout: true, //自动布局
     glyphMargin: true, //字形边缘
@@ -83,37 +158,76 @@ onMounted(() => {
     inherit: true, // 继承基础主题
     rules: [],
     colors: {
-      // "editor.lineHighlightBackground": "#474747" // 光标行背景色
+      // "editor.lineHighlightBackground": "#e7e5e5" // 光标行背景色
     }
   })
 
   // 应用自定义主题
   monaco.editor.setTheme("customTheme")
+  if (!props.readOnly) {
+    listeningContent = monacoCtl.onDidChangeModelContent(() => {
+      const currentContent = monacoCtl.getValue()
+      if (currentContent.length > props.maxSize) {
+        monacoCtl.setValue(editContent.value || "")
+      } else {
+        editContent.value = currentContent
+      }
+    })
+  }
 })
 
 onBeforeUnmount(() => {
-  if (monacoCtl) {
-    monacoCtl.dispose()
-  }
+  listeningContent?.dispose()
+  monacoCtl?.dispose()
 })
+
+defineExpose({ getValue })
 </script>
 
 <template>
   <div ref="boxRef" class="monaco-box">
     <div class="monaco-header">
-      <el-button link>
-        <el-icon :size="20">
-          <IconMdiContentCopy />
-        </el-icon>
-      </el-button>
+      <el-dropdown :teleported="false" @command="formatLang">
+        <el-button link>
+          <div class="d-flex">
+            {{ t("btn.format") }}
+            <el-icon :size="20">
+              <IconMdiChevronDown />
+            </el-icon>
+          </div>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="text">text</el-dropdown-item>
+            <el-dropdown-item command="ini">ini</el-dropdown-item>
+            <el-dropdown-item command="yaml">yaml</el-dropdown-item>
+            <el-dropdown-item command="xml">xml</el-dropdown-item>
+            <el-dropdown-item command="javascript">javascript</el-dropdown-item>
+            <el-dropdown-item command="json">json</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
 
-      <el-button link @click="fullScreen">
-        <el-icon :size="20">
-          <IconMdiArrowExpandAll />
-        </el-icon>
-      </el-button>
+      <v-tooltip :content="t('btn.copy')" :teleported="false" placement="top-end">
+        <el-button link @click="copy()">
+          <el-icon :size="20">
+            <IconMdiContentCopy />
+          </el-icon>
+        </el-button>
+      </v-tooltip>
+
+      <v-tooltip :content="t('btn.fullScreen')" :teleported="false" placement="top-end">
+        <el-button link style="margin-left: 0" @click="fullScreen">
+          <el-icon :size="20">
+            <IconMdiArrowExpandAll />
+          </el-icon>
+        </el-button>
+      </v-tooltip>
     </div>
     <div ref="monacoRef" class="monaco-content" />
+    <div class="text-align-right pr-1">
+      <el-text>{{ `${editContent?.length || 0} / ${props.maxSize}` }}</el-text>
+    </div>
   </div>
 </template>
 
@@ -125,26 +239,25 @@ onBeforeUnmount(() => {
   border-radius: var(--hp-monaco-radius);
   padding: 4px 8px;
   box-sizing: border-box;
-  background-color: #e6e6e7;
+  background-color: #f5f5f5;
 
   .monaco-header {
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: right;
+    gap: 8px;
   }
 
   .monaco-content {
     width: 100%;
-    height: calc(100% - 48px);
-
+    height: calc(100% - 72px);
     border: 1px dashed #adadad;
     border-radius: var(--hp-monaco-radius);
 
     :deep(.monaco-editor) {
       border-radius: var(--hp-monaco-radius);
       //--vscode-editor-background: #acb1b0;
-
       .overflow-guard {
         border-radius: var(--hp-monaco-radius);
 

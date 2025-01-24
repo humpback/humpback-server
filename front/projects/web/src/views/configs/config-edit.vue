@@ -3,7 +3,7 @@ import { ConfigInfo, NewConfigEmptyInfo } from "@/types"
 import { cloneDeep } from "lodash-es"
 import { FormInstance, FormRules } from "element-plus"
 import { RuleFormatErrEmailOption, RulePleaseEnter } from "@/utils"
-import { LimitConfigValue, LimitDescription } from "@/models"
+import { RuleLength } from "@/models"
 
 const { t } = useI18n()
 
@@ -17,11 +17,11 @@ const formRef = useTemplateRef<FormInstance>("formRef")
 const rules = ref<FormRules>({
   configName: [
     { required: true, validator: RulePleaseEnter("label.name"), trigger: "blur" },
-    { required: true, validator: RuleLimitRange(LimitUserName.Min, LimitUserName.Max), trigger: "blur" }
+    { required: true, validator: RuleLimitRange(RuleLength.Username.Min, RuleLength.Username.Max), trigger: "blur" }
   ],
   configType: [{ validator: RuleFormatErrEmailOption(), trigger: "blur" }],
-  configValue: [{ validator: RuleLimitRange(LimitConfigValue.Min, LimitConfigValue.Max), trigger: "blur" }],
-  description: [{ validator: RuleLimitMax(LimitDescription.Max), trigger: "blur" }]
+  configValue: [{ validator: RuleLimitRange(RuleLength.ConfigValue.Min, RuleLength.ConfigValue.Max), trigger: "blur" }],
+  description: [{ validator: RuleLimitMax(RuleLength.Description.Max), trigger: "blur" }]
 })
 
 function open(info?: ConfigInfo) {
@@ -58,7 +58,7 @@ defineExpose({ open })
           <v-input
             v-model="dialogInfo.info.configValue"
             :autosize="{ minRows: 2, maxRows: 4 }"
-            :maxlength="LimitConfigValue.Max / 2"
+            :maxlength="RuleLength.ConfigValue.Max / 2"
             resize="vertical"
             show-word-limit
             type="textarea" />

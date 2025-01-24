@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { LimitPhone } from "@/models"
+import { RuleLength } from "@/models"
 
 const props = withDefaults(
   defineProps<{
@@ -30,7 +30,7 @@ const phone = computed({
     v-model="phone"
     :clearable="props.clearable"
     :disabled="props.disabled"
-    :maxlength="LimitPhone.Max"
+    :maxlength="RuleLength.Phone.Max"
     :placeholder="props.placeholder"
     :show-word-limit="props.showWordLimit"
     :size="props.size" />

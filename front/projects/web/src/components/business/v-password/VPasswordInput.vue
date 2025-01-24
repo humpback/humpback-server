@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { LimitPassword } from "@/models"
+import { RuleLength } from "@/models"
 
 const props = defineProps<{
   modelValue: string
@@ -37,8 +37,8 @@ function focus(evt: FocusEvent) {
     :aria-label="props.label"
     :clearable="props.clearable"
     :disabled="props.disabled"
-    :maxlength="LimitPassword.Max || props.maxlength"
-    :minlength="LimitPassword.Min || props.minlength"
+    :maxlength="RuleLength.Password.Max || props.maxlength"
+    :minlength="RuleLength.Password.Min || props.minlength"
     :model-value="props.modelValue || ''"
     :placeholder="props.placeholder"
     :show-password="showPWD"

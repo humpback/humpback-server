@@ -15,7 +15,7 @@ func ruleConfig(c *gin.Context) {
 	data := map[string]any{
 		"RuleLengthLimit": enum.RuleLength,
 		"RuleFormat":      enum.RuleFormat,
-		"RsaPublicKey":    enum.PublicKey,
+		"EncryptionKey":   enum.PublicKey,
 	}
 	c.JSON(http.StatusOK, data)
 }

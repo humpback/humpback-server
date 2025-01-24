@@ -2,7 +2,7 @@
 import { cloneDeep, find } from "lodash-es"
 import { FormInstance, FormRules } from "element-plus"
 import { RuleFormatErrEmailOption, RuleFormatErrPhone, RulePleaseEnter } from "@/utils"
-import { LimitDescription, LimitEmail, LimitPassword } from "@/models"
+import { RuleLength } from "@/models"
 import { TeamInfo, UserInfo } from "@/types"
 import { RSAEncrypt } from "utils/rsa.ts"
 
@@ -26,22 +26,22 @@ const formRef = useTemplateRef<FormInstance>("formRef")
 const rules = ref<FormRules>({
   username: [
     { required: true, validator: RulePleaseEnter("label.username"), trigger: "blur" },
-    { required: true, validator: RuleLimitRange(LimitUserName.Min, LimitUserName.Max), trigger: "blur" }
+    { required: true, validator: RuleLimitRange(RuleLength.Username.Min, RuleLength.Username.Max), trigger: "blur" }
   ],
   email: [
-    { validator: RuleLimitMax(LimitEmail.Max), trigger: "blur" },
+    { validator: RuleLimitMax(RuleLength.Email.Max), trigger: "blur" },
     { validator: RuleFormatErrEmailOption(), trigger: "blur" }
   ],
   phone: [
-    { validator: RuleLimitMax(LimitEmail.Max), trigger: "blur" },
+    { validator: RuleLimitMax(RuleLength.Phone.Max), trigger: "blur" },
     { validator: RuleFormatErrPhone(), trigger: "blur" }
   ],
   password: [
     { required: true, validator: RulePleaseEnter("label.password"), trigger: "blur" },
-    { validator: RuleLimitRange(LimitPassword.Min, LimitPassword.Max), trigger: "blur" }
+    { validator: RuleLimitRange(RuleLength.Password.Min, RuleLength.Password.Max), trigger: "blur" }
   ],
   role: [{ required: true, validator: checkRole, trigger: "change" }],
-  description: [{ validator: RuleLimitMax(LimitDescription.Max), trigger: "blur" }]
+  description: [{ validator: RuleLimitMax(RuleLength.Description.Max), trigger: "blur" }]
 })
 
 function checkRole(rule: any, value: any, callback: any) {

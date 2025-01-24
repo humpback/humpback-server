@@ -9,6 +9,7 @@ declare global {
   const ChangeEventType: typeof import('./src/utils/event')['ChangeEventType']
   const CloseChannelMessage: typeof import('./src/utils/event')['CloseChannelMessage']
   const ConfigType: typeof import('./src/models/enum')['ConfigType']
+  const CopyToClipboard: typeof import('./src/utils/copy')['CopyToClipboard']
   const Debounce: typeof import('./src/utils/time')['Debounce']
   const EffectScope: typeof import('vue')['EffectScope']
   const GenerateUUID: typeof import('./src/utils/event')['GenerateUUID']
@@ -28,9 +29,6 @@ declare global {
   const IsSupperAdmin: typeof import('./src/utils/common')['IsSupperAdmin']
   const IsUser: typeof import('./src/utils/common')['IsUser']
   const IsValidEmail: typeof import('./src/utils/rule')['IsValidEmail']
-  const IsValidPassword: typeof import('./src/utils/rule')['IsValidPassword']
-  const IsValidUsername: typeof import('./src/utils/rule')['IsValidUsername']
-  const LimitUserName: typeof import('./src/models/rule')['LimitUserName']
   const NewConfigEmptyInfo: typeof import('./src/types/setting')['NewConfigEmptyInfo']
   const NewGroupEmptyInfo: typeof import('./src/types/group')['NewGroupEmptyInfo']
   const NewPageInfo: typeof import('./src/types/query')['NewPageInfo']
@@ -42,14 +40,13 @@ declare global {
   const ParseNumber: typeof import('./src/utils/common')['ParseNumber']
   const QueryInfo: typeof import('./src/types/query')['QueryInfo']
   const RSAEncrypt: typeof import('./src/utils/rsa')['RSAEncrypt']
-  const RegularEmail: typeof import('./src/utils/rule')['RegularEmail']
-  const RegularPassword: typeof import('./src/utils/rule')['RegularPassword']
-  const RegularPhone: typeof import('./src/utils/rule')['RegularPhone']
-  const RegularUsername: typeof import('./src/utils/rule')['RegularUsername']
+  const RSAPublicKey: typeof import('./src/models/rsa')['RSAPublicKey']
   const RuleCannotBeEmpty: typeof import('./src/utils/rule')['RuleCannotBeEmpty']
+  const RuleFormat: typeof import('./src/models/rule')['RuleFormat']
   const RuleFormatErrEmailOption: typeof import('./src/utils/rule')['RuleFormatErrEmailOption']
   const RuleFormatErrPhone: typeof import('./src/utils/rule')['RuleFormatErrPhone']
   const RuleIsRequired: typeof import('./src/utils/rule')['RuleIsRequired']
+  const RuleLength: typeof import('./src/models/rule')['RuleLength']
   const RuleLimitMax: typeof import('./src/utils/rule')['RuleLimitMax']
   const RuleLimitRange: typeof import('./src/utils/rule')['RuleLimitRange']
   const RulePleaseEnter: typeof import('./src/utils/rule')['RulePleaseEnter']
@@ -66,6 +63,7 @@ declare global {
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
+  const commonService: typeof import('./src/services/common-service')['commonService']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
   const computedEager: typeof import('@vueuse/core')['computedEager']
@@ -100,6 +98,8 @@ declare global {
   const h: typeof import('vue')['h']
   const httpClient: typeof import('./src/services/http-client')['httpClient']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
+  const initRSA: typeof import('./src/models/rsa')['initRSA']
+  const initRule: typeof import('./src/models/rule')['initRule']
   const initStore: typeof import('./src/stores/index')['initStore']
   const inject: typeof import('vue')['inject']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
@@ -409,6 +409,7 @@ declare module 'vue' {
     readonly ChangeEventType: UnwrapRef<typeof import('./src/utils/event')['ChangeEventType']>
     readonly CloseChannelMessage: UnwrapRef<typeof import('./src/utils/event')['CloseChannelMessage']>
     readonly ConfigType: UnwrapRef<typeof import('./src/models/enum')['ConfigType']>
+    readonly CopyToClipboard: UnwrapRef<typeof import('./src/utils/copy')['CopyToClipboard']>
     readonly Debounce: UnwrapRef<typeof import('./src/utils/time')['Debounce']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly GenerateUUID: UnwrapRef<typeof import('./src/utils/event')['GenerateUUID']>
@@ -428,9 +429,6 @@ declare module 'vue' {
     readonly IsSupperAdmin: UnwrapRef<typeof import('./src/utils/common')['IsSupperAdmin']>
     readonly IsUser: UnwrapRef<typeof import('./src/utils/common')['IsUser']>
     readonly IsValidEmail: UnwrapRef<typeof import('./src/utils/rule')['IsValidEmail']>
-    readonly IsValidPassword: UnwrapRef<typeof import('./src/utils/rule')['IsValidPassword']>
-    readonly IsValidUsername: UnwrapRef<typeof import('./src/utils/rule')['IsValidUsername']>
-    readonly LimitUserName: UnwrapRef<typeof import('./src/models/rule')['LimitUserName']>
     readonly NewConfigEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewConfigEmptyInfo']>
     readonly NewGroupEmptyInfo: UnwrapRef<typeof import('./src/types/group')['NewGroupEmptyInfo']>
     readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
@@ -442,14 +440,13 @@ declare module 'vue' {
     readonly ParseNumber: UnwrapRef<typeof import('./src/utils/common')['ParseNumber']>
     readonly QueryInfo: UnwrapRef<typeof import('./src/types/query')['QueryInfo']>
     readonly RSAEncrypt: UnwrapRef<typeof import('./src/utils/rsa')['RSAEncrypt']>
-    readonly RegularEmail: UnwrapRef<typeof import('./src/utils/rule')['RegularEmail']>
-    readonly RegularPassword: UnwrapRef<typeof import('./src/utils/rule')['RegularPassword']>
-    readonly RegularPhone: UnwrapRef<typeof import('./src/utils/rule')['RegularPhone']>
-    readonly RegularUsername: UnwrapRef<typeof import('./src/utils/rule')['RegularUsername']>
+    readonly RSAPublicKey: UnwrapRef<typeof import('./src/models/rsa')['RSAPublicKey']>
     readonly RuleCannotBeEmpty: UnwrapRef<typeof import('./src/utils/rule')['RuleCannotBeEmpty']>
+    readonly RuleFormat: UnwrapRef<typeof import('./src/models/rule')['RuleFormat']>
     readonly RuleFormatErrEmailOption: UnwrapRef<typeof import('./src/utils/rule')['RuleFormatErrEmailOption']>
     readonly RuleFormatErrPhone: UnwrapRef<typeof import('./src/utils/rule')['RuleFormatErrPhone']>
     readonly RuleIsRequired: UnwrapRef<typeof import('./src/utils/rule')['RuleIsRequired']>
+    readonly RuleLength: UnwrapRef<typeof import('./src/models/rule')['RuleLength']>
     readonly RuleLimitMax: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitMax']>
     readonly RuleLimitRange: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitRange']>
     readonly RulePleaseEnter: UnwrapRef<typeof import('./src/utils/rule')['RulePleaseEnter']>
@@ -466,6 +463,7 @@ declare module 'vue' {
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
+    readonly commonService: UnwrapRef<typeof import('./src/services/common-service')['commonService']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
     readonly computedEager: UnwrapRef<typeof import('@vueuse/core')['computedEager']>
@@ -500,6 +498,8 @@ declare module 'vue' {
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly httpClient: UnwrapRef<typeof import('./src/services/http-client')['httpClient']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
+    readonly initRSA: UnwrapRef<typeof import('./src/models/rsa')['initRSA']>
+    readonly initRule: UnwrapRef<typeof import('./src/models/rule')['initRule']>
     readonly initStore: UnwrapRef<typeof import('./src/stores/index')['initStore']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>

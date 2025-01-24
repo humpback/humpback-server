@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { RuleLength } from "@/models"
+
 const props = withDefaults(
   defineProps<{
     size?: "large" | "default" | "small"
@@ -22,7 +24,7 @@ const name = defineModel<string>()
     v-model="name"
     :clearable="props.clearable"
     :disabled="props.disabled"
-    :maxlength="LimitUserName.Max"
+    :maxlength="RuleLength.Username.Max"
     :placeholder="props.placeholder"
     :show-word-limit="props.showWordLimit"
     :size="props.size" />

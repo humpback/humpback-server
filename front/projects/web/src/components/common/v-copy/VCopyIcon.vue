@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { CopyToClipboard } from "./copy.ts"
+import { CopyToClipboard } from "@/utils/index.ts"
 
 const props = defineProps<{ text: string; size?: "large" | "small" | "default" }>()
 

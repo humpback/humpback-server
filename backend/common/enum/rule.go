@@ -12,15 +12,17 @@ var (
 	LimitPassword    = LengthLimit{Min: 8, Max: 20}
 	LimitPhone       = LengthLimit{Min: 0, Max: 11}
 	LimitDescription = LengthLimit{Min: 0, Max: 500}
+	LimitConfigValue = LengthLimit{Min: 1, Max: 10000}
 )
 
 var RuleLength = map[string]LengthLimit{
-	"LimitUsername":    LimitUsername,
-	"LimitTeamName":    LimitTeamName,
-	"LimitEmail":       LimitEmail,
-	"LimitPassword":    LimitPassword,
-	"LimitPhone":       LimitPhone,
-	"LimitDescription": LimitDescription,
+	"Username":    LimitUsername,
+	"TeamName":    LimitTeamName,
+	"Email":       LimitEmail,
+	"Password":    LimitPassword,
+	"Phone":       LimitPhone,
+	"Description": LimitDescription,
+	"ConfigValue": LimitConfigValue,
 }
 
 var (
@@ -29,6 +31,6 @@ var (
 )
 
 var RuleFormat = map[string]string{
-	"RegularEmail": RegularEmail,
-	"RegularPhone": RegularPhone,
+	"Email": RegularEmail,
+	"Phone": RegularPhone,
 }

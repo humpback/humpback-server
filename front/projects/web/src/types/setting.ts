@@ -4,7 +4,7 @@ export interface ConfigInfo {
   configId: string
   configName: string
   description: string
-  configValue: any
+  configValue: string
   configType: number
   createdAt: number
   updatedAt: number

@@ -1,14 +1,12 @@
 import { GetI18nMessage } from "@/locales"
-
-export const RegularPhone = /^\d+$/
-export const RegularEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+import { RuleFormat } from "@/models"
 
 export function IsEmpty(value: any): boolean {
   return !value || !(value as string).trim()
 }
 
 export function IsValidEmail(email: string): boolean {
-  return RegularEmail.test(email)
+  return new RegExp(RuleFormat.Email).test(email)
 }
 
 // --------------------通用规则定义-----------------------
@@ -52,7 +50,7 @@ export function RuleFormatErrPhone(isRequired?: boolean) {
     if (!isRequired && IsEmpty(value)) {
       return callback()
     }
-    return RegularPhone.test(value) ? callback() : callback(new Error(GetI18nMessage("rules.formatErrPhone")))
+    return new RegExp(RuleFormat.Phone).test(value) ? callback() : callback(new Error(GetI18nMessage("rules.formatErrPhone")))
   }
 }
 

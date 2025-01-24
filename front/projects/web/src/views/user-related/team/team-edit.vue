@@ -2,7 +2,7 @@
 import { cloneDeep } from "lodash-es"
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
-import { LimitDescription, LimitTeamName } from "@/models"
+import { RuleLength } from "@/models"
 import { NewTeamEmptyInfo, TeamInfo, UserInfo } from "@/types"
 
 const emits = defineEmits<{
@@ -24,9 +24,9 @@ const formRef = useTemplateRef<FormInstance>("formRef")
 const rules = ref<FormRules>({
   name: [
     { required: true, validator: RulePleaseEnter("label.name"), trigger: "blur" },
-    { required: true, validator: RuleLimitRange(LimitTeamName.Min, LimitTeamName.Max), trigger: "blur" }
+    { required: true, validator: RuleLimitRange(RuleLength.TeamName.Min, RuleLength.TeamName.Max), trigger: "blur" }
   ],
-  description: [{ validator: RuleLimitMax(LimitDescription.Max), trigger: "blur" }]
+  description: [{ validator: RuleLimitMax(RuleLength.Description.Max), trigger: "blur" }]
 })
 
 function open(info?: TeamInfo) {

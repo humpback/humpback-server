@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
-import { LimitPassword } from "@/models"
+import { RuleLength } from "@/models"
 import { disposeStore } from "@/stores"
 
 const { t } = useI18n()
@@ -15,11 +15,11 @@ const tableRef = useTemplateRef<FormInstance>("tableRef")
 const rules = ref<FormRules>({
   oldPassword: [
     { required: true, validator: RulePleaseEnter("label.oldPassword"), trigger: "blur" },
-    { validator: RuleLimitRange(LimitPassword.Min, LimitPassword.Max), trigger: "blur" }
+    { validator: RuleLimitRange(RuleLength.Password.Min, RuleLength.Password.Max), trigger: "blur" }
   ],
   newPassword: [
     { required: true, validator: RulePleaseEnter("label.newPassword"), trigger: "blur" },
-    { validator: RuleLimitRange(LimitPassword.Min, LimitPassword.Max), trigger: "blur" }
+    { validator: RuleLimitRange(RuleLength.Password.Min, RuleLength.Password.Max), trigger: "blur" }
   ],
   confirmTheNewPassword: [
     { required: true, validator: RulePleaseEnter("label.confirmTheNewPassword"), trigger: "blur" },

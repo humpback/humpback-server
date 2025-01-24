@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { LimitEmail } from "@/models"
+import { RuleLength } from "@/models"
 
 const props = withDefaults(
   defineProps<{
@@ -17,7 +17,7 @@ const email = defineModel<string>()
   <v-input
     v-model="email"
     :clearable="props.clearable"
-    :maxlength="LimitEmail.Max"
+    :maxlength="RuleLength.Email.Max"
     :placeholder="props.placeholder"
     :show-word-limit="props.showWordLimit"
     :size="size" />
