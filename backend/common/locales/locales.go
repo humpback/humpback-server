@@ -57,4 +57,14 @@ const (
 	CodeOldPasswordIsWrong     = "R4Psd-006"
 	CodeNewPasswordNotEmpty    = "R4Psd-007"
 	CodeNewPasswordLimitLength = "R4Psd-008"
+
+	CodeConfigNameNotEmpty           = "R4Cfg-001"
+	CodeConfigNameLimitLength        = "R4Cfg-002"
+	CodeConfigNameAlreadyExist       = "R4Cfg-003"
+	CodeConfigNotExist               = "R4Cfg-004"
+	CodeConfigValueNotEmpty          = "R4Cfg-005"
+	CodeConfigStaticValueLimitLength = "R4Cfg-006"
+	CodeConfigVolumeValueLimitLength = "R4Cfg-007"
+	CodeConfigTypeIsInvlaid          = "R4Cfg-008"
+	CodeConfigIdNotEmpty             = "R4Cfg-009"
 )

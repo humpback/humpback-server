@@ -3,6 +3,7 @@ package db
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	bolt "go.etcd.io/bbolt"
 	"humpback/common/locales"
@@ -42,14 +43,17 @@ func UserGetById(id string) (*types.User, error) {
 	return info, nil
 }
 
-func UsersGetByName(name string) ([]*types.User, error) {
+func UsersGetByName(name string, isLower bool) ([]*types.User, error) {
 	users, err := GetDataAll[types.User](BucketUsers)
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
 	}
 	var result []*types.User
 	for _, user := range users {
-		if user.Username == name {
+		if isLower && strings.ToLower(user.Username) == strings.ToLower(name) {
+			result = append(result, user)
+		}
+		if !isLower && user.Username == name {
 			result = append(result, user)
 		}
 	}

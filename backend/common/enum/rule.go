@@ -12,6 +12,7 @@ var (
 	LimitPassword    = LengthLimit{Min: 8, Max: 20}
 	LimitPhone       = LengthLimit{Min: 0, Max: 11}
 	LimitDescription = LengthLimit{Min: 0, Max: 500}
+	LimitConfigName  = LengthLimit{Min: 1, Max: 100}
 	LimitConfigValue = LengthLimit{Min: 1, Max: 10000}
 )
 
@@ -22,6 +23,7 @@ var RuleLength = map[string]LengthLimit{
 	"Password":    LimitPassword,
 	"Phone":       LimitPhone,
 	"Description": LimitDescription,
+	"ConfigName":  LimitConfigName,
 	"ConfigValue": LimitConfigValue,
 }
 

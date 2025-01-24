@@ -386,6 +386,7 @@
     "IconMdiCompany": true,
     "IconMdiTextBoxOutline": true,
     "IconMdiViewDashboard": true,
-    "CopyToClipboard": true
+    "CopyToClipboard": true,
+    "configService": true
   }
 }

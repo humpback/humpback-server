@@ -6,6 +6,7 @@ interface RuleLengthLimit {
 interface RuleLength {
   Username: RuleLengthLimit
   TeamName: RuleLengthLimit
+  ConfigName: RuleLengthLimit
   Email: RuleLengthLimit
   Password: RuleLengthLimit
   Phone: RuleLengthLimit

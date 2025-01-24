@@ -89,7 +89,7 @@ defineExpose({ open })
     <div class="my-3">
       <el-form ref="formRef" v-loading="isLoading" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
         <el-form-item :label="t('label.name')" prop="name">
-          <v-username-input v-model="dialogInfo.info.name" />
+          <v-input v-model="dialogInfo.info.name" :maxlength="RuleLength.TeamName.Max" clearable show-word-limit />
         </el-form-item>
         <el-form-item :label="t('label.description')" prop="description">
           <v-description-input v-model="dialogInfo.info.description" />

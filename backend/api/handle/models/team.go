@@ -73,13 +73,13 @@ type TeamQueryReqInfo struct {
 
 func (t *TeamQueryReqInfo) Check() error {
 	t.QueryInfo.CheckBase()
-	if t.Keywords != "" && slices.Index(t.Modes(), t.Mode) == -1 {
+	if t.Keywords != "" && slices.Index(t.keywordsModes(), t.Mode) == -1 {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
 }
 
-func (t *TeamQueryReqInfo) Modes() []string {
+func (t *TeamQueryReqInfo) keywordsModes() []string {
 	return []string{"name"}
 }
 

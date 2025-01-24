@@ -56,6 +56,7 @@ func (api *Router) setRoute() {
 			"/common": {handle.RouteCommon},
 			"/user":   {handle.RouteUser},
 			"/team":   {middleware.CheckLogin(), handle.RouteTeam},
+			"/config": {middleware.CheckLogin(), handle.RouteConfig},
 		},
 	}
 

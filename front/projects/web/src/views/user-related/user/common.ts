@@ -9,7 +9,7 @@ export const defaultFilter = { role: 0 }
 
 export class QueryUserInfo extends QueryInfo {
   constructor(queryInfo: any) {
-    super(queryInfo, ["username", "email", "phone"], defaultPage, defaultSort, sortOptions, defaultFilter)
+    super(queryInfo, ["username", "configNameemail", "phone"], defaultPage, defaultSort, sortOptions, defaultFilter)
     const role = queryInfo["role"] ? Number(queryInfo["role"]).valueOf() : defaultFilter.role
     this.filter.role = !isNaN(role) && find([0, UserRole.User, UserRole.Admin, UserRole.SupperAdmin], x => x === role) ? role : defaultFilter.role
   }

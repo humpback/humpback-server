@@ -8,8 +8,6 @@ import { init } from "@/app/app.ts"
 
 const app = createApp(App).use(stores).use(i18n)
 
-await init()
-
 app.config.errorHandler = (err: any, vm: any, info: any) => {
   if (err.isAxiosError) {
     return
@@ -20,8 +18,10 @@ app.config.errorHandler = (err: any, vm: any, info: any) => {
   console.error(err)
 }
 
-useUserStore()
-  .init()
-  .finally(() => {
-    app.use(router).mount("#app")
-  })
+init().then(() => {
+  useUserStore()
+    .init()
+    .finally(() => {
+      app.use(router).mount("#app")
+    })
+})

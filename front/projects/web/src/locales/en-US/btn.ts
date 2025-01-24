@@ -19,6 +19,8 @@ export default {
     "addConfig": "Add Config",
     "format": "Format",
     "copy": "Copy",
-    "fullScreen": "Full Screen"
+    "fullScreen": "Full Screen",
+    "close": "Close",
+    "view": "View"
   }
 }

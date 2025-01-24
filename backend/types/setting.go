@@ -17,13 +17,13 @@ var (
 )
 
 type Config struct {
-	ConfigId    string      `json:"configId"`
-	ConfigName  string      `json:"configName"`
-	Description string      `json:"description"`
-	ConfigType  ConfigType  `json:"configType"`
-	ConfigValue interface{} `json:"configValue"`
-	CreateAt    int64       `json:"createAt"`
-	UpdateAt    int64       `json:"updateAt"`
+	ConfigId    string     `json:"configId"`
+	ConfigName  string     `json:"configName"`
+	Description string     `json:"description"`
+	ConfigType  ConfigType `json:"configType"`
+	ConfigValue string     `json:"configValue"`
+	CreatedAt   int64      `json:"createdAt"`
+	UpdatedAt   int64      `json:"updatedAt"`
 }
 
 type Template struct {

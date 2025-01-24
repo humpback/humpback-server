@@ -48,4 +48,14 @@ var enUSMsg = map[string]string{
 	CodeOldPasswordIsWrong:     "The old password is wrong.",
 	CodeNewPasswordNotEmpty:    "The new password cannot be empty.",
 	CodeNewPasswordLimitLength: fmt.Sprintf("The new password length limit is %d to %d.", enum.LimitPassword.Min, enum.LimitPassword.Max),
+
+	CodeConfigNameNotEmpty:           "The configuration name cannot be empty.",
+	CodeConfigNameLimitLength:        fmt.Sprintf("The configuration name length limit is %d to %d.", enum.LimitConfigName.Min, enum.LimitConfigName.Max),
+	CodeConfigNameAlreadyExist:       "The configuration name already exists.",
+	CodeConfigNotExist:               "The configuration does not exist.",
+	CodeConfigValueNotEmpty:          "The configuration value cannot be empty.",
+	CodeConfigStaticValueLimitLength: fmt.Sprintf("The configuration value length limit is %d to %d.", enum.LimitConfigValue.Min, enum.LimitConfigValue.Max/2),
+	CodeConfigVolumeValueLimitLength: fmt.Sprintf("The configuration value length limit is %d to %d.", enum.LimitConfigValue.Min, enum.LimitConfigValue.Max),
+	CodeConfigTypeIsInvlaid:          "The configuration type is invalid.",
+	CodeConfigIdNotEmpty:             "The configuration ID cannot be empty.",
 }

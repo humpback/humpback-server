@@ -12,17 +12,17 @@ import (
 	"humpback/types"
 )
 
-func TeamCreate(info *models.TeamCreateReqInfo) (string, error) {
-	err := teamCreateCheckName(info)
+func TeamCreate(reqInfo *models.TeamCreateReqInfo) (string, error) {
+	err := teamCreateCheckName(reqInfo)
 	if err != nil {
 		return "", err
 	}
 	var (
 		users    = make([]*types.User, 0)
-		teamInfo = info.NewTeamInfo()
+		teamInfo = reqInfo.NewTeamInfo()
 	)
-	if len(info.Users) > 0 {
-		users, err = db.UsersQueryByIds(info.Users, false)
+	if len(reqInfo.Users) > 0 {
+		users, err = db.UsersQueryByIds(reqInfo.Users, false)
 		if err != nil {
 			return "", err
 		}
@@ -37,8 +37,8 @@ func TeamCreate(info *models.TeamCreateReqInfo) (string, error) {
 	return id, nil
 }
 
-func teamCreateCheckName(info *models.TeamCreateReqInfo) error {
-	sameNameTeams, err := db.TeamsGetByName(info.Name)
+func teamCreateCheckName(reqInfo *models.TeamCreateReqInfo) error {
+	sameNameTeams, err := db.TeamsGetByName(reqInfo.Name, true)
 	if err != nil {
 		return err
 	}
@@ -48,17 +48,17 @@ func teamCreateCheckName(info *models.TeamCreateReqInfo) error {
 	return nil
 }
 
-func TeamUpdate(info *models.TeamUpdateReqInfo) (string, error) {
-	if err := teamUpdateCheckName(info); err != nil {
+func TeamUpdate(reqInfo *models.TeamUpdateReqInfo) (string, error) {
+	if err := teamUpdateCheckName(reqInfo); err != nil {
 		return "", err
 	}
 
-	oldTeam, err := db.TeamGetById(info.TeamId)
+	oldTeam, err := db.TeamGetById(reqInfo.TeamId)
 	if err != nil {
 		return "", err
 	}
 
-	newTeamInfo := info.NewTeamInfo(oldTeam)
+	newTeamInfo := reqInfo.NewTeamInfo(oldTeam)
 	updateUsers, err := teamUpdateCheckUsers(oldTeam.Users, newTeamInfo.Users, newTeamInfo.TeamId)
 	if err != nil {
 		return "", err
@@ -71,13 +71,13 @@ func TeamUpdate(info *models.TeamUpdateReqInfo) (string, error) {
 	return id, nil
 }
 
-func teamUpdateCheckName(info *models.TeamUpdateReqInfo) error {
-	sameNameTeams, err := db.TeamsGetByName(info.Name)
+func teamUpdateCheckName(reqInfo *models.TeamUpdateReqInfo) error {
+	sameNameTeams, err := db.TeamsGetByName(reqInfo.Name, true)
 	if err != nil {
 		return err
 	}
 
-	if len(sameNameTeams) > 1 || len(sameNameTeams) == 1 && sameNameTeams[0].TeamId != info.TeamId {
+	if len(sameNameTeams) > 1 || len(sameNameTeams) == 1 && sameNameTeams[0].TeamId != reqInfo.TeamId {
 		return response.NewBadRequestErr(locales.CodeTeamAlreadyExist)
 	}
 	return nil

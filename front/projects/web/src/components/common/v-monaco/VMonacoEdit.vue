@@ -225,7 +225,7 @@ defineExpose({ getValue })
       </v-tooltip>
     </div>
     <div ref="monacoRef" class="monaco-content" />
-    <div class="text-align-right pr-1">
+    <div class="footer-total">
       <el-text>{{ `${editContent?.length || 0} / ${props.maxSize}` }}</el-text>
     </div>
   </div>
@@ -268,6 +268,15 @@ defineExpose({ getValue })
         }
       }
     }
+  }
+
+  .footer-total {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    padding-right: 4px;
+    height: 24px;
+    margin-top: 4px;
   }
 }
 </style>

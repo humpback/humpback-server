@@ -229,15 +229,13 @@ func (u *UserQueryReqInfo) Check() error {
 	if err := u.parseFilterInfo(); err != nil {
 		return err
 	}
-	if u.Keywords != "" {
-		if slices.Index(u.Modes(), u.Mode) == -1 {
-			return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
-		}
+	if u.Keywords != "" && slices.Index(u.keywordsModes(), u.Mode) == -1 {
+		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
 }
 
-func (u *UserQueryReqInfo) Modes() []string {
+func (u *UserQueryReqInfo) keywordsModes() []string {
 	return []string{"username", "email", "phone"}
 }
 

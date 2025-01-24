@@ -46,8 +46,8 @@ func InitAdminUser() error {
 	return nil
 }
 
-func UserLogin(info *models.UserLoginReqInfo) (*types.User, string, error) {
-	userInfo, err := db.UserGetByNamePsd(info.Username, info.Password)
+func UserLogin(reqInfo *models.UserLoginReqInfo) (*types.User, string, error) {
+	userInfo, err := db.UserGetByNamePsd(reqInfo.Username, reqInfo.Password)
 	if err != nil {
 		return nil, "", err
 	}
@@ -83,17 +83,17 @@ func MeChangePassword(userInfo *types.User, reqInfo *models.MeChangePasswordReqI
 	return nil
 }
 
-func UserCreate(info *models.UserCreateReqInfo) (string, error) {
-	err := userCreateCheckName(info)
+func UserCreate(reqInfo *models.UserCreateReqInfo) (string, error) {
+	err := userCreateCheckName(reqInfo)
 	if err != nil {
 		return "", err
 	}
 	var (
 		teams    = make([]*types.Team, 0)
-		userInfo = info.NewUserInfo()
+		userInfo = reqInfo.NewUserInfo()
 	)
-	if len(info.Teams) > 0 {
-		teams, err = db.TeamsQueryByIds(info.Teams, false)
+	if len(reqInfo.Teams) > 0 {
+		teams, err = db.TeamsQueryByIds(reqInfo.Teams, false)
 		if err != nil {
 			return "", err
 		}
@@ -108,8 +108,8 @@ func UserCreate(info *models.UserCreateReqInfo) (string, error) {
 	return id, nil
 }
 
-func userCreateCheckName(info *models.UserCreateReqInfo) error {
-	sameNameUsers, err := db.UsersGetByName(info.Username)
+func userCreateCheckName(reqInfo *models.UserCreateReqInfo) error {
+	sameNameUsers, err := db.UsersGetByName(reqInfo.Username, true)
 	if err != nil {
 		return err
 	}
@@ -119,12 +119,12 @@ func userCreateCheckName(info *models.UserCreateReqInfo) error {
 	return nil
 }
 
-func UserUpdate(info *models.UserUpdateReqInfo, operator *types.User) (string, error) {
-	oldUser, err := userUpdateCheckRoleAndName(info, operator)
+func UserUpdate(reqInfo *models.UserUpdateReqInfo, operator *types.User) (string, error) {
+	oldUser, err := userUpdateCheckRoleAndName(reqInfo, operator)
 	if err != nil {
 		return "", err
 	}
-	newUserInfo, clearSession := info.NewUserInfo(oldUser)
+	newUserInfo, clearSession := reqInfo.NewUserInfo(oldUser)
 	updateTeams, err := userUpdateCheckTeams(oldUser.Teams, newUserInfo.Teams, newUserInfo.UserId)
 	if err != nil {
 		return "", err
@@ -143,19 +143,19 @@ func UserUpdate(info *models.UserUpdateReqInfo, operator *types.User) (string, e
 	return id, nil
 }
 
-func userUpdateCheckRoleAndName(info *models.UserUpdateReqInfo, operator *types.User) (*types.User, error) {
-	userInfo, err := db.UserGetById(info.UserId)
+func userUpdateCheckRoleAndName(reqInfo *models.UserUpdateReqInfo, operator *types.User) (*types.User, error) {
+	userInfo, err := db.UserGetById(reqInfo.UserId)
 	if err != nil {
 		return nil, err
 	}
 	if userInfo.Role == types.UserRoleAdmin && operator.Role != types.UserRoleSupperAdmin {
 		return nil, response.NewRespServerErr(locales.CodeNoPermission)
 	}
-	sameNameUsers, err := db.UsersGetByName(info.Username)
+	sameNameUsers, err := db.UsersGetByName(reqInfo.Username, true)
 	if err != nil {
 		return nil, err
 	}
-	if len(sameNameUsers) > 1 || len(sameNameUsers) == 1 && sameNameUsers[0].UserId != info.UserId {
+	if len(sameNameUsers) > 1 || len(sameNameUsers) == 1 && sameNameUsers[0].UserId != reqInfo.UserId {
 		return nil, response.NewBadRequestErr(locales.CodeUserNameAlreadyExist)
 	}
 	return userInfo, nil

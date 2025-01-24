@@ -27,14 +27,14 @@ const viewValueRef = useTemplateRef<InstanceType<typeof ConfigView>>("viewValueR
 
 async function search() {
   await router.replace(queryInfo.value.getQuery())
-  // isLoading.value = true
-  // return await teamService
-  //   .query(queryInfo.value.getSearch())
-  //   .then(res => {
-  //     tableList.value.data = res.list
-  //     tableList.value.total = res.total
-  //   })
-  //   .finally(() => (isLoading.value = false))
+  isLoading.value = true
+  return await configService
+    .query(queryInfo.value.getSearch())
+    .then(res => {
+      tableList.value.data = res.list
+      tableList.value.total = res.total
+    })
+    .finally(() => (isLoading.value = false))
 }
 
 function openAction(action: string, info?: ConfigInfo) {
@@ -44,10 +44,10 @@ function openAction(action: string, info?: ConfigInfo) {
       editRef.value?.open(info)
       break
     case Action.Delete:
-      deleteRef.value?.open()
+      deleteRef.value?.open(info!)
       break
     case Action.View:
-      viewValueRef.value?.open()
+      viewValueRef.value?.open(info!)
       break
   }
 }
@@ -94,7 +94,7 @@ onMounted(() => search())
       :total="tableList.total"
       @page-change="search"
       @sort-change="search">
-      <el-table-column :label="t('label.config')" fixed="left" min-width="140" prop="name" sortable="custom" />
+      <el-table-column :label="t('label.config')" fixed="left" min-width="140" prop="configName" sortable="custom" />
       <el-table-column :label="t('label.description')" min-width="140" prop="description">
         <template #default="scope">
           <v-table-column-none :text="scope.row.description" />
@@ -105,9 +105,10 @@ onMounted(() => search())
           <v-config-type-view :configType="scope.row.configType" />
         </template>
       </el-table-column>
-      <el-table-column :label="t('label.value')" min-width="120">
+      <el-table-column :label="t('label.value')" min-width="200">
         <template #default="scope">
           <span v-if="scope.row.configType === ConfigType.Static">{{ scope.row.configValue }}</span>
+          <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
         </template>
       </el-table-column>
       <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
