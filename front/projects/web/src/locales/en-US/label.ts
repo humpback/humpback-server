@@ -29,6 +29,17 @@ export default {
     "url": "Url",
     "isDefault": "Is Default",
     "default": "Default",
-    "authentication": "Authentication"
+    "authentication": "Authentication",
+    "ip": "IP",
+    "hostname": "Hostname",
+    "labels": "Labels",
+    "status": "Status",
+    "resources": "Resources",
+    "keywords": "Keywords",
+    "label": "Label",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "online": "Online",
+    "offline": "Offline"
   }
 }

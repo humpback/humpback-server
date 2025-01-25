@@ -390,6 +390,11 @@
     "configService": true,
     "NewRegistryEmptyInfo": true,
     "RegistryInfo": true,
-    "registryService": true
+    "registryService": true,
+    "BaseInfo": true,
+    "NewBaseEmptyInfo": true,
+    "NewNodeEmptyInfo": true,
+    "NodeInfo": true,
+    "NodeStatus": true
   }
 }

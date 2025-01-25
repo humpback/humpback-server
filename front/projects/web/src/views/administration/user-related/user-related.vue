@@ -51,8 +51,6 @@ onBeforeMount(async () => {
 
 <style lang="scss" scoped>
 .tab-box {
-  margin-top: -10px;
-
   :deep(.el-tabs__header.is-top) {
     margin-bottom: 20px;
   }

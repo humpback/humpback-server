@@ -1,4 +1,6 @@
-export interface UserInfo {
+import { BaseInfo, NewBaseEmptyInfo } from "#/base.ts"
+
+export interface UserInfo extends BaseInfo {
   userId: string
   username: string
   email: string
@@ -6,13 +8,12 @@ export interface UserInfo {
   description: string
   phone: string
   role: number
-  createdAt: number
-  updatedAt: number
   teams: string[]
 }
 
 export function NewUserEmptyInfo(): UserInfo {
   return {
+    ...NewBaseEmptyInfo(),
     userId: "",
     username: "",
     email: "",
@@ -20,23 +21,20 @@ export function NewUserEmptyInfo(): UserInfo {
     description: "",
     phone: "",
     role: UserRole.User,
-    createdAt: 0,
-    updatedAt: 0,
     teams: []
   }
 }
 
-export interface TeamInfo {
+export interface TeamInfo extends BaseInfo {
   teamId: string
   name: string
   description: string
-  createdAt: number
-  updatedAt: number
   users: string[]
 }
 
 export function NewTeamEmptyInfo(): TeamInfo {
   return {
+    ...NewBaseEmptyInfo(),
     teamId: "",
     name: "",
     description: "",

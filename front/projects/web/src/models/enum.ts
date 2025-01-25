@@ -28,3 +28,8 @@ export enum Action {
   Delete = "delete",
   View = "view"
 }
+
+export enum NodeStatus {
+  Online = "Online",
+  Offline = "Offline"
+}

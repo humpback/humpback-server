@@ -12,10 +12,14 @@ type Props = Partial<
     showHeaderColor?: boolean
     round?: boolean
     bodyPaddingNone?: boolean
+    showTitle?: boolean
   }
 >
 
-const props = withDefaults(defineProps<Props>(), { shadow: "never" })
+const props = withDefaults(defineProps<Props>(), { shadow: "never", showTitle: true })
+
+const { t } = useI18n()
+const route = useRoute()
 const slots = useSlots()
 
 const style = computed(() => {
@@ -39,6 +43,9 @@ const style = computed(() => {
       <slot name="header" />
     </template>
     <template v-if="!!slots.default" #default>
+      <div v-if="props.showTitle" class="card-title">
+        {{ t("menu.header." + (route.name as string)) }}
+      </div>
       <slot />
     </template>
     <template v-if="!!slots.footer" #footer>
@@ -71,5 +78,11 @@ const style = computed(() => {
   :deep(.el-card__body) {
     padding: 0;
   }
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
 }
 </style>

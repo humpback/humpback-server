@@ -13,7 +13,7 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const tableHeight = computed(() => TableHeight(258))
+const tableHeight = computed(() => TableHeight(311))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryUserInfo>(new QueryUserInfo(route.query))
@@ -70,7 +70,7 @@ onMounted(() => search())
   <el-form @submit.prevent="search">
     <el-form-item>
       <div class="d-flex gap-3 w-100 flex-wrap">
-        <div>
+        <div style="width: 280px">
           <v-role-query-select v-model="queryInfo.filter.role" :placeholder="t('placeholder.all')" @change="search()" />
         </div>
         <div class="flex-1" style="min-width: 300px">
