@@ -35,8 +35,9 @@
   "containers": [
     {
       "containerId": "asecfesac3cabd67af7d1ded36c464d6f326c04e80a4bb99a061faca1347f4b2",
-      "containerName": "humpback-kOC3jh7F-PCvTc-n5PLi",
+      "containerName": "humpback-RArCDj4N-RArCD-kNIK7",
       "state": "Running",
+      "errorMsg": "image not found",
       "status": "Up 2 hours",
       "network": "bridge",
       "image": "nginx",

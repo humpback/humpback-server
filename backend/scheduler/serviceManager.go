@@ -83,8 +83,8 @@ func (sm *ServiceManager) Reconcile() {
 	if !sm.ServiceInfo.IsEnabled {
 		for _, c := range sm.ServiceInfo.Containers {
 			nodeId := c.NodeId
-			containerId := c.ContainerId
-			err := sm.DeleteContainer(nodeId, containerId)
+			containerName := c.ContainerName
+			err := sm.DeleteContainer(nodeId, containerName)
 			if err != nil {
 				c.ErrorMsg = err.Error()
 			}
@@ -112,12 +112,13 @@ func (sm *ServiceManager) Reconcile() {
 		// 先选一个容器做删除
 		if c, ok := sm.TryToDeleteOne(); ok {
 			nodeId := c.NodeId
-			containerId := c.ContainerId
+			containerName := c.ContainerName
 			slog.Info("[Service Manager] Remove un-need container......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", c.ContainerName)
-			err := sm.DeleteContainer(nodeId, containerId)
+			err := sm.DeleteContainer(nodeId, containerName)
 			if err != nil {
 				c.ErrorMsg = err.Error()
 			}
+			slog.Info("[Service Manager] After remove container......", "ServiceId", sm.ServiceInfo.ServiceId, "Container Count", len(sm.ServiceInfo.Containers))
 		}
 
 		if sm.ServiceInfo.Deployment.Replicas > len(sm.ServiceInfo.Containers) {
@@ -132,13 +133,13 @@ func (sm *ServiceManager) Reconcile() {
 
 }
 
-func (sm *ServiceManager) DeleteContainer(nodeId string, containerId string) error {
-	if err := RemoveNodeContainer(nodeId, containerId); err != nil {
+func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string) error {
+	if err := RemoveNodeContainer(nodeId, containerName); err != nil {
 		return err
 	}
 
 	sm.ServiceInfo.Containers = lo.Filter(sm.ServiceInfo.Containers, func(cs *types.ContainerStatus, index int) bool {
-		return cs.ContainerId != containerId
+		return cs.ContainerName != containerName
 	})
 	return nil
 }

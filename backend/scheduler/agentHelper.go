@@ -6,7 +6,7 @@ import (
 	"humpback/types"
 )
 
-func RemoveNodeContainer(nodeId string, containerId string) error {
+func RemoveNodeContainer(nodeId string, containerName string) error {
 	// remove container
 	return nil
 }

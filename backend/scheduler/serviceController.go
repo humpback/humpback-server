@@ -84,7 +84,7 @@ func (sc *ServiceController) HandleContainerChanged() {
 		if serviceId != "" {
 			serviceManager, ok := sc.ServiceCtrls[serviceId]
 			if ok {
-				slog.Error("[Service Controller] Handler Service Container Changed", "ServiceId", serviceId, "ContainerName", containerStatus.ContainerName)
+				slog.Info("[Service Controller] Handler Service Container Changed", "ServiceId", serviceId, "ContainerName", containerStatus.ContainerName)
 				go serviceManager.UpdateContainerWhenChanged(containerStatus)
 			}
 		}
