@@ -256,6 +256,12 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 		}
 	}
 
+	if sm.ServiceInfo.Deployment.Mode == types.DeployModeReplicate &&
+		len(sm.ServiceInfo.Containers) > sm.ServiceInfo.Deployment.Replicas {
+		randomIndex := rand.Intn(len(sm.ServiceInfo.Containers))
+		return sm.ServiceInfo.Containers[randomIndex], true
+	}
+
 	return nil, false
 
 }
@@ -332,6 +338,9 @@ func (sm *ServiceManager) ChooseNextNodes(nodes []*types.Node) (nodeId string) {
 		for nId, nu := range nodeUsage {
 			nu.DeployUsage = float32(nu.DeployCount) / float32(totalReplicas)
 			nu.Score = (1-nu.CPUUsage)*100*0.3 + (1-nu.MemoryUsage)*100*0.2 + (1-nu.DeployUsage)*100*0.5
+
+			slog.Info("[Service Manager] Score for node......", "NodeId", nId, "Score", nu.Score)
+
 			if nu.Score > maxScore {
 				maxScore = nu.Score
 				nodeId = nId
