@@ -123,7 +123,7 @@ func (sm *ServiceManager) Reconcile() {
 
 		if sm.ServiceInfo.Deployment.Replicas > len(sm.ServiceInfo.Containers) {
 			sm.StartNextContainer()
-		} else {
+		} else if sm.ServiceInfo.Deployment.Replicas == len(sm.ServiceInfo.Containers) {
 			slog.Info("[Service Manager] Service change status to running......", "ServiceId", sm.ServiceInfo.ServiceId)
 			sm.ServiceInfo.Status = types.ServiceStatusRunning
 		}
@@ -337,7 +337,7 @@ func (sm *ServiceManager) ChooseNextNodes(nodes []*types.Node) (nodeId string) {
 
 		for nId, nu := range nodeUsage {
 			nu.DeployUsage = float32(nu.DeployCount) / float32(totalReplicas)
-			nu.Score = (1-nu.CPUUsage)*100*0.3 + (1-nu.MemoryUsage)*100*0.2 + (1-nu.DeployUsage)*100*0.5
+			nu.Score = (100-nu.CPUUsage)*0.3 + (100-nu.MemoryUsage)*0.2 + (1-nu.DeployUsage)*100*0.5
 
 			slog.Info("[Service Manager] Score for node......", "NodeId", nId, "Score", nu.Score)
 
