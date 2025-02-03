@@ -1,7 +1,6 @@
 package scheduler
 
 import (
-	"log/slog"
 	"strings"
 
 	"humpback/internal/db"
@@ -13,6 +12,7 @@ type ServiceController struct {
 	ServiceCtrls        map[string]*ServiceManager
 	NodeChangeChan      chan NodeSimpleInfo
 	ContainerChangeChan chan types.ContainerStatus
+	ContainerRemoveChan chan types.ContainerStatus
 	ServiceChangeChan   chan string
 }
 
@@ -22,11 +22,13 @@ func NewServiceController(nodeChan chan NodeSimpleInfo, containerChan chan types
 		NodeChangeChan:      nodeChan,
 		ContainerChangeChan: containerChan,
 		ServiceChangeChan:   serviceChan,
+		ContainerRemoveChan: make(chan types.ContainerStatus, 100),
 	}
 
 	go sc.HandleNodeChanged()
 	go sc.HandleContainerChanged()
 	go sc.HandleServiceChange()
+	go sc.HandleContainerRemove()
 
 	return sc
 }
@@ -84,10 +86,17 @@ func (sc *ServiceController) HandleContainerChanged() {
 		if serviceId != "" {
 			serviceManager, ok := sc.ServiceCtrls[serviceId]
 			if ok {
-				slog.Info("[Service Controller] Handler Service Container Changed", "ServiceId", serviceId, "ContainerName", containerStatus.ContainerName)
 				go serviceManager.UpdateContainerWhenChanged(containerStatus)
+			} else {
+				sc.ContainerRemoveChan <- containerStatus
 			}
 		}
+	}
+}
+
+func (sc *ServiceController) HandleContainerRemove() {
+	for containerStatus := range sc.ContainerRemoveChan {
+		RemoveNodeContainer(containerStatus.NodeId, containerStatus.ContainerName)
 	}
 }
 

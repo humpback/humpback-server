@@ -121,7 +121,7 @@ func mockWebServices(c *gin.Context) {
 		Deployment: &types.Deployment{
 			Type:     types.DeployTypeBackground,
 			Mode:     types.DeployModeReplicate,
-			Replicas: 2,
+			Replicas: 4,
 		},
 	}
 
