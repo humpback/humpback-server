@@ -5,8 +5,7 @@ import { Action } from "@/models"
 import NodeEdit from "./node-edit.vue"
 import NodeDelete from "./node-delete.vue"
 import NodeView from "./node-view.vue"
-import { QueryNodesInfo, statusOptions } from "./common.ts"
-import VNodeEnableTag from "@/components/business/v-node/VNodeEnableTag.vue"
+import { QueryNodesInfo, statusOptions, modeOptions } from "./common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -27,7 +26,7 @@ const deleteRef = useTemplateRef<InstanceType<typeof NodeDelete>>("deleteRef")
 const viewValueRef = useTemplateRef<InstanceType<typeof NodeView>>("viewValueRef")
 
 async function search() {
-  await router.replace(queryInfo.value.getQuery())
+  await router.replace(queryInfo.value.urlQuery())
   tableList.value.data.push({
     nodeId: "wr",
     name: "e11dbts01.buyabs.corp",
@@ -91,8 +90,7 @@ onMounted(() => search())
               :placeholder="queryInfo.mode === 'keywords' ? t('placeholder.enterIpOrHostname') : t('placeholder.enterLabelKey')">
               <template #prepend>
                 <el-select v-model="queryInfo.mode" placeholder="" style="width: 120px">
-                  <el-option :label="t('label.keywords')" value="keywords" />
-                  <el-option :label="t('label.label')" value="label" />
+                  <el-option v-for="item in modeOptions" :key="item.value" :label="t(item.label)" :value="item.value" />
                 </el-select>
               </template>
             </v-input>

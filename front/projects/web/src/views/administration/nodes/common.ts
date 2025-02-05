@@ -1,5 +1,5 @@
 import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
-import { find, omitBy } from "lodash-es"
+import { find, map, omitBy } from "lodash-es"
 
 export const sortOptions = ["ip", "hostname", "updatedAt", "createdAt"]
 
@@ -15,21 +15,33 @@ export const statusOptions = [
   { label: "label.offline", value: "offline" }
 ]
 
+export const modeOptions = [
+  { label: "label.keywords", value: "keywords" },
+  { label: "label.label", value: "label" }
+]
+
 export class QueryNodesInfo extends QueryInfo {
   constructor(queryInfo: any, groupOptions: any[]) {
-    super(queryInfo, ["keywords", "label"], defaultPage, defaultSort, sortOptions, defaultFilter)
+    super(
+      queryInfo,
+      map(modeOptions, x => x.value),
+      defaultPage,
+      defaultSort,
+      sortOptions,
+      defaultFilter
+    )
     this.filter.group = queryInfo["group"] ? (queryInfo["group"] as string) : ""
     const statusInfo = find(statusOptions, x => x.value === (queryInfo["status"] as string))
     this.filter.status = statusInfo?.value || ""
   }
 
-  getQuery() {
+  urlQuery() {
     return {
       query: Object.assign({}, { group: this.filter.group || undefined, status: this.filter.status || undefined }, this.getBaseQuery())
     }
   }
 
-  getSearch() {
+  searchParams() {
     return omitBy(this, (value, key) => key.startsWith("_"))
   }
 }

@@ -26,10 +26,10 @@ const deleteRef = useTemplateRef<InstanceType<typeof ConfigDelete>>("deleteRef")
 const viewValueRef = useTemplateRef<InstanceType<typeof ConfigView>>("viewValueRef")
 
 async function search() {
-  await router.replace(queryInfo.value.getQuery())
+  await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
   return await configService
-    .query(queryInfo.value.getSearch())
+    .query(queryInfo.value.searchParams())
     .then(res => {
       tableList.value.data = res.list
       tableList.value.total = res.total

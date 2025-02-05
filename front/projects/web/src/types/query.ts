@@ -13,15 +13,15 @@ export class QueryInfo {
   private _defaultPage?: PageInfo
   private _defaultSort?: SortInfo
   private _sortOptions?: string[]
-  private _defaultMode: string[]
+  private _modeOptions: string[]
 
-  constructor(queryInfo: any, defaultMode: string[], defaultPage?: PageInfo, defaultSort?: SortInfo, sortOptions?: string[], defaultFilter?: any) {
-    this._defaultMode = defaultMode
+  constructor(queryInfo: any, modeOptions: string[], defaultPage?: PageInfo, defaultSort?: SortInfo, sortOptions?: string[], defaultFilter?: any) {
+    this._modeOptions = modeOptions
     this._defaultPage = defaultPage
     this._defaultSort = defaultSort
 
     this.keywords = queryInfo["keywords"] ? queryInfo["keywords"] : ""
-    this.mode = find(this._defaultMode, x => x === queryInfo["mode"]) ? queryInfo["mode"] : this._defaultMode[0]
+    this.mode = find(this._modeOptions, x => x === queryInfo["mode"]) ? queryInfo["mode"] : this._modeOptions[0]
     this.filter = defaultFilter
     this.pageInfo = this._defaultPage
       ? ({
@@ -41,7 +41,7 @@ export class QueryInfo {
   getBaseQuery() {
     return {
       keywords: this.keywords !== "" ? this.keywords : undefined,
-      mode: this.keywords !== "" && this.mode !== this._defaultMode[0] ? this.mode : undefined,
+      mode: this.keywords !== "" && this.mode !== this._modeOptions[0] ? this.mode : undefined,
       pageIndex: this._defaultPage && this.pageInfo!.index === this._defaultPage?.index ? undefined : this.pageInfo!.index,
       pageSize: this._defaultPage && this.pageInfo!.size === this._defaultPage?.size ? undefined : this.pageInfo!.size,
       sortField: this._defaultSort && this.sortInfo!.field === this._defaultSort?.field ? undefined : this.sortInfo!.field,

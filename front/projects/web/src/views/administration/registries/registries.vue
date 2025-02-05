@@ -26,10 +26,10 @@ const registryDeleteRef = useTemplateRef<InstanceType<typeof RegistryDelete>>("r
 const registryViewRef = useTemplateRef<InstanceType<typeof RegistryView>>("registryViewRef")
 
 async function search() {
-  await router.replace(queryInfo.value.getQuery())
+  await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
   return await registryService
-    .query(queryInfo.value.getSearch())
+    .query(queryInfo.value.searchParams())
     .then(res => {
       tableList.value.data = res.list
       tableList.value.total = res.total

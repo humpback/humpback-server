@@ -4,7 +4,7 @@ import { TableHeight } from "@/utils"
 import UserDelete from "./user-delete.vue"
 import UserEdit from "./user-edit.vue"
 import UserViewTeams from "./user-view-teams.vue"
-import { QueryUserInfo } from "./common.ts"
+import { QueryUserInfo, modeOptions } from "./common.ts"
 
 import { Action } from "@/models"
 
@@ -38,10 +38,10 @@ function showActionBtn(info: UserInfo) {
 }
 
 async function search() {
-  await router.replace(queryInfo.value.getQuery())
+  await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
   return await userService
-    .query(queryInfo.value.getSearch())
+    .query(queryInfo.value.searchParams())
     .then(res => {
       tableList.value.data = res.list
       tableList.value.total = res.total
@@ -77,9 +77,7 @@ onMounted(() => search())
           <v-input v-model="queryInfo.keywords">
             <template #prepend>
               <el-select v-model="queryInfo.mode" placeholder="" style="width: 120px">
-                <el-option :label="t('label.username')" value="username" />
-                <el-option :label="t('label.email')" value="email" />
-                <el-option :label="t('label.phone')" value="phone" />
+                <el-option v-for="item in modeOptions" :key="item.value" :label="t(item.label)" :value="item.value" />
               </el-select>
             </template>
           </v-input>

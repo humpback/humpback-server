@@ -11,13 +11,13 @@ export class QueryRegistryInfo extends QueryInfo {
     super(queryInfo, ["registryName"], defaultPage, defaultSort, sortOptions, {})
   }
 
-  getQuery() {
+  urlQuery() {
     return {
       query: Object.assign({}, this.getBaseQuery())
     }
   }
 
-  getSearch() {
+  searchParams() {
     return omitBy(this, (value, key) => key.startsWith("_"))
   }
 }

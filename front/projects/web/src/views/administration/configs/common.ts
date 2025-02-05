@@ -16,13 +16,13 @@ export class QueryConfigsInfo extends QueryInfo {
       !isNaN(configType) && find([0, ConfigType.Volume, ConfigType.Static], x => x === configType) ? configType : defaultFilter.configType
   }
 
-  getQuery() {
+  urlQuery() {
     return {
       query: Object.assign({}, this.filter.configType !== defaultFilter.configType ? { configType: this.filter.configType } : {}, this.getBaseQuery())
     }
   }
 
-  getSearch() {
+  searchParams() {
     return omitBy(this, (value, key) => key.startsWith("_"))
   }
 }
