@@ -62,7 +62,7 @@
     {
       "containerId": "abcc12sac3cabd67af7d1ded36c464d6f326c04e80a4bb99a061faca1347f5b2",
       "containerName": "humpback-n8TQ0gJS-n8TQ0-AH65A",
-      "state": "Running",
+      "state": "Failed",
       "status": "Up 2 hours",
       "network": "bridge",
       "image": "nginx",

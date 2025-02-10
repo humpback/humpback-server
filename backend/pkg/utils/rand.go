@@ -25,7 +25,7 @@ func GenerateRandomNumber() int {
 // GenerateRandomStringWithLength 生成指定长度的随机字符串
 func GenerateRandomStringWithLength(length int) string {
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r := rand.New(rand.NewSource(time.Now().UnixNano() + int64(rand.Intn(1000))))
 	b := make([]byte, length)
 	for i := range b {
 		b[i] = charset[r.Intn(len(charset))]

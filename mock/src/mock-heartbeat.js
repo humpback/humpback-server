@@ -33,7 +33,7 @@ let sendHeartbeat = async (mockFile) => {
     await sleep()
     let mockData = JSON.parse(fs.readFileSync(`${__dirname}/mock-data/${mockFile}.json`, 'utf8'))
     console.log(` [${mockFile}] sending heartbeat...`)
-    let url = `http://localhost:8301/health`
+    let url = `http://localhost:18301/health`
     await axios.post(url, mockData)
   }
 }

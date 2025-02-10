@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"humpback/pkg/utils"
 	"humpback/types"
 	"strings"
 )
@@ -19,6 +20,10 @@ func ParseServiceIdByContainerId(containerId string) string {
 		return ""
 	}
 	return parts[1]
+}
+
+func GenerateContainerName(serviceId, version string) string {
+	return "humpback-" + serviceId + "-" + version + "-" + utils.GenerateRandomStringWithLength(5)
 }
 
 func isContainerRunning(status string) bool {

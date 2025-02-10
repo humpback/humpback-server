@@ -34,6 +34,12 @@ type Service struct {
 	UpdateAt    int64              `json:"updateAt"`
 }
 
+type AgentTask struct {
+	ContainerName string `json:"containerName"`
+	*ServiceMetaDocker
+	*ScheduleInfo
+}
+
 type ContainerStatus struct {
 	ContainerId   string `json:"containerId"`
 	ContainerName string `json:"containerName"`
