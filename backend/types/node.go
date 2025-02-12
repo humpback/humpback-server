@@ -10,7 +10,10 @@ type Node struct {
 	CreatedAt   int64             `json:"createdAt"`
 	UpdatedAt   int64             `json:"updatedAt"`
 	CPUUsage    float32           `json:"cpuUsage"`
+	CPU         int               `json:"cpu"`
 	MemoryUsage float32           `json:"memoryUsage"`
+	MemoryTotal int64             `json:"memoryTotal"`
+	MemoryUsed  int64             `json:"memoryUsed"`
 	Labels      map[string]string `json:"labels"`
 }
 
