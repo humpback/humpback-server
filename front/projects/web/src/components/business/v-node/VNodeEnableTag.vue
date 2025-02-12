@@ -13,7 +13,7 @@ const { t } = useI18n()
 <template>
   <v-tooltip :content="props.enabled ? t('label.enabled') : t('label.disabled')" :effect="props.effect" :placement="props.placement">
     <div v-if="props.enabled" class="enabled box"></div>
-    <div class="disabled box"></div>
+    <div v-else class="disabled box"></div>
   </v-tooltip>
 </template>
 

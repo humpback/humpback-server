@@ -50,7 +50,10 @@ export interface NodeInfo extends BaseInfo {
   status: string
   isEnable: boolean
   cpuUsage: number
+  cpu: number
   memoryUsage: number
+  memoryTotal: number
+  memoryUsed: number
   labels: { [key: string]: string }
 }
 
@@ -64,7 +67,10 @@ export function NewNodeEmptyInfo(): NodeInfo {
     status: "",
     isEnable: false,
     cpuUsage: 0,
+    cpu: 0,
     memoryUsage: 0,
+    memoryTotal: 0,
+    memoryUsed: 0,
     labels: {}
   }
 }

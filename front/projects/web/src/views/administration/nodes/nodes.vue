@@ -35,7 +35,10 @@ async function search() {
     status: "Online",
     isEnable: true,
     cpuUsage: 0,
+    cpu: 8,
     memoryUsage: 0,
+    memoryTotal: 625000,
+    memoryUsed: 134313,
     labels: {},
     createdAt: 0,
     updatedAt: 0
@@ -124,37 +127,45 @@ onMounted(() => search())
           <div class="custom-column">
             <div class="d-flex gap-2">
               <v-node-enable-tag :enabled="scope.row.isEnable" />
-              <el-link type="primary">{{ scope.row.ipAddress }}</el-link>
+              <el-link :type="scope.row.isEnable ? 'primary' : 'info'">{{ scope.row.ipAddress }}</el-link>
             </div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column :label="t('label.hostname')" min-width="140" prop="description">
+      <el-table-column :label="t('label.hostname')" min-width="200" prop="description">
         <template #default="scope">
           <div class="custom-column">
             <v-table-column-none :text="scope.row.name" />
           </div>
         </template>
       </el-table-column>
-      <el-table-column :label="t('label.status')" min-width="220">
+      <el-table-column :label="t('label.status')" min-width="400">
         <template #default="scope">
-          <v-node-status-tag :status="scope.row.status" />
+          <div class="custom-column">
+            <div class="status">
+              <div class="status-content">
+                <div class="status-cpu">
+                  <el-text type="info">
+                    <strong>{{ t("label.cpu") }}</strong>
+                    <div>{{ scope.row.cpu }} {{ t("label.core") }}</div>
+                  </el-text>
+                </div>
+                <div class="status-memory">
+                  <el-text type="info">
+                    <strong>{{ t("label.memoryUsed") }}</strong>
+                    <el-progress v-if="scope.row.memoryTotal" :percentage="50" />
+                    <div></div>
+                  </el-text>
+                </div>
+              </div>
+              <div class="status-tag">
+                <v-node-status-tag :status="scope.row.status" />
+              </div>
+            </div>
+          </div>
         </template>
       </el-table-column>
-      <el-table-column :label="t('label.resources')" min-width="200">
-        <template #default="scope"></template>
-      </el-table-column>
-      <el-table-column :label="t('label.labels')" min-width="200" />
-      <!--      <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">-->
-      <!--        <template #default="scope">-->
-      <!--          <v-date-view :timestamp="scope.row.updatedAt" />-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-      <!--      <el-table-column :label="t('label.createDate')" min-width="140" prop="createdAt" sortable="custom">-->
-      <!--        <template #default="scope">-->
-      <!--          <v-date-view :timestamp="scope.row.createdAt" />-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
+      <el-table-column :label="t('label.labels')" min-width="240" />
       <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
         <template #default="scope">
           <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
@@ -173,5 +184,33 @@ onMounted(() => search())
 <style lang="scss" scoped>
 .custom-column {
   min-height: 60px;
+}
+
+.status {
+  display: flex;
+  align-items: start;
+  gap: 20px;
+  width: 100%;
+
+  .status-content {
+    display: flex;
+    align-items: start;
+    gap: 20px;
+    flex: 1;
+
+    .status-cpu {
+      min-width: 140px;
+    }
+
+    .status-memory {
+      flex: 1;
+    }
+  }
+
+  .status-tag {
+    width: 100px;
+    text-align: right;
+    padding-right: 20px;
+  }
 }
 </style>

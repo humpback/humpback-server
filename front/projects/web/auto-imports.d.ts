@@ -388,8 +388,11 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { PageLimitRole, UserRole, ConfigType, SortType, PageLimitRole, UserRole, ConfigType, SortType } from './src/models/enum'
+  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus } from './src/models/enum'
   import('./src/models/enum')
+  // @ts-ignore
+  export type { BaseInfo } from './src/types/base'
+  import('./src/types/base')
   // @ts-ignore
   export type { GroupInfo } from './src/types/group'
   import('./src/types/group')
@@ -403,7 +406,7 @@ declare global {
   export type { UserInfo, TeamInfo } from './src/types/user'
   import('./src/types/user')
   // @ts-ignore
-  export type { ConfigInfo, RegistryInfo } from './src/types/setting'
+  export type { ConfigInfo, RegistryInfo, NodeInfo } from './src/types/setting'
   import('./src/types/setting')
 }
 
@@ -435,13 +438,16 @@ declare module 'vue' {
     readonly IsSupperAdmin: UnwrapRef<typeof import('./src/utils/common')['IsSupperAdmin']>
     readonly IsUser: UnwrapRef<typeof import('./src/utils/common')['IsUser']>
     readonly IsValidEmail: UnwrapRef<typeof import('./src/utils/rule')['IsValidEmail']>
+    readonly NewBaseEmptyInfo: UnwrapRef<typeof import('./src/types/base')['NewBaseEmptyInfo']>
     readonly NewConfigEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewConfigEmptyInfo']>
     readonly NewGroupEmptyInfo: UnwrapRef<typeof import('./src/types/group')['NewGroupEmptyInfo']>
+    readonly NewNodeEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewNodeEmptyInfo']>
     readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
     readonly NewRegistryEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewRegistryEmptyInfo']>
     readonly NewSortInfo: UnwrapRef<typeof import('./src/types/query')['NewSortInfo']>
     readonly NewTeamEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewTeamEmptyInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
+    readonly NodeStatus: UnwrapRef<typeof import('./src/models/enum')['NodeStatus']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>
     readonly ParseNumber: UnwrapRef<typeof import('./src/utils/common')['ParseNumber']>

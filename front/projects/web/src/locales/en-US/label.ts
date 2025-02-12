@@ -34,12 +34,16 @@ export default {
     "hostname": "Hostname",
     "labels": "Labels",
     "status": "Status",
-    "resources": "Resources",
     "keywords": "Keywords",
     "label": "Label",
     "enabled": "Enabled",
     "disabled": "Disabled",
     "online": "Online",
-    "offline": "Offline"
+    "offline": "Offline",
+    "cpu": "CPU",
+    "memory": "Memory",
+    "memoryUsed": "Memory(used)",
+    "core": "Core",
+    "gb": "GB"
   }
 }
