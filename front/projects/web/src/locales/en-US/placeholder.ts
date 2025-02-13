@@ -6,6 +6,9 @@ export default {
     "password": "Password",
     "newPassword": "New password",
     "enterIpOrHostname": "Enter ip or hostname",
-    "enterLabelKey": "Enter label key, Multiple key, please use comma to divide"
+    "enterLabelKey": "Enter label key, Multiple key, please use comma to divide",
+    "enterIpAddress": "Enter ip address",
+    "labelKey": "Label Key",
+    "labelValue": "Label Value"
   }
 }

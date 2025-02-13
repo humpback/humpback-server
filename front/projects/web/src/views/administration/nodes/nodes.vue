@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { NodeInfo } from "@/types"
-import { TableHeight } from "@/utils"
+import { BytesToGB, TableHeight } from "@/utils"
 import { Action } from "@/models"
-import NodeEdit from "./node-edit.vue"
-import NodeDelete from "./node-delete.vue"
-import NodeView from "./node-view.vue"
+import NodeAdd from "./node-add.vue"
+import NodeEditLabel from "./node-edit-label.vue"
+import NodeViewCommand from "./node-view-command.vue"
 import { QueryNodesInfo, statusOptions, modeOptions } from "./common.ts"
 
 const { t } = useI18n()
@@ -21,28 +21,85 @@ const tableList = ref({
   data: [] as Array<NodeInfo>
 })
 
-const editRef = useTemplateRef<InstanceType<typeof NodeEdit>>("editRef")
-const deleteRef = useTemplateRef<InstanceType<typeof NodeDelete>>("deleteRef")
-const viewValueRef = useTemplateRef<InstanceType<typeof NodeView>>("viewValueRef")
+const addRef = useTemplateRef<InstanceType<typeof NodeAdd>>("addRef")
+const editLabelRef = useTemplateRef<InstanceType<typeof NodeEditLabel>>("editLabelRef")
+const viewValueRef = useTemplateRef<InstanceType<typeof NodeViewCommand>>("viewValueRef")
 
 async function search() {
   await router.replace(queryInfo.value.urlQuery())
-  tableList.value.data.push({
-    nodeId: "wr",
-    name: "e11dbts01.buyabs.corp",
-    ipAddress: "172.16.171.52",
-    port: 8566,
-    status: "Online",
-    isEnable: true,
-    cpuUsage: 0,
-    cpu: 8,
-    memoryUsage: 0,
-    memoryTotal: 625000,
-    memoryUsed: 134313,
-    labels: {},
-    createdAt: 0,
-    updatedAt: 0
-  })
+  tableList.value.data.push(
+    {
+      nodeId: "wr",
+      name: "e11dbts01.buyabs.corp",
+      ipAddress: "172.16.171.52",
+      port: 8566,
+      status: "Online",
+      isEnable: true,
+      cpuUsage: 0,
+      cpu: 8,
+      memoryUsage: 0.36,
+      memoryTotal: 62500000200,
+      memoryUsed: 1343130000,
+      labels: {
+        test: "skyler",
+        nice: "true",
+        "bts-zk-node": "true",
+        "eggkeeper-api": "true",
+        "app": "true",
+        "newegg.platform": "true",
+        "etcd": "true",
+        "skyler": "true"
+      },
+      createdAt: 0,
+      updatedAt: 0
+    },
+    {
+      nodeId: "wrsf2rf2",
+      name: "e11dbts02.buyabs.corp",
+      ipAddress: "172.16.171.53",
+      port: 8566,
+      status: "Offline",
+      isEnable: true,
+      cpuUsage: 0,
+      cpu: 0,
+      memoryUsage: 0,
+      memoryTotal: 0,
+      memoryUsed: 0,
+      labels: {
+        test: "skyler",
+        nice: "true",
+        "bts-zk-node": "true",
+        "eggkeeper-api": "true",
+        "app": "true",
+        "newegg.platform": "true",
+        "etcd": "true",
+        "skyler": "true"
+      },
+      createdAt: 0,
+      updatedAt: 0
+    },
+    {
+      nodeId: "wrsf2rf2fss",
+      name: "e11dbts03.buyabs.corp",
+      ipAddress: "172.16.171.54",
+      port: 8566,
+      status: "Offline",
+      isEnable: false,
+      cpuUsage: 0,
+      cpu: 0,
+      memoryUsage: 0,
+      memoryTotal: 0,
+      memoryUsed: 0,
+      labels: {
+        test: "skyler",
+        nice: "true",
+        "bts-zk-node": "true",
+        "eggkeeper-api": "true"
+      },
+      createdAt: 0,
+      updatedAt: 0
+    }
+  )
   // isLoading.value = true
   // return await nodeService
   //   .query(queryInfo.value.getSearch())
@@ -54,18 +111,17 @@ async function search() {
 }
 
 function openAction(action: string, info?: NodeInfo) {
-  // switch (action) {
-  //   case Action.Add:
-  //   case Action.Edit:
-  //     editRef.value?.open(info)
-  //     break
-  //   case Action.Delete:
-  //     deleteRef.value?.open(info!)
-  //     break
-  //   case Action.View:
-  //     viewValueRef.value?.open(info!)
-  //     break
-  // }
+  switch (action) {
+    case Action.Add:
+      addRef.value?.open()
+      break
+    case Action.EditLabel:
+      editLabelRef.value?.open(info!)
+      break
+    case Action.View:
+      viewValueRef.value?.open(info!)
+      break
+  }
 }
 
 onMounted(() => search())
@@ -106,7 +162,7 @@ onMounted(() => search())
                   <IconMdiAdd />
                 </el-icon>
               </template>
-              {{ t("btn.addNode") }}
+              {{ t("btn.addNodes") }}
             </el-button>
           </div>
         </div>
@@ -124,19 +180,15 @@ onMounted(() => search())
       @sort-change="search">
       <el-table-column :label="t('label.ip')" fixed="left" min-width="160" prop="nodeName" sortable="custom">
         <template #default="scope">
-          <div class="custom-column">
-            <div class="d-flex gap-2">
-              <v-node-enable-tag :enabled="scope.row.isEnable" />
-              <el-link :type="scope.row.isEnable ? 'primary' : 'info'">{{ scope.row.ipAddress }}</el-link>
-            </div>
+          <div class="d-flex gap-2">
+            <v-node-enable-tag :enabled="scope.row.isEnable" />
+            <el-link :type="scope.row.isEnable ? 'primary' : 'info'">{{ scope.row.ipAddress }}</el-link>
           </div>
         </template>
       </el-table-column>
       <el-table-column :label="t('label.hostname')" min-width="200" prop="description">
         <template #default="scope">
-          <div class="custom-column">
-            <v-table-column-none :text="scope.row.name" />
-          </div>
+          <v-table-column-none :text="scope.row.name" />
         </template>
       </el-table-column>
       <el-table-column :label="t('label.status')" min-width="400">
@@ -145,40 +197,58 @@ onMounted(() => search())
             <div class="status">
               <div class="status-content">
                 <div class="status-cpu">
-                  <el-text type="info">
+                  <el-text size="small" type="info">
                     <strong>{{ t("label.cpu") }}</strong>
-                    <div>{{ scope.row.cpu }} {{ t("label.core") }}</div>
+                    <div>{{ scope.row.cpu || "--/--" }} {{ t("label.core") }}</div>
                   </el-text>
                 </div>
                 <div class="status-memory">
-                  <el-text type="info">
+                  <el-text size="small" type="info">
                     <strong>{{ t("label.memoryUsed") }}</strong>
-                    <el-progress v-if="scope.row.memoryTotal" :percentage="50" />
-                    <div></div>
+                    <el-progress v-if="scope.row.memoryTotal" :percentage="Math.trunc(scope.row.memoryUsage * 100)" />
+                    <div v-if="scope.row.memoryTotal">
+                      {{ `${BytesToGB(scope.row.memoryUsed)} ${t("label.gb")} / ${BytesToGB(scope.row.memoryTotal)} ${t("label.gb")}` }}
+                    </div>
+                    <div v-else>
+                      {{ `--/-- ${t("label.gb")}` }}
+                    </div>
                   </el-text>
                 </div>
               </div>
               <div class="status-tag">
-                <v-node-status-tag :status="scope.row.status" />
+                <v-node-status-tag v-if="scope.row.isEnable" :status="scope.row.status" />
               </div>
             </div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column :label="t('label.labels')" min-width="240" />
-      <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
+      <el-table-column :label="t('label.labels')" min-width="240">
         <template #default="scope">
-          <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
-          <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
+          <div class="custom-column">
+            <v-label-table-view :labels="scope.row.labels" :line="4" />
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column :label="t('label.action')" align="center" fixed="right" header-align="center" width="130">
+        <template #default="scope">
+          <div @click="openAction(Action.View, scope.row)">
+            <el-button link type="primary">
+              {{ t("btn.command") }}
+            </el-button>
+          </div>
+          <div>
+            <el-button link type="primary" @click="openAction(Action.EditLabel, scope.row)">{{ t("btn.editLabel") }}</el-button>
+          </div>
         </template>
       </el-table-column>
     </v-table>
   </v-card>
-  <node-delete ref="deleteRef" @refresh="search()" />
 
-  <node-edit ref="editRef" @refresh="search()" />
+  <node-add ref="addRef" @refresh="search()" />
 
-  <node-view ref="viewValueRef" />
+  <node-edit-label ref="editLabelRef" @refresh="search()" />
+
+  <node-view-command ref="viewValueRef" />
 </template>
 
 <style lang="scss" scoped>
@@ -199,11 +269,13 @@ onMounted(() => search())
     flex: 1;
 
     .status-cpu {
-      min-width: 140px;
+      flex: 3;
+      min-width: 100px;
     }
 
     .status-memory {
-      flex: 1;
+      flex: 7;
+      min-width: 180px;
     }
   }
 

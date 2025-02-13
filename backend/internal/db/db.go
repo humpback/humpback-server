@@ -274,7 +274,7 @@ func checkErr(err error) error {
 		return ErrBucketNotExist
 	case bolt.ErrInvalid,
 		bolt.ErrDatabaseNotOpen,
-		bolt.ErrDatabaseOpen,
+		bolt.ErrTimeout,
 		bolt.ErrInvalidMapping:
 		return ErrConnectAbnormal
 	default:

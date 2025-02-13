@@ -21,6 +21,7 @@ interface RuleLength {
 interface RuleFormat {
   Email: string
   Phone: string
+  IPAddress: string
 }
 
 export let RuleLength = {} as RuleLength

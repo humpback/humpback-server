@@ -11,8 +11,8 @@ export const statusOptions = [
   { label: "label.all", value: "" },
   { label: "label.enabled", value: "enabled" },
   { label: "label.disabled", value: "disabled" },
-  { label: "label.online", value: "online" },
-  { label: "label.offline", value: "offline" }
+  { label: "label.healthy", value: "online" },
+  { label: "label.deadly", value: "offline" }
 ]
 
 export const modeOptions = [
@@ -44,4 +44,17 @@ export class QueryNodesInfo extends QueryInfo {
   searchParams() {
     return omitBy(this, (value, key) => key.startsWith("_"))
   }
+}
+
+export function NewCommand(ip: string, isUninstall?: boolean) {
+  if (isUninstall) {
+    return `docker rm -f humpback-agent`
+  }
+  return `docker run -d --name=humpback-agent
+--net=host
+--restart=always
+-e ip=${ip}
+-v /etc/localtime:/etc/localtime
+humpback:latest
+`
 }

@@ -16,7 +16,7 @@ const { t } = useI18n()
 
 <template>
   <el-tag :effect="props.effect" :round="props.round" :size="props.size" :type="toLower(props.status) === toLower(NodeStatus.Online) ? 'success' : 'danger'">
-    {{ toLower(props.status) === toLower(NodeStatus.Online) ? t("label.online") : t("label.offline") }}
+    {{ toLower(props.status) === toLower(NodeStatus.Online) ? t("label.healthy") : t("label.deadly") }}
   </el-tag>
 </template>
 

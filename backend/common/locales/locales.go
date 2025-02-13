@@ -78,4 +78,11 @@ const (
 	CodeRegistryUrlAlreadyExist     = "R4Registry-008"
 	CodeRegistryUsernameLimitLength = "R4Registry-009"
 	CodeRegistryPasswordLimitLength = "R4Registry-010"
+
+	CodeNodesNotEmpty             = "R4Nodes-001"
+	CodeNodesIdNotEmpty           = "R4Nodes-002"
+	CodeNodesIpAddressInvalid     = "R4Nodes-003"
+	CodeNodesLabelKeyIsEmpty      = "R4Nodes-004"
+	CodeNodesLabelValueIsEmpty    = "R4Nodes-005"
+	CodeNodesLabelKeyIsDuplicated = "R4Nodes-006"
 )

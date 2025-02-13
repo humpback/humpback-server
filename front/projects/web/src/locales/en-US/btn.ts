@@ -22,7 +22,12 @@ export default {
     "fullScreen": "Full Screen",
     "close": "Close",
     "view": "View",
+    "addNodes": "Add Nodes",
     "addNode": "Add Node",
-    "addRegistry": "Add Registry"
+    "addRegistry": "Add Registry",
+    "more": "More",
+    "command": "Command",
+    "editLabel": "Edit Label",
+    "addLabel": "Add Label"
   }
 }

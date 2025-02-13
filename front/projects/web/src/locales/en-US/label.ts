@@ -31,19 +31,25 @@ export default {
     "default": "Default",
     "authentication": "Authentication",
     "ip": "IP",
+    "ipAddress": "IP Address",
     "hostname": "Hostname",
     "labels": "Labels",
+    "command": "Command",
     "status": "Status",
     "keywords": "Keywords",
     "label": "Label",
     "enabled": "Enabled",
     "disabled": "Disabled",
-    "online": "Online",
-    "offline": "Offline",
+    "healthy": "Healthy",
+    "deadly": "Deadly",
     "cpu": "CPU",
     "memory": "Memory",
     "memoryUsed": "Memory(used)",
     "core": "Core",
-    "gb": "GB"
+    "gb": "GB",
+    "install": "Install",
+    "uninstall": "Uninstall",
+    "labelKey": "Label Key",
+    "labelValue": "Label Value"
   }
 }

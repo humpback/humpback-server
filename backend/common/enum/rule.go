@@ -36,11 +36,13 @@ var RuleLength = map[string]LengthLimit{
 }
 
 var (
-	RegularEmail = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	RegularPhone = `^\d+$`
+	RegularEmail     = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	RegularPhone     = `^\d+$`
+	RegularIpAddress = `^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$`
 )
 
 var RuleFormat = map[string]string{
-	"Email": RegularEmail,
-	"Phone": RegularPhone,
+	"Email":     RegularEmail,
+	"Phone":     RegularPhone,
+	"IPAddress": RegularIpAddress,
 }

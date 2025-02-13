@@ -47,3 +47,8 @@ export function ParseNumber(number: any, defaultValue?: number) {
   const result = isString(number) ? Number(number) : NaN
   return isNaN(result) ? defaultValue : result
 }
+
+export function BytesToGB(bytes: number): number {
+  const gb = bytes / 1024 ** 3
+  return Number(gb.toFixed(2)).valueOf()
+}
