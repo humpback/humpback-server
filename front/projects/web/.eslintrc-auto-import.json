@@ -395,6 +395,7 @@
     "NewBaseEmptyInfo": true,
     "NewNodeEmptyInfo": true,
     "NodeInfo": true,
-    "NodeStatus": true
+    "NodeStatus": true,
+    "BytesToGB": true
   }
 }

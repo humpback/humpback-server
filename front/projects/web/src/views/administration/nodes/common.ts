@@ -1,5 +1,6 @@
 import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
 import { find, map, omitBy } from "lodash-es"
+import { NodeStatus, NodeSwitch } from "@/models"
 
 export const sortOptions = ["ip", "hostname", "updatedAt", "createdAt"]
 
@@ -9,10 +10,10 @@ export const defaultFilter = { group: "", status: "" }
 
 export const statusOptions = [
   { label: "label.all", value: "" },
-  { label: "label.enabled", value: "enabled" },
-  { label: "label.disabled", value: "disabled" },
-  { label: "label.healthy", value: "online" },
-  { label: "label.deadly", value: "offline" }
+  { label: "label.enabled", value: NodeSwitch.Enabled },
+  { label: "label.disabled", value: NodeSwitch.Disabled },
+  { label: "label.healthy", value: NodeStatus.Online },
+  { label: "label.deadly", value: NodeStatus.Offline }
 ]
 
 export const modeOptions = [
@@ -37,7 +38,14 @@ export class QueryNodesInfo extends QueryInfo {
 
   urlQuery() {
     return {
-      query: Object.assign({}, { group: this.filter.group || undefined, status: this.filter.status || undefined }, this.getBaseQuery())
+      query: Object.assign(
+        {},
+        {
+          group: this.filter.group || undefined,
+          status: this.filter.status || undefined
+        },
+        this.getBaseQuery()
+      )
     }
   }
 

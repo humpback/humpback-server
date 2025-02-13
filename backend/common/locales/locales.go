@@ -65,7 +65,7 @@ const (
 	CodeConfigValueNotEmpty          = "R4Cfg-005"
 	CodeConfigStaticValueLimitLength = "R4Cfg-006"
 	CodeConfigVolumeValueLimitLength = "R4Cfg-007"
-	CodeConfigTypeIsInvlaid          = "R4Cfg-008"
+	CodeConfigTypeIsInvalid          = "R4Cfg-008"
 	CodeConfigIdNotEmpty             = "R4Cfg-009"
 
 	CodeRegistryNameNotEmpty        = "R4Registry-001"
@@ -79,10 +79,11 @@ const (
 	CodeRegistryUsernameLimitLength = "R4Registry-009"
 	CodeRegistryPasswordLimitLength = "R4Registry-010"
 
-	CodeNodesNotEmpty             = "R4Nodes-001"
-	CodeNodesIdNotEmpty           = "R4Nodes-002"
-	CodeNodesIpAddressInvalid     = "R4Nodes-003"
-	CodeNodesLabelKeyIsEmpty      = "R4Nodes-004"
-	CodeNodesLabelValueIsEmpty    = "R4Nodes-005"
-	CodeNodesLabelKeyIsDuplicated = "R4Nodes-006"
+	CodeNodesNotEmpty              = "R4Nodes-001"
+	CodeNodesIdNotEmpty            = "R4Nodes-002"
+	CodeNodesIpAddressInvalid      = "R4Nodes-003"
+	CodeNodesLabelKeyIsEmpty       = "R4Nodes-004"
+	CodeNodesLabelValueIsEmpty     = "R4Nodes-005"
+	CodeNodesLabelKeyIsDuplicated  = "R4Nodes-006"
+	CodeNodesIpAddressAlreadyExist = "R4Nodes-007"
 )

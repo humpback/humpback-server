@@ -14,7 +14,7 @@ function copy() {
   <div class="command-box">
     <div class="command-body">
       <div class="copy-btn">
-        <v-tooltip :content="t('btn.copy')" :teleported="false" placement="top-end">
+        <v-tooltip :content="t('btn.copy')" :teleported="false" placement="right">
           <el-button link type="primary" @click="copy()">
             <el-icon :size="16">
               <IconMdiContentCopy />

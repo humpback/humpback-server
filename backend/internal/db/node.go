@@ -1,9 +1,47 @@
 package db
 
 import (
-	"humpback/types"
+	"encoding/json"
+	"fmt"
 	"slices"
+
+	bolt "go.etcd.io/bbolt"
+	"humpback/common/response"
+	"humpback/types"
 )
+
+func NodesGetAll() ([]*types.Node, error) {
+	return GetDataAll[types.Node](BucketNodes)
+}
+
+func NodesAdd(nodes []*types.Node) error {
+	if err := TransactionUpdates(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(BucketNodes))
+		if bucket == nil {
+			return ErrBucketNotExist
+		}
+		for _, node := range nodes {
+			data, err := json.Marshal(node)
+			if err != nil {
+				return fmt.Errorf("failed to encode node data: %s", err)
+			}
+			if err = bucket.Put([]byte(node.NodeId), data); err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	return nil
+}
+
+func NodeDelete(id string) error {
+	if err := DeleteData(BucketNodes, id); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	return nil
+}
 
 func UpdateNodeStatus(nodeId string, status string, lastUpdate int64, cpuUsage float32, memoryUsage float32) error {
 	node, err := GetDataById[types.Node](BucketNodes, nodeId)
@@ -25,7 +63,6 @@ func GetAllEnabledNodes() ([]*types.Node, error) {
 	nodes, err := GetDataByQuery[types.Node](BucketNodes, func(key string, node interface{}) bool {
 		return node.(*types.Node).IsEnable
 	})
-
 	return nodes, err
 }
 

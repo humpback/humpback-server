@@ -29,7 +29,7 @@ func (c *ConfigCreateReqInfo) Check() error {
 		return err
 	}
 	if c.ConfigType != types.ConfigTypeStatic && c.ConfigType != types.ConfigTypeVolume {
-		return response.NewBadRequestErr(locales.CodeConfigTypeIsInvlaid)
+		return response.NewBadRequestErr(locales.CodeConfigTypeIsInvalid)
 	}
 	if c.ConfigType == types.ConfigTypeStatic {
 		if err := verify.CheckRequiredAndLengthLimit(c.ConfigValue, enum.LimitConfigValue.Min, enum.LimitConfigValue.Max/2, locales.CodeConfigValueNotEmpty, locales.CodeConfigStaticValueLimitLength); err != nil {

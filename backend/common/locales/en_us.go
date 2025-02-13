@@ -56,7 +56,7 @@ var enUSMsg = map[string]string{
 	CodeConfigValueNotEmpty:          "The configuration value cannot be empty.",
 	CodeConfigStaticValueLimitLength: fmt.Sprintf("The configuration value length limit is %d.", enum.LimitConfigValue.Max/2),
 	CodeConfigVolumeValueLimitLength: fmt.Sprintf("The configuration value length limit is %d.", enum.LimitConfigValue.Max),
-	CodeConfigTypeIsInvlaid:          "The configuration type is invalid.",
+	CodeConfigTypeIsInvalid:          "The configuration type is invalid.",
 	CodeConfigIdNotEmpty:             "The configuration ID cannot be empty.",
 
 	CodeRegistryNameNotEmpty:        "The registry name cannot be empty.",
@@ -70,10 +70,11 @@ var enUSMsg = map[string]string{
 	CodeRegistryUsernameLimitLength: fmt.Sprintf("The registry username length limit is %d.", enum.LimitRegistryUsername.Max),
 	CodeRegistryPasswordLimitLength: fmt.Sprintf("The registry password length limit is %d.", enum.LimitRegistryPassword.Max),
 
-	CodeNodesNotEmpty:             "The nodes cannot be empty.",
-	CodeNodesIdNotEmpty:           "The node ID cannot be empty.",
-	CodeNodesIpAddressInvalid:     "The IP address is invalid.",
-	CodeNodesLabelKeyIsEmpty:      "The label key cannot be empty.",
-	CodeNodesLabelValueIsEmpty:    "The label value cannot be empty.",
-	CodeNodesLabelKeyIsDuplicated: "The label key is duplicated.",
+	CodeNodesNotEmpty:              "The nodes cannot be empty.",
+	CodeNodesIdNotEmpty:            "The node ID cannot be empty.",
+	CodeNodesIpAddressInvalid:      "The IP address is invalid.",
+	CodeNodesLabelKeyIsEmpty:       "The label key cannot be empty.",
+	CodeNodesLabelValueIsEmpty:     "The label value cannot be empty.",
+	CodeNodesLabelKeyIsDuplicated:  "The label key is duplicated.",
+	CodeNodesIpAddressAlreadyExist: "The IP address is already.",
 }

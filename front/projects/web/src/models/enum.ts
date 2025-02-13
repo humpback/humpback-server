@@ -34,3 +34,8 @@ export enum NodeStatus {
   Online = "Online",
   Offline = "Offline"
 }
+
+export enum NodeSwitch {
+  Enabled = "Enabled",
+  Disabled = "Disabled"
+}

@@ -1,5 +1,13 @@
 package types
 
+const (
+	NodeStatusOnline  = "Online"
+	NodeStatusOffline = "Offline"
+
+	NodeEnabled  = "Enabled"
+	NodeDisabled = "Disabled"
+)
+
 type QueryRegistry struct {
 	HasAuth bool `json:"hasAuth"`
 	*Registry

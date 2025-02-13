@@ -6,6 +6,7 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const BytesToGB: typeof import('./src/utils/common')['BytesToGB']
   const ChangeEventType: typeof import('./src/utils/event')['ChangeEventType']
   const CloseChannelMessage: typeof import('./src/utils/event')['CloseChannelMessage']
   const ConfigType: typeof import('./src/models/enum')['ConfigType']
@@ -415,6 +416,7 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
+    readonly BytesToGB: UnwrapRef<typeof import('./src/utils/common')['BytesToGB']>
     readonly ChangeEventType: UnwrapRef<typeof import('./src/utils/event')['ChangeEventType']>
     readonly CloseChannelMessage: UnwrapRef<typeof import('./src/utils/event')['CloseChannelMessage']>
     readonly ConfigType: UnwrapRef<typeof import('./src/models/enum')['ConfigType']>

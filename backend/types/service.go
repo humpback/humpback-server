@@ -1,11 +1,6 @@
 package types
 
 const (
-	NodeStatusOnline  = "Online"
-	NodeStatusOffline = "Offline"
-)
-
-const (
 	ServiceStatusNotReady = "NotReady"
 	ServiceStatusRunning  = "Running"
 	ServiceStatusFailed   = "Failed"
