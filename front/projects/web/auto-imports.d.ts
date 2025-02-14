@@ -40,6 +40,7 @@ declare global {
   const NewTeamEmptyInfo: typeof import('./src/types/user')['NewTeamEmptyInfo']
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
   const NodeStatus: typeof import('./src/models/enum')['NodeStatus']
+  const NodeSwitch: typeof import('./src/models/enum')['NodeSwitch']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
   const ParseNumber: typeof import('./src/utils/common')['ParseNumber']
@@ -122,6 +123,7 @@ declare global {
   const mapWritableState: typeof import('pinia')['mapWritableState']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
+  const nodeService: typeof import('./src/services/node-service')['nodeService']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('vue-router')['onBeforeRouteLeave']
@@ -389,7 +391,7 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus } from './src/models/enum'
+  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
   export type { BaseInfo } from './src/types/base'
@@ -450,6 +452,7 @@ declare module 'vue' {
     readonly NewTeamEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewTeamEmptyInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
     readonly NodeStatus: UnwrapRef<typeof import('./src/models/enum')['NodeStatus']>
+    readonly NodeSwitch: UnwrapRef<typeof import('./src/models/enum')['NodeSwitch']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>
     readonly ParseNumber: UnwrapRef<typeof import('./src/utils/common')['ParseNumber']>
@@ -532,6 +535,7 @@ declare module 'vue' {
     readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
+    readonly nodeService: UnwrapRef<typeof import('./src/services/node-service')['nodeService']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('vue-router')['onBeforeRouteLeave']>

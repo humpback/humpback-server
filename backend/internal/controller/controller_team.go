@@ -13,72 +13,62 @@ import (
 )
 
 func TeamCreate(reqInfo *models.TeamCreateReqInfo) (string, error) {
-	err := teamCreateCheckName(reqInfo)
+	err := teamCheckNameExist(reqInfo.Name, "")
 	if err != nil {
 		return "", err
 	}
 	var (
-		users    = make([]*types.User, 0)
-		teamInfo = reqInfo.NewTeamInfo()
+		users = make([]*types.User, 0)
+		team  = reqInfo.NewTeamInfo()
 	)
 	if len(reqInfo.Users) > 0 {
-		users, err = db.UsersQueryByIds(reqInfo.Users, false)
+		users, err = UsersGetByIds(reqInfo.Users, false)
 		if err != nil {
 			return "", err
 		}
 	}
 	for _, user := range users {
-		user.Teams = append(user.Teams, teamInfo.TeamId)
+		user.Teams = append(user.Teams, team.TeamId)
 	}
-	id, err := db.TeamUpdateAndUsers(teamInfo, users)
+	id, err := db.TeamUpdateAndUsers(team, users)
 	if err != nil {
-		return "", err
+		return "", response.NewRespServerErr(err.Error())
 	}
 	return id, nil
-}
-
-func teamCreateCheckName(reqInfo *models.TeamCreateReqInfo) error {
-	sameNameTeams, err := db.TeamsGetByName(reqInfo.Name, true)
-	if err != nil {
-		return err
-	}
-	if len(sameNameTeams) > 0 {
-		return response.NewBadRequestErr(locales.CodeTeamAlreadyExist)
-	}
-	return nil
 }
 
 func TeamUpdate(reqInfo *models.TeamUpdateReqInfo) (string, error) {
-	if err := teamUpdateCheckName(reqInfo); err != nil {
+	if err := teamCheckNameExist(reqInfo.Name, reqInfo.TeamId); err != nil {
 		return "", err
 	}
 
-	oldTeam, err := db.TeamGetById(reqInfo.TeamId)
+	oldTeam, err := Team(reqInfo.TeamId)
 	if err != nil {
 		return "", err
 	}
 
-	newTeamInfo := reqInfo.NewTeamInfo(oldTeam)
-	updateUsers, err := teamUpdateCheckUsers(oldTeam.Users, newTeamInfo.Users, newTeamInfo.TeamId)
+	newTeam := reqInfo.NewTeamInfo(oldTeam)
+	updateUsers, err := teamUpdateCheckUsers(oldTeam.Users, newTeam.Users, newTeam.TeamId)
 	if err != nil {
 		return "", err
 	}
 
-	id, err := db.TeamUpdateAndUsers(newTeamInfo, updateUsers)
+	id, err := db.TeamUpdateAndUsers(newTeam, updateUsers)
 	if err != nil {
-		return "", err
+		return "", response.NewRespServerErr(err.Error())
 	}
 	return id, nil
 }
 
-func teamUpdateCheckName(reqInfo *models.TeamUpdateReqInfo) error {
-	sameNameTeams, err := db.TeamsGetByName(reqInfo.Name, true)
+func teamCheckNameExist(name, id string) error {
+	teams, err := db.TeamsGetByName(name, true)
 	if err != nil {
-		return err
+		return response.NewRespServerErr(err.Error())
 	}
-
-	if len(sameNameTeams) > 1 || len(sameNameTeams) == 1 && sameNameTeams[0].TeamId != reqInfo.TeamId {
-		return response.NewBadRequestErr(locales.CodeTeamAlreadyExist)
+	for _, team := range teams {
+		if team.TeamId != id {
+			return response.NewBadRequestErr(locales.CodeTeamAlreadyExist)
+		}
 	}
 	return nil
 }
@@ -99,7 +89,7 @@ func teamUpdateCheckUsers(oldUsers, newUsers []string, teamId string) ([]*types.
 			userIdMap[userId] = 1
 		}
 	}
-	userList, err := db.UsersQueryByIds(maps.Keys(userIdMap), false)
+	userList, err := UsersGetByIds(maps.Keys(userIdMap), false)
 	if err != nil {
 		return nil, err
 	}
@@ -126,25 +116,39 @@ func teamUpdateCheckUsers(oldUsers, newUsers []string, teamId string) ([]*types.
 func Team(id string) (*types.Team, error) {
 	info, err := db.TeamGetById(id)
 	if err != nil {
-		return nil, err
+		if err == db.ErrKeyNotExist {
+			return nil, response.NewBadRequestErr(locales.CodeTeamNotExist)
+		}
+		return nil, response.NewRespServerErr(err.Error())
 	}
 	return info, nil
 }
 
-func TeamsByUserId(userId string) ([]*types.Team, error) {
-	userInfo, err := db.UserGetById(userId)
+func TeamsGetByUserId(userId string) ([]*types.Team, error) {
+	userInfo, err := User(userId)
 	if err != nil {
 		return nil, err
 	}
-	teams, err := db.TeamsQueryByIds(userInfo.Teams, true)
+	teams, err := TeamsGetByIds(userInfo.Teams, true)
 	if err != nil {
 		return nil, err
 	}
 	return teams, nil
 }
 
+func TeamsGetByIds(ids []string, ignoreNotExist bool) ([]*types.Team, error) {
+	teams, err := db.TeamsGetByIds(ids, ignoreNotExist)
+	if err != nil {
+		if err == db.ErrKeyNotExist {
+			return nil, response.NewBadRequestErr(locales.CodeTeamNotExist)
+		}
+		return nil, response.NewRespServerErr(err.Error())
+	}
+	return teams, nil
+}
+
 func TeamQuery(queryInfo *models.TeamQueryReqInfo) (*response.QueryResult[types.Team], error) {
-	users, err := db.TeamGetAll()
+	users, err := db.TeamsGetAll()
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
 	}
@@ -158,11 +162,10 @@ func TeamQuery(queryInfo *models.TeamQueryReqInfo) (*response.QueryResult[types.
 func TeamDelete(id string) error {
 	info, err := db.TeamGetById(id)
 	if err != nil {
-		e := err.(*response.ErrInfo)
-		if e.Code == locales.CodeTeamNotExist {
+		if err == db.ErrKeyNotExist {
 			return nil
 		}
-		return err
+		return response.NewRespServerErr(err.Error())
 	}
 
 	users, err := teamDeleteCheckUsers(info.Users, id)
@@ -170,7 +173,7 @@ func TeamDelete(id string) error {
 		return err
 	}
 	if err = db.TeamDelete(id, users); err != nil {
-		return err
+		return response.NewRespServerErr(err.Error())
 	}
 	return nil
 }
@@ -179,7 +182,7 @@ func teamDeleteCheckUsers(users []string, teamId string) ([]*types.User, error) 
 	if len(users) == 0 {
 		return nil, nil
 	}
-	userList, err := db.UsersQueryByIds(users, true)
+	userList, err := UsersGetByIds(users, true)
 	if err != nil {
 		return nil, err
 	}

@@ -23,7 +23,7 @@ func (n *NodesCreateReqInfo) Check() error {
 	}
 	ipRule := regexp.MustCompile(enum.RegularIpAddress)
 	for _, ipAddress := range *n {
-		if ipRule.MatchString(ipAddress) {
+		if !ipRule.MatchString(ipAddress) {
 			return response.NewBadRequestErr(locales.CodeNodesIpAddressInvalid)
 		}
 	}
@@ -66,6 +66,18 @@ func (n *NodeUpdateLabelReqInfo) Check() error {
 	return nil
 }
 
+type NodeUpdateSwitchReqInfo struct {
+	NodeId string `json:"nodeId"`
+	Enable bool   `json:"enable"`
+}
+
+func (n *NodeUpdateSwitchReqInfo) Check() error {
+	if err := verify.CheckIsEmpty(n.NodeId, locales.CodeNodesIdNotEmpty); err != nil {
+		return err
+	}
+	return nil
+}
+
 var statusOptions = []string{
 	types.NodeStatusOnline,
 	types.NodeStatusOffline,
@@ -88,7 +100,7 @@ func (n *NodeQueryReqInfo) Check() error {
 		return err
 	}
 
-	if n.FilterInfo != nil && n.FilterInfo.Status != "" && slices.Index(statusOptions, n.Mode) == -1 {
+	if n.FilterInfo != nil && n.FilterInfo.Status != "" && slices.Index(statusOptions, n.FilterInfo.Status) == -1 {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 
@@ -124,7 +136,7 @@ func (n *NodeQueryReqInfo) filter(info *types.Node) bool {
 			if !info.IsEnable {
 				return false
 			}
-			if info.Status != types.NodeEnabled && info.Status != n.FilterInfo.Status {
+			if n.FilterInfo.Status != types.NodeEnabled && info.Status != n.FilterInfo.Status {
 				return false
 			}
 		}
@@ -174,6 +186,7 @@ func (n *NodeQueryReqInfo) parseFilterInfo() error {
 	if err != nil {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
+
 	n.FilterInfo = new(NodeQueryFilterInfo)
 	if err = json.Unmarshal(v, n.FilterInfo); err != nil {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)

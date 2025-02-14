@@ -70,7 +70,7 @@ func teamsQuery(c *gin.Context) {
 
 func teamsByUserId(c *gin.Context) {
 	userId := c.Param("userId")
-	teams, err := controller.TeamsByUserId(userId)
+	teams, err := controller.TeamsGetByUserId(userId)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return

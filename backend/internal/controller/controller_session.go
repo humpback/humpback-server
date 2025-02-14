@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"time"
 
+	"humpback/common/response"
 	"humpback/config"
 	"humpback/internal/db"
 	"humpback/types"
@@ -17,7 +18,7 @@ func SessionGCInterval(stopCh <-chan struct{}) {
 		select {
 		case <-ticker.C:
 			slog.Info("[GC Session] time is up...")
-			sessions, err := db.SessionGetAll()
+			sessions, err := db.SessionsGetAll()
 			if err != nil {
 				slog.Error("[GC Session] get all session failed.", "Error", err)
 			}
@@ -48,12 +49,12 @@ func SessionGCInterval(stopCh <-chan struct{}) {
 func SessionGetAndRefresh(sessionId string) (*types.User, bool, error) {
 	sessionInfo, expired, err := db.SessionGetById(sessionId)
 	if err != nil {
-		return nil, expired, err
+		return nil, expired, response.NewRespServerErr(err.Error())
 	}
 	if expired {
 		return nil, true, nil
 	}
-	userInfo, err := db.UserGetById(sessionInfo.UserId)
+	userInfo, err := User(sessionInfo.UserId)
 	if err != nil {
 		return nil, false, err
 	}
@@ -65,9 +66,22 @@ func SessionGetAndRefresh(sessionId string) (*types.User, bool, error) {
 
 func SessionUpdate(sessionInfo *types.Session) error {
 	sessionInfo.ExpiredAt = time.Now().Add(config.DBArgs().SessionTimeout).UnixMilli()
-	return db.SessionUpdate(sessionInfo)
+	if err := db.SessionUpdate(sessionInfo); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	return nil
 }
 
 func SessionDelete(sessionId string) error {
-	return db.SessionDelete(sessionId)
+	if err := db.SessionDelete(sessionId); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	return nil
+}
+
+func SessionDeleteByUserId(userId string) error {
+	if err := db.SessionBatchDeleteByUserId(userId); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	return nil
 }

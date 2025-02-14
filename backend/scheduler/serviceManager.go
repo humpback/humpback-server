@@ -148,7 +148,7 @@ func (sm *ServiceManager) CheckNodeStatus() {
 	groupId := sm.ServiceInfo.GroupId
 
 	isNeedSave := false
-	nodes, err := db.GetNodesByGroupId(groupId)
+	nodes, err := db.NodesGetByGroupId(groupId)
 
 	if err != nil {
 		slog.Error("[Service Manager] Get offline nodes error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())
@@ -268,7 +268,7 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
 func (sm *ServiceManager) StartNextContainer() {
 
-	nodes, err := db.GetNodesByIds(sm.availableNodes)
+	nodes, err := db.NodesGetByIds(sm.availableNodes)
 
 	if err != nil {
 		slog.Error("[Service Manager] Start Service error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())

@@ -13,7 +13,7 @@ import (
 func RouteConfig(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), configCreate)
 	router.PUT("", middleware.CheckAdminPermissions(), configUpdate)
-	router.GET("/info/:id", configGet)
+	router.GET("/info/:id", configInfo)
 	router.POST("/query", configQuery)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), configDelete)
 }
@@ -44,7 +44,7 @@ func configUpdate(c *gin.Context) {
 	c.JSON(http.StatusOK, id)
 }
 
-func configGet(c *gin.Context) {
+func configInfo(c *gin.Context) {
 	id := c.Param("id")
 	info, err := controller.Config(id)
 	if err != nil {

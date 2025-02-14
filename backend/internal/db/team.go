@@ -6,41 +6,25 @@ import (
 	"strings"
 
 	bolt "go.etcd.io/bbolt"
-	"humpback/common/locales"
-	"humpback/common/response"
 	"humpback/types"
 )
 
-func TeamGetAll() ([]*types.Team, error) {
+func TeamsGetAll() ([]*types.Team, error) {
 	return GetDataAll[types.Team](BucketTeams)
 }
 
-func TeamsQueryByIds(ids []string, ignoreNotExist bool) ([]*types.Team, error) {
-	teams, err := GetDataByIds[types.Team](BucketTeams, ids, ignoreNotExist)
-	if err != nil {
-		if err == ErrKeyNotExist {
-			return nil, response.NewBadRequestErr(locales.CodeTeamNotExist)
-		}
-		return nil, response.NewRespServerErr(err.Error())
-	}
-	return teams, nil
+func TeamsGetByIds(ids []string, ignoreNotExist bool) ([]*types.Team, error) {
+	return GetDataByIds[types.Team](BucketTeams, ids, ignoreNotExist)
 }
 
 func TeamGetById(id string) (*types.Team, error) {
-	info, err := GetDataById[types.Team](BucketTeams, id)
-	if err != nil {
-		if err == ErrKeyNotExist {
-			return nil, response.NewBadRequestErr(locales.CodeTeamNotExist)
-		}
-		return nil, response.NewRespServerErr(err.Error())
-	}
-	return info, nil
+	return GetDataById[types.Team](BucketTeams, id)
 }
 
 func TeamsGetByName(name string, isLower bool) ([]*types.Team, error) {
 	teams, err := GetDataAll[types.Team](BucketTeams)
 	if err != nil {
-		return nil, response.NewRespServerErr(err.Error())
+		return nil, err
 	}
 	var result []*types.Team
 	for _, team := range teams {
@@ -88,13 +72,13 @@ func TeamUpdateAndUsers(teamInfo *types.Team, users []*types.User) (string, erro
 		}
 		return nil
 	}); err != nil {
-		return "", response.NewRespServerErr(err.Error())
+		return "", err
 	}
 	return teamInfo.TeamId, nil
 }
 
 func TeamDelete(id string, users []*types.User) error {
-	if err := TransactionUpdates(func(tx *bolt.Tx) error {
+	return TransactionUpdates(func(tx *bolt.Tx) error {
 		var (
 			teamBucket *bolt.Bucket
 			userBucket *bolt.Bucket
@@ -124,8 +108,5 @@ func TeamDelete(id string, users []*types.User) error {
 			}
 		}
 		return nil
-	}); err != nil {
-		return response.NewRespServerErr(err.Error())
-	}
-	return nil
+	})
 }

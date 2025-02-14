@@ -72,6 +72,7 @@ var enUSMsg = map[string]string{
 
 	CodeNodesNotEmpty:              "The nodes cannot be empty.",
 	CodeNodesIdNotEmpty:            "The node ID cannot be empty.",
+	CodeNodesNotExist:              "The node does not exist.",
 	CodeNodesIpAddressInvalid:      "The IP address is invalid.",
 	CodeNodesLabelKeyIsEmpty:       "The label key cannot be empty.",
 	CodeNodesLabelValueIsEmpty:     "The label value cannot be empty.",

@@ -15,7 +15,7 @@ import (
 func RouteRegistry(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), registryCreate)
 	router.PUT("", middleware.CheckAdminPermissions(), registryUpdate)
-	router.GET("/info/:id", registryGet)
+	router.GET("/info/:id", registry)
 	router.POST("/query", registryQuery)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), registryDelete)
 }
@@ -46,7 +46,7 @@ func registryUpdate(c *gin.Context) {
 	c.JSON(http.StatusOK, id)
 }
 
-func registryGet(c *gin.Context) {
+func registry(c *gin.Context) {
 	id := c.Param("id")
 	hasAuth := c.Query("hasAuth")
 	info, err := controller.Registry(id)

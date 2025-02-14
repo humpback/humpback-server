@@ -6,7 +6,7 @@ export const sortOptions = ["ip", "hostname", "updatedAt", "createdAt"]
 
 export const defaultSort = NewSortInfo("ip", "asc")
 export const defaultPage = NewPageInfo(1, 20)
-export const defaultFilter = { group: "", status: "" }
+export const defaultFilter = { status: "" }
 
 export const statusOptions = [
   { label: "label.all", value: "" },
@@ -31,7 +31,6 @@ export class QueryNodesInfo extends QueryInfo {
       sortOptions,
       defaultFilter
     )
-    this.filter.group = queryInfo["group"] ? (queryInfo["group"] as string) : ""
     const statusInfo = find(statusOptions, x => x.value === (queryInfo["status"] as string))
     this.filter.status = statusInfo?.value || ""
   }

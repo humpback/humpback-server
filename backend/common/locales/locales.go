@@ -81,9 +81,10 @@ const (
 
 	CodeNodesNotEmpty              = "R4Nodes-001"
 	CodeNodesIdNotEmpty            = "R4Nodes-002"
-	CodeNodesIpAddressInvalid      = "R4Nodes-003"
-	CodeNodesLabelKeyIsEmpty       = "R4Nodes-004"
-	CodeNodesLabelValueIsEmpty     = "R4Nodes-005"
-	CodeNodesLabelKeyIsDuplicated  = "R4Nodes-006"
-	CodeNodesIpAddressAlreadyExist = "R4Nodes-007"
+	CodeNodesNotExist              = "R4Nodes-003"
+	CodeNodesIpAddressInvalid      = "R4Nodes-004"
+	CodeNodesLabelKeyIsEmpty       = "R4Nodes-005"
+	CodeNodesLabelValueIsEmpty     = "R4Nodes-006"
+	CodeNodesLabelKeyIsDuplicated  = "R4Nodes-007"
+	CodeNodesIpAddressAlreadyExist = "R4Nodes-008"
 )

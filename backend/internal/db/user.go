@@ -6,17 +6,11 @@ import (
 	"strings"
 
 	bolt "go.etcd.io/bbolt"
-	"humpback/common/locales"
-	"humpback/common/response"
 	"humpback/types"
 )
 
-func UserInit(id string, data *types.User) error {
-	return SaveData[*types.User](BucketUsers, id, data)
-}
-
-func UserFindSupperAdmin() (*types.User, error) {
-	users, err := GetDataAll[types.User](BucketUsers)
+func UserGetSupperAdmin() (*types.User, error) {
+	users, err := UsersGetAll()
 	if err != nil {
 		return nil, err
 	}
@@ -28,25 +22,18 @@ func UserFindSupperAdmin() (*types.User, error) {
 	return nil, nil
 }
 
-func UserGetAll() ([]*types.User, error) {
+func UsersGetAll() ([]*types.User, error) {
 	return GetDataAll[types.User](BucketUsers)
 }
 
 func UserGetById(id string) (*types.User, error) {
-	info, err := GetDataById[types.User](BucketUsers, id)
-	if err != nil {
-		if err == ErrKeyNotExist {
-			return nil, response.NewBadRequestErr(locales.CodeUserNotExist)
-		}
-		return nil, response.NewRespServerErr(err.Error())
-	}
-	return info, nil
+	return GetDataById[types.User](BucketUsers, id)
 }
 
 func UsersGetByName(name string, isLower bool) ([]*types.User, error) {
 	users, err := GetDataAll[types.User](BucketUsers)
 	if err != nil {
-		return nil, response.NewRespServerErr(err.Error())
+		return nil, err
 	}
 	var result []*types.User
 	for _, user := range users {
@@ -60,38 +47,12 @@ func UsersGetByName(name string, isLower bool) ([]*types.User, error) {
 	return result, nil
 }
 
-func UserGetByNamePsd(name string, psd string) (*types.User, error) {
-	users, err := GetDataAll[types.User](BucketUsers)
-	if err != nil {
-		return nil, response.NewRespServerErr(err.Error())
-	}
-	for _, user := range users {
-		if user.Username == name {
-			if user.Password == psd {
-				return user, nil
-			}
-			return nil, response.NewBadRequestErr(locales.CodePasswordIsWrong)
-		}
-	}
-	return nil, response.NewBadRequestErr(locales.CodeUserNotExist)
+func UsersGetByIds(ids []string, ignoreNotExist bool) ([]*types.User, error) {
+	return GetDataByIds[types.User](BucketUsers, ids, ignoreNotExist)
 }
 
-func UsersQueryByIds(ids []string, ignoreNotExist bool) ([]*types.User, error) {
-	users, err := GetDataByIds[types.User](BucketUsers, ids, ignoreNotExist)
-	if err != nil {
-		if err == ErrKeyNotExist {
-			return nil, response.NewBadRequestErr(locales.CodeUserNotExist)
-		}
-		return nil, response.NewRespServerErr(err.Error())
-	}
-	return users, nil
-}
-
-func MeUpdate(id string, data *types.User) error {
-	if err := SaveData[*types.User](BucketUsers, id, data); err != nil {
-		return response.NewRespServerErr(err.Error())
-	}
-	return nil
+func UserUpdate(id string, data *types.User) error {
+	return SaveData[*types.User](BucketUsers, id, data)
 }
 
 func UserUpdateAndTeams(userInfo *types.User, teams []*types.Team) (string, error) {
@@ -128,13 +89,13 @@ func UserUpdateAndTeams(userInfo *types.User, teams []*types.Team) (string, erro
 		}
 		return nil
 	}); err != nil {
-		return "", response.NewRespServerErr(err.Error())
+		return "", err
 	}
 	return userInfo.UserId, nil
 }
 
 func UserDelete(id string, teams []*types.Team) error {
-	if err := TransactionUpdates(func(tx *bolt.Tx) error {
+	return TransactionUpdates(func(tx *bolt.Tx) error {
 		var (
 			teamBucket *bolt.Bucket
 			userBucket *bolt.Bucket
@@ -162,8 +123,5 @@ func UserDelete(id string, teams []*types.Team) error {
 			}
 		}
 		return nil
-	}); err != nil {
-		return response.NewRespServerErr(err.Error())
-	}
-	return nil
+	})
 }

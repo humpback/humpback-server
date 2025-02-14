@@ -13,8 +13,9 @@ import (
 func RouteNodes(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), nodesCreate)
 	router.PUT("/labels", middleware.CheckAdminPermissions(), nodeUpdateLabels)
-	router.GET("/info/:id", registryGet)
-	router.POST("/query", registryQuery)
+	router.PUT("/switch", middleware.CheckAdminPermissions(), nodeUpdateSwitch)
+	router.GET("/info/:id", node)
+	router.POST("/query", nodesQuery)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), nodeDelete)
 }
 
@@ -41,6 +42,42 @@ func nodeUpdateLabels(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, id)
+}
+
+func nodeUpdateSwitch(c *gin.Context) {
+	body := new(models.NodeUpdateSwitchReqInfo)
+	if !middleware.BindAndCheckBody(c, body) {
+		return
+	}
+	id, err := controller.NodeUpdateSwitch(body.NodeId, body.Enable)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, id)
+}
+
+func node(c *gin.Context) {
+	id := c.Param("id")
+	info, err := controller.Node(id)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, info)
+}
+
+func nodesQuery(c *gin.Context) {
+	queryInfo := new(models.NodeQueryReqInfo)
+	if !middleware.BindAndCheckBody(c, queryInfo) {
+		return
+	}
+	result, err := controller.NodesQuery(queryInfo)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
 }
 
 func nodeDelete(c *gin.Context) {

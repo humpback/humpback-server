@@ -55,6 +55,22 @@ async function save() {
   if (!(await formRef.value?.validate())) {
     return
   }
+  const body: any = {
+    nodeId: dialogInfo.value.info.nodeId,
+    labels: {} as any
+  }
+  map(dialogInfo.value.labels, x => {
+    body.labels[x.key] = x.value
+  })
+  isAction.value = true
+  nodeService
+    .updateLabel(body)
+    .then(() => {
+      ShowSuccessMsg(t("message.saveSuccess"))
+      dialogInfo.value.show = false
+      emits("refresh")
+    })
+    .finally(() => (isAction.value = false))
 }
 
 defineExpose({ open })

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { FormInstance, FormRules } from "element-plus"
 import { GenerateUUID, RulePleaseEnter } from "@/utils"
-import { filter } from "lodash-es"
+import { filter, map } from "lodash-es"
 import { RuleFormat } from "@/models"
 
 const emits = defineEmits<{
@@ -52,6 +52,17 @@ async function save() {
   if (!(await formRef.value?.validate())) {
     return
   }
+  isAction.value = true
+  nodeService
+    .create(map(dialogInfo.value.nodes, x => x.ip))
+    .then(() => {
+      ShowSuccessMsg(t("message.addSuccess"))
+      dialogInfo.value.show = false
+      emits("refresh")
+    })
+    .finally(() => {
+      isAction.value = false
+    })
 }
 
 defineExpose({ open })

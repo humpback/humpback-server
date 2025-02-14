@@ -396,6 +396,8 @@
     "NewNodeEmptyInfo": true,
     "NodeInfo": true,
     "NodeStatus": true,
-    "BytesToGB": true
+    "BytesToGB": true,
+    "NodeSwitch": true,
+    "nodeService": true
   }
 }

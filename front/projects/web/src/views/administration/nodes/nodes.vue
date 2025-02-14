@@ -27,79 +27,88 @@ const viewValueRef = useTemplateRef<InstanceType<typeof NodeViewCommand>>("viewV
 
 async function search() {
   await router.replace(queryInfo.value.urlQuery())
-  tableList.value.data.push(
-    {
-      nodeId: "wr",
-      name: "e11dbts01.buyabs.corp",
-      ipAddress: "172.16.171.52",
-      port: 8566,
-      status: "Online",
-      isEnable: true,
-      cpuUsage: 0,
-      cpu: 8,
-      memoryUsage: 0.36,
-      memoryTotal: 62500000200,
-      memoryUsed: 1343130000,
-      labels: {
-        test: "skyler",
-        nice: "true",
-        "bts-zk-node": "true",
-        "eggkeeper-api": "true",
-        "app": "true",
-        "newegg.platform": "true",
-        "etcd": "true",
-        "skyler": "true"
-      },
-      createdAt: 0,
-      updatedAt: 0
-    },
-    {
-      nodeId: "wrsf2rf2",
-      name: "e11dbts02.buyabs.corp",
-      ipAddress: "172.16.171.53",
-      port: 8566,
-      status: "Offline",
-      isEnable: true,
-      cpuUsage: 0,
-      cpu: 0,
-      memoryUsage: 0,
-      memoryTotal: 0,
-      memoryUsed: 0,
-      labels: {
-        test: "skyler",
-        nice: "true",
-        "bts-zk-node": "true",
-        "eggkeeper-api": "true",
-        "app": "true",
-        "newegg.platform": "true",
-        "etcd": "true",
-        "skyler": "true"
-      },
-      createdAt: 0,
-      updatedAt: 0
-    },
-    {
-      nodeId: "wrsf2rf2fss",
-      name: "e11dbts03.buyabs.corp",
-      ipAddress: "172.16.171.54",
-      port: 8566,
-      status: "Offline",
-      isEnable: false,
-      cpuUsage: 0,
-      cpu: 0,
-      memoryUsage: 0,
-      memoryTotal: 0,
-      memoryUsed: 0,
-      labels: {
-        test: "skyler",
-        nice: "true",
-        "bts-zk-node": "true",
-        "eggkeeper-api": "true"
-      },
-      createdAt: 0,
-      updatedAt: 0
-    }
-  )
+  isLoading.value = true
+  return await nodeService
+    .query(queryInfo.value.searchParams())
+    .then(res => {
+      tableList.value.data = res.list
+      tableList.value.total = res.total
+    })
+    .finally(() => (isLoading.value = false))
+
+  // tableList.value.data.push(
+  //   {
+  //     nodeId: "wr",
+  //     name: "e11dbts01.buyabs.corp",
+  //     ipAddress: "172.16.171.52",
+  //     port: 8566,
+  //     status: "Online",
+  //     isEnable: true,
+  //     cpuUsage: 0,
+  //     cpu: 8,
+  //     memoryUsage: 0.36,
+  //     memoryTotal: 62500000200,
+  //     memoryUsed: 1343130000,
+  //     labels: {
+  //       test: "skyler",
+  //       nice: "true",
+  //       "bts-zk-node": "true",
+  //       "eggkeeper-api": "true",
+  //       "app": "true",
+  //       "newegg.platform": "true",
+  //       "etcd": "true",
+  //       "skyler": "true"
+  //     },
+  //     createdAt: 0,
+  //     updatedAt: 0
+  //   },
+  //   {
+  //     nodeId: "wrsf2rf2",
+  //     name: "e11dbts02.buyabs.corp",
+  //     ipAddress: "172.16.171.53",
+  //     port: 8566,
+  //     status: "Offline",
+  //     isEnable: true,
+  //     cpuUsage: 0,
+  //     cpu: 0,
+  //     memoryUsage: 0,
+  //     memoryTotal: 0,
+  //     memoryUsed: 0,
+  //     labels: {
+  //       test: "skyler",
+  //       nice: "true",
+  //       "bts-zk-node": "true",
+  //       "eggkeeper-api": "true",
+  //       "app": "true",
+  //       "newegg.platform": "true",
+  //       "etcd": "true",
+  //       "skyler": "true"
+  //     },
+  //     createdAt: 0,
+  //     updatedAt: 0
+  //   },
+  //   {
+  //     nodeId: "wrsf2rf2fss",
+  //     name: "e11dbts03.buyabs.corp",
+  //     ipAddress: "172.16.171.54",
+  //     port: 8566,
+  //     status: "Offline",
+  //     isEnable: false,
+  //     cpuUsage: 0,
+  //     cpu: 0,
+  //     memoryUsage: 0,
+  //     memoryTotal: 0,
+  //     memoryUsed: 0,
+  //     labels: {
+  //       test: "skyler",
+  //       nice: "true",
+  //       "bts-zk-node": "true",
+  //       "eggkeeper-api": "true"
+  //     },
+  //     createdAt: 0,
+  //     updatedAt: 0
+  //   }
+  // )
   // isLoading.value = true
   // return await nodeService
   //   .query(queryInfo.value.getSearch())
@@ -139,7 +148,8 @@ onMounted(() => search())
               :placeholder="t('placeholder.all')"
               clearable
               out-label-width="80px"
-              show-out-label>
+              show-out-label
+              @change="search">
               <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value" />
             </v-select>
           </div>

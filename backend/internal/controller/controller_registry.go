@@ -22,7 +22,7 @@ func RegistryCreate(reqInfo *models.RegistryCreateReqInfo) (string, error) {
 		updateList = append(updateList, defaultRegistry)
 	}
 	if err = db.RegistryUpdate(updateList); err != nil {
-		return "", err
+		return "", response.NewRespServerErr(err.Error())
 	}
 	return newInfo.RegistryId, err
 }
@@ -39,7 +39,7 @@ func RegistryUpdate(reqInfo *models.RegistryUpdateReqInfo) (string, error) {
 		updateList = append(updateList, defaultRegistry)
 	}
 	if err = db.RegistryUpdate(updateList); err != nil {
-		return "", err
+		return "", response.NewRespServerErr(err.Error())
 	}
 	return newInfo.RegistryId, err
 }
@@ -74,7 +74,10 @@ func registryCheck(reqInfo *models.RegistryCreateReqInfo, id string) (*types.Reg
 func Registry(id string) (*types.Registry, error) {
 	info, err := db.RegistryGetById(id)
 	if err != nil {
-		return nil, err
+		if err == db.ErrKeyNotExist {
+			return nil, response.NewBadRequestErr(locales.CodeRegistryNotExist)
+		}
+		return nil, response.NewRespServerErr(err.Error())
 	}
 	return info, nil
 }
@@ -93,7 +96,7 @@ func RegistryQuery(queryInfo *models.RegistryQueryReqInfo) (*response.QueryResul
 
 func RegistryDelete(id string) error {
 	if err := db.RegistryDelete(id); err != nil {
-		return err
+		return response.NewRespServerErr(err.Error())
 	}
 	return nil
 }

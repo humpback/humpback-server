@@ -52,13 +52,22 @@ const BucketTemplates = "Templates"
 const BucketServices = "Services"
 
 var (
-	Buckets = []string{BucketUsers, BucketTeams, BucketGroups, BucketSessions, BucketRegistries, BucketConfigs, BucketNodes, BucketNodesGroups, BucketTemplates, BucketServices}
+	Buckets = []string{
+		BucketUsers,
+		BucketTeams,
+		BucketGroups,
+		BucketSessions,
+		BucketRegistries,
+		BucketConfigs,
+		BucketNodes,
+		BucketNodesGroups,
+		BucketTemplates,
+		BucketServices}
 )
 
 var (
-	ErrKeyNotExist     = errors.New("Key not found")
-	ErrConnectAbnormal = errors.New("The database link is abnormal")
-	ErrBucketNotExist  = errors.New("Bucket not exists")
+	ErrKeyNotExist    = errors.New("Key not found")
+	ErrBucketNotExist = errors.New("Bucket not exists")
 )
 
 var db *dbHelper
@@ -103,7 +112,7 @@ func GetDataById[T any](bucketName string, id string) (*T, error) {
 		return json.Unmarshal(data, &result)
 	})
 	if err != nil {
-		return nil, checkErr(err)
+		return nil, err
 	}
 	return &result, nil
 }
@@ -132,7 +141,7 @@ func GetDataByIds[T any](bucketName string, ids []string, ignoreNotExist bool) (
 		return nil
 	})
 	if err != nil {
-		return nil, checkErr(err)
+		return nil, err
 	}
 	return results, nil
 }
@@ -155,7 +164,7 @@ func GetDataAll[T any](bucketName string) ([]*T, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, checkErr(err)
+		return nil, err
 	}
 	return results, nil
 }
@@ -182,7 +191,7 @@ func GetDataByQuery[T any](bucketName string, filter CustomFilterData) ([]*T, er
 		return nil
 	})
 	if err != nil {
-		return nil, checkErr(err)
+		return nil, err
 	}
 	return results, nil
 }
@@ -206,13 +215,13 @@ func GetDataByPrefix[T any](bucketName string, prefix string) ([]*T, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, checkErr(err)
+		return nil, err
 	}
 	return results, nil
 }
 
 func SaveData[T any](bucketName string, id string, data T) error {
-	if err := db.boltDB.Update(func(tx *bolt.Tx) error {
+	return db.boltDB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
 			return ErrBucketNotExist
@@ -222,36 +231,27 @@ func SaveData[T any](bucketName string, id string, data T) error {
 			return fmt.Errorf("failed to encode data: %s", err)
 		}
 		return bucket.Put([]byte(id), encodedData)
-	}); err != nil {
-		return checkErr(err)
-	}
-	return nil
+	})
 }
 
 type fn func(tx *bolt.Tx) error
 
 func TransactionUpdates(f fn) error {
-	if err := db.boltDB.Update(f); err != nil {
-		return checkErr(err)
-	}
-	return nil
+	return db.boltDB.Update(f)
 }
 
 func DeleteData(bucketName string, id string) error {
-	if err := db.boltDB.Update(func(tx *bolt.Tx) error {
+	return db.boltDB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
 			return ErrBucketNotExist
 		}
 		return bucket.Delete([]byte(id))
-	}); err != nil {
-		return checkErr(err)
-	}
-	return nil
+	})
 }
 
-func BatchDelete(bucketName string, ids []string) error {
-	if err := db.boltDB.Update(func(tx *bolt.Tx) error {
+func DeleteDataByIds(bucketName string, ids []string) error {
+	return db.boltDB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
 			return ErrBucketNotExist
@@ -262,22 +262,5 @@ func BatchDelete(bucketName string, ids []string) error {
 			}
 		}
 		return nil
-	}); err != nil {
-		return checkErr(err)
-	}
-	return nil
-}
-
-func checkErr(err error) error {
-	switch err {
-	case bolt.ErrBucketNotFound:
-		return ErrBucketNotExist
-	case bolt.ErrInvalid,
-		bolt.ErrDatabaseNotOpen,
-		bolt.ErrTimeout,
-		bolt.ErrInvalidMapping:
-		return ErrConnectAbnormal
-	default:
-		return err
-	}
+	})
 }

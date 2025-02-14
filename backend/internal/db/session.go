@@ -3,16 +3,15 @@ package db
 import (
 	"time"
 
-	"humpback/common/response"
 	"humpback/types"
 )
 
-func SessionGetAll() ([]*types.Session, error) {
+func SessionsGetAll() ([]*types.Session, error) {
 	return GetDataAll[types.Session](BucketSessions)
 }
 
 func SessionGCByIds(ids []string) error {
-	return BatchDelete(BucketSessions, ids)
+	return DeleteDataByIds(BucketSessions, ids)
 }
 
 func SessionGetById(sessionId string) (*types.Session, bool, error) {
@@ -21,29 +20,23 @@ func SessionGetById(sessionId string) (*types.Session, bool, error) {
 		if err == ErrKeyNotExist {
 			return nil, true, nil
 		}
-		return nil, false, response.NewRespServerErr(err.Error())
+		return nil, false, err
 	}
 	return sessionInfo, sessionInfo.ExpiredAt < time.Now().UnixMilli(), nil
 }
 
 func SessionUpdate(data *types.Session) error {
-	if err := SaveData[*types.Session](BucketSessions, data.SessionId, data); err != nil {
-		return response.NewRespServerErr(err.Error())
-	}
-	return nil
+	return SaveData[*types.Session](BucketSessions, data.SessionId, data)
 }
 
 func SessionDelete(sessionId string) error {
-	if err := DeleteData(BucketSessions, sessionId); err != nil {
-		return response.NewRespServerErr(err.Error())
-	}
-	return nil
+	return DeleteData(BucketSessions, sessionId)
 }
 
 func SessionBatchDeleteByUserId(userId string) error {
-	sessions, err := SessionGetAll()
+	sessions, err := SessionsGetAll()
 	if err != nil {
-		return response.NewRespServerErr(err.Error())
+		return err
 	}
 	var ids []string
 	for _, session := range sessions {
@@ -52,8 +45,8 @@ func SessionBatchDeleteByUserId(userId string) error {
 		}
 	}
 	if len(ids) > 0 {
-		if err = BatchDelete(BucketSessions, ids); err != nil {
-			return response.NewRespServerErr(err.Error())
+		if err = DeleteDataByIds(BucketSessions, ids); err != nil {
+			return err
 		}
 	}
 	return nil

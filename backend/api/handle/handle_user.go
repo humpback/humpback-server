@@ -141,7 +141,7 @@ func usersQuery(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, queryInfo) {
 		return
 	}
-	result, err := controller.UserQuery(queryInfo)
+	result, err := controller.UsersQuery(queryInfo)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -151,7 +151,7 @@ func usersQuery(c *gin.Context) {
 
 func usersByTeamId(c *gin.Context) {
 	teamId := c.Param("teamId")
-	users, err := controller.UsersByTeamId(teamId)
+	users, err := controller.UsersGetByTeamId(teamId)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return

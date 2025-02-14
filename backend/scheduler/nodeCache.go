@@ -44,7 +44,7 @@ func GetNodeInfo(nodeId string) *types.Node {
 		return v.(*types.Node)
 	}
 
-	n, err := db.GetNodeById(nodeId)
+	n, err := db.NodeGetById(nodeId)
 	if err != nil {
 		return nil
 	}

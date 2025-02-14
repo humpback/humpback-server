@@ -1,15 +1,14 @@
 package scheduler
 
 import (
+	"log/slog"
 	"sync"
 	"time"
-
+	
 	"humpback/config"
 	"humpback/internal/db"
 	"humpback/types"
-
-	"log/slog"
-
+	
 	"golang.org/x/exp/rand"
 )
 
@@ -52,7 +51,7 @@ func (nc *NodeController) RestoreNodes() {
 	nc.Lock()
 	defer nc.Unlock()
 
-	nodes, err := db.GetAllEnabledNodes()
+	nodes, err := db.NodesGetAllEnabled()
 	if err != nil {
 		slog.Info("[Node Controller] restore nodes failed", "error", err)
 		return
@@ -108,7 +107,7 @@ func (nc *NodeController) CheckNodesCore() {
 			}
 		}
 
-		err := db.UpdateNodeStatus(nodeId, nodeInfo.Status, nodeInfo.LastHeartbeat, nodeInfo.CPUUsage, nodeInfo.MemoryUsage)
+		err := db.NodeUpdateStatus(nodeId, nodeInfo.Status, nodeInfo.LastHeartbeat, nodeInfo.CPUUsage, nodeInfo.MemoryUsage)
 		if err != nil {
 			slog.Info("[Node Controller] update node status to DB failed", "error", err)
 		}
@@ -132,7 +131,7 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 		}
 		n.LastHeartbeat = ts
 	} else {
-		n, err := db.GetNodeById(nodeId)
+		n, err := db.NodeGetById(nodeId)
 		if err == nil {
 			nc.NodesInfo[nodeId] = &NodeSimpleInfo{
 				NodeId:          n.NodeId,
