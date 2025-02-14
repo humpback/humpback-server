@@ -35,6 +35,9 @@ func InitApp() (*App, error) {
 }
 
 func (app *App) Startup() {
+	// app.scheduler.NodeHeartbeatChan
+	// app.scheduler.ServiceChangeChan
+	// website 可以用这两个channel通知调度器节点变动和服务变动
 	app.scheduler.Start()
 	app.webSite.Start()
 	controller.Start(app.stopCh)
