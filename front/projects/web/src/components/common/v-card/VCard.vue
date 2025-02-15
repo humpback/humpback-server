@@ -69,7 +69,7 @@ const style = computed(() => {
 
 .header-color {
   :deep(.el-card__header) {
-    background-color: var(--card-header-background-color);
+    background-color: var(--hp-card-header-bg-color);
     color: #2b2b2b;
   }
 }

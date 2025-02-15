@@ -40,7 +40,7 @@ function toggleCard() {
   width: 100%;
 
   .card-header {
-    background-color: var(--card-header-background-color);
+    background-color: var(--hp-card-header-bg-color);
     padding: 6px 10px;
     cursor: pointer;
 
@@ -58,7 +58,7 @@ function toggleCard() {
     overflow-y: hidden;
     padding: 16px;
     background-color: #ffffff;
-    //border-top: 1px solid var(--card-header-background-color);
+    //border-top: 1px solid var(--hp-card-header-bg-color);
   }
 }
 </style>
