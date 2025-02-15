@@ -26,6 +26,7 @@ export enum Action {
   Add = "add",
   Edit = "edit",
   EditLabel = "editLabel",
+  Enable = "enable",
   Delete = "delete",
   View = "view"
 }

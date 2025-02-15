@@ -3,6 +3,8 @@ import { NodeInfo } from "@/types"
 import { BytesToGB, TableHeight } from "@/utils"
 import { Action } from "@/models"
 import NodeAdd from "./node-add.vue"
+import NodeDelete from "./node-delete.vue"
+import NodeEnable from "./node-enable.vue"
 import NodeEditLabel from "./node-edit-label.vue"
 import NodeViewCommand from "./node-view-command.vue"
 import { QueryNodesInfo, statusOptions, modeOptions } from "./common.ts"
@@ -24,6 +26,8 @@ const tableList = ref({
 const addRef = useTemplateRef<InstanceType<typeof NodeAdd>>("addRef")
 const editLabelRef = useTemplateRef<InstanceType<typeof NodeEditLabel>>("editLabelRef")
 const viewValueRef = useTemplateRef<InstanceType<typeof NodeViewCommand>>("viewValueRef")
+const enableRef = useTemplateRef<InstanceType<typeof NodeEnable>>("enableRef")
+const deleteRef = useTemplateRef<InstanceType<typeof NodeDelete>>("deleteRef")
 
 async function search() {
   await router.replace(queryInfo.value.urlQuery())
@@ -130,6 +134,11 @@ function openAction(action: string, info?: NodeInfo) {
     case Action.View:
       viewValueRef.value?.open(info!)
       break
+    case Action.Delete:
+      deleteRef.value?.open(info!)
+      break
+    case Action.Enable:
+      enableRef.value?.open(info!)
   }
 }
 
@@ -241,14 +250,31 @@ onMounted(() => search())
       </el-table-column>
       <el-table-column :label="t('label.action')" align="center" fixed="right" header-align="center" width="130">
         <template #default="scope">
-          <div @click="openAction(Action.View, scope.row)">
+          <el-button link type="primary" @click="openAction(Action.View, scope.row)">
+            {{ t("btn.command") }}
+          </el-button>
+          <el-dropdown placement="bottom-end" @command="openAction($event, scope.row)">
             <el-button link type="primary">
-              {{ t("btn.command") }}
+              <el-icon :size="20">
+                <IconMdiMoreHoriz />
+              </el-icon>
             </el-button>
-          </div>
-          <div>
-            <el-button link type="primary" @click="openAction(Action.EditLabel, scope.row)">{{ t("btn.editLabel") }}</el-button>
-          </div>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item :command="Action.EditLabel">
+                  <el-link :underline="false" type="primary">{{ t("btn.editLabel") }}</el-link>
+                </el-dropdown-item>
+                <el-dropdown-item :command="Action.Enable">
+                  <el-link :type="scope.row.isEnable ? 'info' : 'success'" :underline="false">
+                    {{ scope.row.isEnable ? t("btn.disable") : t("btn.enable") }}
+                  </el-link>
+                </el-dropdown-item>
+                <el-dropdown-item :command="Action.Delete">
+                  <el-link :underline="false" type="danger">{{ t("btn.delete") }}</el-link>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </template>
       </el-table-column>
     </v-table>
@@ -256,9 +282,13 @@ onMounted(() => search())
 
   <node-add ref="addRef" @refresh="search()" />
 
+  <node-view-command ref="viewValueRef" />
+
   <node-edit-label ref="editLabelRef" @refresh="search()" />
 
-  <node-view-command ref="viewValueRef" />
+  <node-enable ref="enableRef" @refresh="search()" />
+
+  <node-delete ref="deleteRef" @refresh="search()" />
 </template>
 
 <style lang="scss" scoped>

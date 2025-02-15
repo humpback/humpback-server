@@ -56,6 +56,7 @@ declare module 'vue' {
     IconMdiInvoiceTextOutline: typeof import('~icons/mdi/invoice-text-outline')['default']
     IconMdiLanguage: typeof import('~icons/mdi/language')['default']
     IconMdiLoginVariant: typeof import('~icons/mdi/login-variant')['default']
+    IconMdiMoreHoriz: typeof import('~icons/mdi/more-horiz')['default']
     IconMdiRemove: typeof import('~icons/mdi/remove')['default']
     IconMdiUserOutline: typeof import('~icons/mdi/user-outline')['default']
     Language: typeof import('./src/components/business/i18n/Language.vue')['default']

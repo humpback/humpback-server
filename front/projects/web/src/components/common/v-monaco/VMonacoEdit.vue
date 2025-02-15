@@ -187,6 +187,9 @@ defineExpose({ getValue })
 <template>
   <div ref="boxRef" class="monaco-box">
     <div class="monaco-header">
+      <div class="flex-1">
+        <slot name="title" />
+      </div>
       <el-dropdown :teleported="false" @command="formatLang">
         <el-button link>
           <div class="d-flex">
@@ -245,7 +248,7 @@ defineExpose({ getValue })
     height: 40px;
     display: flex;
     align-items: center;
-    justify-content: right;
+    justify-content: left;
     gap: 8px;
   }
 

@@ -18,6 +18,7 @@ export default {
     "users": "Users",
     "totalTeams": "{total} Teams",
     "totalUsers": "{total} Users",
+    "totalNumber": "Total {total}",
     "type": "Type",
     "value": "Value",
     "static": "Static",

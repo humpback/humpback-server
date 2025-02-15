@@ -19,9 +19,7 @@ defineExpose({ open })
 
 <template>
   <v-dialog v-model="dialogInfo.show">
-    <template #header>
-      <span v-html="t('header.viewConfig', { configName: dialogInfo.info.configName })" />
-    </template>
+    <template #header> {{ t("header.config") }}</template>
     <div class="view-content">
       <v-monaco-edit v-model="dialogInfo.info.configValue" read-only />
     </div>

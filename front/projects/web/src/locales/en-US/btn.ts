@@ -28,6 +28,8 @@ export default {
     "more": "More",
     "command": "Command",
     "editLabel": "Edit Label",
-    "addLabel": "Add Label"
+    "addLabel": "Add Label",
+    "enable": "Enable",
+    "disable": "Disable"
   }
 }

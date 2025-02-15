@@ -19,12 +19,15 @@ function open(info: NodeInfo) {
   dialogInfo.value.show = true
 }
 
-async function confirmDelete() {
+async function save() {
   isAction.value = true
   return await nodeService
-    .delete(dialogInfo.value.info.nodeId)
+    .updateSwitch({
+      nodeId: dialogInfo.value.info.nodeId,
+      enable: !dialogInfo.value.info.isEnable
+    })
     .then(() => {
-      ShowSuccessMsg(t("message.deleteSuccess"))
+      ShowSuccessMsg(t("message.saveSuccess"))
       dialogInfo.value.show = false
       emits("refresh")
     })
@@ -36,13 +39,15 @@ defineExpose({ open })
 
 <template>
   <v-dialog v-model="dialogInfo.show" width="600px">
-    <template #header>{{ t("header.deleteNode") }}</template>
+    <template #header>{{ dialogInfo.info.isEnable ? t("header.disableNode") : t("header.enableNode") }}</template>
     <div class="my-3">
-      <strong v-html="t('notify.deleteNode', { ip: dialogInfo.info.ipAddress })" />
+      <strong v-if="dialogInfo.info.isEnable" v-html="t('notify.disableNode', { ip: dialogInfo.info.ipAddress })" />
+      <strong v-else v-html="t('notify.enableNode', { ip: dialogInfo.info.ipAddress })" />
     </div>
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button :loading="isAction" type="danger" @click="confirmDelete">{{ t("btn.delete") }}</el-button>
+      <el-button v-if="dialogInfo.info.isEnable" :loading="isAction" type="info" @click="save">{{ t("btn.disable") }}</el-button>
+      <el-button v-else :loading="isAction" type="success" @click="save">{{ t("btn.enable") }}</el-button>
     </template>
   </v-dialog>
 </template>

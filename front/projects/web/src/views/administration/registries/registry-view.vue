@@ -27,12 +27,12 @@ defineExpose({ open })
 </script>
 
 <template>
-  <v-dialog v-model="dialogInfo.show" width="800px">
+  <v-dialog v-model="dialogInfo.show" width="600px">
     <template #header>
-      <span v-html="t('header.viewRegistry', { registryName: dialogInfo.info.registryName })" />
+      {{ t("header.viewRegistry") }}
     </template>
     <div v-loading="isLoading" class="my-3">
-      <el-descriptions :column="1" border label-width="200px">
+      <el-descriptions :column="1" border label-width="160px">
         <el-descriptions-item :label="t('label.name')">
           <span>{{ dialogInfo.info.registryName }}</span>
           <el-tag v-if="dialogInfo.info.isDefault" class="ml-3" effect="dark" round size="small" type="warning">

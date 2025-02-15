@@ -57,11 +57,10 @@ export function NewCommand(ip: string, isUninstall?: boolean) {
   if (isUninstall) {
     return `docker rm -f humpback-agent`
   }
-  return `docker run -d --name=humpback-agent
---net=host
---restart=always
--e ip=${ip}
--v /etc/localtime:/etc/localtime
-humpback:latest
-`
+  return `docker run -d --name=humpback-agent \\
+--net=host \\
+--restart=always \\
+-e ip=${ip} \\
+-v /etc/localtime:/etc/localtime \\
+humpback:latest`
 }
