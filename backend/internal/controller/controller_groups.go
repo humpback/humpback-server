@@ -96,8 +96,17 @@ func GroupQuery(queryInfo *models.GroupQueryReqInfo) (*response.QueryResult[type
 }
 
 func GroupDelete(id string) error {
-	if err := db.GroupDelete(id); err != nil {
+	_, err := db.GroupGetById(id)
+	if err != nil {
+		if err == db.ErrKeyNotExist {
+			//todo 往scheduler发送消息
+			return nil
+		}
 		return response.NewRespServerErr(err.Error())
 	}
+	if err = db.GroupDelete(id); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	//todo 往scheduler发送消息
 	return nil
 }
