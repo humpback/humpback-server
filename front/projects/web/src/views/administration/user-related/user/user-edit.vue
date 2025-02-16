@@ -20,7 +20,7 @@ const dialogInfo = ref({
   info: {} as UserInfo
 })
 
-const teamsOptions = ref<TeamInfo[]>([])
+const teamsOption = ref<TeamInfo[]>([])
 
 const formRef = useTemplateRef<FormInstance>("formRef")
 const rules = ref<FormRules>({
@@ -70,9 +70,9 @@ async function getUserInfo() {
 }
 
 async function getTeams() {
-  return await teamService.query({ sortInfo: { field: "name", order: "asc" } }).then(res => {
-    teamsOptions.value = res.list
-    return res
+  return await teamService.list().then(data => {
+    teamsOption.value = data
+    return data
   })
 }
 
@@ -159,7 +159,7 @@ defineExpose({ open })
 
           <el-col>
             <el-form-item :label="t('label.teams')" prop="teams">
-              <v-team-use-option-select v-model="dialogInfo.info.teams" :options="teamsOptions" />
+              <v-teams-option-select v-model="dialogInfo.info.teams" :options="teamsOption" />
             </el-form-item>
           </el-col>
         </el-row>

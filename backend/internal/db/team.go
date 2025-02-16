@@ -22,7 +22,7 @@ func TeamGetById(id string) (*types.Team, error) {
 }
 
 func TeamsGetByName(name string, isLower bool) ([]*types.Team, error) {
-	teams, err := GetDataAll[types.Team](BucketTeams)
+	teams, err := TeamsGetAll()
 	if err != nil {
 		return nil, err
 	}

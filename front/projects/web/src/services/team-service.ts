@@ -5,6 +5,10 @@ class TeamService {
     return await httpClient.get<TeamInfo>(`/webapi/team/info/${id}`).then(res => res.data)
   }
 
+  async list() {
+    return await httpClient.get<TeamInfo[]>(`/webapi/team/list`).then(res => res.data)
+  }
+
   async query(data: any) {
     return await httpClient.post<ResponseQuery<TeamInfo>>("/webapi/team/query", data).then(res => res.data)
   }

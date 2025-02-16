@@ -5,8 +5,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
-	"time"
-
+	
 	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
@@ -32,7 +31,7 @@ func (n *NodesCreateReqInfo) Check() error {
 
 func (n *NodesCreateReqInfo) NewNodesInfo() []*types.Node {
 	result := make([]*types.Node, 0)
-	nowT := time.Now().UnixMilli()
+	nowT := utils.NewActionTimestamp()
 	for _, ip := range *n {
 		result = append(result, &types.Node{
 			NodeId:      utils.NewGuidStr(),

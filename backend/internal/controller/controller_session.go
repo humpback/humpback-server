@@ -7,6 +7,7 @@ import (
 	"humpback/common/response"
 	"humpback/config"
 	"humpback/internal/db"
+	"humpback/pkg/utils"
 	"humpback/types"
 )
 
@@ -23,7 +24,7 @@ func SessionGCInterval(stopCh <-chan struct{}) {
 				slog.Error("[GC Session] get all session failed.", "Error", err)
 			}
 			var (
-				nowT  = time.Now().UnixMilli()
+				nowT  = utils.NewActionTimestamp()
 				gcIds = make([]string, 0)
 			)
 			for _, session := range sessions {

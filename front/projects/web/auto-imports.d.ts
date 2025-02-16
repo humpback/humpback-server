@@ -102,6 +102,7 @@ declare global {
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const globalLoading: typeof import('./src/utils/global-loading')['globalLoading']
+  const groupService: typeof import('./src/services/group-service')['groupService']
   const h: typeof import('vue')['h']
   const httpClient: typeof import('./src/services/http-client')['httpClient']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
@@ -514,6 +515,7 @@ declare module 'vue' {
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly globalLoading: UnwrapRef<typeof import('./src/utils/global-loading')['globalLoading']>
+    readonly groupService: UnwrapRef<typeof import('./src/services/group-service')['groupService']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly httpClient: UnwrapRef<typeof import('./src/services/http-client')['httpClient']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>

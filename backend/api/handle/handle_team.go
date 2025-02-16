@@ -2,19 +2,23 @@ package handle
 
 import (
 	"net/http"
+	"slices"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"humpback/api/handle/models"
 	"humpback/api/middleware"
 	"humpback/common/response"
 	"humpback/internal/controller"
+	"humpback/types"
 )
 
 func RouteTeam(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), teamCreate)
 	router.PUT("", middleware.CheckAdminPermissions(), teamUpdate)
 	router.GET("/info/:id", middleware.CheckAdminPermissions(), team)
-	router.POST("/query", teamsQuery)
+	router.GET("/list", teams)
+	router.POST("/query", middleware.CheckAdminPermissions(), teamsQuery)
 	router.GET("/query-by-user/:userId", middleware.CheckAdminPermissions(), teamsByUserId)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), teamDelete)
 }
@@ -53,6 +57,18 @@ func team(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, info)
+}
+
+func teams(c *gin.Context) {
+	result, err := controller.Teams()
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	slices.SortFunc(result, func(a, b *types.Team) int {
+		return types.QuerySortOrder(types.SortOrderAsc, strings.ToLower(a.Name), strings.ToLower(b.Name))
+	})
+	c.JSON(http.StatusOK, result)
 }
 
 func teamsQuery(c *gin.Context) {

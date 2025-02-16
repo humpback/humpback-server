@@ -26,6 +26,10 @@ class UserService {
     return await httpClient.get<UserInfo>(url).then(res => res.data)
   }
 
+  async list() {
+    return await httpClient.get<UserInfo[]>(`/webapi/user/list`).then(res => res.data)
+  }
+
   async query(data: any) {
     return await httpClient.post<ResponseQuery<UserInfo>>("/webapi/user/query", data).then(res => res.data)
   }

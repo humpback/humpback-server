@@ -1,14 +1,13 @@
 package scheduler
 
 import (
+	"net/http"
+	"time"
+	
+	"github.com/gin-gonic/gin"
 	"humpback/internal/db"
 	"humpback/pkg/utils"
 	"humpback/types"
-	"net/http"
-
-	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 func getAllNodes(c *gin.Context) {

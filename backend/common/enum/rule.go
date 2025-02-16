@@ -18,6 +18,7 @@ var (
 	LimitRegistryUrl      = LengthLimit{Min: 1, Max: 200}
 	LimitRegistryUsername = LengthLimit{Min: 1, Max: 100}
 	LimitRegistryPassword = LengthLimit{Min: 1, Max: 100}
+	LimitGroupName        = LengthLimit{Min: 1, Max: 100}
 )
 
 var RuleLength = map[string]LengthLimit{
@@ -33,6 +34,7 @@ var RuleLength = map[string]LengthLimit{
 	"RegistryUrl":      LimitRegistryUrl,
 	"RegistryUsername": LimitRegistryUsername,
 	"RegistryPassword": LimitRegistryPassword,
+	"GroupName":        LimitGroupName,
 }
 
 var (

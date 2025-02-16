@@ -30,6 +30,9 @@ export default {
     "editLabel": "Edit Label",
     "addLabel": "Add Label",
     "enable": "Enable",
-    "disable": "Disable"
+    "disable": "Disable",
+    "addGroup": "Add Group",
+    "editGroup": "Edit Group",
+    "deleteGroup": "Delete Group"
   }
 }

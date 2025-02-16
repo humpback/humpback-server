@@ -16,6 +16,7 @@ interface RuleLength {
   RegistryUrl: RuleLengthLimit
   RegistryUsername: RuleLengthLimit
   RegistryPassword: RuleLengthLimit
+  GroupName: RuleLengthLimit
 }
 
 interface RuleFormat {

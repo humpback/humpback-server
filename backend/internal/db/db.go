@@ -5,14 +5,13 @@ package db
 Buckets
 
 Users: user_id, user_name, password, email, phone, create_time, update_time, is_admin, groups
-Groups: group_id, group_name, create_time, update_time, users
+Groups: group_id, group_name, create_time, update_time, users, teams, nodes
 
 Registries: registry_id, registry_name, url, user_name, password, isDefault, create_time, update_time, status
 
 Configs: config_id, config_name, create_time, update_time, values(json)
 
 Nodes: node_id, node_name, host_ip, host_port, create_time, update_time, status, infos(json)
-NodesGroups: group_id, group_name, create_time, update_time, nodes
 
 templates: template_id, template_name, create_time, update_time, infos(json)
 
@@ -20,7 +19,6 @@ Services: service_id, service_name, create_time, update_time, type, status, cont
 
 serviceId: {random-8}
 containerName: humpback-{serviceId}-{version-5}-{random-5}
-
 
 */
 
@@ -42,7 +40,6 @@ type dbHelper struct {
 
 const BucketUsers = "Users"
 const BucketTeams = "Teams"
-const BucketGroups = "Groups"
 const BucketSessions = "Sessions"
 const BucketRegistries = "Registries"
 const BucketConfigs = "Configs"
@@ -55,7 +52,6 @@ var (
 	Buckets = []string{
 		BucketUsers,
 		BucketTeams,
-		BucketGroups,
 		BucketSessions,
 		BucketRegistries,
 		BucketConfigs,

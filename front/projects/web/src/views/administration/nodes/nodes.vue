@@ -7,7 +7,7 @@ import NodeDelete from "./node-delete.vue"
 import NodeEnable from "./node-enable.vue"
 import NodeEditLabel from "./node-edit-label.vue"
 import NodeViewCommand from "./node-view-command.vue"
-import { QueryNodesInfo, statusOptions, modeOptions } from "./common.ts"
+import { modeOptions, QueryNodesInfo, statusOptions } from "./common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -201,7 +201,7 @@ onMounted(() => search())
         <template #default="scope">
           <div class="d-flex gap-2">
             <v-node-enable-tag :enabled="scope.row.isEnable" />
-            <el-link :type="scope.row.isEnable ? 'primary' : 'info'">{{ scope.row.ipAddress }}</el-link>
+            <v-router-link :href="`/ws/node/${scope.row.nodeId}/detail`" :text="scope.row.ipAddress" :type="scope.row.isEnable ? 'primary' : 'info'" />
           </div>
         </template>
       </el-table-column>
@@ -253,7 +253,7 @@ onMounted(() => search())
           <el-button link type="primary" @click="openAction(Action.View, scope.row)">
             {{ t("btn.command") }}
           </el-button>
-          <el-dropdown placement="bottom-end" @command="openAction($event, scope.row)">
+          <el-dropdown class="ml-1" placement="bottom-end" @command="openAction($event, scope.row)">
             <el-button link type="primary">
               <el-icon :size="20">
                 <IconMdiMoreHoriz />

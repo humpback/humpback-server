@@ -15,7 +15,7 @@ func ConfigGetById(id string) (*types.Config, error) {
 }
 
 func ConfigsGetByName(name string, isLower bool) ([]*types.Config, error) {
-	configs, err := GetDataAll[types.Config](BucketConfigs)
+	configs, err := ConfigsGetAll()
 	if err != nil {
 		return nil, err
 	}

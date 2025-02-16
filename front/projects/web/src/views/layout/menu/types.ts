@@ -3,6 +3,7 @@ import { shallowRef } from "vue"
 export interface MenuInfo {
   icon: any
   name: string
+  routeName?: string
   params?: any
   query?: any
   path?: string
@@ -19,7 +20,8 @@ export const menuList: MenuInfo[] = [
   },
   {
     icon: shallowRef(IconMdiCompany),
-    name: "serviceManagement"
+    name: "serviceManagement",
+    routeName: "groups"
   },
   {
     icon: shallowRef(IconMdiCogOutline),

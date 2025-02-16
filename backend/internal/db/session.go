@@ -1,8 +1,7 @@
 package db
 
 import (
-	"time"
-
+	"humpback/pkg/utils"
 	"humpback/types"
 )
 
@@ -22,7 +21,7 @@ func SessionGetById(sessionId string) (*types.Session, bool, error) {
 		}
 		return nil, false, err
 	}
-	return sessionInfo, sessionInfo.ExpiredAt < time.Now().UnixMilli(), nil
+	return sessionInfo, sessionInfo.ExpiredAt < utils.NewActionTimestamp(), nil
 }
 
 func SessionUpdate(data *types.Session) error {

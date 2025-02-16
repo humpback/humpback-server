@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"time"
-
 	"humpback/api/handle/models"
 	"humpback/common/locales"
 	"humpback/common/response"
 	"humpback/internal/db"
+	"humpback/pkg/utils"
 	"humpback/types"
 )
 
@@ -35,7 +34,7 @@ func NodeUpdateLabel(info *models.NodeUpdateLabelReqInfo) (string, error) {
 		return "", err
 	}
 	node.Labels = info.Labels
-	node.UpdatedAt = time.Now().UnixMilli()
+	node.UpdatedAt = utils.NewActionTimestamp()
 	if err = db.NodeUpdate(node); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}

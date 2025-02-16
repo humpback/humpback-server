@@ -1,5 +1,9 @@
 package types
 
+import (
+	"slices"
+)
+
 type UserRole int
 
 var (
@@ -19,6 +23,28 @@ type User struct {
 	CreatedAt   int64    `json:"createdAt"`
 	UpdatedAt   int64    `json:"updatedAt"`
 	Teams       []string `json:"teams"`
+}
+
+func (u *User) InGroup(group *NodesGroups) bool {
+	if group == nil {
+		return false
+	}
+	if IsAdmin(u.Role) || IsSupperAdmin(u.Role) {
+		return true
+	}
+	if slices.Index(group.Users, u.UserId) != -1 {
+		return true
+	}
+	groupTeams := make(map[string]bool)
+	for _, team := range group.Teams {
+		groupTeams[team] = true
+	}
+	for _, team := range u.Teams {
+		if groupTeams[team] {
+			return true
+		}
+	}
+	return false
 }
 
 type Team struct {

@@ -12,11 +12,11 @@ type Props = Partial<
     showHeaderColor?: boolean
     round?: boolean
     bodyPaddingNone?: boolean
-    showTitle?: boolean
+    showPageTitle?: boolean
   }
 >
 
-const props = withDefaults(defineProps<Props>(), { shadow: "never", showTitle: true })
+const props = withDefaults(defineProps<Props>(), { shadow: "never", showPageTitle: true })
 
 const { t } = useI18n()
 const route = useRoute()
@@ -43,7 +43,7 @@ const style = computed(() => {
       <slot name="header" />
     </template>
     <template v-if="!!slots.default" #default>
-      <div v-if="props.showTitle" class="card-title">
+      <div v-if="props.showPageTitle" class="card-title">
         {{ t("menu.header." + (route.name as string)) }}
       </div>
       <slot />

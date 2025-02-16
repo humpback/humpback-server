@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
-	"time"
-
+	
 	"golang.org/x/exp/maps"
 	"humpback/api/handle/models"
 	"humpback/common/locales"
@@ -25,7 +24,7 @@ func InitAdminUser() error {
 	}
 	if user == nil {
 		var (
-			t  = time.Now().UnixMilli()
+			t  = utils.NewActionTimestamp()
 			id = utils.NewGuidStr()
 		)
 		if err = db.UserUpdate(id, &types.User{
@@ -62,9 +61,9 @@ func UserLogin(reqInfo *models.UserLoginReqInfo) (*types.User, string, error) {
 }
 
 func userCheckNamePsd(username, password string) (*types.User, error) {
-	users, err := db.UsersGetAll()
+	users, err := Users()
 	if err != nil {
-		return nil, response.NewRespServerErr(err.Error())
+		return nil, err
 	}
 	for _, user := range users {
 		if user.Username == username {
@@ -89,7 +88,7 @@ func MeChangePassword(userInfo *types.User, reqInfo *models.MeChangePasswordReqI
 		return response.NewBadRequestErr(locales.CodeOldPasswordIsWrong)
 	}
 	userInfo.Password = reqInfo.NewPassword
-	userInfo.UpdatedAt = time.Now().UnixMilli()
+	userInfo.UpdatedAt = utils.NewActionTimestamp()
 	if err := MeUpdate(userInfo); err != nil {
 		return err
 	}
@@ -226,10 +225,21 @@ func User(id string) (*types.User, error) {
 	return info, nil
 }
 
-func UsersQuery(queryInfo *models.UserQueryReqInfo) (*response.QueryResult[types.User], error) {
+func Users() ([]*types.User, error) {
 	users, err := db.UsersGetAll()
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
+	}
+	for _, user := range users {
+		user.Password = ""
+	}
+	return users, nil
+}
+
+func UsersQuery(queryInfo *models.UserQueryReqInfo) (*response.QueryResult[types.User], error) {
+	users, err := Users()
+	if err != nil {
+		return nil, err
 	}
 	result := queryInfo.QueryFilter(users)
 	return response.NewQueryResult[types.User](

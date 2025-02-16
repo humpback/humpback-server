@@ -87,4 +87,11 @@ const (
 	CodeNodesLabelValueIsEmpty     = "R4Nodes-006"
 	CodeNodesLabelKeyIsDuplicated  = "R4Nodes-007"
 	CodeNodesIpAddressAlreadyExist = "R4Nodes-008"
+
+	CodeGroupIdNotEmpty       = "R4Group-001"
+	CodeGroupNotExist         = "R4Group-002"
+	CodeGroupNameAlreadyExist = "R4Group-003"
+	CodeGroupNameLimitLength  = "R4Group-004"
+	CodeGroupNameNotEmpty     = "R4Group-005"
+	CodeGroupNoPermission     = "R4Group-006"
 )

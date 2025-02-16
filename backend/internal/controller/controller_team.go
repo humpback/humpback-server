@@ -147,10 +147,18 @@ func TeamsGetByIds(ids []string, ignoreNotExist bool) ([]*types.Team, error) {
 	return teams, nil
 }
 
-func TeamQuery(queryInfo *models.TeamQueryReqInfo) (*response.QueryResult[types.Team], error) {
-	users, err := db.TeamsGetAll()
+func Teams() ([]*types.Team, error) {
+	teams, err := db.TeamsGetAll()
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
+	}
+	return teams, nil
+}
+
+func TeamQuery(queryInfo *models.TeamQueryReqInfo) (*response.QueryResult[types.Team], error) {
+	users, err := Teams()
+	if err != nil {
+		return nil, err
 	}
 	result := queryInfo.QueryFilter(users)
 	return response.NewQueryResult[types.Team](

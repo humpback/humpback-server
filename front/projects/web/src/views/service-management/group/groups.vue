@@ -1,34 +1,35 @@
 <script lang="ts" setup>
-import { ConfigInfo } from "@/types"
+import { GroupInfo } from "@/types"
 import { TableHeight } from "@/utils"
-import { Action, ConfigType } from "@/models"
-import ConfigEdit from "./config-edit.vue"
-import ConfigDelete from "./config-delete.vue"
-import ConfigView from "./config-view.vue"
-import { QueryConfigsInfo } from "./common.ts"
+import { Action } from "@/models"
+import GroupEdit from "./group-edit.vue"
+import GroupDelete from "./group-delete.vue"
+import { QueryGroupsInfo } from "./common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const userStore = useUserStore()
 
 const tableHeight = computed(() => TableHeight(252))
 
 const isLoading = ref(false)
-const queryInfo = ref<QueryConfigsInfo>(new QueryConfigsInfo(route.query))
+const queryInfo = ref<QueryGroupsInfo>(new QueryGroupsInfo(route.query))
 
 const tableList = ref({
   total: 0,
-  data: [] as Array<ConfigInfo>
+  data: [] as Array<GroupInfo>
 })
 
-const editRef = useTemplateRef<InstanceType<typeof ConfigEdit>>("editRef")
-const deleteRef = useTemplateRef<InstanceType<typeof ConfigDelete>>("deleteRef")
-const viewValueRef = useTemplateRef<InstanceType<typeof ConfigView>>("viewValueRef")
+const editRef = useTemplateRef<InstanceType<typeof GroupEdit>>("editRef")
+const deleteRef = useTemplateRef<InstanceType<typeof GroupDelete>>("deleteRef")
+
+const isAdmin = computed(() => userStore.isAdmin || userStore.isSupperAdmin)
 
 async function search() {
   await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
-  return await configService
+  return await groupService
     .query(queryInfo.value.searchParams())
     .then(res => {
       tableList.value.data = res.list
@@ -37,7 +38,7 @@ async function search() {
     .finally(() => (isLoading.value = false))
 }
 
-function openAction(action: string, info?: ConfigInfo) {
+function openAction(action: string, info?: GroupInfo) {
   switch (action) {
     case Action.Add:
     case Action.Edit:
@@ -45,9 +46,6 @@ function openAction(action: string, info?: ConfigInfo) {
       break
     case Action.Delete:
       deleteRef.value?.open(info!)
-      break
-    case Action.View:
-      viewValueRef.value?.open(info!)
       break
   }
 }
@@ -60,9 +58,6 @@ onMounted(() => search())
     <el-form @submit.prevent="search">
       <el-form-item>
         <div class="d-flex gap-3 w-100 flex-wrap">
-          <div>
-            <v-config-type-query-select v-model="queryInfo.filter.configType" :placeholder="t('placeholder.all')" @change="search()" />
-          </div>
           <div class="flex-1" style="min-width: 300px">
             <v-input v-model="queryInfo.keywords">
               <template #prepend>
@@ -72,13 +67,13 @@ onMounted(() => search())
           </div>
           <div>
             <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-            <el-button plain type="primary" @click="openAction(Action.Add)">
+            <el-button v-if="isAdmin" plain type="primary" @click="openAction(Action.Add)">
               <template #icon>
                 <el-icon :size="20">
                   <IconMdiAdd />
                 </el-icon>
               </template>
-              {{ t("btn.addConfig") }}
+              {{ t("btn.addGroup") }}
             </el-button>
           </div>
         </div>
@@ -94,21 +89,14 @@ onMounted(() => search())
       :total="tableList.total"
       @page-change="search"
       @sort-change="search">
-      <el-table-column :label="t('label.config')" fixed="left" min-width="160" prop="configName" sortable="custom" />
+      <el-table-column :label="t('label.group')" fixed="left" min-width="160" prop="groupName" sortable="custom">
+        <template #default="scope">
+          <v-router-link :href="`/ws/group/${scope.row.groupId}/services`" :text="scope.row.groupName" />
+        </template>
+      </el-table-column>
       <el-table-column :label="t('label.description')" min-width="140" prop="description">
         <template #default="scope">
           <v-table-column-none :text="scope.row.description" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.type')" min-width="120">
-        <template #default="scope">
-          <v-config-type-view :configType="scope.row.configType" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.value')" min-width="200">
-        <template #default="scope">
-          <span v-if="scope.row.configType === ConfigType.Static">{{ scope.row.configValue }}</span>
-          <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }} </el-button>
         </template>
       </el-table-column>
       <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
@@ -130,11 +118,18 @@ onMounted(() => search())
     </v-table>
   </v-card>
 
-  <config-delete ref="deleteRef" @refresh="search()" />
+  <group-delete ref="deleteRef" @refresh="search()" />
 
-  <config-edit ref="editRef" @refresh="search()" />
-
-  <config-view ref="viewValueRef" />
+  <group-edit ref="editRef" @refresh="search()" />
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.ellipsis {
+  display: inline-block;
+  width: 100%;
+  //max-width: 150px; /* 设置最大宽度 */
+  white-space: nowrap; /* 禁止换行 */
+  overflow: hidden; /* 隐藏溢出内容 */
+  text-overflow: ellipsis; /* 使用省略号表示溢出 */
+}
+</style>

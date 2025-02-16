@@ -268,7 +268,7 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
 func (sm *ServiceManager) StartNextContainer() {
 
-	nodes, err := db.NodesGetByIds(sm.availableNodes)
+	nodes, err := db.NodesGetByIds(sm.availableNodes, true)
 
 	if err != nil {
 		slog.Error("[Service Manager] Start Service error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())

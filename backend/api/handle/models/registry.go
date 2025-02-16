@@ -3,7 +3,6 @@ package models
 import (
 	"slices"
 	"strings"
-	"time"
 
 	"humpback/common/enum"
 	"humpback/common/locales"
@@ -44,7 +43,7 @@ func (r *RegistryCreateReqInfo) Check() error {
 }
 
 func (r *RegistryCreateReqInfo) NewRegistryInfo() *types.Registry {
-	nowT := time.Now().UnixMilli()
+	nowT := utils.NewActionTimestamp()
 	return &types.Registry{
 		RegistryId:   utils.NewGuidStr(),
 		RegistryName: r.RegistryName,
@@ -78,7 +77,7 @@ func (r *RegistryUpdateReqInfo) NewRegistryInfo(oldInfo *types.Registry) *types.
 		Username:     r.Username,
 		Password:     r.Password,
 		CreatedAt:    oldInfo.CreatedAt,
-		UpdatedAt:    time.Now().UnixMilli(),
+		UpdatedAt:    utils.NewActionTimestamp(),
 	}
 }
 
@@ -86,49 +85,38 @@ type RegistryQueryReqInfo struct {
 	types.QueryInfo
 }
 
-func (c *RegistryQueryReqInfo) Check() error {
-	c.QueryInfo.CheckBase()
-	if c.Keywords != "" && slices.Index(c.keywordsModes(), c.Mode) == -1 {
+func (r *RegistryQueryReqInfo) Check() error {
+	r.QueryInfo.CheckBase()
+	if r.Keywords != "" && r.Mode != "registryName" {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
 }
 
-func (c *RegistryQueryReqInfo) keywordsModes() []string {
-	return []string{"registryName"}
-}
-
-func (c *RegistryQueryReqInfo) QueryFilter(registrys []*types.Registry) []*types.Registry {
+func (r *RegistryQueryReqInfo) QueryFilter(registries []*types.Registry) []*types.Registry {
 	result := make([]*types.Registry, 0)
-	for _, registry := range registrys {
-		if c.filter(registry) {
+	for _, registry := range registries {
+		if strings.Contains(strings.ToLower(registry.RegistryName), strings.ToLower(r.Keywords)) {
 			result = append(result, registry)
 		}
 	}
-	c.sort(result)
+	r.sort(result)
 	return result
 }
 
-func (c *RegistryQueryReqInfo) filter(info *types.Registry) bool {
-	if c.Keywords != "" && c.Mode == "registryName" {
-		return strings.Contains(strings.ToLower(info.RegistryName), strings.ToLower(c.Keywords))
-	}
-	return true
-}
-
-func (c *RegistryQueryReqInfo) sort(list []*types.Registry) []*types.Registry {
+func (r *RegistryQueryReqInfo) sort(list []*types.Registry) []*types.Registry {
 	var sortField = []string{"registryName", "updatedAt", "createdAt"}
-	if c.SortInfo == nil || c.SortInfo.Field == "" || slices.Index(sortField, c.SortInfo.Field) == -1 {
+	if r.SortInfo == nil || r.SortInfo.Field == "" || slices.Index(sortField, r.SortInfo.Field) == -1 {
 		return list
 	}
 	slices.SortFunc(list, func(a, b *types.Registry) int {
-		switch c.SortInfo.Field {
+		switch r.SortInfo.Field {
 		case "registryName":
-			return types.QuerySortOrder(c.SortInfo.Order, strings.ToLower(a.RegistryName), strings.ToLower(b.RegistryName))
+			return types.QuerySortOrder(r.SortInfo.Order, strings.ToLower(a.RegistryName), strings.ToLower(b.RegistryName))
 		case "updatedAt":
-			return types.QuerySortOrder(c.SortInfo.Order, a.UpdatedAt, b.UpdatedAt)
+			return types.QuerySortOrder(r.SortInfo.Order, a.UpdatedAt, b.UpdatedAt)
 		case "createdAt":
-			return types.QuerySortOrder(c.SortInfo.Order, a.CreatedAt, b.CreatedAt)
+			return types.QuerySortOrder(r.SortInfo.Order, a.CreatedAt, b.CreatedAt)
 		}
 		return 1
 	})

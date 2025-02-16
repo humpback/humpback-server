@@ -78,4 +78,11 @@ var enUSMsg = map[string]string{
 	CodeNodesLabelValueIsEmpty:     "The label value cannot be empty.",
 	CodeNodesLabelKeyIsDuplicated:  "The label key is duplicated.",
 	CodeNodesIpAddressAlreadyExist: "The IP address is already.",
+
+	CodeGroupIdNotEmpty:       "The group ID cannot be empty.",
+	CodeGroupNotExist:         "The group does not exist.",
+	CodeGroupNameAlreadyExist: "The group name already exists.",
+	CodeGroupNameLimitLength:  fmt.Sprintf("The group name length limit is %d to %d.", enum.LimitGroupName.Min, enum.LimitGroupName.Max),
+	CodeGroupNameNotEmpty:     "The group name cannot be empty.",
+	CodeGroupNoPermission:     "You do not have the group permission",
 }

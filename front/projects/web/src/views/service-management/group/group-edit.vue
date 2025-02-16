@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash-es"
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
 import { RuleLength } from "@/models"
-import { NewTeamEmptyInfo, TeamInfo, UserInfo } from "@/types"
+import { GroupInfo, NewGroupEmptyInfo } from "@/types"
 
 const emits = defineEmits<{
   (e: "refresh"): void
@@ -15,30 +15,19 @@ const isLoading = ref(false)
 const isAction = ref(false)
 const dialogInfo = ref({
   show: false,
-  info: {} as TeamInfo
+  info: {} as GroupInfo
 })
 
 const userOptions = ref<UserInfo[]>([])
-
+const teamOptions = ref<TeamInfo[]>([])
 const formRef = useTemplateRef<FormInstance>("formRef")
 const rules = ref<FormRules>({
-  name: [
+  groupName: [
     { required: true, validator: RulePleaseEnter("label.name"), trigger: "blur" },
-    { required: true, validator: RuleLimitRange(RuleLength.TeamName.Min, RuleLength.TeamName.Max), trigger: "blur" }
+    { required: true, validator: RuleLimitRange(RuleLength.GroupName.Min, RuleLength.GroupName.Max), trigger: "blur" }
   ],
   description: [{ validator: RuleLimitMax(RuleLength.Description.Max), trigger: "blur" }]
 })
-
-function open(info?: TeamInfo) {
-  dialogInfo.value.info = info ? cloneDeep(info) : NewTeamEmptyInfo()
-  dialogInfo.value.show = true
-  isLoading.value = true
-  getUsers()
-    .catch(() => {
-      dialogInfo.value.show = false
-    })
-    .finally(() => (isLoading.value = false))
-}
 
 async function getUsers() {
   return await userService.list().then(data => {
@@ -47,29 +36,54 @@ async function getUsers() {
   })
 }
 
+async function getTeams() {
+  return await teamService.list().then(data => {
+    teamOptions.value = data
+    return data
+  })
+}
+
+async function open(info?: GroupInfo) {
+  dialogInfo.value.info = info ? cloneDeep(info) : NewGroupEmptyInfo()
+  dialogInfo.value.show = true
+  isLoading.value = true
+  await Promise.all([getUsers(), getTeams()])
+    .catch(() => {
+      dialogInfo.value.show = false
+    })
+    .finally(() => (isLoading.value = false))
+}
+
 async function save() {
   if (!(await formRef.value?.validate())) {
     return
   }
 
   const body: any = {
-    name: dialogInfo.value.info.name,
+    groupName: dialogInfo.value.info.groupName,
     description: dialogInfo.value.info.description,
-    users: dialogInfo.value.info.users
+    users: dialogInfo.value.info.users,
+    teams: dialogInfo.value.info.teams
   }
   isAction.value = true
-  if (dialogInfo.value.info.teamId) {
-    body.teamId = dialogInfo.value.info.teamId
-    teamService
+  if (dialogInfo.value.info.groupId) {
+    body.groupId = dialogInfo.value.info.groupId
+    groupService
       .update(body)
       .then(() => {
         ShowSuccessMsg(t("message.saveSuccess"))
         dialogInfo.value.show = false
         emits("refresh")
       })
+      .catch(err => {
+        if (err?.code === "CodeGroupNoPermission") {
+          dialogInfo.value.show = false
+          emits("refresh")
+        }
+      })
       .finally(() => (isAction.value = false))
   } else {
-    teamService
+    groupService
       .create(body)
       .then(() => {
         ShowSuccessMsg(t("message.addSuccess"))
@@ -85,18 +99,23 @@ defineExpose({ open })
 
 <template>
   <v-dialog v-model="dialogInfo.show" width="800px">
-    <template #header>{{ dialogInfo.info.teamId ? t("header.editTeam") : t("header.addTeam") }}</template>
+    <template #header>{{ dialogInfo.info.groupId ? t("header.editGroup") : t("header.addGroup") }}</template>
     <div class="my-3">
       <el-form ref="formRef" v-loading="isLoading" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
-        <el-form-item :label="t('label.name')" prop="name">
-          <v-input v-model="dialogInfo.info.name" :maxlength="RuleLength.TeamName.Max" clearable show-word-limit />
+        <el-form-item :label="t('label.name')" prop="groupName">
+          <v-input v-model="dialogInfo.info.groupName" :maxlength="RuleLength.GroupName.Max" clearable show-word-limit />
         </el-form-item>
         <el-form-item :label="t('label.description')" prop="description">
           <v-description-input v-model="dialogInfo.info.description" />
         </el-form-item>
-        <el-form-item :label="t('label.users')" prop="teams">
+        <el-form-item :label="t('label.users')" prop="groups">
           <v-users-option-select v-model="dialogInfo.info.users" :options="userOptions" />
         </el-form-item>
+        <el-col>
+          <el-form-item :label="t('label.teams')" prop="teams">
+            <v-teams-option-select v-model="dialogInfo.info.teams" :options="teamOptions" />
+          </el-form-item>
+        </el-col>
       </el-form>
     </div>
     <template #footer>

@@ -398,6 +398,7 @@
     "NodeStatus": true,
     "BytesToGB": true,
     "NodeSwitch": true,
-    "nodeService": true
+    "nodeService": true,
+    "groupService": true
   }
 }

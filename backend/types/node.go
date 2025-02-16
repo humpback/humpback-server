@@ -18,9 +18,12 @@ type Node struct {
 }
 
 type NodesGroups struct {
-	GroupId   string   `json:"groupId"`
-	GroupName string   `json:"groupName"`
-	CreatedAt int64    `json:"createdAt"`
-	UpdatedAt int64    `json:"updatedAt"`
-	Nodes     []string `json:"nodes"`
+	GroupId     string   `json:"groupId"`
+	GroupName   string   `json:"groupName"`
+	Description string   `json:"description"`
+	CreatedAt   int64    `json:"createdAt"`
+	UpdatedAt   int64    `json:"updatedAt"`
+	Users       []string `json:"users"`
+	Teams       []string `json:"teams"`
+	Nodes       []string `json:"nodes"`
 }

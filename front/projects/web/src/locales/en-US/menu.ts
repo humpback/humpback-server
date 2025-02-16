@@ -18,7 +18,8 @@ export default {
       "nodes": "Nodes",
       "configs": "Configs",
       "help": "Help",
-      "myAccount": "My Account"
+      "myAccount": "My Account",
+      "groups": "Groups"
     }
   },
   webTitle: {
@@ -30,6 +31,7 @@ export default {
     "teams": "Teams",
     "configs": "Configs",
     "nodes": "Nodes",
-    "registries": "Registries"
+    "registries": "Registries",
+    "groups": "Groups"
   }
 }

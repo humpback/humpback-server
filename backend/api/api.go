@@ -59,6 +59,7 @@ func (api *Router) setRoute() {
 			"/config":   {middleware.CheckLogin(), handle.RouteConfig},
 			"/registry": {middleware.CheckLogin(), handle.RouteRegistry},
 			"/node":     {middleware.CheckLogin(), handle.RouteNodes},
+			"/group":    {middleware.CheckLogin(), handle.RouteGroup},
 		},
 	}
 

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"slices"
 	"strings"
-	"time"
 
 	"humpback/common/enum"
 	"humpback/common/locales"
@@ -70,7 +69,7 @@ func (u *MeUpdateReqInfo) NewUserInfo(userInfo *types.User) *types.User {
 	userInfo.Email = u.Email
 	userInfo.Phone = u.Phone
 	userInfo.Description = u.Description
-	userInfo.UpdatedAt = time.Now().UnixMilli()
+	userInfo.UpdatedAt = utils.NewActionTimestamp()
 	return userInfo
 }
 
@@ -148,7 +147,7 @@ func (u *UserCreateReqInfo) CheckCreateRole(operator *types.User) error {
 }
 
 func (u *UserCreateReqInfo) NewUserInfo() *types.User {
-	t := time.Now().UnixMilli()
+	t := utils.NewActionTimestamp()
 	return &types.User{
 		UserId:      utils.NewGuidStr(),
 		Username:    u.Username,
@@ -195,7 +194,7 @@ func (u *UserUpdateReqInfo) NewUserInfo(oldUserInfo *types.User) (*types.User, b
 		Phone:       u.Phone,
 		Description: u.Description,
 		CreatedAt:   oldUserInfo.CreatedAt,
-		UpdatedAt:   time.Now().UnixMilli(),
+		UpdatedAt:   utils.NewActionTimestamp(),
 		Teams:       u.Teams,
 	}
 	if u.Username != oldUserInfo.Username ||
@@ -229,14 +228,10 @@ func (u *UserQueryReqInfo) Check() error {
 	if err := u.parseFilterInfo(); err != nil {
 		return err
 	}
-	if u.Keywords != "" && slices.Index(u.keywordsModes(), u.Mode) == -1 {
+	if u.Keywords != "" && slices.Index([]string{"username", "email", "phone"}, u.Mode) == -1 {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
-}
-
-func (u *UserQueryReqInfo) keywordsModes() []string {
-	return []string{"username", "email", "phone"}
 }
 
 func (u *UserQueryReqInfo) QueryFilter(users []*types.User) []*types.User {
@@ -255,17 +250,15 @@ func (u *UserQueryReqInfo) filter(info *types.User) bool {
 	if u.FilterInfo != nil && u.FilterInfo.Role != 0 && int(info.Role) != u.FilterInfo.Role {
 		return false
 	}
-	if u.Keywords != "" {
-		switch u.Mode {
-		case "username":
-			return strings.Contains(strings.ToLower(info.Username), strings.ToLower(u.Keywords))
-		case "email":
-			return strings.Contains(strings.ToLower(info.Email), strings.ToLower(u.Keywords))
-		case "phone":
-			return strings.Contains(strings.ToLower(info.Phone), strings.ToLower(u.Keywords))
-		}
+	switch u.Mode {
+	case "username":
+		return strings.Contains(strings.ToLower(info.Username), strings.ToLower(u.Keywords))
+	case "email":
+		return strings.Contains(strings.ToLower(info.Email), strings.ToLower(u.Keywords))
+	case "phone":
+		return strings.Contains(strings.ToLower(info.Phone), strings.ToLower(u.Keywords))
 	}
-	return true
+	return false
 }
 
 func (u *UserQueryReqInfo) sort(list []*types.User) []*types.User {

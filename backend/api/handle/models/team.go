@@ -3,7 +3,6 @@ package models
 import (
 	"slices"
 	"strings"
-	"time"
 
 	"humpback/common/enum"
 	"humpback/common/locales"
@@ -33,7 +32,7 @@ func (t *TeamCreateReqInfo) Check() error {
 }
 
 func (t *TeamCreateReqInfo) NewTeamInfo() *types.Team {
-	nowT := time.Now().UnixMilli()
+	nowT := utils.NewActionTimestamp()
 	return &types.Team{
 		Name:        t.Name,
 		Description: t.Description,
@@ -62,7 +61,7 @@ func (t *TeamUpdateReqInfo) NewTeamInfo(oldTeamInfo *types.Team) *types.Team {
 		Description: t.Description,
 		Users:       t.Users,
 		CreatedAt:   oldTeamInfo.CreatedAt,
-		UpdatedAt:   time.Now().UnixMilli(),
+		UpdatedAt:   utils.NewActionTimestamp(),
 		TeamId:      t.TeamId,
 	}
 }
@@ -73,32 +72,21 @@ type TeamQueryReqInfo struct {
 
 func (t *TeamQueryReqInfo) Check() error {
 	t.QueryInfo.CheckBase()
-	if t.Keywords != "" && slices.Index(t.keywordsModes(), t.Mode) == -1 {
+	if t.Keywords != "" && t.Mode != "name" {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
 }
 
-func (t *TeamQueryReqInfo) keywordsModes() []string {
-	return []string{"name"}
-}
-
 func (t *TeamQueryReqInfo) QueryFilter(teams []*types.Team) []*types.Team {
 	result := make([]*types.Team, 0)
 	for _, team := range teams {
-		if t.filter(team) {
+		if strings.Contains(strings.ToLower(team.Name), strings.ToLower(t.Keywords)) {
 			result = append(result, team)
 		}
 	}
 	t.sort(result)
 	return result
-}
-
-func (t *TeamQueryReqInfo) filter(info *types.Team) bool {
-	if t.Keywords != "" && t.Mode == "name" {
-		return strings.Contains(strings.ToLower(info.Name), strings.ToLower(t.Keywords))
-	}
-	return true
 }
 
 func (t *TeamQueryReqInfo) sort(list []*types.Team) []*types.Team {

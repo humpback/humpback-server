@@ -2,17 +2,21 @@ import { BaseInfo, NewBaseEmptyInfo } from "#/base.ts"
 
 export interface GroupInfo extends BaseInfo {
   groupId: string
-  name: string
+  groupName: string
   description: string
   users: string[]
+  teams: string[]
+  nodes: string[]
 }
 
 export function NewGroupEmptyInfo(): GroupInfo {
   return {
     ...NewBaseEmptyInfo(),
     groupId: "",
-    name: "",
+    groupName: "",
     description: "",
-    users: [] as Array<string>
+    users: [] as Array<string>,
+    teams: [] as Array<string>,
+    nodes: [] as Array<string>
   }
 }

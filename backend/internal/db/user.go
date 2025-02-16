@@ -31,7 +31,7 @@ func UserGetById(id string) (*types.User, error) {
 }
 
 func UsersGetByName(name string, isLower bool) ([]*types.User, error) {
-	users, err := GetDataAll[types.User](BucketUsers)
+	users, err := UsersGetAll()
 	if err != nil {
 		return nil, err
 	}

@@ -36,30 +36,23 @@ func NodesGetAllEnabled() ([]*types.Node, error) {
 }
 
 func NodesGetByGroupId(groupId string) ([]*types.Node, error) {
-	ng, err := GetDataById[types.NodesGroups](BucketNodesGroups, groupId)
+	ng, err := GroupGetById(groupId)
 	if err != nil {
 		return nil, err
-	} else {
-		nodes := make([]*types.Node, 0)
-		for _, v := range ng.Nodes {
-			node, err := GetDataById[types.Node](BucketNodes, v)
-			if err == nil {
-				nodes = append(nodes, node)
-			}
-		}
-		return nodes, nil
 	}
-}
-
-func NodesGetByIds(nodeIds []string) ([]*types.Node, error) {
 	nodes := make([]*types.Node, 0)
-	for _, v := range nodeIds {
+	for _, v := range ng.Nodes {
 		node, err := GetDataById[types.Node](BucketNodes, v)
 		if err == nil {
 			nodes = append(nodes, node)
 		}
 	}
 	return nodes, nil
+
+}
+
+func NodesGetByIds(ids []string, ignoreNotExist bool) ([]*types.Node, error) {
+	return GetDataByIds[types.Node](BucketNodes, ids, ignoreNotExist)
 }
 
 func NodeUpdate(node *types.Node) error {

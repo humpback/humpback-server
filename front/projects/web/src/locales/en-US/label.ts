@@ -51,6 +51,7 @@ export default {
     "install": "Install",
     "uninstall": "Uninstall",
     "labelKey": "Label Key",
-    "labelValue": "Label Value"
+    "labelValue": "Label Value",
+    "group": "Group"
   }
 }

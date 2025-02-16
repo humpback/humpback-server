@@ -2,6 +2,8 @@ package handle
 
 import (
 	"net/http"
+	"slices"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"humpback/api/handle/models"
@@ -9,6 +11,7 @@ import (
 	"humpback/common/response"
 	"humpback/config"
 	"humpback/internal/controller"
+	"humpback/types"
 )
 
 func RouteUser(router *gin.RouterGroup) {
@@ -21,7 +24,8 @@ func RouteUser(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userCreate)
 	router.PUT("", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userUpdate)
 	router.GET("/info/:id", middleware.CheckLogin(), middleware.CheckAdminPermissions(), user)
-	router.POST("/query", middleware.CheckLogin(), usersQuery)
+	router.GET("/list", middleware.CheckLogin(), users)
+	router.POST("/query", middleware.CheckLogin(), middleware.CheckAdminPermissions(), usersQuery)
 	router.GET("/query-by-team/:teamId", middleware.CheckLogin(), middleware.CheckAdminPermissions(), usersByTeamId)
 	router.DELETE("/:id", middleware.CheckLogin(), middleware.CheckAdminPermissions(), userDelete)
 }
@@ -134,6 +138,18 @@ func user(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, info)
+}
+
+func users(c *gin.Context) {
+	result, err := controller.Users()
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	slices.SortFunc(result, func(a, b *types.User) int {
+		return types.QuerySortOrder(types.SortOrderAsc, strings.ToLower(a.Username), strings.ToLower(b.Username))
+	})
+	c.JSON(http.StatusOK, result)
 }
 
 func usersQuery(c *gin.Context) {

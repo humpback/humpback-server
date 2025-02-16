@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"slices"
 	"strings"
-	"time"
 
 	"humpback/common/enum"
 	"humpback/common/locales"
@@ -44,7 +43,7 @@ func (c *ConfigCreateReqInfo) Check() error {
 }
 
 func (c *ConfigCreateReqInfo) NewConfigInfo() *types.Config {
-	nowT := time.Now().UnixMilli()
+	nowT := utils.NewActionTimestamp()
 	return &types.Config{
 		ConfigName:  c.ConfigName,
 		Description: c.Description,
@@ -75,7 +74,7 @@ func (c *ConfigUpdateReqInfo) NewConfigInfo(oldInfo *types.Config) *types.Config
 		ConfigType:  c.ConfigType,
 		ConfigValue: c.ConfigValue,
 		CreatedAt:   oldInfo.CreatedAt,
-		UpdatedAt:   time.Now().UnixMilli(),
+		UpdatedAt:   utils.NewActionTimestamp(),
 		ConfigId:    oldInfo.ConfigId,
 	}
 }
@@ -91,17 +90,13 @@ type ConfigQueryReqInfo struct {
 
 func (c *ConfigQueryReqInfo) Check() error {
 	c.QueryInfo.CheckBase()
-	if c.Keywords != "" && slices.Index(c.keywordsModes(), c.Mode) == -1 {
+	if c.Keywords != "" && c.Mode != "configName" {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	if err := c.parseFilterInfo(); err != nil {
 		return err
 	}
 	return nil
-}
-
-func (c *ConfigQueryReqInfo) keywordsModes() []string {
-	return []string{"configName"}
 }
 
 func (c *ConfigQueryReqInfo) QueryFilter(configs []*types.Config) []*types.Config {
@@ -119,11 +114,7 @@ func (c *ConfigQueryReqInfo) filter(info *types.Config) bool {
 	if c.FilterInfo != nil && c.FilterInfo.ConfigType != 0 && int(info.ConfigType) != c.FilterInfo.ConfigType {
 		return false
 	}
-
-	if c.Keywords != "" && c.Mode == "configName" {
-		return strings.Contains(strings.ToLower(info.ConfigName), strings.ToLower(c.Keywords))
-	}
-	return true
+	return strings.Contains(strings.ToLower(info.ConfigName), strings.ToLower(c.Keywords))
 }
 
 func (c *ConfigQueryReqInfo) sort(list []*types.Config) []*types.Config {
