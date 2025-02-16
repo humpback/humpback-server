@@ -45,6 +45,7 @@ type ContainerStatus struct {
 	Command       string `json:"command"`
 	CreateAt      int64  `json:"createAt"`
 	StartAt       int64  `json:"startAt"`
+	LastHeartbeat int64  `json:"lastHeartbeat"`
 }
 
 type Deployment struct {

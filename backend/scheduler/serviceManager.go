@@ -16,13 +16,14 @@ import (
 )
 
 type ServiceManager struct {
-	ServiceInfo      *types.Service
-	availableNodes   []string
-	unavailableNodes []string
-	CheckInterval    int64
-	IsNeedCheckAll   atomic.Value
-	isNeedQuit       atomic.Value
-	isReconcile      atomic.Value
+	ServiceInfo                 *types.Service
+	availableNodes              []string
+	unavailableNodes            []string
+	containerThresholdInvterval int64
+	CheckInterval               int64
+	IsNeedCheckAll              atomic.Value
+	isNeedQuit                  atomic.Value
+	isReconcile                 atomic.Value
 	sync.RWMutex
 }
 
@@ -37,8 +38,9 @@ type NodesScore struct {
 
 func NewServiceManager(svc *types.Service) *ServiceManager {
 	sm := &ServiceManager{
-		ServiceInfo:   svc,
-		CheckInterval: int64(config.BackendArgs().ServiceCheckInterval),
+		ServiceInfo:                 svc,
+		CheckInterval:               int64(config.BackendArgs().ServiceCheckInterval),
+		containerThresholdInvterval: int64(config.BackendArgs().CheckInterval) * int64(config.BackendArgs().CheckThreshold),
 	}
 
 	sm.isNeedQuit.Store(false)
@@ -148,7 +150,7 @@ func (sm *ServiceManager) CheckNodeStatus() {
 	groupId := sm.ServiceInfo.GroupId
 
 	isNeedSave := false
-	nodes, err := db.NodesGetByGroupId(groupId)
+	nodes, err := db.NodesGetEnabledByGroupId(groupId)
 
 	if err != nil {
 		slog.Error("[Service Manager] Get offline nodes error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())
@@ -199,6 +201,7 @@ func (sm *ServiceManager) GetMatchedNodes(nodes []*types.Node) {
 
 func (sm *ServiceManager) IsContainerAllReady() bool {
 	result := true
+	currentTime := time.Now().Unix()
 	for _, c := range sm.ServiceInfo.Containers {
 		version := parseVersionByContainerId(c.ContainerName)
 		if version == sm.ServiceInfo.Version {
@@ -206,8 +209,15 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 				continue
 			}
 			if isContainerRunning(c.Status) {
-				continue
+				// 容器可能已经不存在了
+				if currentTime-c.LastHeartbeat > sm.containerThresholdInvterval*2 {
+					slog.Info("[Service Manager] Container is not responding.", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", c.ContainerName)
+					c.Status = types.ContainerStatusWarning
+				} else {
+					continue
+				}
 			}
+
 		}
 
 		result = false
@@ -362,10 +372,13 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 		return c.ContainerName == cs.ContainerName
 	})
 
-	if ok && (ct.Status != cs.Status || ct.StartAt != cs.StartAt) {
+	currentTime := time.Now().Unix()
+
+	if ok && (ct.Status != cs.Status || ct.StartAt != cs.StartAt || currentTime-ct.LastHeartbeat > sm.containerThresholdInvterval) {
 		ct.Status = cs.Status
 		ct.StartAt = cs.StartAt
 		ct.ContainerId = cs.ContainerId
+		ct.LastHeartbeat = currentTime
 		if ct.Status == types.ContainerStatusRunning {
 			ct.ErrorMsg = ""
 		}
@@ -375,6 +388,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 	}
 
 	if !ok {
+		cs.LastHeartbeat = currentTime
 		sm.ServiceInfo.Containers = append(sm.ServiceInfo.Containers, &cs)
 		slog.Info("[Service Manager] New container found......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", cs.ContainerName)
 		db.SaveService(sm.ServiceInfo)

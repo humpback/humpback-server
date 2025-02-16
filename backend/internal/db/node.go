@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	bolt "go.etcd.io/bbolt"
 	"humpback/types"
+
+	bolt "go.etcd.io/bbolt"
 )
 
 func NodesGetAll() ([]*types.Node, error) {
@@ -35,7 +36,7 @@ func NodesGetAllEnabled() ([]*types.Node, error) {
 	return nodes, err
 }
 
-func NodesGetByGroupId(groupId string) ([]*types.Node, error) {
+func NodesGetEnabledByGroupId(groupId string) ([]*types.Node, error) {
 	ng, err := GetDataById[types.NodesGroups](BucketNodesGroups, groupId)
 	if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func NodesGetByGroupId(groupId string) ([]*types.Node, error) {
 		nodes := make([]*types.Node, 0)
 		for _, v := range ng.Nodes {
 			node, err := GetDataById[types.Node](BucketNodes, v)
-			if err == nil {
+			if err == nil && node.IsEnable {
 				nodes = append(nodes, node)
 			}
 		}
