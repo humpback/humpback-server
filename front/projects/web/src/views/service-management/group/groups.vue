@@ -89,12 +89,12 @@ onMounted(() => search())
       :total="tableList.total"
       @page-change="search"
       @sort-change="search">
-      <el-table-column :label="t('label.group')" fixed="left" min-width="160" prop="groupName" sortable="custom">
+      <el-table-column :label="t('label.group')" fixed="left" min-width="200" prop="groupName" sortable="custom">
         <template #default="scope">
           <v-router-link :href="`/ws/group/${scope.row.groupId}/services`" :text="scope.row.groupName" />
         </template>
       </el-table-column>
-      <el-table-column :label="t('label.description')" min-width="140" prop="description">
+      <el-table-column :label="t('label.description')" min-width="200" prop="description">
         <template #default="scope">
           <v-table-column-none :text="scope.row.description" />
         </template>

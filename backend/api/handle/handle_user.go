@@ -162,6 +162,9 @@ func usersQuery(c *gin.Context) {
 		middleware.AbortErr(c, err)
 		return
 	}
+	for _, user := range result.List {
+		user.Password = ""
+	}
 	c.JSON(http.StatusOK, result)
 }
 

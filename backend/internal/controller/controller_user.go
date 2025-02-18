@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
-	
+
 	"golang.org/x/exp/maps"
 	"humpback/api/handle/models"
 	"humpback/common/locales"
@@ -229,9 +229,6 @@ func Users() ([]*types.User, error) {
 	users, err := db.UsersGetAll()
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
-	}
-	for _, user := range users {
-		user.Password = ""
 	}
 	return users, nil
 }
