@@ -44,7 +44,7 @@ defineExpose({ open })
     <template #header>{{ t("header.deleteGroup") }}</template>
     <v-alert type="warning">{{ t("tips.deleteGroupTips") }}</v-alert>
     <div class="my-3">
-      <strong>{{ t("notify.deleteGroup") }}</strong>
+      <strong>{{ t("notify.delete") }}</strong>
     </div>
     <v-delete-input-continue v-model="isChecked" :keywords="dialogInfo.info.groupName" class="mt-5" />
     <template #footer>

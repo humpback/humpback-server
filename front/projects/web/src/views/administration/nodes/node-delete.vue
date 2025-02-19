@@ -43,7 +43,7 @@ defineExpose({ open })
   <v-dialog v-model="dialogInfo.show" width="600px">
     <template #header>{{ t("header.deleteNode") }}</template>
     <div class="my-3">
-      <strong>{{ t("notify.deleteNode") }}</strong>
+      <strong>{{ t("notify.delete") }}</strong>
     </div>
     <v-delete-input-continue v-model="isChecked" :keywords="dialogInfo.info.ipAddress" class="mt-5" />
     <template #footer>
