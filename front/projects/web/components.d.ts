@@ -69,6 +69,7 @@ declare module 'vue' {
     VCopyText: typeof import('./src/components/common/v-copy/VCopyText.vue')['default']
     VDatePicker: typeof import('./src/components/common/v-date/VDatePicker.vue')['default']
     VDateView: typeof import('./src/components/common/v-date/VDateView.vue')['default']
+    VDeleteInputContinue: typeof import('./src/components/business/v-delete/VDeleteInputContinue.vue')['default']
     VDescriptionInput: typeof import('./src/components/business/v-description/VDescriptionInput.vue')['default']
     VDescriptionView: typeof import('./src/components/business/v-description/VDescriptionView.vue')['default']
     VDialog: typeof import('./src/components/common/v-dialog/VDialog.vue')['default']

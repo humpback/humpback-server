@@ -4,11 +4,9 @@ const props = withDefaults(
     text: string
     href: string
     underline?: boolean
-    type?: "primary" | "success" | "warning" | "danger" | "info"
-    size?: "large" | "default" | "small"
   }>(),
   {
-    type: "primary"
+    underline: false
   }
 )
 
@@ -28,7 +26,7 @@ const classList = computed(() => {
 </script>
 
 <template>
-  <el-text :class="classList" :size="props.size" :type="props.type" @click="navigateToRoute($event)">{{ props.text }} </el-text>
+  <a :class="classList" :href="props.href" @click.prevent="navigateToRoute">{{ props.text }}</a>
 </template>
 
 <style lang="scss" scoped>
@@ -40,11 +38,13 @@ const classList = computed(() => {
   text-overflow: ellipsis;
   vertical-align: middle;
   line-height: 1.5;
-}
+  text-decoration: none;
+  color: var(--el-color-primary);
 
-.link-style:hover {
-  opacity: 0.7;
-  cursor: pointer;
+  &:hover {
+    opacity: 0.7;
+    cursor: pointer;
+  }
 }
 
 .underline:hover {

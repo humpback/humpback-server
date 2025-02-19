@@ -9,17 +9,22 @@ const emits = defineEmits<{
 const { t } = useI18n()
 
 const isAction = ref(false)
+const isChecked = ref(false)
 const dialogInfo = ref({
   show: false,
   info: {} as TeamInfo
 })
 
 function open(info: TeamInfo) {
+  isChecked.value = false
   dialogInfo.value.info = cloneDeep(info)
   dialogInfo.value.show = true
 }
 
 async function confirmDelete() {
+  if (!isChecked.value) {
+    return
+  }
   isAction.value = true
   return await teamService
     .delete(dialogInfo.value.info.teamId)
@@ -38,11 +43,12 @@ defineExpose({ open })
   <v-dialog v-model="dialogInfo.show" width="600px">
     <template #header>{{ t("header.deleteTeam") }}</template>
     <div class="my-3">
-      <strong v-html="t('notify.deleteTeam', { name: dialogInfo.info.name })" />
+      <strong>{{ t("notify.deleteTeam") }}</strong>
     </div>
+    <v-delete-input-continue v-model="isChecked" :keywords="dialogInfo.info.name" class="mt-5" />
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button :loading="isAction" type="danger" @click="confirmDelete">{{ t("btn.delete") }}</el-button>
+      <el-button :disabled="!isChecked" :loading="isAction" type="danger" @click="confirmDelete">{{ t("btn.delete") }}</el-button>
     </template>
   </v-dialog>
 </template>

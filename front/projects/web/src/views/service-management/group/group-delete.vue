@@ -9,17 +9,22 @@ const emits = defineEmits<{
 const { t } = useI18n()
 
 const isAction = ref(false)
+const isChecked = ref(false)
 const dialogInfo = ref({
   show: false,
   info: {} as GroupInfo
 })
 
 function open(info: GroupInfo) {
+  isChecked.value = false
   dialogInfo.value.info = cloneDeep(info)
   dialogInfo.value.show = true
 }
 
 async function confirmDelete() {
+  if (!isChecked.value) {
+    return
+  }
   isAction.value = true
   return await groupService
     .delete(dialogInfo.value.info.groupId)
@@ -39,11 +44,12 @@ defineExpose({ open })
     <template #header>{{ t("header.deleteGroup") }}</template>
     <v-alert type="warning">{{ t("tips.deleteGroupTips") }}</v-alert>
     <div class="my-3">
-      <strong v-html="t('notify.deleteGroup', { name: dialogInfo.info.groupName })" />
+      <strong>{{ t("notify.deleteGroup") }}</strong>
     </div>
+    <v-delete-input-continue v-model="isChecked" :keywords="dialogInfo.info.groupName" class="mt-5" />
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button :loading="isAction" type="danger" @click="confirmDelete">{{ t("btn.delete") }}</el-button>
+      <el-button :disabled="!isChecked" :loading="isAction" type="danger" @click="confirmDelete">{{ t("btn.delete") }}</el-button>
     </template>
   </v-dialog>
 </template>
