@@ -12,7 +12,8 @@ import (
 	"humpback/types"
 
 	"github.com/samber/lo"
-	"golang.org/x/exp/rand"
+
+	"math/rand/v2"
 )
 
 type ServiceManager struct {
@@ -82,7 +83,7 @@ func (sm *ServiceManager) Reconcile() {
 	}
 
 	// service被disabled后就删除全部容器
-	if !sm.ServiceInfo.IsEnabled {
+	if !sm.ServiceInfo.IsEnabled || sm.ServiceInfo.IsDelete {
 		for _, c := range sm.ServiceInfo.Containers {
 			nodeId := c.NodeId
 			containerName := c.ContainerName
@@ -268,7 +269,7 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
 	if sm.ServiceInfo.Deployment.Mode == types.DeployModeReplicate &&
 		len(sm.ServiceInfo.Containers) > sm.ServiceInfo.Deployment.Replicas {
-		randomIndex := rand.Intn(len(sm.ServiceInfo.Containers))
+		randomIndex := rand.IntN(len(sm.ServiceInfo.Containers))
 		return sm.ServiceInfo.Containers[randomIndex], true
 	}
 
@@ -399,7 +400,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 // 定时检查服务状态，看是否满足预期
 func (sm *ServiceManager) CheckService() {
 	interval := sm.CheckInterval
-	time.Sleep(time.Duration(rand.Int31n(int32(interval))) * time.Second)
+	time.Sleep(time.Duration(rand.Int32N(int32(interval))) * time.Second)
 
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 
@@ -414,6 +415,20 @@ func (sm *ServiceManager) CheckService() {
 			sm.Reconcile()
 		} else {
 			slog.Info("[Service Manager] Service is busy", "ServiceId", sm.ServiceInfo.ServiceId)
+		}
+	}
+}
+
+func (sm *ServiceManager) DoServiceAction(action string) {
+	sm.RLock()
+	defer sm.RUnlock()
+
+	for _, c := range sm.ServiceInfo.Containers {
+		nodeId := c.NodeId
+		containerName := c.ContainerName
+		err := OperateNodeContainer(nodeId, containerName, action)
+		if err != nil {
+			c.ErrorMsg = err.Error()
 		}
 	}
 }

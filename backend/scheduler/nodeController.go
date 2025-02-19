@@ -4,12 +4,12 @@ import (
 	"log/slog"
 	"sync"
 	"time"
-	
+
 	"humpback/config"
 	"humpback/internal/db"
 	"humpback/types"
-	
-	"golang.org/x/exp/rand"
+
+	"math/rand/v2"
 )
 
 type NodeSimpleInfo struct {
@@ -72,7 +72,7 @@ func (nc *NodeController) RestoreNodes() {
 
 func (nc *NodeController) CheckNodes() {
 	interval := nc.CheckInterval
-	time.Sleep(time.Duration(rand.Int31n(int32(interval))) * time.Second)
+	time.Sleep(time.Duration(rand.Int32N(int32(interval))) * time.Second)
 
 	ticker := time.NewTicker(time.Duration(interval) * time.Second)
 

@@ -3,11 +3,12 @@ package scheduler
 import (
 	"net/http"
 	"time"
-	
-	"github.com/gin-gonic/gin"
+
 	"humpback/internal/db"
 	"humpback/pkg/utils"
 	"humpback/types"
+
+	"github.com/gin-gonic/gin"
 )
 
 func getAllNodes(c *gin.Context) {
@@ -102,7 +103,12 @@ func mockGatewayServices(c *gin.Context) {
 
 	sc := c.MustGet("scheduler").(*HumpbackScheduler)
 
-	sc.ServiceChangeChan <- svc.ServiceId
+	svcChange := ServiceChangeInfo{
+		ServiceId: svc.ServiceId,
+		Version:   svc.Version,
+	}
+
+	sc.ServiceChangeChan <- svcChange
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
@@ -128,7 +134,12 @@ func mockWebServices(c *gin.Context) {
 
 	sc := c.MustGet("scheduler").(*HumpbackScheduler)
 
-	sc.ServiceChangeChan <- svc.ServiceId
+	svcChange := ServiceChangeInfo{
+		ServiceId: svc.ServiceId,
+		Version:   svc.Version,
+	}
+
+	sc.ServiceChangeChan <- svcChange
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }

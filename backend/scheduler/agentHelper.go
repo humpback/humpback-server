@@ -6,6 +6,7 @@ import (
 	"humpback/pkg/utils"
 	"humpback/types"
 	"log/slog"
+	"strings"
 )
 
 func RemoveNodeContainer(nodeId string, containerName string) error {
@@ -13,6 +14,21 @@ func RemoveNodeContainer(nodeId string, containerName string) error {
 	node := GetNodeInfo(nodeId)
 	if node != nil {
 		url := fmt.Sprintf("http://%s:%d/containers/%s", node.IpAddress, node.Port, containerName)
+		slog.Info("[Agent Helper] Remove container for mock", "url", url)
+		// err := httpx.NewHttpXClient().Delete(url, nil, nil, nil)
+		// if err != nil {
+		// 	slog.Error("[Agent Helper] Remove container error", "error", err.Error())
+		// 	return err
+		// }
+	}
+	return nil
+}
+
+func OperateNodeContainer(nodeId string, containerName string, action string) error {
+	// remove container
+	node := GetNodeInfo(nodeId)
+	if node != nil {
+		url := fmt.Sprintf("http://%s:%d/containers/%s/%s", node.IpAddress, node.Port, containerName, strings.ToLower(action))
 		slog.Info("[Agent Helper] Remove container for mock", "url", url)
 		// err := httpx.NewHttpXClient().Delete(url, nil, nil, nil)
 		// if err != nil {

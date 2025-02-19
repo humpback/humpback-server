@@ -7,16 +7,22 @@ import (
 	"humpback/types"
 )
 
+type ServiceChangeInfo struct {
+	ServiceId string
+	Action    string
+	Version   string
+}
+
 // Service管理入口，每个service一个Manager
 type ServiceController struct {
 	ServiceCtrls        map[string]*ServiceManager
 	NodeChangeChan      chan NodeSimpleInfo
 	ContainerChangeChan chan types.ContainerStatus
 	ContainerRemoveChan chan types.ContainerStatus
-	ServiceChangeChan   chan string
+	ServiceChangeChan   chan ServiceChangeInfo
 }
 
-func NewServiceController(nodeChan chan NodeSimpleInfo, containerChan chan types.ContainerStatus, serviceChan chan string) *ServiceController {
+func NewServiceController(nodeChan chan NodeSimpleInfo, containerChan chan types.ContainerStatus, serviceChan chan ServiceChangeInfo) *ServiceController {
 	sc := &ServiceController{
 		ServiceCtrls:        make(map[string]*ServiceManager),
 		NodeChangeChan:      nodeChan,
@@ -41,7 +47,7 @@ func (sc *ServiceController) RestoreServiceManager() {
 	}
 
 	for _, svc := range svcs {
-		if svc.IsEnabled {
+		if svc.IsEnabled && !svc.IsDelete {
 			sm := NewServiceManager(svc)
 			sc.ServiceCtrls[svc.ServiceId] = sm
 		}
@@ -49,12 +55,20 @@ func (sc *ServiceController) RestoreServiceManager() {
 }
 
 func (sc *ServiceController) HandleServiceChange() {
-	for serviceId := range sc.ServiceChangeChan {
-		if serviceManager, ok := sc.ServiceCtrls[serviceId]; ok {
-			serviceManager.IsNeedCheckAll.Store(true)
+	for serviceInfo := range sc.ServiceChangeChan {
+		if serviceManager, ok := sc.ServiceCtrls[serviceInfo.ServiceId]; ok {
+			if serviceInfo.Version != serviceManager.ServiceInfo.Version {
+				serviceManager.IsNeedCheckAll.Store(true)
+			} else if serviceInfo.Action == types.ServiceActionDisable ||
+				serviceInfo.Action == types.ServiceActionDelete {
+				serviceManager.IsNeedCheckAll.Store(true)
+				delete(sc.ServiceCtrls, serviceInfo.ServiceId)
+			} else {
+				go serviceManager.DoServiceAction(serviceInfo.Action)
+			}
 		} else {
-			svc, err := db.GetServiceById(serviceId)
-			if err == nil && svc.IsEnabled {
+			svc, err := db.GetServiceById(serviceInfo.ServiceId)
+			if err == nil && svc.IsEnabled && !svc.IsDelete {
 				sm := NewServiceManager(svc)
 				sc.ServiceCtrls[svc.ServiceId] = sm
 			}

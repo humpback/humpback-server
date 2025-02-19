@@ -13,6 +13,13 @@ const (
 	ContainerStatusExited   = "Exited"
 	ContainerStatusRemoved  = "Removed"
 	ContainerStatusWarning  = "Warning"
+
+	ServiceActionStart   = "Start"
+	ServiceActionStop    = "Stop"
+	ServiceActionRestart = "Restart"
+	ServiceActionEnable  = "Enable"
+	ServiceActionDisable = "Disable"
+	ServiceActionDelete  = "Delete"
 )
 
 type Service struct {
@@ -20,6 +27,7 @@ type Service struct {
 	ServiceName string             `json:"serviceName"`
 	Version     string             `json:"version"`
 	IsEnabled   bool               `json:"isEnabled"`
+	IsDelete    bool               `json:"isDelete"`
 	Status      string             `json:"status"`
 	Meta        *ServiceMetaDocker `json:"meta"`
 	Deployment  *Deployment        `json:"deployment"`
