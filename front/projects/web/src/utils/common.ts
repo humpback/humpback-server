@@ -10,6 +10,10 @@ export function TableHeight(invalidHeight: number, minHeight = 500) {
   return height
 }
 
+export function SetWebTitle(title: string) {
+  window.document.title = title
+}
+
 export function IncludesIgnoreCase(str?: string, subStr?: string): boolean {
   if (!str) {
     return false

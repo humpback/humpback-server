@@ -2,7 +2,6 @@
 import { TabPaneName } from "element-plus"
 import TeamPage from "./team/teams.vue"
 import UserPage from "./user/users.vue"
-import { find, toLower } from "lodash-es"
 
 enum UserRelatedType {
   Users = "users",
@@ -12,7 +11,7 @@ enum UserRelatedType {
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const activeTab = ref<TabPaneName | undefined>()
+const activeTab = ref<TabPaneName | undefined>(route.params?.mode as string)
 
 async function changeTab(name: TabPaneName) {
   await router.replace({ params: { mode: name } })
@@ -23,15 +22,6 @@ const options = reactive<{ name: UserRelatedType; label: string; component: any 
   { name: UserRelatedType.Users, label: "header.users", component: shallowRef(UserPage) },
   { name: UserRelatedType.Teams, label: "header.teams", component: shallowRef(TeamPage) }
 ])
-
-onBeforeMount(async () => {
-  const t = find(options, x => x.name === toLower(route.params["mode"] as string))
-  if (!t) {
-    await router.push({ name: "404" })
-    return
-  }
-  await changeTab(t.name as UserRelatedType)
-})
 </script>
 
 <template>
@@ -52,7 +42,11 @@ onBeforeMount(async () => {
 <style lang="scss" scoped>
 .tab-box {
   :deep(.el-tabs__header.is-top) {
-    margin-bottom: 20px;
+    margin-bottom: 0;
+  }
+
+  :deep(.el-tabs__content) {
+    padding-top: 20px;
   }
 }
 </style>

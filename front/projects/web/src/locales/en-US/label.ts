@@ -19,6 +19,7 @@ export default {
     "totalTeams": "{total} Teams",
     "totalUsers": "{total} Users",
     "totalNumber": "Total {total}",
+    "totalNodes": "{total} Nodes",
     "type": "Type",
     "value": "Value",
     "static": "Static",
@@ -52,6 +53,8 @@ export default {
     "uninstall": "Uninstall",
     "labelKey": "Label Key",
     "labelValue": "Label Value",
-    "group": "Group"
+    "group": "Group",
+    "nodes": "Nodes",
+    "services": "Services"
   }
 }

@@ -1,5 +1,5 @@
 import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
-import { find, omitBy } from "lodash-es"
+import { cloneDeep, find, omitBy } from "lodash-es"
 import { ConfigType } from "@/models"
 
 export const sortOptions = ["configName", "updatedAt", "createdAt"]
@@ -10,7 +10,7 @@ export const defaultFilter = { configType: 0 }
 
 export class QueryConfigsInfo extends QueryInfo {
   constructor(queryInfo: any) {
-    super(queryInfo, ["configName"], defaultPage, defaultSort, sortOptions, defaultFilter)
+    super(queryInfo, ["configName"], defaultPage, defaultSort, sortOptions, cloneDeep(defaultFilter))
     const configType = queryInfo["configType"] ? Number(queryInfo["configType"]).valueOf() : defaultFilter.configType
     this.filter.configType =
       !isNaN(configType) && find([0, ConfigType.Volume, ConfigType.Static], x => x === configType) ? configType : defaultFilter.configType

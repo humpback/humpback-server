@@ -46,7 +46,9 @@ function handleUserMenuClick(v: string) {
 
 <template>
   <div class="header-box">
-    <el-text> {{ t("menu.header." + (route.name as string)) }}</el-text>
+    <div>
+      <el-text> {{ t("menu.header." + (route.name as string)) }}</el-text>
+    </div>
     <div class="d-flex">
       <div class="d-flex gap-5 mr-5">
         <el-button v-if="!pageStore.isSmallScreen" link> {{ t("btn.help") }}</el-button>

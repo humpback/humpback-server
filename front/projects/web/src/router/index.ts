@@ -3,6 +3,7 @@ import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNorma
 import { configure, done, start } from "nprogress"
 import { GetI18nMessage } from "@/locales"
 import "nprogress/nprogress.css"
+import { SetWebTitle } from "@/utils"
 
 configure({
   easing: "ease", // 动画方式
@@ -17,13 +18,21 @@ const routes: RouteRecordRaw[] = [
     path: "/:pathMatch(.*)*",
     name: "404",
     component: () => import("@/views/common/404/404.vue"),
-    meta: {}
+    meta: {
+      webTitle: {
+        custom: "404"
+      }
+    }
   },
   {
     path: "/401",
     name: "401",
     component: () => import("@/views/common/401/401.vue"),
-    meta: {}
+    meta: {
+      webTitle: {
+        custom: "401"
+      }
+    }
   }
 ]
 
@@ -74,7 +83,7 @@ router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, n
 router.afterEach((to: RouteLocationNormalized, from: RouteLocationNormalized) => {
   if (to.fullPath !== from.fullPath) {
     let titleKey = to.meta?.webTitle?.params ? (to.params[to.meta?.webTitle?.params] as string) : (to.name as string)
-    window.document.title = `${GetI18nMessage("webTitle." + titleKey)}`
+    SetWebTitle(`${GetI18nMessage("webTitle." + titleKey)}`)
   }
 
   if (to.name !== from.name) {

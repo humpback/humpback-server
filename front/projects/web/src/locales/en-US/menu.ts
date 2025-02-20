@@ -32,6 +32,7 @@ export default {
     "configs": "Configs",
     "nodes": "Nodes",
     "registries": "Registries",
-    "groups": "Groups"
+    "groups": "Groups",
+    "services": "Services"
   }
 }

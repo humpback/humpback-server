@@ -1,5 +1,5 @@
 import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
-import { find, map, omitBy } from "lodash-es"
+import { cloneDeep, find, map, omitBy } from "lodash-es"
 import { NodeStatus, NodeSwitch } from "@/models"
 
 export const sortOptions = ["ip", "hostname", "updatedAt", "createdAt"]
@@ -29,7 +29,7 @@ export class QueryNodesInfo extends QueryInfo {
       defaultPage,
       defaultSort,
       sortOptions,
-      defaultFilter
+      cloneDeep(defaultFilter)
     )
     const statusInfo = find(statusOptions, x => x.value === (queryInfo["status"] as string))
     this.filter.status = statusInfo?.value || ""

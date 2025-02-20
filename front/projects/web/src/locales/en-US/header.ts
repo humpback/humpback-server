@@ -25,6 +25,8 @@ export default {
     "editLabel": "Edit Label",
     "addGroup": "Add Group",
     "editGroup": "Edit Group",
-    "deleteGroup": "Delete Group"
+    "deleteGroup": "Delete Group",
+    "nodes": "Nodes",
+    "services": "Services"
   }
 }

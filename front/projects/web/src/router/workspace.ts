@@ -1,5 +1,6 @@
 import type { RouteRecordRaw } from "vue-router"
 import { PageLimitRole } from "@/models"
+import { find } from "lodash-es"
 
 const administrator = <RouteRecordRaw[]>[
   {
@@ -30,6 +31,9 @@ const administrator = <RouteRecordRaw[]>[
     path: "/ws/user-related/:mode",
     name: "userRelated",
     component: () => import("@/views/administration/user-related/user-related.vue"),
+    beforeEnter: (to, from, next) => {
+      return find(["users", "teams"], x => x === to.params.mode) ? next() : next({ name: "404" })
+    },
     meta: {
       onlyAdmin: true,
       webTitle: {
@@ -43,8 +47,22 @@ const serviceManagement = <RouteRecordRaw[]>[
   {
     path: "/ws/groups",
     name: "groups",
-    component: () => import("@/views/service-management/group/groups.vue"),
+    component: () => import("@/views/service-management/groups.vue"),
     meta: {}
+  },
+  {
+    path: "/ws/group/:groupId/:mode",
+    name: "group-detail",
+    component: () => import("@/views/service-management/group-detail.vue"),
+    beforeEnter: (to, from, next) => {
+      return find(["services", "nodes"], x => x === to.params.mode) ? next() : next({ name: "404" })
+    },
+    meta: {
+      currentMenu: "groups",
+      webTitle: {
+        params: "mode"
+      }
+    }
   }
 ]
 

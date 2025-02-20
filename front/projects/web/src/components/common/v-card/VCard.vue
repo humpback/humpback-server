@@ -43,7 +43,8 @@ const style = computed(() => {
       <slot name="header" />
     </template>
     <template v-if="!!slots.default" #default>
-      <div v-if="props.showPageTitle" class="card-title">
+      <slot v-if="!!slots.bodyTitle" name="bodyTitle" />
+      <div v-else-if="props.showPageTitle" class="card-title">
         {{ t("menu.header." + (route.name as string)) }}
       </div>
       <slot />

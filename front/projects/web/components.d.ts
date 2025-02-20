@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
+    ElBadge: typeof import('element-plus/es')['ElBadge']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
@@ -60,6 +61,7 @@ declare module 'vue' {
     IconMdiUserOutline: typeof import('~icons/mdi/user-outline')['default']
     Language: typeof import('./src/components/business/i18n/Language.vue')['default']
     VAlert: typeof import('./src/components/common/v-alert/VAlert.vue')['default']
+    VBreadcrumb: typeof import('./src/components/business/v-breadcrumb/VBreadcrumb.vue')['default']
     VCard: typeof import('./src/components/common/v-card/VCard.vue')['default']
     VCardExpand: typeof import('./src/components/common/v-card/VCardExpand.vue')['default']
     VConfigTypeQuerySelect: typeof import('./src/components/business/v-configs/VConfigTypeQuerySelect.vue')['default']

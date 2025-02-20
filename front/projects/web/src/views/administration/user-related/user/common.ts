@@ -1,5 +1,5 @@
 import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
-import { find, map, omitBy } from "lodash-es"
+import { cloneDeep, find, map, omitBy } from "lodash-es"
 
 export const sortOptions = ["username", "updatedAt", "createdAt"]
 
@@ -20,7 +20,7 @@ export class QueryUserInfo extends QueryInfo {
       defaultPage,
       defaultSort,
       sortOptions,
-      defaultFilter
+      cloneDeep(defaultFilter)
     )
     const role = queryInfo["role"] ? Number(queryInfo["role"]).valueOf() : defaultFilter.role
     this.filter.role = !isNaN(role) && find([0, UserRole.User, UserRole.Admin, UserRole.SupperAdmin], x => x === role) ? role : defaultFilter.role

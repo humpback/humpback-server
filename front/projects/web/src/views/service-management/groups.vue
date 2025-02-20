@@ -99,6 +99,15 @@ onMounted(() => search())
           <v-table-column-none :text="scope.row.description" />
         </template>
       </el-table-column>
+      <el-table-column :label="t('label.nodes')" min-width="100" prop="description">
+        <template #default="scope">
+          <v-router-link
+            v-if="scope.row.nodes.length > 0"
+            :href="`/ws/group/${scope.row.groupId}/nodes`"
+            :text="t('label.totalNodes', { total: scope.row.nodes.length })" />
+          <span v-else>--</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
         <template #default="scope">
           <v-date-view :timestamp="scope.row.updatedAt" />
