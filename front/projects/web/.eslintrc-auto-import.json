@@ -401,6 +401,9 @@
     "nodeService": true,
     "groupService": true,
     "useGroupStore": true,
-    "useStateStore": true
+    "useStateStore": true,
+    "SetWebTitle": true,
+    "PageGroupDetail": true,
+    "PageUserRelated": true
   }
 }

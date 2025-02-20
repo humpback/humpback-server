@@ -2,11 +2,7 @@
 import { TabPaneName } from "element-plus"
 import TeamPage from "./team/teams.vue"
 import UserPage from "./user/users.vue"
-
-enum UserRelatedType {
-  Users = "users",
-  Teams = "teams"
-}
+import { PageUserRelated } from "@/models"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -18,9 +14,9 @@ async function changeTab(name: TabPaneName) {
   activeTab.value = name
 }
 
-const options = reactive<{ name: UserRelatedType; label: string; component: any }[]>([
-  { name: UserRelatedType.Users, label: "header.users", component: shallowRef(UserPage) },
-  { name: UserRelatedType.Teams, label: "header.teams", component: shallowRef(TeamPage) }
+const options = reactive<{ name: string; label: string; component: any }[]>([
+  { name: PageUserRelated.Users, label: "header.users", component: shallowRef(UserPage) },
+  { name: PageUserRelated.Teams, label: "header.teams", component: shallowRef(TeamPage) }
 ])
 </script>
 

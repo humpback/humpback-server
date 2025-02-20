@@ -18,21 +18,13 @@ const routes: RouteRecordRaw[] = [
     path: "/:pathMatch(.*)*",
     name: "404",
     component: () => import("@/views/common/404/404.vue"),
-    meta: {
-      webTitle: {
-        custom: "404"
-      }
-    }
+    meta: {}
   },
   {
     path: "/401",
     name: "401",
     component: () => import("@/views/common/401/401.vue"),
-    meta: {
-      webTitle: {
-        custom: "401"
-      }
-    }
+    meta: {}
   }
 ]
 

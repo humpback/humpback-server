@@ -26,9 +26,9 @@ const tableList = ref({
 
 const isAdmin = computed(() => userStore.isAdmin || userStore.isSupperAdmin)
 
-function getGroupInfo() {
-  return groupService.info(groupId.value).then(info => {
-    stateStore.setGroup(groupId, info)
+async function getGroupInfo() {
+  return await groupService.info(groupId.value).then(info => {
+    stateStore.setGroup(groupId.value, info)
   })
 }
 

@@ -2,11 +2,7 @@
 import PageServices from "@/views/service-management/service/services.vue"
 import PageNodes from "@/views/service-management/node/nodes.vue"
 import { TabPaneName } from "element-plus"
-
-enum DetailMode {
-  Services = "services",
-  Nodes = "nodes"
-}
+import { PageGroupDetail } from "@/models"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -14,16 +10,13 @@ const router = useRouter()
 const stateStore = useStateStore()
 
 const activeTab = ref<TabPaneName | undefined>(route.params?.mode as string)
-const resourceTotal = ref({
-  services: 0,
-  nodes: 0
-})
 
-const groupInfo = computed(() => {
-  const info = stateStore.getGroup(route.params.groupId as string)
-  console.log(info)
-  return info
-})
+const groupInfo = computed(() => stateStore.getGroup())
+
+const options = reactive<{ name: string; label: string; component: any }[]>([
+  { name: PageGroupDetail.Services, label: "header.services", component: shallowRef(PageServices) },
+  { name: PageGroupDetail.Nodes, label: "header.nodes", component: shallowRef(PageNodes) }
+])
 
 async function changeTab(name: TabPaneName) {
   await router.replace({ params: { mode: name } })
@@ -41,23 +34,14 @@ async function changeTab(name: TabPaneName) {
     </template>
 
     <el-tabs v-model="activeTab" class="tab-box" type="card" @tab-change="changeTab">
-      <el-tab-pane :name="DetailMode.Services">
+      <el-tab-pane v-for="item in options" :key="item.name" :name="item.name">
         <template #label>
           <el-badge :offset="[10, 2]" class="mr-3" color="#28c3d7">
-            <template #content>{{ resourceTotal.services }}</template>
-            <strong>{{ t("header.services") }}</strong>
+            <template #content>{{ groupInfo?.total[item.name] || 0 }}</template>
+            <strong>{{ t(item.label) }}</strong>
           </el-badge>
         </template>
-        <PageServices v-if="activeTab === DetailMode.Services" v-model="resourceTotal" />
-      </el-tab-pane>
-      <el-tab-pane :name="DetailMode.Nodes">
-        <template #label>
-          <el-badge :offset="[10, 2]" class="mr-3" color="#28c3d7">
-            <template #content>{{ resourceTotal.nodes }}</template>
-            <strong>{{ t("header.nodes") }}</strong>
-          </el-badge>
-        </template>
-        <PageNodes v-if="activeTab === DetailMode.Nodes" v-model="resourceTotal" />
+        <component :is="item.component" v-if="activeTab === item.name" />
       </el-tab-pane>
     </el-tabs>
   </v-card>

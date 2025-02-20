@@ -8,10 +8,7 @@ export default <RouteRecordRaw[]>[
     name: "login",
     component: login,
     meta: {
-      loginLimit: PageLimitRole.Logout,
-      webTitle: {
-        custom: "login"
-      }
+      loginLimit: PageLimitRole.Logout
     }
   }
 ]

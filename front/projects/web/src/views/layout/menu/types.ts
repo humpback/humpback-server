@@ -1,4 +1,5 @@
 import { shallowRef } from "vue"
+import { PageUserRelated } from "@/models"
 
 export interface MenuInfo {
   icon: any
@@ -43,7 +44,7 @@ export const menuList: MenuInfo[] = [
       {
         icon: shallowRef(IconMdiAccount),
         name: "userRelated",
-        params: { mode: "users" }
+        params: { mode: PageUserRelated.Users }
       }
     ]
   }

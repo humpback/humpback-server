@@ -41,8 +41,10 @@ declare global {
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
   const NodeStatus: typeof import('./src/models/enum')['NodeStatus']
   const NodeSwitch: typeof import('./src/models/enum')['NodeSwitch']
+  const PageGroupDetail: typeof import('./src/models/page')['PageGroupDetail']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
+  const PageUserRelated: typeof import('./src/models/page')['PageUserRelated']
   const ParseNumber: typeof import('./src/utils/common')['ParseNumber']
   const QueryInfo: typeof import('./src/types/query')['QueryInfo']
   const RSAEncrypt: typeof import('./src/utils/rsa')['RSAEncrypt']
@@ -57,6 +59,7 @@ declare global {
   const RuleLimitRange: typeof import('./src/utils/rule')['RuleLimitRange']
   const RulePleaseEnter: typeof import('./src/utils/rule')['RulePleaseEnter']
   const SendChannelMessage: typeof import('./src/utils/event')['SendChannelMessage']
+  const SetWebTitle: typeof import('./src/utils/common')['SetWebTitle']
   const ShowErrMsg: typeof import('./src/utils/message')['ShowErrMsg']
   const ShowInfoMsg: typeof import('./src/utils/message')['ShowInfoMsg']
   const ShowSuccessMsg: typeof import('./src/utils/message')['ShowSuccessMsg']
@@ -260,7 +263,6 @@ declare global {
   const useFullscreen: typeof import('@vueuse/core')['useFullscreen']
   const useGamepad: typeof import('@vueuse/core')['useGamepad']
   const useGeolocation: typeof import('@vueuse/core')['useGeolocation']
-  const useGroupStore: typeof import("@/stores/use-state-store.ts")["default"]
   const useI18n: typeof import('vue-i18n')['useI18n']
   const useId: typeof import('vue')['useId']
   const useIdle: typeof import('@vueuse/core')['useIdle']
@@ -397,6 +399,9 @@ declare global {
   export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
+  export type { PageUserRelated, PageGroupDetail, PageUserRelated, PageGroupDetail } from './src/models/page'
+  import('./src/models/page')
+  // @ts-ignore
   export type { BaseInfo } from './src/types/base'
   import('./src/types/base')
   // @ts-ignore
@@ -456,8 +461,10 @@ declare module 'vue' {
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
     readonly NodeStatus: UnwrapRef<typeof import('./src/models/enum')['NodeStatus']>
     readonly NodeSwitch: UnwrapRef<typeof import('./src/models/enum')['NodeSwitch']>
+    readonly PageGroupDetail: UnwrapRef<typeof import('./src/models/page')['PageGroupDetail']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>
+    readonly PageUserRelated: UnwrapRef<typeof import('./src/models/page')['PageUserRelated']>
     readonly ParseNumber: UnwrapRef<typeof import('./src/utils/common')['ParseNumber']>
     readonly QueryInfo: UnwrapRef<typeof import('./src/types/query')['QueryInfo']>
     readonly RSAEncrypt: UnwrapRef<typeof import('./src/utils/rsa')['RSAEncrypt']>
@@ -472,6 +479,7 @@ declare module 'vue' {
     readonly RuleLimitRange: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitRange']>
     readonly RulePleaseEnter: UnwrapRef<typeof import('./src/utils/rule')['RulePleaseEnter']>
     readonly SendChannelMessage: UnwrapRef<typeof import('./src/utils/event')['SendChannelMessage']>
+    readonly SetWebTitle: UnwrapRef<typeof import('./src/utils/common')['SetWebTitle']>
     readonly ShowErrMsg: UnwrapRef<typeof import('./src/utils/message')['ShowErrMsg']>
     readonly ShowInfoMsg: UnwrapRef<typeof import('./src/utils/message')['ShowInfoMsg']>
     readonly ShowSuccessMsg: UnwrapRef<typeof import('./src/utils/message')['ShowSuccessMsg']>
