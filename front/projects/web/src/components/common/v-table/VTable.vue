@@ -7,7 +7,6 @@ type Props = Partial<
     pageInfo: PageInfo
     total: number
     sortInfo: SortInfo
-    selectedData: any[]
   }
 >
 
@@ -19,13 +18,16 @@ const props = withDefaults(defineProps<Props>(), {
   allowDragLastColumn: true,
   showOverflowTooltip: true,
   scrollbarAlwaysOn: true,
+  tooltipOptions: () => {
+    return { placement: "top-start" }
+  },
   headerCellClassName: "table-header"
 })
 
 const emits = defineEmits<{
   (e: "update:pageInfo", pageInfo: PageInfo): void
   (e: "update:sortInfo", sortInfo: SortInfo): void
-  (e: "update:selectedData", selectedData: any[]): void
+  (e: "selection-change", selectedData: any[]): void
   (e: "pageChange"): void
   (e: "sortChange"): void
 }>()
@@ -47,7 +49,7 @@ const defaultSort = ref<Sort | undefined>(
 )
 
 const tableAttrs = computed(() => {
-  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total", "selectedData"]))
+  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total"]))
   attrs.defaultSort = defaultSort.value
 
   return Object.keys(attrs).reduce((acc, key) => {
@@ -73,8 +75,14 @@ function sortChangeEvent(sort: any) {
 }
 
 function selectionChangeEvent(selectedData: any[]) {
-  emits("update:selectedData", selectedData)
+  emits("selection-change", selectedData)
 }
+
+function clearSelection() {
+  tableRef.value?.clearSelection()
+}
+
+defineExpose({ clearSelection })
 </script>
 
 <template>
@@ -83,7 +91,7 @@ function selectionChangeEvent(selectedData: any[]) {
       ref="tableRef"
       class-name="v-table"
       v-bind="tableAttrs"
-      @select="selectionChangeEvent($event.selection)"
+      @select="selectionChangeEvent"
       @sort-change="sortChangeEvent"
       @select-all="selectionChangeEvent">
       <template v-if="!!slots.default" #default>

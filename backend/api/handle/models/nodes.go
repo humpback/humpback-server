@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
-	
+
 	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
@@ -157,15 +157,15 @@ func (n *NodeQueryReqInfo) filter(info *types.Node) bool {
 }
 
 func (n *NodeQueryReqInfo) sort(list []*types.Node) []*types.Node {
-	var sortField = []string{"ip", "hostname", "updatedAt", "createdAt"}
+	var sortField = []string{"ipAddress", "name", "updatedAt", "createdAt"}
 	if n.SortInfo == nil || n.SortInfo.Field == "" || slices.Index(sortField, n.SortInfo.Field) == -1 {
 		return list
 	}
 	slices.SortFunc(list, func(a, b *types.Node) int {
 		switch n.SortInfo.Field {
-		case "ip":
+		case "ipAddress":
 			return types.QuerySortOrder(n.SortInfo.Order, strings.ToLower(a.IpAddress), strings.ToLower(b.IpAddress))
-		case "hostname":
+		case "name":
 			return types.QuerySortOrder(n.SortInfo.Order, strings.ToLower(a.Name), strings.ToLower(b.Name))
 		case "updatedAt":
 			return types.QuerySortOrder(n.SortInfo.Order, a.UpdatedAt, b.UpdatedAt)

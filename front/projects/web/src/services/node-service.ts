@@ -5,6 +5,10 @@ class NodeService {
     return await httpClient.get<NodeInfo>(`/webapi/node/info/${id}`).then(res => res.data)
   }
 
+  async list() {
+    return await httpClient.get<NodeInfo[]>(`/webapi/node/list`).then(res => res.data)
+  }
+
   async query(data: any) {
     return await httpClient.post<ResponseQuery<NodeInfo>>("/webapi/node/query", data).then(res => res.data)
   }

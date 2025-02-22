@@ -8,6 +8,7 @@ export default {
     "enterIpOrHostname": "Enter ip or hostname",
     "enterLabelKey": "Enter label key",
     "enterIpAddress": "Enter ip address",
+    "enterIpHostNameOrLabel": "Enter ip、hostname or label",
     "labelKey": "Label Key",
     "labelValue": "Label Value"
   }

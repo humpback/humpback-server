@@ -10,9 +10,9 @@ import (
 )
 
 func NodeCreate(nodes models.NodesCreateReqInfo) error {
-	nodeList, err := db.NodesGetAll()
+	nodeList, err := Nodes()
 	if err != nil {
-		return response.NewRespServerErr(err.Error())
+		return err
 	}
 	addNodes := nodes.NewNodesInfo()
 	for _, node := range addNodes {
@@ -85,10 +85,18 @@ func Node(id string) (*types.Node, error) {
 	return node, nil
 }
 
-func NodesQuery(queryInfo *models.NodeQueryReqInfo) (*response.QueryResult[types.Node], error) {
+func Nodes() ([]*types.Node, error) {
 	nodes, err := db.NodesGetAll()
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
+	}
+	return nodes, nil
+}
+
+func NodesQuery(queryInfo *models.NodeQueryReqInfo) (*response.QueryResult[types.Node], error) {
+	nodes, err := Nodes()
+	if err != nil {
+		return nil, err
 	}
 	result := queryInfo.QueryFilter(nodes)
 	return response.NewQueryResult[types.Node](

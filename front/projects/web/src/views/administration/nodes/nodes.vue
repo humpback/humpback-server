@@ -197,7 +197,7 @@ onMounted(() => search())
       :total="tableList.total"
       @page-change="search"
       @sort-change="search">
-      <el-table-column :label="t('label.ip')" fixed="left" min-width="160" prop="nodeName" sortable="custom">
+      <el-table-column :label="t('label.ip')" fixed="left" min-width="160" prop="ipAddress" sortable="custom">
         <template #default="scope">
           <div class="d-flex gap-2">
             <v-node-enable-tag :enabled="scope.row.isEnable" />
@@ -205,7 +205,7 @@ onMounted(() => search())
           </div>
         </template>
       </el-table-column>
-      <el-table-column :label="t('label.hostname')" min-width="200" prop="description">
+      <el-table-column :label="t('label.hostname')" min-width="200" prop="name" sortable="custom">
         <template #default="scope">
           <v-table-column-none :text="scope.row.name" />
         </template>

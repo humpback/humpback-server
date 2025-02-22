@@ -2,12 +2,15 @@ package handle
 
 import (
 	"net/http"
+	"slices"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"humpback/api/handle/models"
 	"humpback/api/middleware"
 	"humpback/common/response"
 	"humpback/internal/controller"
+	"humpback/types"
 )
 
 func RouteNodes(router *gin.RouterGroup) {
@@ -16,6 +19,7 @@ func RouteNodes(router *gin.RouterGroup) {
 	router.PUT("/switch", middleware.CheckAdminPermissions(), nodeUpdateSwitch)
 	router.GET("/info/:id", node)
 	router.POST("/query", nodesQuery)
+	router.GET("/list", nodes)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), nodeDelete)
 }
 
@@ -65,6 +69,18 @@ func node(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, info)
+}
+
+func nodes(c *gin.Context) {
+	list, err := controller.Nodes()
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	slices.SortFunc(list, func(a, b *types.Node) int {
+		return types.QuerySortOrder(types.SortOrderAsc, strings.ToLower(a.IpAddress), strings.ToLower(b.IpAddress))
+	})
+	c.JSON(http.StatusOK, list)
 }
 
 func nodesQuery(c *gin.Context) {

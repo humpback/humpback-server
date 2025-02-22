@@ -15,6 +15,7 @@ export default {
     "config": "Config",
     "addNodes": "Add Nodes",
     "deleteNode": "Delete Node",
+    "removeNode": "Remove Node",
     "enableNode": "Enable Node",
     "disableNode": "Enable Node",
     "addRegistry": "Add Registry",

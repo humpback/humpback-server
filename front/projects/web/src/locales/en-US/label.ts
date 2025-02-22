@@ -55,6 +55,7 @@ export default {
     "labelValue": "Label Value",
     "group": "Group",
     "nodes": "Nodes",
-    "services": "Services"
+    "services": "Services",
+    "selectedNodes": "Selected Nodes"
   }
 }

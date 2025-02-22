@@ -16,7 +16,7 @@ type Props = Partial<
   }
 >
 
-const props = withDefaults(defineProps<Props>(), { shadow: "never", showPageTitle: true })
+const props = withDefaults(defineProps<Props>(), { shadow: "never" })
 
 const { t } = useI18n()
 const route = useRoute()

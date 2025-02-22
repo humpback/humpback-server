@@ -2,9 +2,9 @@ import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
 import { cloneDeep, find, map, omitBy } from "lodash-es"
 import { NodeStatus, NodeSwitch } from "@/models"
 
-export const sortOptions = ["ip", "hostname", "updatedAt", "createdAt"]
+export const sortOptions = ["ipAddress", "name", "updatedAt", "createdAt"]
 
-export const defaultSort = NewSortInfo("ip", "asc")
+export const defaultSort = NewSortInfo("ipAddress", "asc")
 export const defaultPage = NewPageInfo(1, 20)
 export const defaultFilter = { status: "" }
 

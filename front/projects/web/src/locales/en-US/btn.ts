@@ -13,6 +13,7 @@ export default {
     "addTeam": "Add Team",
     "edit": "Edit",
     "delete": "Delete",
+    "remove": "Remove",
     "confirm": "Confirm",
     "goToAddUser": "Go to add user",
     "goToAddTeam": "Go to add team",
@@ -33,6 +34,8 @@ export default {
     "disable": "Disable",
     "addGroup": "Add Group",
     "editGroup": "Edit Group",
-    "deleteGroup": "Delete Group"
+    "deleteGroup": "Delete Group",
+    "select": "Select",
+    "refresh": "Refresh"
   }
 }

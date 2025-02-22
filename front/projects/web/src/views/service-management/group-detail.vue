@@ -19,7 +19,7 @@ const options = reactive<{ name: string; label: string; component: any }[]>([
 ])
 
 async function changeTab(name: TabPaneName) {
-  await router.replace({ params: { mode: name } })
+  await router.replace({ params: Object.assign({}, route.params, { mode: name }) })
   activeTab.value = name
 }
 </script>
@@ -33,7 +33,7 @@ async function changeTab(name: TabPaneName) {
       </div>
     </template>
 
-    <el-tabs v-model="activeTab" class="tab-box" type="card" @tab-change="changeTab">
+    <el-tabs :model-value="activeTab" class="tab-box" type="card" @update:modelValue="changeTab">
       <el-tab-pane v-for="item in options" :key="item.name" :name="item.name">
         <template #label>
           <el-badge :offset="[10, 2]" class="mr-3" color="#28c3d7">
