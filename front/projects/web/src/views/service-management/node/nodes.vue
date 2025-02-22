@@ -42,13 +42,7 @@ async function getGroupNodes() {
 async function search() {
   await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
-  await Promise.all([getGroupInfo(), getGroupNodes()])
-    .finally(() => (isLoading.value = false))
-    .catch(err => {
-      if (err?.response?.data?.code === "R4Group-006") {
-        router.push({ name: "groups" })
-      }
-    })
+  await Promise.all([getGroupInfo(), getGroupNodes()]).finally(() => (isLoading.value = false))
 }
 
 function openAction(action: string, info?: NodeInfo) {

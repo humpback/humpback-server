@@ -7,7 +7,6 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const router = useRouter()
 const stateStore = useStateStore()
 
 const isLoading = ref(false)
@@ -92,11 +91,6 @@ async function save() {
       ShowSuccessMsg(t("message.addSuccess"))
       dialogInfo.value.show = false
       emits("refresh")
-    })
-    .catch(err => {
-      if (err?.response?.data?.code === "R4Group-006") {
-        router.push({ name: "groups" })
-      }
     })
     .finally(() => {
       isAction.value = false
