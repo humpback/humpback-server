@@ -6,6 +6,7 @@ export default {
     "saveSuccess": "Save Successful",
     "addSuccess": "Added successfully",
     "deleteSuccess": "Delete Successfully",
+    "removeSuccess": "Remove Successfully",
     "uploadSuccess": "Upload Successful",
     "loginSuccess": "Login Successful",
     "copySucceed": "Copy successful",

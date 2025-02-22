@@ -22,7 +22,7 @@ function open(info: NodeInfo) {
 }
 
 async function confirmDelete() {
-  if (!isAction.value) {
+  if (!isChecked.value) {
     return
   }
   isAction.value = true

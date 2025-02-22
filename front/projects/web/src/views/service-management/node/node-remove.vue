@@ -7,6 +7,8 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const router = useRouter()
+const stateStore = useStateStore()
 
 const isAction = ref(false)
 const isChecked = ref(false)
@@ -22,16 +24,25 @@ function open(info: NodeInfo) {
 }
 
 async function remove() {
-  if (!isAction.value) {
+  if (!isChecked.value) {
     return
   }
   isAction.value = true
-  return await nodeService
-    .delete(dialogInfo.value.info.nodeId)
+  return await groupService
+    .updateNodes({
+      groupId: stateStore.getGroup()?.groupId,
+      isDelete: true,
+      nodes: [dialogInfo.value.info.nodeId]
+    })
     .then(() => {
-      ShowSuccessMsg(t("message.deleteSuccess"))
+      ShowSuccessMsg(t("message.removeSuccess"))
       dialogInfo.value.show = false
       emits("refresh")
+    })
+    .catch(err => {
+      if (err?.response?.data?.code === "R4Group-006") {
+        router.push({ name: "groups" })
+      }
     })
     .finally(() => (isAction.value = false))
 }

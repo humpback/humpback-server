@@ -14,8 +14,6 @@ const tableHeight = computed(() => TableHeight(252))
 
 const groupId = ref(route.params?.groupId as string)
 
-const resourceTotal = defineModel<{ services: number; nodes: number }>()
-
 const isLoading = ref(false)
 const queryInfo = ref<QueryGroupsInfo>(new QueryGroupsInfo(route.query))
 

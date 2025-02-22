@@ -24,6 +24,9 @@ func GroupUpdate(userInfo *types.User, reqInfo *models.GroupUpdateReqInfo) (stri
 	if err != nil {
 		return "", err
 	}
+	if !userInfo.InGroup(oldInfo) {
+		return "", response.NewBadRequestErr(locales.CodeGroupNoPermission)
+	}
 	if err := groupCheckNameExist(reqInfo.GroupName, reqInfo.GroupId); err != nil {
 		return "", err
 	}
@@ -52,6 +55,10 @@ func GroupUpdateNodes(userInfo *types.User, info *models.GroupUpdateNodesReqInfo
 	if err != nil {
 		return "", err
 	}
+	if !userInfo.InGroup(oldInfo) {
+		return "", response.NewBadRequestErr(locales.CodeGroupNoPermission)
+	}
+
 	if !info.IsDelete {
 		_, err := db.NodesGetByIds(info.Nodes, false)
 		if err != nil {
@@ -109,4 +116,23 @@ func GroupDelete(id string) error {
 	}
 	//todo 往scheduler发送消息
 	return nil
+}
+
+func GroupNodesQuery(groupId string, userInfo *types.User, queryInfo *models.GroupQueryNodesReqInfo) (*response.QueryResult[types.Node], error) {
+	groupInfo, err := Group(userInfo, groupId)
+	if err != nil {
+		return nil, err
+	}
+	if !userInfo.InGroup(groupInfo) {
+		return nil, response.NewBadRequestErr(locales.CodeGroupNoPermission)
+	}
+	nodes, err := NodesGetByIds(groupInfo.Nodes, true)
+	if err != nil {
+		return nil, err
+	}
+	result := queryInfo.QueryFilter(nodes)
+	return response.NewQueryResult[types.Node](
+		len(result),
+		types.QueryPagination[types.Node](queryInfo.PageInfo, result),
+	), nil
 }

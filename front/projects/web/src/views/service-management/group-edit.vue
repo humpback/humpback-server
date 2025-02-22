@@ -76,7 +76,7 @@ async function save() {
         emits("refresh")
       })
       .catch(err => {
-        if (err?.code === "CodeGroupNoPermission") {
+        if (err?.response?.data?.code === "R4Group-006") {
           dialogInfo.value.show = false
           emits("refresh")
         }

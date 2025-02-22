@@ -104,3 +104,14 @@ func NodesQuery(queryInfo *models.NodeQueryReqInfo) (*response.QueryResult[types
 		types.QueryPagination[types.Node](queryInfo.PageInfo, result),
 	), nil
 }
+
+func NodesGetByIds(ids []string, ignoreNotExist bool) ([]*types.Node, error) {
+	list, err := db.NodesGetByIds(ids, ignoreNotExist)
+	if err != nil {
+		if err == db.ErrKeyNotExist {
+			return nil, response.NewBadRequestErr(locales.CodeUserNotExist)
+		}
+		return nil, response.NewRespServerErr(err.Error())
+	}
+	return list, nil
+}

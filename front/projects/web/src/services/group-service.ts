@@ -9,6 +9,10 @@ class GroupService {
     return await httpClient.post<ResponseQuery<GroupInfo>>("/webapi/group/query", data).then(res => res.data)
   }
 
+  async queryNodes(id: string, data: any) {
+    return await httpClient.post<ResponseQuery<NodeInfo>>(`/webapi/group/${id}/query`, data).then(res => res.data)
+  }
+
   async create(data: any) {
     return await httpClient.post<string>("/webapi/group", data).then(res => res.data)
   }

@@ -32,16 +32,23 @@ async function getGroupInfo() {
   })
 }
 
+async function getGroupNodes() {
+  return await groupService.queryNodes(groupId.value, queryInfo.value.searchParams()).then(res => {
+    tableList.value.data = res.list
+    tableList.value.total = res.total
+  })
+}
+
 async function search() {
   await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
-  return await nodeService
-    .query(queryInfo.value.searchParams())
-    .then(res => {
-      tableList.value.data = res.list
-      tableList.value.total = res.total
-    })
+  await Promise.all([getGroupInfo(), getGroupNodes()])
     .finally(() => (isLoading.value = false))
+    .catch(err => {
+      if (err?.response?.data?.code === "R4Group-006") {
+        router.push({ name: "groups" })
+      }
+    })
 }
 
 function openAction(action: string, info?: NodeInfo) {

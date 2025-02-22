@@ -16,6 +16,7 @@ func RouteGroup(router *gin.RouterGroup) {
 	router.GET("/info/:id", groupInfo)
 	router.POST("/query", groupQuery)
 	router.PUT("/nodes", groupUpdateNodes)
+	router.POST("/:groupId/query", groupNodeQuery)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), groupDelete)
 }
 
@@ -92,4 +93,18 @@ func groupDelete(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.NewRespSucceed())
+}
+
+func groupNodeQuery(c *gin.Context) {
+	groupId := c.Param("groupId")
+	queryInfo := new(models.GroupQueryNodesReqInfo)
+	if !middleware.BindAndCheckBody(c, queryInfo) {
+		return
+	}
+	result, err := controller.GroupNodesQuery(groupId, middleware.GetUserInfo(c), queryInfo)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
 }

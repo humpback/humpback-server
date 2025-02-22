@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { FormInstance, FormRules } from "element-plus"
 import { BytesToGB } from "@/utils"
 import { filter, find, findIndex, map } from "lodash-es"
 
@@ -8,6 +7,8 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const router = useRouter()
+const stateStore = useStateStore()
 
 const isLoading = ref(false)
 const isAction = ref(false)
@@ -19,10 +20,12 @@ const dialogInfo = ref({
 })
 
 const validNodes = computed(() =>
-  filter(
-    dialogInfo.value.nodes,
-    x => x.isEnable && (IncludesIgnoreCase(x.ipAddress, dialogInfo.value.keywords) || IncludesIgnoreCase(x.name, dialogInfo.value.keywords))
-  )
+  filter(dialogInfo.value.nodes, (x: NodeInfo) => {
+    if (find(stateStore.getGroup()?.nodes || [], nodeId => nodeId === x.nodeId)) {
+      return false
+    }
+    return x.isEnable && (IncludesIgnoreCase(x.ipAddress, dialogInfo.value.keywords) || IncludesIgnoreCase(x.name, dialogInfo.value.keywords))
+  })
 )
 
 function disableSelect(ip: string) {
@@ -43,8 +46,12 @@ function removeNode(ip: string) {
 }
 
 function open() {
-  dialogInfo.value.show = true
-  isLoading.value = true
+  dialogInfo.value = {
+    show: true,
+    keywords: "",
+    selectedNodes: [] as string[],
+    nodes: [] as NodeInfo[]
+  }
   getNodeList()
 }
 
@@ -64,13 +71,32 @@ async function getNodeList() {
 }
 
 async function save() {
+  if (dialogInfo.value.selectedNodes.length === 0) {
+    return
+  }
+  const nodes = filter(
+    map(dialogInfo.value.selectedNodes, ip => {
+      const info = find(dialogInfo.value.nodes, x => x.ipAddress === ip)
+      return info?.nodeId || ""
+    }),
+    x => !!x
+  )
   isAction.value = true
-  nodeService
-    .create(map(dialogInfo.value.nodes, x => x.ipAddress))
+  return await groupService
+    .updateNodes({
+      groupId: stateStore.getGroup()?.groupId,
+      nodes: nodes,
+      isDelete: false
+    })
     .then(() => {
       ShowSuccessMsg(t("message.addSuccess"))
       dialogInfo.value.show = false
       emits("refresh")
+    })
+    .catch(err => {
+      if (err?.response?.data?.code === "R4Group-006") {
+        router.push({ name: "groups" })
+      }
     })
     .finally(() => {
       isAction.value = false
