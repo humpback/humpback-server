@@ -159,6 +159,56 @@ func mockWebServices(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
 
+func mockScheduleServices(c *gin.Context) {
+
+	svc := &types.Service{
+		ServiceId:   utils.GenerateRandomStringWithLength(8),
+		ServiceName: "Test Schedule Service",
+		Version:     utils.GenerateRandomStringWithLength(5),
+		IsEnabled:   true,
+		Status:      types.ServiceStatusNotReady,
+		GroupId:     "GroupTest",
+		CreateAt:    time.Now().Unix(),
+		Deployment: &types.Deployment{
+			Type:     types.DeployTypeSchedule,
+			Mode:     types.DeployModeReplicate,
+			Replicas: 2,
+			Schedule: &types.ScheduleInfo{
+				Timeout: "30s",
+				Rules:   []string{"*/5 * * * *"},
+			},
+		},
+		Meta: &types.ServiceMetaDocker{
+			Image: "nginx:latest",
+			Network: &types.NetworkInfo{
+				Mode: types.NetworkModeBridge,
+				Ports: []*types.PortInfo{
+					{
+						HostPort:      0,
+						ContainerPort: 80,
+					},
+				},
+			},
+			RestartPolicy: &types.RestartPolicy{
+				Mode: types.RestartPolicyModeAlways,
+			},
+		},
+	}
+
+	db.SaveData(db.BucketServices, svc.ServiceId, svc)
+
+	sc := c.MustGet("scheduler").(*HumpbackScheduler)
+
+	svcChange := ServiceChangeInfo{
+		ServiceId: svc.ServiceId,
+		Version:   svc.Version,
+	}
+
+	sc.ServiceChangeChan <- svcChange
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
 func mockServiceAction(c *gin.Context) {
 	svcId := c.Param("serviceId")
 	action := c.Param("action")

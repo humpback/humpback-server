@@ -109,7 +109,7 @@ func (sm *ServiceManager) Reconcile() {
 	if sm.ServiceInfo.Status == types.ServiceStatusNotReady {
 
 		// 如果有容器正在启动，就不再继续
-		if sm.HasPendingContainer() {
+		if sm.ServiceInfo.Deployment.Type != types.DeployTypeSchedule && sm.HasPendingContainer() {
 			slog.Info("[Service Manager] Wait pending container......", "ServiceId", sm.ServiceInfo.ServiceId)
 			return
 		}
@@ -212,6 +212,11 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 					strings.EqualFold(sm.ServiceInfo.Action, types.ServiceActionStop)) {
 				continue
 			}
+
+			if isContainerStarting(c.Status) && sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule {
+				continue
+			}
+
 			if isContainerRunning(c.Status) {
 				// 容器可能已经不存在了
 				if currentTime-c.LastHeartbeat > sm.containerThresholdInvterval*2 {

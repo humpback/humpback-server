@@ -14,6 +14,10 @@ GET http://localhost:8801/mock/service/web
 Accept: application/json
 
 ###
+GET http://localhost:8801/mock/service/schedule
+Accept: application/json
+
+###
 GET http://localhost:8801/mock/service/P0Kngmoy/stop
 Accept: application/json
 
