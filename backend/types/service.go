@@ -26,6 +26,7 @@ type Service struct {
 	ServiceId   string             `json:"serviceId"`
 	ServiceName string             `json:"serviceName"`
 	Version     string             `json:"version"`
+	Action      string             `json:"action"`
 	IsEnabled   bool               `json:"isEnabled"`
 	IsDelete    bool               `json:"isDelete"`
 	Status      string             `json:"status"`

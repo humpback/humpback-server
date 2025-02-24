@@ -158,3 +158,23 @@ func mockWebServices(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }
+
+func mockServiceAction(c *gin.Context) {
+	svcId := c.Param("serviceId")
+	action := c.Param("action")
+
+	svc, _ := db.GetDataById[types.Service](db.BucketServices, svcId)
+
+	if svc != nil {
+		svcChange := ServiceChangeInfo{
+			ServiceId: svc.ServiceId,
+			Version:   svc.Version,
+			Action:    action,
+		}
+
+		sc := c.MustGet("scheduler").(*HumpbackScheduler)
+		sc.ServiceChangeChan <- svcChange
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}

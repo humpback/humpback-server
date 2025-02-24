@@ -57,6 +57,7 @@ func (sc *ServiceController) RestoreServiceManager() {
 func (sc *ServiceController) HandleServiceChange() {
 	for serviceInfo := range sc.ServiceChangeChan {
 		if serviceManager, ok := sc.ServiceCtrls[serviceInfo.ServiceId]; ok {
+
 			if serviceInfo.Version != serviceManager.ServiceInfo.Version {
 				serviceManager.IsNeedCheckAll.Store(true)
 			} else if serviceInfo.Action == types.ServiceActionDisable ||
@@ -66,6 +67,7 @@ func (sc *ServiceController) HandleServiceChange() {
 			} else {
 				go serviceManager.DoServiceAction(serviceInfo.Action)
 			}
+
 		} else {
 			svc, err := db.GetServiceById(serviceInfo.ServiceId)
 			if err == nil && svc.IsEnabled && !svc.IsDelete {

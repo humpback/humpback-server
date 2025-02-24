@@ -3,6 +3,7 @@ package scheduler
 import (
 	"log/slog"
 	"slices"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -206,7 +207,9 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 	for _, c := range sm.ServiceInfo.Containers {
 		version := parseVersionByContainerId(c.ContainerName)
 		if version == sm.ServiceInfo.Version {
-			if isContainerExited(c.Status) && sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule {
+			if isContainerExited(c.Status) &&
+				(sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule ||
+					strings.EqualFold(sm.ServiceInfo.Action, types.ServiceActionStop)) {
 				continue
 			}
 			if isContainerRunning(c.Status) {
@@ -397,7 +400,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 		if cs.Status != types.ContainerStatusRemoved {
 			cs.LastHeartbeat = currentTime
 			sm.ServiceInfo.Containers = append(sm.ServiceInfo.Containers, &cs)
-			slog.Info("[Service Manager] New container found......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", cs.ContainerName, "Status", ct.Status)
+			slog.Info("[Service Manager] New container found......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", cs.ContainerName, "Status", cs.Status)
 			db.SaveService(sm.ServiceInfo)
 		}
 	}
@@ -427,9 +430,10 @@ func (sm *ServiceManager) CheckService() {
 }
 
 func (sm *ServiceManager) DoServiceAction(action string) {
-	sm.RLock()
-	defer sm.RUnlock()
+	sm.Lock()
+	defer sm.Unlock()
 
+	sm.ServiceInfo.Action = action
 	for _, c := range sm.ServiceInfo.Containers {
 		nodeId := c.NodeId
 		containerId := c.ContainerId
@@ -438,4 +442,6 @@ func (sm *ServiceManager) DoServiceAction(action string) {
 			c.ErrorMsg = err.Error()
 		}
 	}
+
+	db.SaveService(sm.ServiceInfo)
 }
