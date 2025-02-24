@@ -48,11 +48,13 @@ type ContainerStatus struct {
 	ContainerName string `json:"containerName"`
 	NodeId        string `json:"nodeId"`
 	Status        string `json:"state"`
+	StatusInfo    string `json:"status"`
 	ErrorMsg      string `json:"errorMsg"`
 	Image         string `json:"image"`
 	Command       string `json:"command"`
-	CreateAt      int64  `json:"createAt"`
-	StartAt       int64  `json:"startAt"`
+	Network       string `json:"network"`
+	CreateAt      int64  `json:"created"`
+	StartAt       int64  `json:"started"`
 	LastHeartbeat int64  `json:"lastHeartbeat"`
 }
 

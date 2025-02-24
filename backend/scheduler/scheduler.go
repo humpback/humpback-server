@@ -41,6 +41,7 @@ func doHealth(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
 		return
 	}
+
 	nodeId := MatchNodeWithIpAddress(payload.HostInfo.IpAddress)
 	if nodeId == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "node not found"})
@@ -64,7 +65,7 @@ func (scheduler *HumpbackScheduler) Start() {
 			c.Next()
 		})
 
-		e.POST("/health", doHealth)
+		e.POST("/api/health", doHealth)
 
 		e.GET("/mock/nodes", mockNodes)
 

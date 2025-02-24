@@ -31,10 +31,12 @@ func MatchNodeWithIpAddress(ipAddress []string) string {
 	})
 
 	id := ""
-	if err == nil || len(n) > 0 {
+	if err == nil && len(n) > 0 {
 		id = n[0].NodeId
+		cache.Add(n[0].IpAddress, id)
+	} else {
+		cache.Add(ipAddress[0], id)
 	}
-	cache.Add(n[0].IpAddress, id)
 
 	return id
 }

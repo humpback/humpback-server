@@ -27,8 +27,8 @@ func mockNodes(c *gin.Context) {
 	node1 := &types.Node{
 		NodeId:    utils.GenerateRandomStringWithLength(8),
 		Name:      "hb001",
-		IpAddress: "172.16.41.21",
-		Port:      8301,
+		IpAddress: "172.30.198.172",
+		Port:      8018,
 		Status:    "Online",
 		IsEnable:  true,
 		CreatedAt: time.Now().Unix(),
@@ -40,7 +40,7 @@ func mockNodes(c *gin.Context) {
 		NodeId:    utils.GenerateRandomStringWithLength(8),
 		Name:      "hb002",
 		IpAddress: "172.16.41.22",
-		Port:      8301,
+		Port:      8018,
 		Status:    "Online",
 		IsEnable:  true,
 		CreatedAt: time.Now().Unix(),
@@ -52,7 +52,7 @@ func mockNodes(c *gin.Context) {
 		NodeId:    utils.GenerateRandomStringWithLength(8),
 		Name:      "hb003",
 		IpAddress: "172.16.41.23",
-		Port:      8301,
+		Port:      8018,
 		Status:    "Online",
 		IsEnable:  true,
 		CreatedAt: time.Now().Unix(),
@@ -126,7 +126,22 @@ func mockWebServices(c *gin.Context) {
 		Deployment: &types.Deployment{
 			Type:     types.DeployTypeBackground,
 			Mode:     types.DeployModeReplicate,
-			Replicas: 4,
+			Replicas: 2,
+		},
+		Meta: &types.ServiceMetaDocker{
+			Image: "nginx:latest",
+			Network: &types.NetworkInfo{
+				Mode: types.NetworkModeBridge,
+				Ports: []*types.PortInfo{
+					{
+						HostPort:      0,
+						ContainerPort: 80,
+					},
+				},
+			},
+			RestartPolicy: &types.RestartPolicy{
+				Mode: types.RestartPolicyModeAlways,
+			},
 		},
 	}
 

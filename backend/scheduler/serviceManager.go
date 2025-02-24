@@ -87,7 +87,8 @@ func (sm *ServiceManager) Reconcile() {
 		for _, c := range sm.ServiceInfo.Containers {
 			nodeId := c.NodeId
 			containerName := c.ContainerName
-			err := sm.DeleteContainer(nodeId, containerName)
+			containerId := c.ContainerId
+			err := sm.DeleteContainer(nodeId, containerName, containerId)
 			if err != nil {
 				c.ErrorMsg = err.Error()
 			}
@@ -116,8 +117,9 @@ func (sm *ServiceManager) Reconcile() {
 		if c, ok := sm.TryToDeleteOne(); ok {
 			nodeId := c.NodeId
 			containerName := c.ContainerName
+			containerId := c.ContainerId
 			slog.Info("[Service Manager] Remove un-need container......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", c.ContainerName)
-			err := sm.DeleteContainer(nodeId, containerName)
+			err := sm.DeleteContainer(nodeId, containerName, containerId)
 			if err != nil {
 				c.ErrorMsg = err.Error()
 			}
@@ -136,10 +138,8 @@ func (sm *ServiceManager) Reconcile() {
 
 }
 
-func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string) error {
-	if err := RemoveNodeContainer(nodeId, containerName); err != nil {
-		return err
-	}
+func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string, containerId string) error {
+	RemoveNodeContainer(nodeId, containerId)
 
 	sm.ServiceInfo.Containers = lo.Filter(sm.ServiceInfo.Containers, func(cs *types.ContainerStatus, index int) bool {
 		return cs.ContainerName != containerName
@@ -378,21 +378,28 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 	if ok && (ct.Status != cs.Status || ct.StartAt != cs.StartAt || currentTime-ct.LastHeartbeat > sm.containerThresholdInvterval) {
 		ct.Status = cs.Status
 		ct.StartAt = cs.StartAt
+		ct.CreateAt = cs.CreateAt
+		ct.StatusInfo = cs.StatusInfo
 		ct.ContainerId = cs.ContainerId
 		ct.LastHeartbeat = currentTime
+		ct.Image = cs.Image
+		ct.Command = cs.Command
+		ct.Network = cs.Network
 		if ct.Status == types.ContainerStatusRunning {
 			ct.ErrorMsg = ""
 		}
 		db.SaveService(sm.ServiceInfo)
 
-		slog.Info("[Service Manager] Container status changed......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", ct.ContainerName)
+		slog.Info("[Service Manager] Container status changed......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", ct.ContainerName, "Status", ct.Status)
 	}
 
 	if !ok {
-		cs.LastHeartbeat = currentTime
-		sm.ServiceInfo.Containers = append(sm.ServiceInfo.Containers, &cs)
-		slog.Info("[Service Manager] New container found......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", cs.ContainerName)
-		db.SaveService(sm.ServiceInfo)
+		if cs.Status != types.ContainerStatusRemoved {
+			cs.LastHeartbeat = currentTime
+			sm.ServiceInfo.Containers = append(sm.ServiceInfo.Containers, &cs)
+			slog.Info("[Service Manager] New container found......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", cs.ContainerName, "Status", ct.Status)
+			db.SaveService(sm.ServiceInfo)
+		}
 	}
 
 }
@@ -425,8 +432,8 @@ func (sm *ServiceManager) DoServiceAction(action string) {
 
 	for _, c := range sm.ServiceInfo.Containers {
 		nodeId := c.NodeId
-		containerName := c.ContainerName
-		err := OperateNodeContainer(nodeId, containerName, action)
+		containerId := c.ContainerId
+		err := OperateNodeContainer(nodeId, containerId, action)
 		if err != nil {
 			c.ErrorMsg = err.Error()
 		}

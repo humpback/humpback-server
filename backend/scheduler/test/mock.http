@@ -16,3 +16,12 @@ Accept: application/json
 ###
 GET http://localhost:8801/services
 Accept: application/json
+
+###
+POST http://172.30.198.172:8018/api/v1/container/list
+Accept: application/json
+Content-Type: application/json
+
+{
+  "all": true
+}

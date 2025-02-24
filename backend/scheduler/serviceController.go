@@ -110,7 +110,9 @@ func (sc *ServiceController) HandleContainerChanged() {
 
 func (sc *ServiceController) HandleContainerRemove() {
 	for containerStatus := range sc.ContainerRemoveChan {
-		RemoveNodeContainer(containerStatus.NodeId, containerStatus.ContainerName)
+		if containerStatus.Status != types.ContainerStatusRemoved {
+			RemoveNodeContainer(containerStatus.NodeId, containerStatus.ContainerId)
+		}
 	}
 }
 
