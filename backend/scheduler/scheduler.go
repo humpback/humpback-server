@@ -71,15 +71,17 @@ func (scheduler *HumpbackScheduler) Start() {
 
 		e.GET("/nodes", getAllNodes)
 
+		e.GET("/groups", getAllGroups)
+
 		e.GET("/services", getAllServices)
 
-		e.GET("/mock/service/gateway", mockGatewayServices)
+		e.GET("/mock/service/:groupId/gateway", mockGatewayServices)
 
-		e.GET("/mock/service/web", mockWebServices)
+		e.GET("/mock/service/:groupId/web", mockWebServices)
 
-		e.GET("/mock/service/schedule", mockScheduleServices)
+		e.GET("/mock/service/:groupId/schedule", mockScheduleServices)
 
-		e.GET("/mock/service/:serviceId/:action", mockServiceAction)
+		e.GET("/mock/action/:serviceId/:action", mockServiceAction)
 
 		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.BackendArgs().BackendPort)
 		slog.Info("[Scheduler] Listening...", "Address", listeningAddress)

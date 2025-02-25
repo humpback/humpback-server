@@ -20,6 +20,10 @@ const (
 	ServiceActionEnable  = "Enable"
 	ServiceActionDisable = "Disable"
 	ServiceActionDelete  = "Delete"
+
+	ContainerLabelServiceId   = "Humpback-ServiceId"
+	ContainerLabelServiceName = "Humpback-ServiceName"
+	ContainerLabelGroupId     = "Humpback-GroupId"
 )
 
 type Service struct {
@@ -45,19 +49,35 @@ type AgentTask struct {
 	*ScheduleInfo
 }
 
+type MounteInfo struct {
+	Source      string `json:"Source"`
+	Destination string `json:"Destination"`
+}
+
+type ContainerPort struct {
+	BindIP      string `json:"bindIP"`
+	PrivatePort int    `json:"privatePort"`
+	PublicPort  int    `json:"publicPort"`
+	Type        string `json:"type"`
+}
+
 type ContainerStatus struct {
-	ContainerId   string `json:"containerId"`
-	ContainerName string `json:"containerName"`
-	NodeId        string `json:"nodeId"`
-	Status        string `json:"status"`
-	StatusInfo    string `json:"statusInfo"`
-	ErrorMsg      string `json:"errorMsg"`
-	Image         string `json:"image"`
-	Command       string `json:"command"`
-	Network       string `json:"network"`
-	CreateAt      int64  `json:"created"`
-	StartAt       int64  `json:"started"`
-	LastHeartbeat int64  `json:"lastHeartbeat"`
+	ContainerId   string            `json:"containerId"`
+	ContainerName string            `json:"containerName"`
+	NodeId        string            `json:"nodeId"`
+	Status        string            `json:"state"`
+	StatusInfo    string            `json:"status"`
+	ErrorMsg      string            `json:"errorMsg"`
+	Image         string            `json:"image"`
+	Command       string            `json:"command"`
+	Network       string            `json:"network"`
+	CreateAt      int64             `json:"created"`
+	StartAt       int64             `json:"started"`
+	LastHeartbeat int64             `json:"lastHeartbeat"`
+	Labels        map[string]string `json:"labels"`
+	Env           []string          `json:"env"`
+	Mountes       []MounteInfo      `json:"mounts"`
+	Ports         []ContainerPort   `json:"ports"`
 }
 
 type Deployment struct {

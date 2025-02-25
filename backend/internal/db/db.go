@@ -17,7 +17,7 @@ templates: template_id, template_name, create_time, update_time, infos(json)
 
 Services: service_id, service_name, create_time, update_time, type, status, containers, infos(json)
 
-serviceId: {random-8}
+serviceId: {groupId}{random-8}
 containerName: humpback-{serviceId}-{version-5}-{random-5}
 
 */

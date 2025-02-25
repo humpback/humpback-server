@@ -22,6 +22,17 @@ func getAllNodes(c *gin.Context) {
 	}
 }
 
+func getAllGroups(c *gin.Context) {
+
+	nodes, err := db.GetDataAll[types.NodesGroups](db.BucketNodesGroups)
+
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+	} else {
+		c.JSON(http.StatusOK, nodes)
+	}
+}
+
 func mockNodes(c *gin.Context) {
 
 	node1 := &types.Node{
@@ -61,7 +72,7 @@ func mockNodes(c *gin.Context) {
 	db.SaveData(db.BucketNodes, node3.NodeId, node3)
 
 	group1 := &types.NodesGroups{
-		GroupId:   "GroupTest",
+		GroupId:   utils.GenerateRandomStringWithLength(8),
 		GroupName: "GroupTest",
 		CreatedAt: time.Now().Unix(),
 		Nodes:     []string{node1.NodeId, node2.NodeId, node3.NodeId},
@@ -84,14 +95,14 @@ func getAllServices(c *gin.Context) {
 }
 
 func mockGatewayServices(c *gin.Context) {
-
+	gId := c.Param("groupId")
 	svc := &types.Service{
-		ServiceId:   utils.GenerateRandomStringWithLength(8),
+		ServiceId:   gId + utils.GenerateRandomStringWithLength(8),
 		ServiceName: "Gateway",
 		Version:     utils.GenerateRandomStringWithLength(5),
 		IsEnabled:   true,
 		Status:      types.ServiceStatusNotReady,
-		GroupId:     "GroupTest",
+		GroupId:     gId,
 		CreatedAt:   time.Now().Unix(),
 		Deployment: &types.Deployment{
 			Type: types.DeployTypeBackground,
@@ -114,14 +125,14 @@ func mockGatewayServices(c *gin.Context) {
 }
 
 func mockWebServices(c *gin.Context) {
-
+	gId := c.Param("groupId")
 	svc := &types.Service{
-		ServiceId:   utils.GenerateRandomStringWithLength(8),
+		ServiceId:   gId + utils.GenerateRandomStringWithLength(8),
 		ServiceName: "Http Web Service",
 		Version:     utils.GenerateRandomStringWithLength(5),
 		IsEnabled:   true,
 		Status:      types.ServiceStatusNotReady,
-		GroupId:     "GroupTest",
+		GroupId:     gId,
 		CreatedAt:   time.Now().Unix(),
 		Deployment: &types.Deployment{
 			Type:     types.DeployTypeBackground,
@@ -160,13 +171,14 @@ func mockWebServices(c *gin.Context) {
 }
 
 func mockScheduleServices(c *gin.Context) {
+	gId := c.Param("groupId")
 	svc := &types.Service{
-		ServiceId:   utils.GenerateRandomStringWithLength(8),
+		ServiceId:   gId + utils.GenerateRandomStringWithLength(8),
 		ServiceName: "Test Schedule Service",
 		Version:     utils.GenerateRandomStringWithLength(5),
 		IsEnabled:   true,
 		Status:      types.ServiceStatusNotReady,
-		GroupId:     "GroupTest",
+		GroupId:     gId,
 		CreatedAt:   time.Now().Unix(),
 		Deployment: &types.Deployment{
 			Type:     types.DeployTypeSchedule,

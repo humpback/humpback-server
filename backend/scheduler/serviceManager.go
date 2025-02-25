@@ -8,11 +8,11 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	
+
 	"humpback/config"
 	"humpback/internal/db"
 	"humpback/types"
-	
+
 	"github.com/samber/lo"
 )
 
@@ -72,6 +72,7 @@ func (sm *ServiceManager) Reconcile() {
 		}
 
 		sm.ServiceInfo = svc
+		sm.PrepareMeta()
 		sm.CheckNodeStatus()
 	}
 
@@ -136,6 +137,24 @@ func (sm *ServiceManager) Reconcile() {
 		db.ServiceUpdate(sm.ServiceInfo)
 	}
 
+}
+
+func (sm *ServiceManager) PrepareMeta() {
+	if sm.ServiceInfo.Meta.Labels == nil {
+		sm.ServiceInfo.Meta.Labels = make(map[string]string)
+	}
+
+	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelGroupId]; !ok || label != sm.ServiceInfo.GroupId {
+		sm.ServiceInfo.Meta.Labels[types.ContainerLabelGroupId] = sm.ServiceInfo.GroupId
+	}
+
+	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceId]; !ok || label != sm.ServiceInfo.ServiceId {
+		sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceId] = sm.ServiceInfo.ServiceId
+	}
+
+	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName]; !ok || label != sm.ServiceInfo.ServiceName {
+		sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName] = sm.ServiceInfo.ServiceName
+	}
 }
 
 func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string, containerId string) error {
@@ -392,6 +411,10 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 		ct.Image = cs.Image
 		ct.Command = cs.Command
 		ct.Network = cs.Network
+		ct.Labels = cs.Labels
+		ct.Env = cs.Env
+		ct.Mountes = cs.Mountes
+		ct.Ports = cs.Ports
 		if ct.Status == types.ContainerStatusRunning {
 			ct.ErrorMsg = ""
 		}

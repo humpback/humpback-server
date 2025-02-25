@@ -10,7 +10,7 @@ GET http://localhost:8801/mock/service/gateway
 Accept: application/json
 
 ###
-GET http://localhost:8801/mock/service/web
+GET http://localhost:8801/mock/service/LcNSJe1X/web
 Accept: application/json
 
 ###
