@@ -2,14 +2,22 @@ package db
 
 import "humpback/types"
 
-func GetAllService() ([]*types.Service, error) {
+func ServicesGetAll() ([]*types.Service, error) {
 	return GetDataAll[types.Service](BucketServices)
 }
 
-func GetServiceById(serviceId string) (*types.Service, error) {
+func ServicesGetByPrefix(prefix string) ([]*types.Service, error) {
+	return GetDataByPrefix[types.Service](BucketServices, prefix)
+}
+
+func ServiceGetTotalByPrefix(prefix string) (int, error) {
+	return GetDataTotalByPrefix[types.Service](BucketServices, prefix)
+}
+
+func ServiceGetById(serviceId string) (*types.Service, error) {
 	return GetDataById[types.Service](BucketServices, serviceId)
 }
 
-func SaveService(data *types.Service) error {
+func ServiceUpdate(data *types.Service) error {
 	return SaveData(BucketServices, data.ServiceId, data)
 }

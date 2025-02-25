@@ -33,6 +33,8 @@ export default {
     "nodes": "Nodes",
     "registries": "Registries",
     "groups": "Groups",
-    "services": "Services"
+    "services": "Services",
+    "serviceInfo": "Service Info",
+    "serviceCreate": "Service Create"
   }
 }

@@ -85,4 +85,10 @@ var enUSMsg = map[string]string{
 	CodeGroupNameLimitLength:  fmt.Sprintf("The group name length limit is %d to %d.", enum.LimitGroupName.Min, enum.LimitGroupName.Max),
 	CodeGroupNameNotEmpty:     "The group name cannot be empty.",
 	CodeGroupNoPermission:     "You do not have the group permission",
+
+	CodeServiceNotExist:         "The service does not exist.",
+	CodeServiceNameNotEmpty:     "The service name cannot be empty.",
+	CodeServiceNameLimitLength:  fmt.Sprintf("The service name length limit is %d to %d.", enum.LimitServiceName.Min, enum.LimitServiceName.Max),
+	CodeServiceNameAlreadyExist: "The service name already exists.",
+	CodeServiceIdNotEmpty:       "The service ID cannot be empty.",
 }

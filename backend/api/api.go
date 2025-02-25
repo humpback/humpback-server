@@ -53,13 +53,14 @@ func (api *Router) setMiddleware() {
 func (api *Router) setRoute() {
 	var routes = map[string]map[string][]any{
 		"/webapi": {
-			"/common":   {handle.RouteCommon},
-			"/user":     {handle.RouteUser},
-			"/team":     {middleware.CheckLogin(), handle.RouteTeam},
-			"/config":   {middleware.CheckLogin(), handle.RouteConfig},
-			"/registry": {middleware.CheckLogin(), handle.RouteRegistry},
-			"/node":     {middleware.CheckLogin(), handle.RouteNodes},
-			"/group":    {middleware.CheckLogin(), handle.RouteGroup},
+			"/common":                 {handle.RouteCommon},
+			"/user":                   {handle.RouteUser},
+			"/team":                   {middleware.CheckLogin(), handle.RouteTeam},
+			"/config":                 {middleware.CheckLogin(), handle.RouteConfig},
+			"/registry":               {middleware.CheckLogin(), handle.RouteRegistry},
+			"/node":                   {middleware.CheckLogin(), handle.RouteNodes},
+			"/group":                  {middleware.CheckLogin(), handle.RouteGroup},
+			"/group/:groupId/service": {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteService},
 		},
 	}
 

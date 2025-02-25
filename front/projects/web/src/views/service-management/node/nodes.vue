@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { NodeInfo } from "@/types"
-import { BytesToGB, TableHeight } from "@/utils"
+import { BytesToGB, SetWebTitle, TableHeight } from "@/utils"
 import { Action } from "@/models"
 import NodeAdd from "./node-add.vue"
 import NodeRemove from "./node-remove.vue"
 import { QueryGroupNodesInfo } from "./common.ts"
+import { serviceService } from "services/service-client.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -32,6 +33,12 @@ async function getGroupInfo() {
   })
 }
 
+async function getServiceTotal() {
+  return await serviceService.total(groupId.value).then(total => {
+    stateStore.setGroupTotal(groupId.value, total)
+  })
+}
+
 async function getGroupNodes() {
   return await groupService.queryNodes(groupId.value, queryInfo.value.searchParams()).then(res => {
     tableList.value.data = res.list
@@ -42,7 +49,7 @@ async function getGroupNodes() {
 async function search() {
   await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
-  await Promise.all([getGroupInfo(), getGroupNodes()]).finally(() => (isLoading.value = false))
+  await Promise.all([getGroupInfo(), getServiceTotal(), getGroupNodes()]).finally(() => (isLoading.value = false))
 }
 
 function openAction(action: string, info?: NodeInfo) {
@@ -56,7 +63,10 @@ function openAction(action: string, info?: NodeInfo) {
   }
 }
 
-onMounted(() => search())
+onMounted(async () => {
+  await search()
+  SetWebTitle(`${t("webTitle.nodes")} - ${stateStore.getGroup()?.groupName}`)
+})
 </script>
 
 <template>

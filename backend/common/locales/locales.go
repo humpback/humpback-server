@@ -94,4 +94,10 @@ const (
 	CodeGroupNameLimitLength  = "R4Group-004"
 	CodeGroupNameNotEmpty     = "R4Group-005"
 	CodeGroupNoPermission     = "R4Group-006"
+
+	CodeServiceNotExist         = "R4Service-001"
+	CodeServiceNameNotEmpty     = "R4Service-002"
+	CodeServiceNameLimitLength  = "R4Service-003"
+	CodeServiceNameAlreadyExist = "R4Service-004"
+	CodeServiceIdNotEmpty       = "R4Service-005"
 )

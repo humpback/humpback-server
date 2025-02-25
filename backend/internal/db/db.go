@@ -203,7 +203,7 @@ func GetDataByPrefix[T any](bucketName string, prefix string) ([]*T, error) {
 		bp := []byte(prefix)
 		for k, v := c.Seek([]byte(prefix)); k != nil && bytes.HasPrefix(k, bp); k, v = c.Next() {
 			result := new(T)
-			if err := json.Unmarshal(v, &result); err != nil {
+			if err := json.Unmarshal(v, result); err != nil {
 				return err
 			}
 			results = append(results, result)
@@ -214,6 +214,26 @@ func GetDataByPrefix[T any](bucketName string, prefix string) ([]*T, error) {
 		return nil, err
 	}
 	return results, nil
+}
+
+func GetDataTotalByPrefix[T any](bucketName string, prefix string) (int, error) {
+	result := 0
+	err := db.boltDB.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketName))
+		if bucket == nil {
+			return ErrBucketNotExist
+		}
+		c := bucket.Cursor()
+		bp := []byte(prefix)
+		for k, _ := c.Seek([]byte(prefix)); k != nil && bytes.HasPrefix(k, bp); k, _ = c.Next() {
+			result++
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, err
+	}
+	return result, nil
 }
 
 func SaveData[T any](bucketName string, id string, data T) error {

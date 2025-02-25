@@ -24,7 +24,9 @@ const (
 
 type Service struct {
 	ServiceId   string             `json:"serviceId"`
+	GroupId     string             `json:"groupId"`
 	ServiceName string             `json:"serviceName"`
+	Description string             `json:"description"`
 	Version     string             `json:"version"`
 	Action      string             `json:"action"`
 	IsEnabled   bool               `json:"isEnabled"`
@@ -33,9 +35,8 @@ type Service struct {
 	Meta        *ServiceMetaDocker `json:"meta"`
 	Deployment  *Deployment        `json:"deployment"`
 	Containers  []*ContainerStatus `json:"containers"`
-	GroupId     string             `json:"groupId"`
-	CreateAt    int64              `json:"createAt"`
-	UpdateAt    int64              `json:"updateAt"`
+	CreatedAt   int64              `json:"createdAt"`
+	UpdatedAt   int64              `json:"updatedAt"`
 }
 
 type AgentTask struct {
@@ -48,8 +49,8 @@ type ContainerStatus struct {
 	ContainerId   string `json:"containerId"`
 	ContainerName string `json:"containerName"`
 	NodeId        string `json:"nodeId"`
-	Status        string `json:"state"`
-	StatusInfo    string `json:"status"`
+	Status        string `json:"status"`
+	StatusInfo    string `json:"statusInfo"`
 	ErrorMsg      string `json:"errorMsg"`
 	Image         string `json:"image"`
 	Command       string `json:"command"`

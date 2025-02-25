@@ -34,7 +34,7 @@ func (g *GroupCreateReqInfo) Check() error {
 func (g *GroupCreateReqInfo) NewGroupInfo() *types.NodesGroups {
 	nowT := utils.NewActionTimestamp()
 	return &types.NodesGroups{
-		GroupId:     utils.NewGuidStr(),
+		GroupId:     utils.GenerateRandomStringWithLength(8),
 		GroupName:   g.GroupName,
 		Description: g.Description,
 		Users:       g.Users,

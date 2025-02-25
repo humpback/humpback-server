@@ -41,7 +41,7 @@ func NewServiceController(nodeChan chan NodeSimpleInfo, containerChan chan types
 
 // RestoreServiceManager 重启时恢复服务
 func (sc *ServiceController) RestoreServiceManager() {
-	svcs, err := db.GetAllService()
+	svcs, err := db.ServicesGetAll()
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ func (sc *ServiceController) HandleServiceChange() {
 			}
 
 		} else {
-			svc, err := db.GetServiceById(serviceInfo.ServiceId)
+			svc, err := db.ServiceGetById(serviceInfo.ServiceId)
 			if err == nil && svc.IsEnabled && !svc.IsDelete {
 				sm := NewServiceManager(svc)
 				sc.ServiceCtrls[svc.ServiceId] = sm

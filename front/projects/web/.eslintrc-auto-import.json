@@ -404,6 +404,27 @@
     "useStateStore": true,
     "SetWebTitle": true,
     "PageGroupDetail": true,
-    "PageUserRelated": true
+    "PageUserRelated": true,
+    "NewServiceDeploymentInfo": true,
+    "NewServiceEmptyInfo": true,
+    "NewServiceMetaDockerEmptyInfo": true,
+    "ServiceContainerStatusInfo": true,
+    "ServiceDeployMode": true,
+    "ServiceDeployType": true,
+    "ServiceDeploymentInfo": true,
+    "ServiceInfo": true,
+    "ServiceMetaDockerInfo": true,
+    "ServiceNetworkInfo": true,
+    "ServiceNetworkMode": true,
+    "ServicePlacementInfo": true,
+    "ServicePlacementMode": true,
+    "ServicePortInfo": true,
+    "ServiceRestartPolicyInfo": true,
+    "ServiceRestartPolicyMode": true,
+    "ServiceScheduleInfo": true,
+    "ServiceStatus": true,
+    "PageServiceDetail": true,
+    "SessionStorageCurrentGroupId": true,
+    "serviceService": true
   }
 }

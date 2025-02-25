@@ -12,12 +12,12 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
 	"humpback/common/locales"
+	"humpback/common/response"
 	"humpback/config"
 	"humpback/internal/controller"
 	"humpback/types"
-
-	"humpback/common/response"
 )
 
 const (
@@ -134,6 +134,21 @@ func CheckAdminPermissions() gin.HandlerFunc {
 		userInfo := GetUserInfo(c)
 		if userInfo.Role != types.UserRoleAdmin && userInfo.Role != types.UserRoleSupperAdmin {
 			AbortErr(c, response.NewBadRequestErr(locales.CodeNoPermission))
+			return
+		}
+	}
+}
+
+func CheckInGroup() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userInfo := GetUserInfo(c)
+		groupId := c.Param("groupId")
+		if groupId == "" {
+			AbortErr(c, response.NewBadRequestErr(locales.CodeRequestParamsInvalid))
+			return
+		}
+		if _, err := controller.Group(userInfo, groupId); err != nil {
+			AbortErr(c, err)
 			return
 		}
 	}

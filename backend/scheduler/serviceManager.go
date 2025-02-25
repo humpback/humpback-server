@@ -2,19 +2,18 @@ package scheduler
 
 import (
 	"log/slog"
+	"math/rand/v2"
 	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
-
+	
 	"humpback/config"
 	"humpback/internal/db"
 	"humpback/types"
-
+	
 	"github.com/samber/lo"
-
-	"math/rand/v2"
 )
 
 type ServiceManager struct {
@@ -66,7 +65,7 @@ func (sm *ServiceManager) Reconcile() {
 
 	if sm.IsNeedCheckAll.Load().(bool) {
 		sm.IsNeedCheckAll.Store(false)
-		svc, err := db.GetServiceById(sm.ServiceInfo.ServiceId)
+		svc, err := db.ServiceGetById(sm.ServiceInfo.ServiceId)
 		if err != nil {
 			slog.Error("[Service Manager] Get service error", "ServiceId", sm.ServiceInfo.ServiceId, "error", err.Error())
 			return
@@ -93,7 +92,7 @@ func (sm *ServiceManager) Reconcile() {
 			if err != nil {
 				c.ErrorMsg = err.Error()
 			}
-			db.SaveService(sm.ServiceInfo)
+			db.ServiceUpdate(sm.ServiceInfo)
 		}
 		sm.isNeedQuit.Store(true)
 		return
@@ -134,7 +133,7 @@ func (sm *ServiceManager) Reconcile() {
 			sm.ServiceInfo.Status = types.ServiceStatusRunning
 		}
 
-		db.SaveService(sm.ServiceInfo)
+		db.ServiceUpdate(sm.ServiceInfo)
 	}
 
 }
@@ -174,7 +173,7 @@ func (sm *ServiceManager) CheckNodeStatus() {
 	}
 
 	if isNeedSave {
-		db.SaveService(sm.ServiceInfo)
+		db.ServiceUpdate(sm.ServiceInfo)
 	}
 }
 
@@ -312,7 +311,7 @@ func (sm *ServiceManager) StartNextContainer() {
 		return
 	}
 
-	db.SaveService(sm.ServiceInfo)
+	db.ServiceUpdate(sm.ServiceInfo)
 
 }
 
@@ -396,7 +395,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 		if ct.Status == types.ContainerStatusRunning {
 			ct.ErrorMsg = ""
 		}
-		db.SaveService(sm.ServiceInfo)
+		db.ServiceUpdate(sm.ServiceInfo)
 
 		slog.Info("[Service Manager] Container status changed......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", ct.ContainerName, "Status", ct.Status)
 	}
@@ -406,7 +405,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 			cs.LastHeartbeat = currentTime
 			sm.ServiceInfo.Containers = append(sm.ServiceInfo.Containers, &cs)
 			slog.Info("[Service Manager] New container found......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", cs.ContainerName, "Status", cs.Status)
-			db.SaveService(sm.ServiceInfo)
+			db.ServiceUpdate(sm.ServiceInfo)
 		}
 	}
 
@@ -448,5 +447,5 @@ func (sm *ServiceManager) DoServiceAction(action string) {
 		}
 	}
 
-	db.SaveService(sm.ServiceInfo)
+	db.ServiceUpdate(sm.ServiceInfo)
 }

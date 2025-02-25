@@ -1,10 +1,9 @@
 package models
 
 import (
-	"encoding/json"
 	"slices"
 	"strings"
-
+	
 	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
@@ -225,9 +224,11 @@ type UserQueryReqInfo struct {
 
 func (u *UserQueryReqInfo) Check() error {
 	u.CheckBase()
-	if err := u.parseFilterInfo(); err != nil {
+	u.FilterInfo = new(UserQueryFilterInfo)
+	if err := ParseMapToStructConvert(u.Filter, u.FilterInfo); err != nil {
 		return err
 	}
+
 	if u.Keywords != "" && slices.Index([]string{"username", "email", "phone"}, u.Mode) == -1 {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
@@ -278,19 +279,4 @@ func (u *UserQueryReqInfo) sort(list []*types.User) []*types.User {
 		return 1
 	})
 	return list
-}
-
-func (u *UserQueryReqInfo) parseFilterInfo() error {
-	if len(u.Filter) == 0 {
-		return nil
-	}
-	v, err := json.Marshal(u.Filter)
-	if err != nil {
-		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
-	}
-	u.FilterInfo = new(UserQueryFilterInfo)
-	if err = json.Unmarshal(v, u.FilterInfo); err != nil {
-		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
-	}
-	return nil
 }

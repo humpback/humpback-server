@@ -4,8 +4,8 @@ const (
 	NodeStatusOnline  = "Online"
 	NodeStatusOffline = "Offline"
 
-	NodeEnabled  = "Enabled"
-	NodeDisabled = "Disabled"
+	SwitchEnabled  = "Enabled"
+	SwitchDisabled = "Disabled"
 )
 
 type QueryRegistry struct {

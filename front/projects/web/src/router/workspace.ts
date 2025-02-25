@@ -1,5 +1,5 @@
 import type { RouteRecordRaw } from "vue-router"
-import { PageGroupDetail, PageLimitRole, PageUserRelated } from "@/models"
+import { PageGroupDetail, PageLimitRole, PageServiceDetail, PageUserRelated } from "@/models"
 import { find } from "lodash-es"
 
 const administrator = <RouteRecordRaw[]>[
@@ -52,7 +52,7 @@ const serviceManagement = <RouteRecordRaw[]>[
   },
   {
     path: "/ws/group/:groupId/:mode",
-    name: "group-detail",
+    name: "groupDetail",
     component: () => import("@/views/service-management/group-detail.vue"),
     beforeEnter: (to, from, next) => {
       return find([PageGroupDetail.Services, PageGroupDetail.Nodes], x => x === to.params.mode) ? next() : next({ name: "404" })
@@ -62,6 +62,29 @@ const serviceManagement = <RouteRecordRaw[]>[
       webTitle: {
         params: "mode"
       }
+    }
+  },
+  {
+    path: "/ws/group/:groupId/service/:serviceId/:mode",
+    name: "serviceInfo",
+    component: () => import("@/views/service-management/service/detail/service-detail.vue"),
+    beforeEnter: (to, from, next) => {
+      return find(
+        [
+          PageServiceDetail.BasicInfo,
+          PageServiceDetail.Application,
+          PageServiceDetail.Deployment,
+          PageServiceDetail.InstanceInfo,
+          PageServiceDetail.Log,
+          PageServiceDetail.Performance
+        ],
+        x => x === to.params.mode
+      )
+        ? next()
+        : next({ name: "404" })
+    },
+    meta: {
+      currentMenu: "groups"
     }
   }
 ]

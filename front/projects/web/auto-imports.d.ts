@@ -36,6 +36,9 @@ declare global {
   const NewNodeEmptyInfo: typeof import('./src/types/setting')['NewNodeEmptyInfo']
   const NewPageInfo: typeof import('./src/types/query')['NewPageInfo']
   const NewRegistryEmptyInfo: typeof import('./src/types/setting')['NewRegistryEmptyInfo']
+  const NewServiceDeploymentInfo: typeof import('./src/types/service')['NewServiceDeploymentInfo']
+  const NewServiceEmptyInfo: typeof import('./src/types/service')['NewServiceEmptyInfo']
+  const NewServiceMetaDockerEmptyInfo: typeof import('./src/types/service')['NewServiceMetaDockerEmptyInfo']
   const NewSortInfo: typeof import('./src/types/query')['NewSortInfo']
   const NewTeamEmptyInfo: typeof import('./src/types/user')['NewTeamEmptyInfo']
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
@@ -43,6 +46,7 @@ declare global {
   const NodeSwitch: typeof import('./src/models/enum')['NodeSwitch']
   const PageGroupDetail: typeof import('./src/models/page')['PageGroupDetail']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
+  const PageServiceDetail: typeof import('./src/models/page')['PageServiceDetail']
   const PageSizeOptions: typeof import('./src/models/enum')['PageSizeOptions']
   const PageUserRelated: typeof import('./src/models/page')['PageUserRelated']
   const ParseNumber: typeof import('./src/utils/common')['ParseNumber']
@@ -59,6 +63,13 @@ declare global {
   const RuleLimitRange: typeof import('./src/utils/rule')['RuleLimitRange']
   const RulePleaseEnter: typeof import('./src/utils/rule')['RulePleaseEnter']
   const SendChannelMessage: typeof import('./src/utils/event')['SendChannelMessage']
+  const ServiceDeployMode: typeof import('./src/models/enum')['ServiceDeployMode']
+  const ServiceDeployType: typeof import('./src/models/enum')['ServiceDeployType']
+  const ServiceNetworkMode: typeof import('./src/models/enum')['ServiceNetworkMode']
+  const ServicePlacementMode: typeof import('./src/models/enum')['ServicePlacementMode']
+  const ServiceRestartPolicyMode: typeof import('./src/models/enum')['ServiceRestartPolicyMode']
+  const ServiceStatus: typeof import('./src/models/enum')['ServiceStatus']
+  const SessionStorageCurrentGroupId: typeof import('./src/models/page')['SessionStorageCurrentGroupId']
   const SetWebTitle: typeof import('./src/utils/common')['SetWebTitle']
   const ShowErrMsg: typeof import('./src/utils/message')['ShowErrMsg']
   const ShowInfoMsg: typeof import('./src/utils/message')['ShowInfoMsg']
@@ -169,6 +180,7 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const serviceService: typeof import('./src/services/service-client')['serviceService']
   const setActivePinia: typeof import('pinia')['setActivePinia']
   const setMapStoreSuffix: typeof import('pinia')['setMapStoreSuffix']
   const shallowReactive: typeof import('vue')['shallowReactive']
@@ -396,10 +408,10 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch } from './src/models/enum'
+  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceRestartPolicyMode, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceRestartPolicyMode } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
-  export type { PageUserRelated, PageGroupDetail, PageUserRelated, PageGroupDetail } from './src/models/page'
+  export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageUserRelated, PageGroupDetail, PageServiceDetail } from './src/models/page'
   import('./src/models/page')
   // @ts-ignore
   export type { BaseInfo } from './src/types/base'
@@ -419,6 +431,9 @@ declare global {
   // @ts-ignore
   export type { ConfigInfo, RegistryInfo, NodeInfo } from './src/types/setting'
   import('./src/types/setting')
+  // @ts-ignore
+  export type { ServiceInfo, ServiceMetaDockerInfo, ServiceNetworkInfo, ServicePortInfo, ServiceRestartPolicyInfo, ServiceDeploymentInfo, ServicePlacementInfo, ServiceScheduleInfo, ServiceContainerStatusInfo } from './src/types/service'
+  import('./src/types/service')
 }
 
 // for vue template auto import
@@ -456,6 +471,9 @@ declare module 'vue' {
     readonly NewNodeEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewNodeEmptyInfo']>
     readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
     readonly NewRegistryEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewRegistryEmptyInfo']>
+    readonly NewServiceDeploymentInfo: UnwrapRef<typeof import('./src/types/service')['NewServiceDeploymentInfo']>
+    readonly NewServiceEmptyInfo: UnwrapRef<typeof import('./src/types/service')['NewServiceEmptyInfo']>
+    readonly NewServiceMetaDockerEmptyInfo: UnwrapRef<typeof import('./src/types/service')['NewServiceMetaDockerEmptyInfo']>
     readonly NewSortInfo: UnwrapRef<typeof import('./src/types/query')['NewSortInfo']>
     readonly NewTeamEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewTeamEmptyInfo']>
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
@@ -463,6 +481,7 @@ declare module 'vue' {
     readonly NodeSwitch: UnwrapRef<typeof import('./src/models/enum')['NodeSwitch']>
     readonly PageGroupDetail: UnwrapRef<typeof import('./src/models/page')['PageGroupDetail']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
+    readonly PageServiceDetail: UnwrapRef<typeof import('./src/models/page')['PageServiceDetail']>
     readonly PageSizeOptions: UnwrapRef<typeof import('./src/models/enum')['PageSizeOptions']>
     readonly PageUserRelated: UnwrapRef<typeof import('./src/models/page')['PageUserRelated']>
     readonly ParseNumber: UnwrapRef<typeof import('./src/utils/common')['ParseNumber']>
@@ -479,6 +498,13 @@ declare module 'vue' {
     readonly RuleLimitRange: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitRange']>
     readonly RulePleaseEnter: UnwrapRef<typeof import('./src/utils/rule')['RulePleaseEnter']>
     readonly SendChannelMessage: UnwrapRef<typeof import('./src/utils/event')['SendChannelMessage']>
+    readonly ServiceDeployMode: UnwrapRef<typeof import('./src/models/enum')['ServiceDeployMode']>
+    readonly ServiceDeployType: UnwrapRef<typeof import('./src/models/enum')['ServiceDeployType']>
+    readonly ServiceNetworkMode: UnwrapRef<typeof import('./src/models/enum')['ServiceNetworkMode']>
+    readonly ServicePlacementMode: UnwrapRef<typeof import('./src/models/enum')['ServicePlacementMode']>
+    readonly ServiceRestartPolicyMode: UnwrapRef<typeof import('./src/models/enum')['ServiceRestartPolicyMode']>
+    readonly ServiceStatus: UnwrapRef<typeof import('./src/models/enum')['ServiceStatus']>
+    readonly SessionStorageCurrentGroupId: UnwrapRef<typeof import('./src/models/page')['SessionStorageCurrentGroupId']>
     readonly SetWebTitle: UnwrapRef<typeof import('./src/utils/common')['SetWebTitle']>
     readonly ShowErrMsg: UnwrapRef<typeof import('./src/utils/message')['ShowErrMsg']>
     readonly ShowInfoMsg: UnwrapRef<typeof import('./src/utils/message')['ShowInfoMsg']>
@@ -589,6 +615,7 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly serviceService: UnwrapRef<typeof import('./src/services/service-client')['serviceService']>
     readonly setActivePinia: UnwrapRef<typeof import('pinia')['setActivePinia']>
     readonly setMapStoreSuffix: UnwrapRef<typeof import('pinia')['setMapStoreSuffix']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>

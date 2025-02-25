@@ -1,0 +1,29 @@
+import { ResponseQuery, ResponseSuccess } from "@/types"
+
+class ServiceService {
+  async info(groupId: string, id: string) {
+    return await httpClient.get<ServiceInfo>(`/webapi/group/${groupId}/service/info/${id}`).then(res => res.data)
+  }
+
+  async query(groupId: string, data: any) {
+    return await httpClient.post<ResponseQuery<ServiceInfo>>(`/webapi/group/${groupId}/service/query`, data).then(res => res.data)
+  }
+
+  async total(groupId: string) {
+    return await httpClient.get<number>(`/webapi/group/${groupId}/service/total`).then(res => res.data)
+  }
+
+  async create(data: any) {
+    return await httpClient.post<string>(`/webapi/group/${data.groupId}/service`, data).then(res => res.data)
+  }
+
+  async update(data: any) {
+    return await httpClient.put<string>(`/webapi/group/${data.groupId}/service`, data).then(res => res.data)
+  }
+
+  async delete(groupId: string, id: string) {
+    return await httpClient.delete<ResponseSuccess>(`/webapi/group/${groupId}/service/${id}`).then(res => res.data)
+  }
+}
+
+export const serviceService = new ServiceService()

@@ -28,6 +28,7 @@ export default {
     "editGroup": "Edit Group",
     "deleteGroup": "Delete Group",
     "nodes": "Nodes",
-    "services": "Services"
+    "services": "Services",
+    "addService": "Add Service"
   }
 }

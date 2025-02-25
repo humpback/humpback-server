@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"regexp"
 	"slices"
 	"strings"
@@ -77,13 +76,6 @@ func (n *NodeUpdateSwitchReqInfo) Check() error {
 	return nil
 }
 
-var statusOptions = []string{
-	types.NodeStatusOnline,
-	types.NodeStatusOffline,
-	types.NodeEnabled,
-	types.NodeDisabled,
-}
-
 type NodeQueryFilterInfo struct {
 	Status string `json:"status"`
 }
@@ -95,22 +87,24 @@ type NodeQueryReqInfo struct {
 
 func (n *NodeQueryReqInfo) Check() error {
 	n.CheckBase()
-	if err := n.parseFilterInfo(); err != nil {
+	n.FilterInfo = new(NodeQueryFilterInfo)
+	if err := ParseMapToStructConvert(n.Filter, n.FilterInfo); err != nil {
 		return err
 	}
 
-	if n.FilterInfo != nil && n.FilterInfo.Status != "" && slices.Index(statusOptions, n.FilterInfo.Status) == -1 {
+	if n.FilterInfo != nil && n.FilterInfo.Status != "" && slices.Index([]string{
+		types.NodeStatusOnline,
+		types.NodeStatusOffline,
+		types.SwitchEnabled,
+		types.SwitchDisabled,
+	}, n.FilterInfo.Status) == -1 {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 
-	if n.Keywords != "" && slices.Index(n.keywordsModes(), n.Mode) == -1 {
+	if n.Keywords != "" && slices.Index([]string{"keywords", "label"}, n.Mode) == -1 {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
-}
-
-func (n *NodeQueryReqInfo) keywordsModes() []string {
-	return []string{"keywords", "label"}
 }
 
 func (n *NodeQueryReqInfo) QueryFilter(nodes []*types.Node) []*types.Node {
@@ -127,15 +121,15 @@ func (n *NodeQueryReqInfo) QueryFilter(nodes []*types.Node) []*types.Node {
 func (n *NodeQueryReqInfo) filter(info *types.Node) bool {
 	if n.FilterInfo != nil {
 		switch n.FilterInfo.Status {
-		case types.NodeDisabled:
+		case types.SwitchDisabled:
 			if info.IsEnable {
 				return false
 			}
-		case types.NodeEnabled, types.NodeStatusOffline, types.NodeStatusOnline:
+		case types.SwitchEnabled, types.NodeStatusOffline, types.NodeStatusOnline:
 			if !info.IsEnable {
 				return false
 			}
-			if n.FilterInfo.Status != types.NodeEnabled && info.Status != n.FilterInfo.Status {
+			if n.FilterInfo.Status != types.SwitchEnabled && info.Status != n.FilterInfo.Status {
 				return false
 			}
 		}
@@ -175,20 +169,4 @@ func (n *NodeQueryReqInfo) sort(list []*types.Node) []*types.Node {
 		return 1
 	})
 	return list
-}
-
-func (n *NodeQueryReqInfo) parseFilterInfo() error {
-	if len(n.Filter) == 0 {
-		return nil
-	}
-	v, err := json.Marshal(n.Filter)
-	if err != nil {
-		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
-	}
-
-	n.FilterInfo = new(NodeQueryFilterInfo)
-	if err = json.Unmarshal(v, n.FilterInfo); err != nil {
-		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
-	}
-	return nil
 }

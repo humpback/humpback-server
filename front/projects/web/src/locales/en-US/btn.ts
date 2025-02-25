@@ -36,6 +36,8 @@ export default {
     "editGroup": "Edit Group",
     "deleteGroup": "Delete Group",
     "select": "Select",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "addService": "Add Service",
+    "action": "Action"
   }
 }

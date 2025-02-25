@@ -3,6 +3,8 @@ import PageServices from "@/views/service-management/service/services.vue"
 import PageNodes from "@/views/service-management/node/nodes.vue"
 import { TabPaneName } from "element-plus"
 import { PageGroupDetail } from "@/models"
+import { SetWebTitle } from "@/utils"
+import { GetI18nMessage } from "@/locales"
 
 const { t } = useI18n()
 const route = useRoute()

@@ -56,6 +56,17 @@ export default {
     "group": "Group",
     "nodes": "Nodes",
     "services": "Services",
-    "selectedNodes": "Selected Nodes"
+    "selectedNodes": "Selected Nodes",
+    "image": "Image",
+    "ports": "Ports",
+    "deployMode": "Deploy Mode",
+    "instanceName": "Instance Name",
+    "service": "Service",
+    "notReady": "Not Ready",
+    "running": "Running",
+    "failed": "Failed",
+    "schedule": "Schedule",
+    "yes": "Yes",
+    "no": "No"
   }
 }

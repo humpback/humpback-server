@@ -92,7 +92,7 @@ func mockGatewayServices(c *gin.Context) {
 		IsEnabled:   true,
 		Status:      types.ServiceStatusNotReady,
 		GroupId:     "GroupTest",
-		CreateAt:    time.Now().Unix(),
+		CreatedAt:   time.Now().Unix(),
 		Deployment: &types.Deployment{
 			Type: types.DeployTypeBackground,
 			Mode: types.DeployModeGlobal,
@@ -122,7 +122,7 @@ func mockWebServices(c *gin.Context) {
 		IsEnabled:   true,
 		Status:      types.ServiceStatusNotReady,
 		GroupId:     "GroupTest",
-		CreateAt:    time.Now().Unix(),
+		CreatedAt:   time.Now().Unix(),
 		Deployment: &types.Deployment{
 			Type:     types.DeployTypeBackground,
 			Mode:     types.DeployModeReplicate,
@@ -160,7 +160,6 @@ func mockWebServices(c *gin.Context) {
 }
 
 func mockScheduleServices(c *gin.Context) {
-
 	svc := &types.Service{
 		ServiceId:   utils.GenerateRandomStringWithLength(8),
 		ServiceName: "Test Schedule Service",
@@ -168,7 +167,7 @@ func mockScheduleServices(c *gin.Context) {
 		IsEnabled:   true,
 		Status:      types.ServiceStatusNotReady,
 		GroupId:     "GroupTest",
-		CreateAt:    time.Now().Unix(),
+		CreatedAt:   time.Now().Unix(),
 		Deployment: &types.Deployment{
 			Type:     types.DeployTypeSchedule,
 			Mode:     types.DeployModeReplicate,
