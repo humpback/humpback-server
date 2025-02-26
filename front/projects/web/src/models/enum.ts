@@ -72,6 +72,11 @@ export enum ServiceNetworkMode {
   NetworkModeCustom = "custom"
 }
 
+export enum ServiceNetworkProtocol {
+  NetworkProtocolTCP = "TCP",
+  NetworkProtocolUDP = "UDP"
+}
+
 export enum ServiceRestartPolicyMode {
   RestartPolicyModeNo = "no",
   RestartPolicyModeAlways = "always",

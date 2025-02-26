@@ -33,8 +33,8 @@ export interface ServiceNetworkInfo {
 }
 
 export interface ServicePortInfo {
-  hostPort: string
-  containerPort: string
+  hostPort: number
+  containerPort: number
   protocol: string
 }
 
@@ -104,13 +104,13 @@ export function NewServiceMetaDockerEmptyInfo(): ServiceMetaDockerInfo {
     env: [],
     labels: {},
     network: {
-      mode: "",
+      mode: ServiceNetworkMode.NetworkModeHost,
       hostname: "",
       networkName: "",
       ports: []
     },
     restartPolicy: {
-      mode: "",
+      mode: ServiceRestartPolicyMode.RestartPolicyModeNo,
       maxRetryCount: 0
     }
   }

@@ -3,8 +3,6 @@ import PageServices from "@/views/service-management/service/services.vue"
 import PageNodes from "@/views/service-management/node/nodes.vue"
 import { TabPaneName } from "element-plus"
 import { PageGroupDetail } from "@/models"
-import { SetWebTitle } from "@/utils"
-import { GetI18nMessage } from "@/locales"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -27,13 +25,11 @@ async function changeTab(name: TabPaneName) {
 </script>
 
 <template>
-  <v-card>
-    <template #bodyTitle>
-      <div class="card-title">
-        <span v-if="groupInfo">{{ groupInfo?.groupName }}</span>
-        <el-button v-else link loading />
-      </div>
-    </template>
+  <div>
+    <div class="card-title">
+      <span v-if="groupInfo">{{ groupInfo?.groupName }}</span>
+      <el-button v-else link loading />
+    </div>
 
     <el-tabs :model-value="activeTab" class="tab-box" type="card" @update:modelValue="changeTab">
       <el-tab-pane v-for="item in options" :key="item.name" :name="item.name">
@@ -46,7 +42,7 @@ async function changeTab(name: TabPaneName) {
         <component :is="item.component" v-if="activeTab === item.name" />
       </el-tab-pane>
     </el-tabs>
-  </v-card>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -58,10 +54,29 @@ async function changeTab(name: TabPaneName) {
 
 .tab-box {
   :deep(.el-tabs__header.is-top) {
+    --el-tabs-header-height: 48px;
     margin-bottom: 0;
+
+    & .el-tabs__nav {
+      border: 0;
+    }
+
+    & .el-tabs__item {
+      border-left: 0;
+
+      &.is-active {
+        background-color: #ffffff;
+        border-top: 1px solid var(--el-border-color);
+        border-left: 1px solid var(--el-border-color);
+        border-right: 1px solid var(--el-border-color);
+        border-top-right-radius: 4px;
+        border-top-left-radius: 4px;
+      }
+    }
   }
 
   :deep(.el-tabs__content) {
+    background-color: #ffffff;
     padding: 20px;
     border: 1px solid var(--el-border-color);
     border-top: none;

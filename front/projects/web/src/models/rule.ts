@@ -12,12 +12,12 @@ interface RuleLength {
   Phone: RuleLengthLimit
   Description: RuleLengthLimit
   ConfigValue: RuleLengthLimit
-  RegistryName: RuleLengthLimit
   RegistryUrl: RuleLengthLimit
   RegistryUsername: RuleLengthLimit
   RegistryPassword: RuleLengthLimit
   GroupName: RuleLengthLimit
   ServiceName: RuleLengthLimit
+  ImageName: RuleLengthLimit
 }
 
 interface RuleFormat {

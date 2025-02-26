@@ -1,49 +1,17 @@
 package controller
 
 import (
-	"fmt"
 	"log/slog"
 	"slices"
-
+	
 	"golang.org/x/exp/maps"
 	"humpback/api/handle/models"
 	"humpback/common/locales"
 	"humpback/common/response"
-	"humpback/config"
 	"humpback/internal/db"
 	"humpback/pkg/utils"
 	"humpback/types"
 )
-
-func InitAdminUser() error {
-	slog.Info("[Supper Admin] Account check start...")
-	adminConfig := config.AdminArgs()
-	user, err := db.UserGetSupperAdmin()
-	if err != nil {
-		return fmt.Errorf("Check admin account failed: %s", err)
-	}
-	if user == nil {
-		var (
-			t  = utils.NewActionTimestamp()
-			id = utils.NewGuidStr()
-		)
-		if err = db.UserUpdate(id, &types.User{
-			UserId:    id,
-			Username:  adminConfig.Username,
-			Email:     "",
-			Password:  adminConfig.Password,
-			Phone:     "",
-			Role:      types.UserRoleSupperAdmin,
-			CreatedAt: t,
-			UpdatedAt: t,
-			Teams:     nil,
-		}); err != nil {
-			return fmt.Errorf("Create admin account failed: %s", err)
-		}
-	}
-	slog.Info("[Supper Admin] Account check completed.")
-	return nil
-}
 
 func UserLogin(reqInfo *models.UserLoginReqInfo) (*types.User, string, error) {
 	user, err := userCheckNamePsd(reqInfo.Username, reqInfo.Password)

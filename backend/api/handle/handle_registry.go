@@ -17,6 +17,7 @@ func RouteRegistry(router *gin.RouterGroup) {
 	router.PUT("", middleware.CheckAdminPermissions(), registryUpdate)
 	router.GET("/info/:id", registry)
 	router.POST("/query", registryQuery)
+	router.GET("/list", registries)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), registryDelete)
 }
 
@@ -59,6 +60,19 @@ func registry(c *gin.Context) {
 		info.Password = ""
 	}
 	c.JSON(http.StatusOK, info)
+}
+
+func registries(c *gin.Context) {
+	list, err := controller.Registries()
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	for _, registiry := range list {
+		registiry.Username = ""
+		registiry.Password = ""
+	}
+	c.JSON(http.StatusOK, list)
 }
 
 func registryQuery(c *gin.Context) {

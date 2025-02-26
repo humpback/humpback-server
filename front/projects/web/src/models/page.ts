@@ -12,9 +12,9 @@ export enum PageGroupDetail {
 
 export enum PageServiceDetail {
   BasicInfo = "basic-info",
-  Application = "application-info",
+  Application = "application",
   Deployment = "deployment",
-  InstanceInfo = "instances-info",
+  Instances = "instances",
   Log = "log",
   Performance = "performance"
 }

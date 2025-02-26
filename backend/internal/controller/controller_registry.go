@@ -45,9 +45,9 @@ func RegistryUpdate(reqInfo *models.RegistryUpdateReqInfo) (string, error) {
 }
 
 func registryCheck(reqInfo *models.RegistryCreateReqInfo, id string) (*types.Registry, *types.Registry, error) {
-	list, err := db.RegistryGetAll()
+	list, err := Registries()
 	if err != nil {
-		return nil, nil, response.NewRespServerErr(err.Error())
+		return nil, nil, err
 	}
 	var (
 		defaultInfo *types.Registry
@@ -57,9 +57,6 @@ func registryCheck(reqInfo *models.RegistryCreateReqInfo, id string) (*types.Reg
 		if info.RegistryId == id {
 			currentInfo = info
 			continue
-		}
-		if strings.ToLower(info.RegistryName) == strings.ToLower(reqInfo.RegistryName) {
-			return nil, nil, response.NewBadRequestErr(locales.CodeRegistryNameAlreadyExist)
 		}
 		if strings.ToLower(info.URL) == strings.ToLower(reqInfo.URL) {
 			return nil, nil, response.NewBadRequestErr(locales.CodeRegistryUrlAlreadyExist)
@@ -82,10 +79,18 @@ func Registry(id string) (*types.Registry, error) {
 	return info, nil
 }
 
-func RegistryQuery(queryInfo *models.RegistryQueryReqInfo) (*response.QueryResult[types.Registry], error) {
-	registrys, err := db.RegistryGetAll()
+func Registries() ([]*types.Registry, error) {
+	list, err := db.RegistryGetAll()
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
+	}
+	return list, nil
+}
+
+func RegistryQuery(queryInfo *models.RegistryQueryReqInfo) (*response.QueryResult[types.Registry], error) {
+	registrys, err := Registries()
+	if err != nil {
+		return nil, err
 	}
 	result := queryInfo.QueryFilter(registrys)
 	return response.NewQueryResult[types.Registry](
@@ -95,6 +100,13 @@ func RegistryQuery(queryInfo *models.RegistryQueryReqInfo) (*response.QueryResul
 }
 
 func RegistryDelete(id string) error {
+	info, err := Registry(id)
+	if err != nil {
+		return err
+	}
+	if strings.ToLower(info.URL) == "docker.io" {
+		return response.NewBadRequestErr(locales.CodeRegistryDefaultNotDelete)
+	}
 	if err := db.RegistryDelete(id); err != nil {
 		return response.NewRespServerErr(err.Error())
 	}

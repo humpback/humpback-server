@@ -6,6 +6,10 @@ class RegistryService {
     return await httpClient.get<RegistryInfo>(url).then(res => res.data)
   }
 
+  async list() {
+    return await httpClient.get<RegistryInfo[]>(`/webapi/registry/list`).then(res => res.data)
+  }
+
   async query(data: any) {
     return await httpClient.post<ResponseQuery<RegistryInfo>>("/webapi/registry/query", data).then(res => res.data)
   }

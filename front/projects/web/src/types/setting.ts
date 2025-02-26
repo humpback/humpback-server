@@ -22,7 +22,6 @@ export function NewConfigEmptyInfo(): ConfigInfo {
 
 export interface RegistryInfo extends BaseInfo {
   registryId: string
-  registryName: string
   url: string
   isDefault: boolean
   username: string
@@ -34,7 +33,6 @@ export function NewRegistryEmptyInfo(): RegistryInfo {
   return {
     ...NewBaseEmptyInfo(),
     registryId: "",
-    registryName: "",
     url: "",
     isDefault: false,
     username: "",

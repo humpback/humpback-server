@@ -14,7 +14,7 @@ func RouteService(router *gin.RouterGroup) {
 	router.GET("/total", serviceTotal)
 	router.POST("", serviceCreate)
 	//router.PUT("", serviceUpdate)
-	//router.GET("/info/:serviceId", serviceInfo)
+	router.GET("/info/:serviceId", serviceInfo)
 	//router.DELETE("/:serviceId", serviceDelete)
 }
 
@@ -49,6 +49,17 @@ func serviceCreate(c *gin.Context) {
 		return
 	}
 	result, err := controller.ServiceCreate(body)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+func serviceInfo(c *gin.Context) {
+	groupId := c.Param("groupId")
+	serviceId := c.Param("serviceId")
+	result, err := controller.Service(groupId, serviceId)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return

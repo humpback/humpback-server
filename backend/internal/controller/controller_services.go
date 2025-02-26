@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 
@@ -13,7 +12,7 @@ import (
 )
 
 func ServiceQuery(groupId string, queryInfo *models.ServiceQueryReqInfo) (*response.QueryResult[types.Service], error) {
-	services, err := db.ServicesGetByPrefix(fmt.Sprintf("%s-", groupId))
+	services, err := db.ServicesGetByPrefix(groupId)
 	if err != nil {
 		return nil, response.NewRespServerErr(err.Error())
 	}
@@ -25,7 +24,7 @@ func ServiceQuery(groupId string, queryInfo *models.ServiceQueryReqInfo) (*respo
 }
 
 func ServiceTotal(groupId string) (int, error) {
-	total, err := db.ServiceGetTotalByPrefix(fmt.Sprintf("%s-", groupId))
+	total, err := db.ServiceGetTotalByPrefix(groupId)
 	if err != nil {
 		if err == db.ErrBucketNotExist {
 			return 0, response.NewBadRequestErr(locales.CodeGroupNotExist)
@@ -36,7 +35,7 @@ func ServiceTotal(groupId string) (int, error) {
 }
 
 func ServiceCreate(info *models.ServiceCreateReqInfo) (string, error) {
-	services, err := db.ServicesGetByPrefix(fmt.Sprintf("%s-", info.GroupId))
+	services, err := db.ServicesGetByPrefix(info.GroupId)
 	if err != nil {
 		if err == db.ErrBucketNotExist {
 			return "", response.NewBadRequestErr(locales.CodeGroupNotExist)
@@ -53,4 +52,18 @@ func ServiceCreate(info *models.ServiceCreateReqInfo) (string, error) {
 		return "", response.NewRespServerErr(err.Error())
 	}
 	return newService.ServiceId, nil
+}
+
+func Service(groupId, serviceId string) (*types.Service, error) {
+	service, err := db.ServiceGetById(serviceId)
+	if err != nil {
+		if err != db.ErrBucketNotExist {
+			return nil, response.NewBadRequestErr(locales.CodeServiceNotExist)
+		}
+		return nil, response.NewRespServerErr(err.Error())
+	}
+	if service.GroupId != groupId {
+		return nil, response.NewBadRequestErr(locales.CodeServiceNotExist)
+	}
+	return service, nil
 }

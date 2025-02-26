@@ -10,6 +10,9 @@ export default {
     "enterIpAddress": "Enter ip address",
     "enterIpHostNameOrLabel": "Enter ip、hostname or label",
     "labelKey": "Label Key",
-    "labelValue": "Label Value"
+    "labelValue": "Label Value",
+    "containerPort": "Container Port",
+    "hostPort": "Host Port",
+    "protocol": "Protocol"
   }
 }

@@ -33,13 +33,12 @@ defineExpose({ open })
     </template>
     <div v-loading="isLoading" class="my-3">
       <el-descriptions :column="1" border label-width="160px">
-        <el-descriptions-item :label="t('label.name')">
-          <span>{{ dialogInfo.info.registryName }}</span>
+        <el-descriptions-item :label="t('label.url')">
+          <span>{{ dialogInfo.info.url }}</span>
           <el-tag v-if="dialogInfo.info.isDefault" class="ml-3" effect="dark" round size="small" type="warning">
             {{ t("label.default") }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item :label="t('label.url')">{{ dialogInfo.info.url }}</el-descriptions-item>
         <el-descriptions-item :label="t('label.username')">{{ dialogInfo.info.username }}</el-descriptions-item>
         <el-descriptions-item :label="t('label.password')">{{ dialogInfo.info.password }}</el-descriptions-item>
       </el-descriptions>

@@ -27,9 +27,10 @@ func (r *RegistryCreateReqInfo) Check() error {
 	if r.Password != "" {
 		r.Password = utils.RSADecrypt(r.Password)
 	}
-	if err := verify.CheckRequiredAndLengthLimit(r.RegistryName, enum.LimitRegistryName.Min, enum.LimitRegistryName.Max, locales.CodeRegistryNameNotEmpty, locales.CodeRegistryNameLimitLength); err != nil {
-		return err
+	if strings.Contains(r.URL, "/") {
+		return response.NewBadRequestErr(locales.CodeRegistryUrlIsInvalid)
 	}
+
 	if err := verify.CheckRequiredAndLengthLimit(r.URL, 0, enum.LimitRegistryUrl.Max, locales.CodeRegistryUrlNotEmpty, locales.CodeRegistryUrlLimitLength); err != nil {
 		return err
 	}
@@ -45,14 +46,13 @@ func (r *RegistryCreateReqInfo) Check() error {
 func (r *RegistryCreateReqInfo) NewRegistryInfo() *types.Registry {
 	nowT := utils.NewActionTimestamp()
 	return &types.Registry{
-		RegistryId:   utils.NewGuidStr(),
-		RegistryName: r.RegistryName,
-		URL:          r.URL,
-		IsDefault:    r.IsDefault,
-		Username:     r.Username,
-		Password:     r.Password,
-		CreatedAt:    nowT,
-		UpdatedAt:    nowT,
+		RegistryId: utils.NewGuidStr(),
+		URL:        r.URL,
+		IsDefault:  r.IsDefault,
+		Username:   r.Username,
+		Password:   r.Password,
+		CreatedAt:  nowT,
+		UpdatedAt:  nowT,
 	}
 }
 
@@ -70,14 +70,13 @@ func (r *RegistryUpdateReqInfo) Check() error {
 
 func (r *RegistryUpdateReqInfo) NewRegistryInfo(oldInfo *types.Registry) *types.Registry {
 	return &types.Registry{
-		RegistryId:   oldInfo.RegistryId,
-		RegistryName: r.RegistryName,
-		URL:          r.URL,
-		IsDefault:    r.IsDefault,
-		Username:     r.Username,
-		Password:     r.Password,
-		CreatedAt:    oldInfo.CreatedAt,
-		UpdatedAt:    utils.NewActionTimestamp(),
+		RegistryId: oldInfo.RegistryId,
+		URL:        r.URL,
+		IsDefault:  r.IsDefault,
+		Username:   r.Username,
+		Password:   r.Password,
+		CreatedAt:  oldInfo.CreatedAt,
+		UpdatedAt:  utils.NewActionTimestamp(),
 	}
 }
 
@@ -87,7 +86,7 @@ type RegistryQueryReqInfo struct {
 
 func (r *RegistryQueryReqInfo) Check() error {
 	r.QueryInfo.CheckBase()
-	if r.Keywords != "" && r.Mode != "registryName" {
+	if r.Keywords != "" && r.Mode != "url" {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
@@ -96,7 +95,7 @@ func (r *RegistryQueryReqInfo) Check() error {
 func (r *RegistryQueryReqInfo) QueryFilter(registries []*types.Registry) []*types.Registry {
 	result := make([]*types.Registry, 0)
 	for _, registry := range registries {
-		if strings.Contains(strings.ToLower(registry.RegistryName), strings.ToLower(r.Keywords)) {
+		if strings.Contains(strings.ToLower(registry.URL), strings.ToLower(r.Keywords)) {
 			result = append(result, registry)
 		}
 	}
@@ -105,14 +104,14 @@ func (r *RegistryQueryReqInfo) QueryFilter(registries []*types.Registry) []*type
 }
 
 func (r *RegistryQueryReqInfo) sort(list []*types.Registry) []*types.Registry {
-	var sortField = []string{"registryName", "updatedAt", "createdAt"}
+	var sortField = []string{"url", "updatedAt", "createdAt"}
 	if r.SortInfo == nil || r.SortInfo.Field == "" || slices.Index(sortField, r.SortInfo.Field) == -1 {
 		return list
 	}
 	slices.SortFunc(list, func(a, b *types.Registry) int {
 		switch r.SortInfo.Field {
-		case "registryName":
-			return types.QuerySortOrder(r.SortInfo.Order, strings.ToLower(a.RegistryName), strings.ToLower(b.RegistryName))
+		case "url":
+			return types.QuerySortOrder(r.SortInfo.Order, strings.ToLower(a.URL), strings.ToLower(b.URL))
 		case "updatedAt":
 			return types.QuerySortOrder(r.SortInfo.Order, a.UpdatedAt, b.UpdatedAt)
 		case "createdAt":

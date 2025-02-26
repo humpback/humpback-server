@@ -14,12 +14,12 @@ var (
 	LimitDescription      = LengthLimit{Min: 0, Max: 500}
 	LimitConfigName       = LengthLimit{Min: 1, Max: 100}
 	LimitConfigValue      = LengthLimit{Min: 1, Max: 10000}
-	LimitRegistryName     = LengthLimit{Min: 2, Max: 100}
 	LimitRegistryUrl      = LengthLimit{Min: 1, Max: 200}
 	LimitRegistryUsername = LengthLimit{Min: 1, Max: 100}
 	LimitRegistryPassword = LengthLimit{Min: 1, Max: 100}
 	LimitGroupName        = LengthLimit{Min: 1, Max: 100}
 	LimitServiceName      = LengthLimit{Min: 1, Max: 100}
+	LimitImageName        = LengthLimit{Min: 1, Max: 200}
 )
 
 var RuleLength = map[string]LengthLimit{
@@ -31,12 +31,12 @@ var RuleLength = map[string]LengthLimit{
 	"Description":      LimitDescription,
 	"ConfigName":       LimitConfigName,
 	"ConfigValue":      LimitConfigValue,
-	"RegistryName":     LimitRegistryName,
 	"RegistryUrl":      LimitRegistryUrl,
 	"RegistryUsername": LimitRegistryUsername,
 	"RegistryPassword": LimitRegistryPassword,
 	"GroupName":        LimitGroupName,
 	"ServiceName":      LimitServiceName,
+	"ImageName":        LimitImageName,
 }
 
 var (

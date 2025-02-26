@@ -38,6 +38,13 @@ export default {
     "select": "Select",
     "refresh": "Refresh",
     "addService": "Add Service",
-    "action": "Action"
+    "action": "Action",
+    "restart": "Restart",
+    "start": "Start",
+    "stop": "Stop",
+    "clone": "Clone",
+    "addPort": "Add Port",
+    "addVolume": "Add Volume",
+    "addEnvironment": "Add Environment"
   }
 }

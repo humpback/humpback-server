@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { cloneDeep } from "lodash-es"
 import { RegistryInfo } from "@/types"
+import { isDefaultRegistry } from "@/views/administration/registries/common.ts"
 
 const emits = defineEmits<{
   (e: "refresh"): void
@@ -45,10 +46,12 @@ defineExpose({ open })
     <div class="my-3">
       <strong>{{ t("notify.delete") }}</strong>
     </div>
-    <v-delete-input-continue v-model="isChecked" :keywords="dialogInfo.info.registryName" class="mt-5" />
+    <v-delete-input-continue v-model="isChecked" :keywords="dialogInfo.info.url" class="mt-5" />
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button :disabled="!isChecked" :loading="isAction" type="danger" @click="confirmDelete">{{ t("btn.delete") }}</el-button>
+      <el-button v-if="!isDefaultRegistry(dialogInfo.info.url)" :disabled="!isChecked" :loading="isAction" type="danger" @click="confirmDelete"
+        >{{ t("btn.delete") }}
+      </el-button>
     </template>
   </v-dialog>
 </template>

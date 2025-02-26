@@ -74,7 +74,7 @@ const serviceManagement = <RouteRecordRaw[]>[
           PageServiceDetail.BasicInfo,
           PageServiceDetail.Application,
           PageServiceDetail.Deployment,
-          PageServiceDetail.InstanceInfo,
+          PageServiceDetail.Instances,
           PageServiceDetail.Log,
           PageServiceDetail.Performance
         ],

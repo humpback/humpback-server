@@ -35,7 +35,7 @@ func (s *ServiceCreateReqInfo) Check() error {
 func (s *ServiceCreateReqInfo) NewServiceInfo() *types.Service {
 	nowT := utils.NewActionTimestamp()
 	return &types.Service{
-		ServiceId:   fmt.Sprintf("%s-%s", s.GroupId, utils.GenerateRandomStringWithLength(8)),
+		ServiceId:   fmt.Sprintf("%s%s", s.GroupId, utils.GenerateRandomStringWithLength(8)),
 		GroupId:     s.GroupId,
 		ServiceName: s.ServiceName,
 		Description: s.Description,

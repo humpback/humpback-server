@@ -28,7 +28,7 @@ func InitApp() (*App, error) {
 	if err := static.InitStaticsResource(); err != nil {
 		return nil, err
 	}
-	if err := controller.InitAdminUser(); err != nil {
+	if err := controller.InitData(); err != nil {
 		return nil, err
 	}
 	return app, nil

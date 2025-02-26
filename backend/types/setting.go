@@ -14,14 +14,13 @@ type QueryRegistry struct {
 }
 
 type Registry struct {
-	RegistryId   string `json:"registryId"`
-	RegistryName string `json:"registryName"`
-	URL          string `json:"url"`
-	IsDefault    bool   `json:"isDefault"`
-	Username     string `json:"username"`
-	Password     string `json:"password"`
-	CreatedAt    int64  `json:"createdAt"`
-	UpdatedAt    int64  `json:"updatedAt"`
+	RegistryId string `json:"registryId"`
+	URL        string `json:"url"`
+	IsDefault  bool   `json:"isDefault"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	CreatedAt  int64  `json:"createdAt"`
+	UpdatedAt  int64  `json:"updatedAt"`
 }
 
 type ConfigType int

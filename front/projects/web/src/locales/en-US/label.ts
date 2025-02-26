@@ -67,6 +67,22 @@ export default {
     "failed": "Failed",
     "schedule": "Schedule",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "setting": "Setting",
+    "basicInfo": "Basic Info",
+    "application": "Application",
+    "deployment": "Deployment",
+    "monitor": "Monitor",
+    "instances": "Instances",
+    "log": "Log",
+    "performance": "Performance",
+    "network": "Network",
+    "restartPolicy": "Restart Policy",
+    "volumes": "Volumes",
+    "environments": "Environments",
+    "alwaysPull": "Always Pull",
+    "maxRetryCount": "Max Retry Count",
+    "networkName": "Network Name",
+    "networkMode": "Network Mode"
   }
 }

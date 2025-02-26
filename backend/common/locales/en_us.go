@@ -59,16 +59,15 @@ var enUSMsg = map[string]string{
 	CodeConfigTypeIsInvalid:          "The configuration type is invalid.",
 	CodeConfigIdNotEmpty:             "The configuration ID cannot be empty.",
 
-	CodeRegistryNameNotEmpty:        "The registry name cannot be empty.",
-	CodeRegistryNameLimitLength:     fmt.Sprintf("The registry name length limit is %d to %d.", enum.LimitRegistryName.Min, enum.LimitRegistryName.Max),
-	CodeRegistryNameAlreadyExist:    "The registry name already exists.",
 	CodeRegistryNotExist:            "The registry does not exist.",
 	CodeRegistryIdNotEmpty:          "The registry ID cannot be empty.",
 	CodeRegistryUrlNotEmpty:         "The registry url cannot be empty.",
 	CodeRegistryUrlLimitLength:      fmt.Sprintf("The registry url length limit is %d.", enum.LimitRegistryUrl.Max),
 	CodeRegistryUrlAlreadyExist:     "The registry url already exists.",
+	CodeRegistryUrlIsInvalid:        "The registry url is invalid.",
 	CodeRegistryUsernameLimitLength: fmt.Sprintf("The registry username length limit is %d.", enum.LimitRegistryUsername.Max),
 	CodeRegistryPasswordLimitLength: fmt.Sprintf("The registry password length limit is %d.", enum.LimitRegistryPassword.Max),
+	CodeRegistryDefaultNotDelete:    "The repository docker.io cannot be deleted.",
 
 	CodeNodesNotEmpty:              "The nodes cannot be empty.",
 	CodeNodesIdNotEmpty:            "The node ID cannot be empty.",
