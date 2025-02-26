@@ -425,6 +425,7 @@
     "ServiceStatus": true,
     "PageServiceDetail": true,
     "SessionStorageCurrentGroupId": true,
-    "serviceService": true
+    "serviceService": true,
+    "ServiceNetworkProtocol": true
   }
 }

@@ -80,6 +80,6 @@ export enum ServiceNetworkProtocol {
 export enum ServiceRestartPolicyMode {
   RestartPolicyModeNo = "no",
   RestartPolicyModeAlways = "always",
-  RestartPolicyModeOnFail = "on-failure",
+  RestartPolicyModeOnFailure = "on-failure",
   RestartPolicyModeUnlessStopped = "unless-stopped"
 }

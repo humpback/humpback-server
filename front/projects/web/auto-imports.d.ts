@@ -66,6 +66,7 @@ declare global {
   const ServiceDeployMode: typeof import('./src/models/enum')['ServiceDeployMode']
   const ServiceDeployType: typeof import('./src/models/enum')['ServiceDeployType']
   const ServiceNetworkMode: typeof import('./src/models/enum')['ServiceNetworkMode']
+  const ServiceNetworkProtocol: typeof import('./src/models/enum')['ServiceNetworkProtocol']
   const ServicePlacementMode: typeof import('./src/models/enum')['ServicePlacementMode']
   const ServiceRestartPolicyMode: typeof import('./src/models/enum')['ServiceRestartPolicyMode']
   const ServiceStatus: typeof import('./src/models/enum')['ServiceStatus']
@@ -408,7 +409,7 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceRestartPolicyMode, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceRestartPolicyMode } from './src/models/enum'
+  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
   export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageUserRelated, PageGroupDetail, PageServiceDetail } from './src/models/page'
@@ -501,6 +502,7 @@ declare module 'vue' {
     readonly ServiceDeployMode: UnwrapRef<typeof import('./src/models/enum')['ServiceDeployMode']>
     readonly ServiceDeployType: UnwrapRef<typeof import('./src/models/enum')['ServiceDeployType']>
     readonly ServiceNetworkMode: UnwrapRef<typeof import('./src/models/enum')['ServiceNetworkMode']>
+    readonly ServiceNetworkProtocol: UnwrapRef<typeof import('./src/models/enum')['ServiceNetworkProtocol']>
     readonly ServicePlacementMode: UnwrapRef<typeof import('./src/models/enum')['ServicePlacementMode']>
     readonly ServiceRestartPolicyMode: UnwrapRef<typeof import('./src/models/enum')['ServiceRestartPolicyMode']>
     readonly ServiceStatus: UnwrapRef<typeof import('./src/models/enum')['ServiceStatus']>

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { GenerateUUID, RulePleaseEnter, SetWebTitle } from "@/utils"
-import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol } from "@/models"
+import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
 import { NewServiceMetaDockerEmptyInfo } from "@/types"
 import { find, map } from "lodash-es"
@@ -10,8 +10,8 @@ interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
   imageName: string
   ports: Array<{
     id: string
-    hostPort: number
-    containerPort: number
+    hostPort?: number
+    containerPort?: number
     protocol: string
   }>
 }
@@ -29,7 +29,12 @@ const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
 const registries = ref<RegistryInfo[]>([])
 
-const metaInfo = ref<ServiceApplicationInfo>({ imageDomain: "", imageName: "", ports: [], ...NewServiceMetaDockerEmptyInfo() })
+const metaInfo = ref<ServiceApplicationInfo>({
+  imageDomain: "",
+  imageName: "",
+  ports: [],
+  ...NewServiceMetaDockerEmptyInfo()
+})
 
 const formRef = useTemplateRef<FormInstance>("formRef")
 const rules = ref<FormRules>({
@@ -51,13 +56,23 @@ function parseMetaInfo() {
   metaInfo.value = {
     imageDomain: imageSplit > 0 ? meta.image.slice(0, imageSplit) : domain,
     imageName: imageSplit > 0 ? meta.image.slice(imageSplit) : "",
-    ports: map(meta.network.ports, x => ({ id: GenerateUUID(), ...x })),
+    ports: map(meta.network.ports, x => ({
+      id: GenerateUUID(),
+      containerPort: x.containerPort || undefined,
+      protocol: x.protocol,
+      hostPort: x.hostPort || undefined
+    })),
     ...meta
   }
 }
 
 function addPort() {
-  metaInfo.value.ports.push({ id: GenerateUUID(), containerPort: 0, protocol: ServiceNetworkProtocol.NetworkProtocolTCP, hostPort: 0 })
+  metaInfo.value.ports.push({
+    id: GenerateUUID(),
+    containerPort: undefined,
+    protocol: ServiceNetworkProtocol.NetworkProtocolTCP,
+    hostPort: undefined
+  })
 }
 
 function removePort(index: number) {
@@ -105,7 +120,7 @@ onMounted(async () => {
     <el-row :gutter="12">
       <el-col :span="24">
         <el-form-item :label="t('label.image')" prop="imageName">
-          <v-input v-model="metaInfo.imageName" :maxlength="RuleLength.ImageName?.Max" clearable show-word-limit>
+          <v-input v-model="metaInfo.imageName" :maxlength="RuleLength.ImageName?.Max" :placeholder="t('placeholder.egImage')" clearable show-word-limit>
             <template #prepend>
               <el-select v-model="metaInfo.imageDomain" placeholder="" style="width: auto; min-width: 200px">
                 <el-option v-for="item in registries" :key="item.registryId" :label="item.url" :value="item.url" />
@@ -120,7 +135,23 @@ onMounted(async () => {
         </el-form-item>
       </el-col>
 
-      <el-col :span="24">
+      <el-col>
+        <div class="d-flex gap-3 w-100">
+          <el-form-item :label="t('label.restartPolicy')">
+            <el-select v-model="metaInfo.restartPolicy.mode" style="width: 300px">
+              <el-option :value="ServiceRestartPolicyMode.RestartPolicyModeNo" label="No" />
+              <el-option :value="ServiceRestartPolicyMode.RestartPolicyModeAlways" label="Always" />
+              <el-option :value="ServiceRestartPolicyMode.RestartPolicyModeOnFailure" label="On Failure" />
+              <el-option :value="ServiceRestartPolicyMode.RestartPolicyModeUnlessStopped" label="Unless Stopped" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="metaInfo.restartPolicy.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure" :label="t('label.maxRetryCount')">
+            <v-input-number v-model="metaInfo.restartPolicy.maxRetryCount" :min="0" />
+          </el-form-item>
+        </div>
+      </el-col>
+
+      <el-col :span="8">
         <el-form-item :label="t('label.network')">
           <el-select v-model="metaInfo.network.mode">
             <el-option :value="ServiceNetworkMode.NetworkModeHost" label="Host" />
@@ -130,20 +161,20 @@ onMounted(async () => {
         </el-form-item>
       </el-col>
 
+      <el-col v-if="metaInfo.network.mode === ServiceNetworkMode.NetworkModeCustom" :span="8">
+        <el-form-item :label="t('label.networkName')" prop="network.networkName">
+          <v-input v-model="metaInfo.network.networkName" />
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost" :label="t('label.hostname')" prop="network.hostname">
+          <v-input v-model="metaInfo.network.hostname" />
+        </el-form-item>
+      </el-col>
+
       <el-col v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost">
         <div class="network-box">
           <el-row :gutter="12">
-            <el-col v-if="metaInfo.network.mode === ServiceNetworkMode.NetworkModeCustom" :span="12">
-              <el-form-item :label="t('label.networkName')" prop="network.networkName">
-                <v-input v-model="metaInfo.network.networkName" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item :label="t('label.hostname')" prop="network.hostname">
-                <v-input v-model="metaInfo.network.hostname" />
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" />
             <el-col v-for="(portInfo, index) in metaInfo.ports" :key="index" :span="24">
               <div class="d-flex gap-2">
                 <el-form-item :prop="`ports.${index}.containerPort`">

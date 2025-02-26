@@ -13,6 +13,7 @@ export default {
     "labelValue": "Label Value",
     "containerPort": "Container Port",
     "hostPort": "Host Port",
-    "protocol": "Protocol"
+    "protocol": "Protocol",
+    "egImage": "e.g. image-name:image-tag"
   }
 }
