@@ -83,6 +83,24 @@ export default {
     "alwaysPull": "Always Pull",
     "maxRetryCount": "Max Retry Count",
     "networkName": "Network Name",
-    "networkMode": "Network Mode"
+    "networkMode": "Network Mode",
+    "onFailure": "On Failure",
+    "always": "Always",
+    "unlessStopped": "Unless Stopped",
+    "host": "Host",
+    "bridge": "Bridge",
+    "custom": "Custom",
+    "tcp": "TCP",
+    "udp": "UDP",
+    "useMachineHostname": "Use Machine Hostname",
+    "writable": "Writable",
+    "readonly": "Read-only",
+    "containerVolume": "Container Volume",
+    "hostVolume": "Host Volume",
+    "containerPort": "Container Port",
+    "hostPort": "Host Port",
+    "privilegedMode": "Privileged Mode",
+    "capabilities": "Capabilities",
+    "resources": "Resources"
   }
 }

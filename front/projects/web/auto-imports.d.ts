@@ -70,6 +70,7 @@ declare global {
   const ServicePlacementMode: typeof import('./src/models/enum')['ServicePlacementMode']
   const ServiceRestartPolicyMode: typeof import('./src/models/enum')['ServiceRestartPolicyMode']
   const ServiceStatus: typeof import('./src/models/enum')['ServiceStatus']
+  const ServiceVolumeType: typeof import('./src/models/enum')['ServiceVolumeType']
   const SessionStorageCurrentGroupId: typeof import('./src/models/page')['SessionStorageCurrentGroupId']
   const SetWebTitle: typeof import('./src/utils/common')['SetWebTitle']
   const ShowErrMsg: typeof import('./src/utils/message')['ShowErrMsg']
@@ -409,7 +410,7 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode } from './src/models/enum'
+  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
   export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageUserRelated, PageGroupDetail, PageServiceDetail } from './src/models/page'
@@ -433,7 +434,7 @@ declare global {
   export type { ConfigInfo, RegistryInfo, NodeInfo } from './src/types/setting'
   import('./src/types/setting')
   // @ts-ignore
-  export type { ServiceInfo, ServiceMetaDockerInfo, ServiceNetworkInfo, ServicePortInfo, ServiceRestartPolicyInfo, ServiceDeploymentInfo, ServicePlacementInfo, ServiceScheduleInfo, ServiceContainerStatusInfo } from './src/types/service'
+  export type { ServiceInfo, ServiceMetaDockerInfo, ServiceVolumeInfo, ServiceNetworkInfo, ServicePortInfo, ServiceRestartPolicyInfo, ServiceDeploymentInfo, ServicePlacementInfo, ServiceScheduleInfo, ServiceContainerStatusInfo } from './src/types/service'
   import('./src/types/service')
 }
 
@@ -506,6 +507,7 @@ declare module 'vue' {
     readonly ServicePlacementMode: UnwrapRef<typeof import('./src/models/enum')['ServicePlacementMode']>
     readonly ServiceRestartPolicyMode: UnwrapRef<typeof import('./src/models/enum')['ServiceRestartPolicyMode']>
     readonly ServiceStatus: UnwrapRef<typeof import('./src/models/enum')['ServiceStatus']>
+    readonly ServiceVolumeType: UnwrapRef<typeof import('./src/models/enum')['ServiceVolumeType']>
     readonly SessionStorageCurrentGroupId: UnwrapRef<typeof import('./src/models/page')['SessionStorageCurrentGroupId']>
     readonly SetWebTitle: UnwrapRef<typeof import('./src/utils/common')['SetWebTitle']>
     readonly ShowErrMsg: UnwrapRef<typeof import('./src/utils/message')['ShowErrMsg']>

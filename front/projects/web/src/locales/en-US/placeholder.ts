@@ -11,9 +11,11 @@ export default {
     "enterIpHostNameOrLabel": "Enter ip、hostname or label",
     "labelKey": "Label Key",
     "labelValue": "Label Value",
-    "containerPort": "Container Port",
-    "hostPort": "Host Port",
+    "containerPort": "Container Port, e.g. 80",
+    "hostPort": "Host Port, e.g. 80",
     "protocol": "Protocol",
-    "egImage": "e.g. image-name:image-tag"
+    "egImage": "e.g. image-name:image-tag",
+    "containerVolume": "e.g. /path/in/container",
+    "hostVolume": "e.g. /path/on/container"
   }
 }

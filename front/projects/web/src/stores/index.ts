@@ -5,7 +5,7 @@ export default piniaStore
 
 export function disposeStore() {
   useUserStore().clearUserInfo()
-  useGroupStore().$dispose()
+  useStateStore().$dispose()
 }
 
 export function initStore() {}

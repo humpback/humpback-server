@@ -12,6 +12,7 @@ export default {
     "invalidIpAddress": "Invalid IP address",
     "duplicateIPAddress": "Duplicate IP address",
     "duplicateLabelKey": "Duplicate label key",
+    "duplicate": "Duplicate",
 
     "alreadyExists": "Already exists, cannot be repeated",
     "completeAddress": "Please complete address information.",

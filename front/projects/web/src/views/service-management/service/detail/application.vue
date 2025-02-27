@@ -1,13 +1,28 @@
 <script lang="ts" setup>
 import { GenerateUUID, RulePleaseEnter, SetWebTitle } from "@/utils"
-import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode } from "@/models"
+import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode, ServiceVolumeType } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
 import { NewServiceMetaDockerEmptyInfo } from "@/types"
-import { find, map } from "lodash-es"
+import { cloneDeep, filter, find, findIndex, groupBy, map, toLower } from "lodash-es"
+import VolumesPage from "./application-advanced/volumes.vue"
+import EnvironmentsPage from "./application-advanced/environments.vue"
+import LabelsPage from "./application-advanced/labels.vue"
+import CapabilitiesPage from "./application-advanced/capabilities.vue"
+import ResourcesPage from "./application-advanced/resources.vue"
 
 interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
   imageDomain: string
   imageName: string
+  advancedMode: "volumes" | "environments" | "labels" | "resources" | "capabilities"
+  validEnv: Array<{ id: string; name: string; value: string }>
+  validLabel: Array<{ id: string; name: string; value: string }>
+  validVolumes: Array<{
+    id: string
+    type: ServiceVolumeType.VolumeTypeBind | ServiceVolumeType.VolumeTypeVolume
+    target: string
+    source: string
+    "readonly": boolean
+  }>
   ports: Array<{
     id: string
     hostPort?: number
@@ -29,20 +44,58 @@ const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
 const registries = ref<RegistryInfo[]>([])
 
+const advancedOptions = ref<Array<{ label: string; value: string; color?: string }>>([
+  { label: "label.volumes", value: "volumes" },
+  { label: "label.environments", value: "environments" },
+  { label: "label.labels", value: "labels" },
+  { label: "label.resources", value: "resources" },
+  { label: "label.capabilities", value: "capabilities" }
+])
+
 const metaInfo = ref<ServiceApplicationInfo>({
   imageDomain: "",
   imageName: "",
   ports: [],
+  validVolumes: [],
+  validEnv: [],
+  validLabel: [],
+  advancedMode: "volumes",
   ...NewServiceMetaDockerEmptyInfo()
 })
 
 const formRef = useTemplateRef<FormInstance>("formRef")
+const volumeRef = useTemplateRef<InstanceType<typeof VolumesPage>>("volumeRef")
+const environmentRef = useTemplateRef<InstanceType<typeof EnvironmentsPage>>("environmentRef")
+const labelRef = useTemplateRef<InstanceType<typeof LabelsPage>>("labelRef")
+
 const rules = ref<FormRules>({
   imageName: [
     { required: true, validator: RulePleaseEnter("label.image"), trigger: "blur" },
     { required: true, validator: RuleLimitRange(RuleLength.ServiceName.Min, RuleLength.ServiceName.Max), trigger: "blur" }
-  ]
+  ],
+  networkName: [{ required: true, validator: RulePleaseEnter("label.networkName"), trigger: "blur" }],
+  containerPort: [{ required: true, validator: checkContainerPort, trigger: "blur" }],
+  hostPort: [{ required: true, validator: checkHostPort, trigger: "blur" }]
 })
+
+function checkContainerPort(rule: any, value: any, callback: any) {
+  const containerPort = value ? (value as number) : 0
+  if (!containerPort) {
+    return callback(new Error(`${t("rules.pleaseEnter")} ${t("label.containerPort")}`))
+  }
+  if (filter(metaInfo.value.ports, x => x.containerPort === containerPort).length > 1) {
+    return callback(new Error(`${t("rules.duplicate")} ${t("label.containerPort")}`))
+  }
+  return callback()
+}
+
+function checkHostPort(rule: any, value: any, callback: any) {
+  const hostPort = value ? (value as number) : 0
+  if (hostPort && filter(metaInfo.value.ports, x => x.hostPort === hostPort).length > 1) {
+    return callback(new Error(`${t("rules.duplicate")} ${t("label.hostPort")}`))
+  }
+  return callback()
+}
 
 function cancel() {
   router.push({ name: "groupDetail", params: { groupId: groupId.value, mode: PageGroupDetail.Services } })
@@ -56,6 +109,26 @@ function parseMetaInfo() {
   metaInfo.value = {
     imageDomain: imageSplit > 0 ? meta.image.slice(0, imageSplit) : domain,
     imageName: imageSplit > 0 ? meta.image.slice(imageSplit) : "",
+    advancedMode: "volumes",
+    validEnv: filter(
+      map(meta.env, x => {
+        const s = x.split("=")
+        return {
+          id: GenerateUUID(),
+          name: s.length > 0 ? s[0] : "",
+          value: s.length > 1 ? s[1] : ""
+        }
+      }),
+      d => !!d.name && !!d.value
+    ),
+    validLabel: map(Object.keys(meta.labels), x => ({ id: GenerateUUID(), name: x, value: meta.labels[x] })),
+    validVolumes: map(meta.volumes, x => ({
+      id: GenerateUUID(),
+      type: x.type,
+      target: x.target,
+      source: x.source,
+      readonly: x.readonly
+    })),
     ports: map(meta.network.ports, x => ({
       id: GenerateUUID(),
       containerPort: x.containerPort || undefined,
@@ -107,7 +180,106 @@ async function search(init?: boolean) {
     .finally(() => (isLoading.value = false))
 }
 
-async function save() {}
+function checkVolumes(isAddErrCheck?: boolean) {
+  let isFailed = false
+  for (const volume of metaInfo.value.validVolumes) {
+    if (!volume.target || !volume.source) {
+      isFailed = true
+      break
+    }
+  }
+  const obj = groupBy(metaInfo.value.validVolumes, "target")
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === "volumes")
+  if (index != -1) {
+    if (isAddErrCheck && isFailed) {
+      advancedOptions.value[index].color = "validator-error"
+    }
+    if (!isAddErrCheck && advancedOptions.value[0].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+}
+
+function checkEnvironment(isAddErrCheck?: boolean) {
+  let isFailed = false
+  const envs = cloneDeep(metaInfo.value.validEnv)
+  for (const env of envs) {
+    env.name = toLower(env.name)
+    if (!env.name || !env.value) {
+      isFailed = true
+      break
+    }
+  }
+  const obj = groupBy(envs, "name")
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === "environments")
+  if (index != -1) {
+    if (isAddErrCheck && isFailed) {
+      advancedOptions.value[index].color = "validator-error"
+    }
+    if (!isAddErrCheck && advancedOptions.value[0].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+}
+
+function checkLabels(isAddErrCheck?: boolean) {
+  let isFailed = false
+  const labels = cloneDeep(metaInfo.value.validLabel)
+  for (const label of labels) {
+    label.name = toLower(label.name)
+    if (!label.name || !label.value) {
+      isFailed = true
+      break
+    }
+  }
+  const obj = groupBy(labels, "name")
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === "labels")
+  if (index != -1) {
+    if (isAddErrCheck && isFailed) {
+      advancedOptions.value[index].color = "validator-error"
+    }
+    if (!isAddErrCheck && advancedOptions.value[0].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+}
+
+async function validate() {
+  checkVolumes(true)
+  checkEnvironment(true)
+  checkLabels(true)
+  const validList = await Promise.all([
+    formRef.value?.validate().catch(() => false),
+    volumeRef.value?.validate().catch(() => false),
+    environmentRef.value?.validate().catch(() => false),
+    labelRef.value?.validate().catch(() => false)
+  ])
+  return filter(validList, x => !x).length <= 0
+}
+
+async function save() {
+  if (!(await validate())) {
+    return
+  }
+}
 
 onMounted(async () => {
   await search(true)
@@ -116,15 +288,31 @@ onMounted(async () => {
 </script>
 
 <template>
-  <el-form ref="formRef" v-loading="isLoading" :model="serviceInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
+  <el-form ref="formRef" v-loading="isLoading" :model="metaInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
     <el-row :gutter="12">
       <el-col :span="24">
         <el-form-item :label="t('label.image')" prop="imageName">
           <v-input v-model="metaInfo.imageName" :maxlength="RuleLength.ImageName?.Max" :placeholder="t('placeholder.egImage')" clearable show-word-limit>
             <template #prepend>
-              <el-select v-model="metaInfo.imageDomain" placeholder="" style="width: auto; min-width: 200px">
-                <el-option v-for="item in registries" :key="item.registryId" :label="item.url" :value="item.url" />
-              </el-select>
+              <el-dropdown trigger="click" @command="metaInfo.imageDomain = $event">
+                <div class="registry-domain">
+                  <div style="width: auto">{{ metaInfo.imageDomain }}</div>
+                  <el-icon :size="18">
+                    <IconMdiChevronDown />
+                  </el-icon>
+                </div>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+              <!--              <el-select v-model="metaInfo.imageDomain" placeholder="" style="width: auto; min-width: 200px">-->
+              <!--                <el-option v-for="item in registries" :key="item.registryId" :label="item.url" :value="item.url" />-->
+              <!--              </el-select>-->
+            </template>
+            <template #append>
+              <el-checkbox v-model="metaInfo.alwaysPull">{{ t("label.alwaysPull") }}</el-checkbox>
             </template>
           </v-input>
         </el-form-item>
@@ -135,66 +323,84 @@ onMounted(async () => {
         </el-form-item>
       </el-col>
 
-      <el-col>
-        <div class="d-flex gap-3 w-100">
-          <el-form-item :label="t('label.restartPolicy')">
-            <el-select v-model="metaInfo.restartPolicy.mode" style="width: 300px">
-              <el-option :value="ServiceRestartPolicyMode.RestartPolicyModeNo" label="No" />
-              <el-option :value="ServiceRestartPolicyMode.RestartPolicyModeAlways" label="Always" />
-              <el-option :value="ServiceRestartPolicyMode.RestartPolicyModeOnFailure" label="On Failure" />
-              <el-option :value="ServiceRestartPolicyMode.RestartPolicyModeUnlessStopped" label="Unless Stopped" />
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="metaInfo.restartPolicy.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure" :label="t('label.maxRetryCount')">
-            <v-input-number v-model="metaInfo.restartPolicy.maxRetryCount" :min="0" />
-          </el-form-item>
-        </div>
-      </el-col>
-
-      <el-col :span="8">
-        <el-form-item :label="t('label.network')">
-          <el-select v-model="metaInfo.network.mode">
-            <el-option :value="ServiceNetworkMode.NetworkModeHost" label="Host" />
-            <el-option :value="ServiceNetworkMode.NetworkModeBridge" label="Bridge" />
-            <el-option :value="ServiceNetworkMode.NetworkModeCustom" label="Custom" />
+      <el-col :md="metaInfo.restartPolicy.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure ? 12 : 24">
+        <el-form-item :label="t('label.restartPolicy')">
+          <el-select v-model="metaInfo.restartPolicy.mode">
+            <el-option :label="t('label.no')" :value="ServiceRestartPolicyMode.RestartPolicyModeNo" />
+            <el-option :label="t('label.always')" :value="ServiceRestartPolicyMode.RestartPolicyModeAlways" />
+            <el-option :label="t('label.onFailure')" :value="ServiceRestartPolicyMode.RestartPolicyModeOnFailure" />
+            <el-option :label="t('label.unlessStopped')" :value="ServiceRestartPolicyMode.RestartPolicyModeUnlessStopped" />
           </el-select>
         </el-form-item>
       </el-col>
 
-      <el-col v-if="metaInfo.network.mode === ServiceNetworkMode.NetworkModeCustom" :span="8">
-        <el-form-item :label="t('label.networkName')" prop="network.networkName">
+      <el-col v-if="metaInfo.restartPolicy.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure" :md="12">
+        <el-form-item :label="t('label.maxRetryCount')">
+          <v-input-number v-model="metaInfo.restartPolicy.maxRetryCount" :min="0" style="width: 100%" />
+        </el-form-item>
+      </el-col>
+
+      <el-col
+        :span="metaInfo.network.mode === ServiceNetworkMode.NetworkModeHost ? 24 : metaInfo.network.mode === ServiceNetworkMode.NetworkModeBridge ? 10 : 6">
+        <el-form-item :label="t('label.network')">
+          <el-select v-model="metaInfo.network.mode">
+            <el-option :label="t('label.host')" :value="ServiceNetworkMode.NetworkModeHost" />
+            <el-option :label="t('label.bridge')" :value="ServiceNetworkMode.NetworkModeBridge" />
+            <el-option :label="t('label.custom')" :value="ServiceNetworkMode.NetworkModeCustom" />
+          </el-select>
+        </el-form-item>
+      </el-col>
+
+      <el-col v-if="metaInfo.network.mode === ServiceNetworkMode.NetworkModeCustom" :span="6">
+        <el-form-item :label="t('label.networkName')" :rules="rules.networkName" prop="network.networkName">
           <v-input v-model="metaInfo.network.networkName" />
         </el-form-item>
       </el-col>
-      <el-col :span="8">
-        <el-form-item v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost" :label="t('label.hostname')" prop="network.hostname">
-          <v-input v-model="metaInfo.network.hostname" />
+
+      <el-col
+        v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost"
+        :span="metaInfo.network.mode === ServiceNetworkMode.NetworkModeBridge ? 14 : 12">
+        <el-form-item :label="t('label.hostname')" prop="network.hostname">
+          <v-input v-model="metaInfo.network.hostname" :disabled="metaInfo.network.useMachineHostname">
+            <template #prepend>
+              <el-checkbox v-model="metaInfo.network.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
+            </template>
+          </v-input>
         </el-form-item>
       </el-col>
 
       <el-col v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost">
         <div class="network-box">
+          <div class="mb-3">
+            <v-tips>{{ t("tips.networkPortTips") }}</v-tips>
+          </div>
           <el-row :gutter="12">
             <el-col v-for="(portInfo, index) in metaInfo.ports" :key="index" :span="24">
               <div class="d-flex gap-2">
-                <el-form-item :prop="`ports.${index}.containerPort`">
-                  <v-input-number v-model="metaInfo.ports[index].containerPort" :controls="false" :min="0" :placeholder="t('placeholder.containerPort')" />
+                <el-form-item :prop="`ports.${index}.containerPort`" :rules="rules.containerPort" class="flex-1">
+                  <v-input-number
+                    v-model="metaInfo.ports[index].containerPort"
+                    :controls="false"
+                    :min="0"
+                    :placeholder="t('placeholder.containerPort')"
+                    style="width: 100%">
+                  </v-input-number>
                 </el-form-item>
                 <el-form-item :prop="`ports.${index}.protocol`">
-                  <el-select v-model="metaInfo.ports[index].protocol" :placeholder="t('placeholder.protocol')" style="width: 100px">
-                    <el-option :value="ServiceNetworkProtocol.NetworkProtocolTCP" label="TCP" />
-                    <el-option :value="ServiceNetworkProtocol.NetworkProtocolUDP" label="UDP" />
+                  <el-select v-model="metaInfo.ports[index].protocol" :placeholder="t('placeholder.protocol')" style="width: 200px">
+                    <el-option :label="t('label.tcp')" :value="ServiceNetworkProtocol.NetworkProtocolTCP" />
+                    <el-option :label="t('label.udp')" :value="ServiceNetworkProtocol.NetworkProtocolUDP" />
                   </el-select>
                 </el-form-item>
-                <el-form-item :prop="`ports.${index}.hostPort`">
-                  <div class="d-flex gap-1">
-                    <v-input-number v-model="metaInfo.ports[index].hostPort" :controls="false" :placeholder="t('placeholder.hostPort')" />
-                    <el-button plain style="padding: 4px 12px" text type="danger" @click="removePort(index)">
-                      <el-icon :size="26">
-                        <IconMdiClose />
-                      </el-icon>
-                    </el-button>
-                  </div>
+                <el-form-item :prop="`ports.${index}.hostPort`" :rules="rules.hostPort" class="flex-1">
+                  <v-input-number v-model="metaInfo.ports[index].hostPort" :controls="false" :placeholder="t('placeholder.hostPort')" class="flex-1" />
+                </el-form-item>
+                <el-form-item>
+                  <el-button plain style="padding: 4px 12px" text type="danger" @click="removePort(index)">
+                    <el-icon :size="26">
+                      <IconMdiClose />
+                    </el-icon>
+                  </el-button>
                 </el-form-item>
               </div>
             </el-col>
@@ -211,20 +417,84 @@ onMounted(async () => {
           </el-row>
         </div>
       </el-col>
+
+      <el-col>
+        <el-form-item class="w-100 mt-5">
+          <el-segmented v-model="metaInfo.advancedMode" :options="advancedOptions" block class="advanced-segmented w-100">
+            <template #default="{ item }">
+              <span :class="(item as any).color">{{ t((item as any).label as string) }}</span>
+            </template>
+          </el-segmented>
+        </el-form-item>
+      </el-col>
+
+      <el-col>
+        <div class="advanced-box">
+          <div class="advanced-content">
+            <volumes-page
+              v-if="metaInfo.advancedMode === 'volumes'"
+              ref="volumeRef"
+              v-model="metaInfo.validVolumes"
+              :has-valid="!!find(advancedOptions, x => x.value === 'volumes')?.color"
+              @check="checkVolumes()" />
+
+            <environments-page
+              v-if="metaInfo.advancedMode === 'environments'"
+              ref="environmentRef"
+              v-model="metaInfo.validEnv"
+              :has-valid="!!find(advancedOptions, x => x.value === 'environments')?.color"
+              @check="checkEnvironment()" />
+
+            <labels-page
+              v-if="metaInfo.advancedMode === 'labels'"
+              ref="labelRef"
+              v-model="metaInfo.validLabel"
+              :has-valid="!!find(advancedOptions, x => x.value === 'labels')?.color"
+              @check="checkLabels()" />
+
+            <resources-page v-if="metaInfo.advancedMode === 'resources'" />
+
+            <capabilities-page v-if="metaInfo.advancedMode === 'capabilities'" v-model="metaInfo.capabilities" />
+          </div>
+        </div>
+      </el-col>
+
+      <el-col>
+        <el-form-item class="mt-5">
+          <el-checkbox v-model="metaInfo.privileged">
+            <strong>
+              <el-text size="small">{{ t("label.privilegedMode") }}</el-text>
+            </strong>
+          </el-checkbox>
+          <v-tips>{{ t("tips.privilegedTips") }}</v-tips>
+        </el-form-item>
+      </el-col>
     </el-row>
   </el-form>
-  <div class="text-align-right pt-3">
+  <div class="text-align-right pt-5">
     <el-button @click="cancel()">{{ t("btn.cancel") }}</el-button>
     <el-button :loading="isAction" type="primary" @click="save">{{ t("btn.save") }}</el-button>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.registry-domain {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.7;
+  }
+}
+
 .form-box {
   :deep(.el-form-item__label) {
-    //font-weight: 500;
-    //font-size: 12px;
-    //margin-bottom: 2px;
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 4px;
   }
 }
 
@@ -234,5 +504,71 @@ onMounted(async () => {
   border-radius: 4px;
   box-sizing: border-box;
   background-color: #ecf0f5;
+}
+
+.advanced-segmented {
+  --hp-active-segmented-bg-color: #e3e3e4;
+  padding: 0;
+  border: 1px solid var(--el-border-color);
+  border-right: none;
+
+  :deep(.el-segmented__group) {
+    .el-segmented__item-selected {
+      display: none !important;
+    }
+
+    .el-segmented__item {
+      border-right: 1px solid var(--el-border-color);
+      background-color: #ffffff;
+
+      &:has(.validator-error) {
+        background-color: var(--el-color-danger);
+        color: #ffffff;
+      }
+
+      &:not(:has(.validator-error)):hover {
+        background-color: #f5f7fa;
+      }
+
+      &.is-selected:not(:has(.validator-error)) {
+        background-color: var(--hp-active-segmented-bg-color);
+        color: #2f4050ff;
+      }
+    }
+  }
+
+  .el-radio-button {
+    flex: 1;
+
+    .span {
+      flex: 1;
+    }
+  }
+}
+
+.advanced-box {
+  border: 1px solid var(--el-border-color);
+  border-top: none;
+  margin-top: -18px;
+  padding: 20px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  box-sizing: border-box;
+
+  .advanced-content {
+    border: 1px solid var(--el-border-color);
+    padding: 16px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #ecf0f5;
+  }
+
+  .volume-type {
+    :deep(.el-radio-button):not(.is-active) {
+      & .el-radio-button__inner:hover {
+        color: var(--el-text-color-regular);
+      }
+    }
+  }
 }
 </style>

@@ -1,4 +1,5 @@
 import { BaseInfo, NewBaseEmptyInfo } from "#/base.ts"
+import { ServiceVolumeType } from "@/models"
 
 export interface ServiceInfo extends BaseInfo {
   serviceId: string
@@ -21,14 +22,25 @@ export interface ServiceMetaDockerInfo {
   command: string
   env: string[]
   labels: { [key: string]: string }
+  privileged: boolean
+  capabilities: string[]
+  volumes: ServiceVolumeInfo[]
   network: ServiceNetworkInfo
   restartPolicy: ServiceRestartPolicyInfo
+}
+
+export interface ServiceVolumeInfo {
+  type: ServiceVolumeType.VolumeTypeBind | ServiceVolumeType.VolumeTypeVolume
+  target: string
+  source: string
+  "readonly": boolean
 }
 
 export interface ServiceNetworkInfo {
   mode: string
   hostname: string
   networkName: string
+  useMachineHostname: boolean
   ports: ServicePortInfo[]
 }
 
@@ -103,10 +115,14 @@ export function NewServiceMetaDockerEmptyInfo(): ServiceMetaDockerInfo {
     command: "",
     env: [],
     labels: {},
+    volumes: [],
+    privileged: false,
+    capabilities: [],
     network: {
       mode: ServiceNetworkMode.NetworkModeHost,
       hostname: "",
       networkName: "",
+      useMachineHostname: false,
       ports: []
     },
     restartPolicy: {

@@ -73,7 +73,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <el-form ref="formRef" v-loading="isLoading" :model="serviceInfo" :rules="rules" label-position="top" label-width="auto">
+  <el-form ref="formRef" v-loading="isLoading" :model="serviceInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
     <el-form-item :label="t('label.name')" prop="serviceName">
       <v-input :maxlength="RuleLength.ServiceName.Max" :model-value="serviceInfo.serviceName" clearable disabled show-word-limit />
     </el-form-item>
@@ -87,4 +87,12 @@ onMounted(async () => {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.form-box {
+  :deep(.el-form-item__label) {
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+}
+</style>

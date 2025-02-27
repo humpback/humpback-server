@@ -13,6 +13,7 @@ const emits = defineEmits<{
   (e: "update:modelValue", v: string): void
   (e: "change", v: string): void
   (e: "input", v: string): void
+  (e: "blur"): void
 }>()
 
 const slots = useSlots()
@@ -23,6 +24,7 @@ function updateModelValue(v: string) {
 
 function blur(e: FocusEvent) {
   emits("update:modelValue", props.modelValue ? props.modelValue.trim() : "")
+  emits("blur")
 }
 
 function change(v: string) {

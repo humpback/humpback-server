@@ -77,6 +77,11 @@ export enum ServiceNetworkProtocol {
   NetworkProtocolUDP = "UDP"
 }
 
+export enum ServiceVolumeType {
+  VolumeTypeBind = "bind",
+  VolumeTypeVolume = "volume"
+}
+
 export enum ServiceRestartPolicyMode {
   RestartPolicyModeNo = "no",
   RestartPolicyModeAlways = "always",
