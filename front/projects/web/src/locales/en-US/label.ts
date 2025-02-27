@@ -101,6 +101,16 @@ export default {
     "hostPort": "Host Port",
     "privilegedMode": "Privileged Mode",
     "capabilities": "Capabilities",
-    "resources": "Resources"
+    "resourcesAndLogs": "Resources & Logs",
+    "memoryLimit": "Memory Limit (MB)",
+    "memoryReservation": "Memory Reservation (MB)",
+    "maximumCpuUsage": "Maximum CPU usage",
+    "mb": "MB",
+    "unLimited": "UnLimited",
+    "resources": "Resources",
+    "logConfig": "Log Config",
+    "driver": "Driver",
+    "options": "Options",
+    "dockerDocumentation": "Docker documentation"
   }
 }

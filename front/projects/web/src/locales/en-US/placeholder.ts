@@ -16,6 +16,7 @@ export default {
     "protocol": "Protocol",
     "egImage": "e.g. image-name:image-tag",
     "containerVolume": "e.g. /path/in/container",
-    "hostVolume": "e.g. /path/on/container"
+    "hostVolume": "e.g. /path/on/container",
+    "defaultLoggingDriver": "Default Logging Driver"
   }
 }

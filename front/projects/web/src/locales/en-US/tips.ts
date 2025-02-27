@@ -14,6 +14,14 @@ export default {
     "envTips":
       "The value in env can use built-in variables (IP, Hostname, InstanceName) and global config of type static, format: {'{'}VariableName or ConfigName{'}'}",
     "privilegedTips": "Give extended privileges to this container.",
+    "memoryLimitTips": "The maximum memory that can be used, if the limit (OOM) is exceeded, the system will force it to kill, and 0 means no limit.",
+    "memoryReservationTips": "The minimum amount of memory reserved by the system, 0 is not restricted.",
+    "maxCpuUsageTips": "The maximum percentage of all CPU resources on the machine that can be used.",
+    "resourcesTips":
+      "If the memory limit is set and the value of the memory reservation is greater than the memory limit, the memory reservation will be invalid.",
+    "logDriverTips":
+      "The log driver settings will override the docker daemon log driver. If it is not set, the default driver will be used, please go to the {document} for driver instructions.",
+
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",
     "BLOCK_SUSPEND": "Employ features that can block system suspend.",

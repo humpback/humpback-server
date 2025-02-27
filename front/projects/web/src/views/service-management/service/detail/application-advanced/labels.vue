@@ -35,6 +35,7 @@ function addLabel() {
 
 function removeLabel(index: number) {
   labels.value?.splice(index, 1)
+  emits("check")
 }
 
 async function validate() {

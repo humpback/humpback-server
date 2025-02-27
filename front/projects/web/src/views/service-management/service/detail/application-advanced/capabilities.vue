@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { find, findIndex, map } from "lodash-es"
+import { find, findIndex } from "lodash-es"
 
 const { t } = useI18n()
 const capabilities = defineModel<string[]>()
@@ -67,11 +67,9 @@ function getValue(label: string) {
             <el-text>{{ item.label }}</el-text>
           </strong>
           <v-tooltip :content="t(item.i18nTips)" effect="dark" max-width="300px" placement="top-start">
-            <template #default>
-              <el-icon :size="16">
-                <IconMdiHelpCircleOutline />
-              </el-icon>
-            </template>
+            <el-icon :size="16">
+              <IconMdiHelpCircleOutline />
+            </el-icon>
           </v-tooltip>
         </div>
         <div style="flex: 3">

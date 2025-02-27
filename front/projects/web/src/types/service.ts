@@ -24,9 +24,22 @@ export interface ServiceMetaDockerInfo {
   labels: { [key: string]: string }
   privileged: boolean
   capabilities: string[]
+  logConfig: ServiceLogConfigInfo
+  resources: ServiceResourcesInfo
   volumes: ServiceVolumeInfo[]
   network: ServiceNetworkInfo
   restartPolicy: ServiceRestartPolicyInfo
+}
+
+export interface ServiceLogConfigInfo {
+  type: string
+  config: { [key: string]: string }
+}
+
+export interface ServiceResourcesInfo {
+  memory: number
+  memoryReservation: number
+  maxCpuUsage: number
 }
 
 export interface ServiceVolumeInfo {
@@ -118,6 +131,18 @@ export function NewServiceMetaDockerEmptyInfo(): ServiceMetaDockerInfo {
     volumes: [],
     privileged: false,
     capabilities: [],
+    logConfig: {
+      type: "json-file",
+      config: {
+        "max-file": "3",
+        "max-size": "10m"
+      }
+    },
+    resources: {
+      memory: 0,
+      memoryReservation: 0,
+      maxCpuUsage: 0
+    },
     network: {
       mode: ServiceNetworkMode.NetworkModeHost,
       hostname: "",
@@ -165,16 +190,3 @@ export function NewServiceDeploymentInfo(): ServiceDeploymentInfo {
 // 	PlacementModeLabel PlacementMode = "label"
 // 	PlacementModeIP    PlacementMode = "ip"
 // )
-
-// type NetworkMode string
-//
-// var (
-// 	NetworkModeHost   NetworkMode = "host"
-// 	NetworkModeBridge NetworkMode = "bridge"
-// 	NetworkModeCustom NetworkMode = "custom"
-// )
-
-//
-//   type Service struct {
-// 	Containers  []*ContainerStatus `json:"containers"`
-// }

@@ -45,6 +45,7 @@ export default {
     "clone": "Clone",
     "addPort": "Add Port",
     "addVolume": "Add Volume",
-    "addEnvironment": "Add Environment"
+    "addEnvironment": "Add Environment",
+    "addOption": "Add Option"
   }
 }

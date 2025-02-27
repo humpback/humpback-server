@@ -50,6 +50,7 @@ function addVolume() {
 
 function removeVolume(index: number) {
   volumes.value!.splice(index, 1)
+  emits("check")
 }
 
 async function validate() {

@@ -8,12 +8,12 @@ import VolumesPage from "./application-advanced/volumes.vue"
 import EnvironmentsPage from "./application-advanced/environments.vue"
 import LabelsPage from "./application-advanced/labels.vue"
 import CapabilitiesPage from "./application-advanced/capabilities.vue"
-import ResourcesPage from "./application-advanced/resources.vue"
+import ResourcesLogConfigPage from "./application-advanced/resources-log-config.vue"
 
 interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
   imageDomain: string
   imageName: string
-  advancedMode: "volumes" | "environments" | "labels" | "resources" | "capabilities"
+  advancedMode: "volumes" | "environments" | "labels" | "resourcesAndLogs" | "capabilities"
   validEnv: Array<{ id: string; name: string; value: string }>
   validLabel: Array<{ id: string; name: string; value: string }>
   validVolumes: Array<{
@@ -23,6 +23,7 @@ interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
     source: string
     "readonly": boolean
   }>
+  validLogConfig: { type: string; options: Array<{ id: string; name: string; value: string }> }
   ports: Array<{
     id: string
     hostPort?: number
@@ -48,7 +49,7 @@ const advancedOptions = ref<Array<{ label: string; value: string; color?: string
   { label: "label.volumes", value: "volumes" },
   { label: "label.environments", value: "environments" },
   { label: "label.labels", value: "labels" },
-  { label: "label.resources", value: "resources" },
+  { label: "label.resourcesAndLogs", value: "resourcesAndLogs" },
   { label: "label.capabilities", value: "capabilities" }
 ])
 
@@ -60,6 +61,7 @@ const metaInfo = ref<ServiceApplicationInfo>({
   validEnv: [],
   validLabel: [],
   advancedMode: "volumes",
+  validLogConfig: { type: "", options: [] },
   ...NewServiceMetaDockerEmptyInfo()
 })
 
@@ -67,6 +69,7 @@ const formRef = useTemplateRef<FormInstance>("formRef")
 const volumeRef = useTemplateRef<InstanceType<typeof VolumesPage>>("volumeRef")
 const environmentRef = useTemplateRef<InstanceType<typeof EnvironmentsPage>>("environmentRef")
 const labelRef = useTemplateRef<InstanceType<typeof LabelsPage>>("labelRef")
+const resourcesAndLogsRef = useTemplateRef<InstanceType<typeof ResourcesLogConfigPage>>("resourcesAndLogsRef")
 
 const rules = ref<FormRules>({
   imageName: [
@@ -129,6 +132,14 @@ function parseMetaInfo() {
       source: x.source,
       readonly: x.readonly
     })),
+    validLogConfig: {
+      type: meta.logConfig.type,
+      options: map(Object.keys(meta.logConfig.config), x => ({
+        id: GenerateUUID(),
+        name: x,
+        value: meta.logConfig.config[x]
+      }))
+    },
     ports: map(meta.network.ports, x => ({
       id: GenerateUUID(),
       containerPort: x.containerPort || undefined,
@@ -197,10 +208,10 @@ function checkVolumes(isAddErrCheck?: boolean) {
   }
   const index = findIndex(advancedOptions.value, x => x.value === "volumes")
   if (index != -1) {
-    if (isAddErrCheck && isFailed) {
-      advancedOptions.value[index].color = "validator-error"
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
     }
-    if (!isAddErrCheck && advancedOptions.value[0].color && !isFailed) {
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
       advancedOptions.value[index].color = undefined
     }
   }
@@ -225,10 +236,10 @@ function checkEnvironment(isAddErrCheck?: boolean) {
   }
   const index = findIndex(advancedOptions.value, x => x.value === "environments")
   if (index != -1) {
-    if (isAddErrCheck && isFailed) {
-      advancedOptions.value[index].color = "validator-error"
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
     }
-    if (!isAddErrCheck && advancedOptions.value[0].color && !isFailed) {
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
       advancedOptions.value[index].color = undefined
     }
   }
@@ -253,10 +264,38 @@ function checkLabels(isAddErrCheck?: boolean) {
   }
   const index = findIndex(advancedOptions.value, x => x.value === "labels")
   if (index != -1) {
-    if (isAddErrCheck && isFailed) {
-      advancedOptions.value[index].color = "validator-error"
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
     }
-    if (!isAddErrCheck && advancedOptions.value[0].color && !isFailed) {
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+}
+
+function checkLogConfig(isAddErrCheck?: boolean) {
+  let isFailed = false
+  const logConfigs = cloneDeep(metaInfo.value.validLogConfig)
+  for (const logConfig of logConfigs.options) {
+    logConfig.name = toLower(logConfig.name)
+    if (!logConfig.name || !logConfig.value) {
+      isFailed = true
+      break
+    }
+  }
+  const obj = groupBy(logConfigs.options, "name")
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === "resourcesAndLogs")
+  if (index != -1) {
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
+    }
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
       advancedOptions.value[index].color = undefined
     }
   }
@@ -266,11 +305,13 @@ async function validate() {
   checkVolumes(true)
   checkEnvironment(true)
   checkLabels(true)
+  checkLogConfig(true)
   const validList = await Promise.all([
     formRef.value?.validate().catch(() => false),
     volumeRef.value?.validate().catch(() => false),
     environmentRef.value?.validate().catch(() => false),
-    labelRef.value?.validate().catch(() => false)
+    labelRef.value?.validate().catch(() => false),
+    resourcesAndLogsRef.value?.validate().catch(() => false)
   ])
   return filter(validList, x => !x).length <= 0
 }
@@ -303,13 +344,10 @@ onMounted(async () => {
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
+                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
-              <!--              <el-select v-model="metaInfo.imageDomain" placeholder="" style="width: auto; min-width: 200px">-->
-              <!--                <el-option v-for="item in registries" :key="item.registryId" :label="item.url" :value="item.url" />-->
-              <!--              </el-select>-->
             </template>
             <template #append>
               <el-checkbox v-model="metaInfo.alwaysPull">{{ t("label.alwaysPull") }}</el-checkbox>
@@ -363,7 +401,7 @@ onMounted(async () => {
         <el-form-item :label="t('label.hostname')" prop="network.hostname">
           <v-input v-model="metaInfo.network.hostname" :disabled="metaInfo.network.useMachineHostname">
             <template #prepend>
-              <el-checkbox v-model="metaInfo.network.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
+              <el-checkbox v-model="metaInfo.network.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
             </template>
           </v-input>
         </el-form-item>
@@ -452,7 +490,13 @@ onMounted(async () => {
               :has-valid="!!find(advancedOptions, x => x.value === 'labels')?.color"
               @check="checkLabels()" />
 
-            <resources-page v-if="metaInfo.advancedMode === 'resources'" />
+            <resources-log-config-page
+              v-if="metaInfo.advancedMode === 'resourcesAndLogs'"
+              ref="resourcesAndLogsRef"
+              v-model:log-config="metaInfo.validLogConfig"
+              v-model:resources="metaInfo.resources"
+              :has-valid="!!find(advancedOptions, x => x.value === 'resourcesAndLogs')?.color"
+              @check="checkLogConfig()" />
 
             <capabilities-page v-if="metaInfo.advancedMode === 'capabilities'" v-model="metaInfo.capabilities" />
           </div>

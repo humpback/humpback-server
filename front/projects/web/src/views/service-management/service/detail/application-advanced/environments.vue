@@ -35,6 +35,7 @@ function addEnv() {
 
 function removeEnv(index: number) {
   envs.value?.splice(index, 1)
+  emits("check")
 }
 
 async function validate() {
