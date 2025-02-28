@@ -11,11 +11,11 @@ import (
 )
 
 func RouteConfig(router *gin.RouterGroup) {
-	router.POST("", middleware.CheckAdminPermissions(), configCreate)
-	router.PUT("", middleware.CheckAdminPermissions(), configUpdate)
+	router.POST("", configCreate)
+	router.PUT("", configUpdate)
 	router.GET("/info/:id", configInfo)
 	router.POST("/query", configQuery)
-	router.DELETE("/:id", middleware.CheckAdminPermissions(), configDelete)
+	router.DELETE("/:id", configDelete)
 }
 
 func configCreate(c *gin.Context) {

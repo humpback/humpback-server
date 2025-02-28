@@ -2,10 +2,10 @@
 import { ConfigInfo } from "@/types"
 import { TableHeight } from "@/utils"
 import { Action, ConfigType } from "@/models"
+import { QueryConfigsInfo } from "./common.ts"
 import ConfigEdit from "./config-edit.vue"
 import ConfigDelete from "./config-delete.vue"
 import ConfigView from "./config-view.vue"
-import { QueryConfigsInfo } from "./common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -108,7 +108,7 @@ onMounted(() => search())
       <el-table-column :label="t('label.value')" min-width="200">
         <template #default="scope">
           <span v-if="scope.row.configType === ConfigType.Static">{{ scope.row.configValue }}</span>
-          <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }} </el-button>
+          <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
         </template>
       </el-table-column>
       <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">

@@ -159,9 +159,9 @@ export function NewServiceMetaDockerEmptyInfo(): ServiceMetaDockerInfo {
 
 export function NewServiceDeploymentInfo(): ServiceDeploymentInfo {
   return {
-    type: "",
-    mode: "",
-    replicas: 0,
+    type: ServiceDeployType.DeployTypeBackground,
+    mode: ServiceDeployMode.DeployModeReplicate,
+    replicas: 1,
     placements: [],
     schedule: {
       timeout: "",

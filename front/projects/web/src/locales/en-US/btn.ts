@@ -46,6 +46,7 @@ export default {
     "addPort": "Add Port",
     "addVolume": "Add Volume",
     "addEnvironment": "Add Environment",
-    "addOption": "Add Option"
+    "addOption": "Add Option",
+    "addPlacementConstraint": "Add Placement Constraint"
   }
 }

@@ -20,14 +20,6 @@ const administrator = <RouteRecordRaw[]>[
     }
   },
   {
-    path: "/ws/configs",
-    name: "configs",
-    component: () => import("@/views/administration/configs/configs.vue"),
-    meta: {
-      onlyAdmin: true
-    }
-  },
-  {
     path: "/ws/user-related/:mode",
     name: "userRelated",
     component: () => import("@/views/administration/user-related/user-related.vue"),
@@ -109,6 +101,12 @@ export default <RouteRecordRaw[]>[
         meta: {
           loginLimit: PageLimitRole.Login
         }
+      },
+      {
+        path: "/ws/configs",
+        name: "configs",
+        component: () => import("@/views/configs/configs.vue"),
+        meta: {}
       },
       ...administrator,
       ...serviceManagement

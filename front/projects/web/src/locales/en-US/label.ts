@@ -111,6 +111,12 @@ export default {
     "logConfig": "Log Config",
     "driver": "Driver",
     "options": "Options",
-    "dockerDocumentation": "Docker documentation"
+    "dockerDocumentation": "Docker documentation",
+    "dispatchMode": "Dispatch Mode",
+    "global": "Global",
+    "replicated": "Replicated",
+    "instanceNum": "Instance Num",
+    "placementConstraints": "Placement Constraints",
+    "schedulesInfo": "Schedules Info"
   }
 }

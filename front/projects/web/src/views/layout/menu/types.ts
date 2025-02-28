@@ -25,6 +25,10 @@ export const menuList: MenuInfo[] = [
     routeName: "groups"
   },
   {
+    icon: shallowRef(IconMdiTextBoxOutline),
+    name: "configs"
+  },
+  {
     icon: shallowRef(IconMdiCogOutline),
     name: "administration",
     rolesLimit: [UserRole.SupperAdmin, UserRole.Admin],
@@ -36,10 +40,6 @@ export const menuList: MenuInfo[] = [
       {
         icon: shallowRef(IconMdiTextBoxOutline),
         name: "nodes"
-      },
-      {
-        icon: shallowRef(IconMdiTextBoxOutline),
-        name: "configs"
       },
       {
         icon: shallowRef(IconMdiAccount),

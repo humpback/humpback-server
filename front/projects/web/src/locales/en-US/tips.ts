@@ -21,6 +21,9 @@ export default {
       "If the memory limit is set and the value of the memory reservation is greater than the memory limit, the memory reservation will be invalid.",
     "logDriverTips":
       "The log driver settings will override the docker daemon log driver. If it is not set, the default driver will be used, please go to the {document} for driver instructions.",
+    "globalTips": "In the global mode, the number of instances represents the number of instances deployed on each machine in the current group.",
+    "replicatedTips":
+      "In replicated mode, the service is migrated to other available nodes after the machine goes offline, and the number of instances represents the total number of instances deployed in the current service, and the number of instances is scheduled on the eligible machines according to the resources (cpu/memory).",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",

@@ -76,6 +76,7 @@
     "ServiceDeployType": true,
     "ServiceDeploymentInfo": true,
     "ServiceInfo": true,
+    "ServiceLogConfigInfo": true,
     "ServiceMetaDockerInfo": true,
     "ServiceNetworkInfo": true,
     "ServiceNetworkMode": true,
@@ -83,10 +84,13 @@
     "ServicePlacementInfo": true,
     "ServicePlacementMode": true,
     "ServicePortInfo": true,
+    "ServiceResourcesInfo": true,
     "ServiceRestartPolicyInfo": true,
     "ServiceRestartPolicyMode": true,
     "ServiceScheduleInfo": true,
     "ServiceStatus": true,
+    "ServiceVolumeInfo": true,
+    "ServiceVolumeType": true,
     "SessionStorageCurrentGroupId": true,
     "SetWebTitle": true,
     "ShowErrMsg": true,
@@ -425,8 +429,6 @@
     "IconMdiLogoutVariant": true,
     "IconMdiTextBoxOutline": true,
     "IconMdiUserOutline": true,
-    "IconMdiViewDashboard": true,
-    "ServiceVolumeInfo": true,
-    "ServiceVolumeType": true
+    "IconMdiViewDashboard": true
   }
 }
