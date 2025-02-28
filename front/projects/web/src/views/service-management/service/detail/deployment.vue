@@ -6,7 +6,7 @@ import { filter, map, uniq, uniqWith } from "lodash-es"
 import { groupService } from "services/group-service.ts"
 
 interface ServiceValidDeploymentInfo extends ServiceDeploymentInfo {
-  hasPlacementConstraints: boolean
+  hasPlacements: boolean
   validPlacements: Array<{ id: string; mode: string; key: string; value: string; isEqual: boolean }>
 }
 
@@ -24,7 +24,7 @@ const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
 const groupNodes = ref<NodeInfo[]>([])
 
 const deploymentInfo = ref<ServiceValidDeploymentInfo>({
-  hasPlacementConstraints: false,
+  hasPlacements: false,
   validPlacements: [],
   ...NewServiceDeploymentInfo()
 })
@@ -91,7 +91,7 @@ async function getServiceInfo() {
     stateStore.setService(serviceId.value, info)
     const tempInfo = info.deployment || NewServiceDeploymentInfo()
     deploymentInfo.value = {
-      hasPlacementConstraints: tempInfo.placements.length > 0,
+      hasPlacements: tempInfo.placements.length > 0,
       validPlacements: map(tempInfo.placements, x => Object.assign({ id: GenerateUUID() }, x)),
       ...tempInfo
     }
@@ -132,13 +132,13 @@ onMounted(async () => {
       <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }} </v-tips>
     </el-form-item>
     <el-form-item>
-      <el-checkbox v-model="deploymentInfo.hasPlacementConstraints">
+      <el-checkbox v-model="deploymentInfo.hasPlacements">
         <strong>
           <el-text size="small">{{ t("label.placementConstraints") }}</el-text>
         </strong>
       </el-checkbox>
     </el-form-item>
-    <div v-if="deploymentInfo.hasPlacementConstraints" class="placement-constraints">
+    <div v-if="deploymentInfo.hasPlacements" class="placement-constraints">
       <div v-for="(item, index) in deploymentInfo.validPlacements" :key="item.id" class="d-flex gap-3 flex-wrap" style="align-items: start">
         <el-form-item style="margin: 0">
           <el-radio-group v-model="deploymentInfo.validPlacements[index].mode" @change="changePlacementMode(index)">
