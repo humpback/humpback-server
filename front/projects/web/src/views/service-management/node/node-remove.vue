@@ -28,7 +28,7 @@ async function remove() {
   }
   isAction.value = true
   return await groupService
-    .updateNodes({
+    .updateNodes(stateStore.getGroup()?.groupId, {
       groupId: stateStore.getGroup()?.groupId,
       isDelete: true,
       nodes: [dialogInfo.value.info.nodeId]
@@ -53,7 +53,7 @@ defineExpose({ open })
     <v-delete-input-continue v-model="isChecked" :keywords="dialogInfo.info.ipAddress" class="mt-5" />
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button :disabled="!isChecked" :loading="isAction" type="danger" @click="remove">{{ t("btn.remove") }}</el-button>
+      <el-button :disabled="!isChecked" :loading="isAction" type="danger" @click="remove">{{ t("btn.remove") }} </el-button>
     </template>
   </v-dialog>
 </template>

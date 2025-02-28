@@ -80,7 +80,7 @@ export interface ServicePlacementInfo {
   mode: string
   key: string
   value: string
-  isEqual: string
+  isEqual: boolean
 }
 
 export interface ServiceScheduleInfo {

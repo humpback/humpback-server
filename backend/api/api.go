@@ -61,6 +61,7 @@ func (api *Router) setRoute() {
 			"/node":                   {middleware.CheckLogin(), handle.RouteNodes},
 			"/group":                  {middleware.CheckLogin(), handle.RouteGroup},
 			"/group/:groupId/service": {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteService},
+			"/group/:groupId/node":    {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteGroupNode},
 		},
 	}
 

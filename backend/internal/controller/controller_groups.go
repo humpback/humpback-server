@@ -102,6 +102,18 @@ func GroupQuery(queryInfo *models.GroupQueryReqInfo) (*response.QueryResult[type
 	), nil
 }
 
+func GroupNodes(groupId string, userInfo *types.User) ([]*types.Node, error) {
+	groupInfo, err := Group(userInfo, groupId)
+	if err != nil {
+		return nil, err
+	}
+	nodes, err := NodesGetByIds(groupInfo.Nodes, true)
+	if err != nil {
+		return nil, err
+	}
+	return nodes, nil
+}
+
 func GroupDelete(id string) error {
 	_, err := db.GroupGetById(id)
 	if err != nil {

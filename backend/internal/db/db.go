@@ -114,7 +114,7 @@ func GetDataById[T any](bucketName string, id string) (*T, error) {
 }
 
 func GetDataByIds[T any](bucketName string, ids []string, ignoreNotExist bool) ([]*T, error) {
-	var results []*T
+	var results = make([]*T, 0)
 	err := db.boltDB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
@@ -168,7 +168,7 @@ func GetDataAll[T any](bucketName string) ([]*T, error) {
 type CustomFilterData func(key string, value interface{}) bool
 
 func GetDataByQuery[T any](bucketName string, filter CustomFilterData) ([]*T, error) {
-	var results []*T
+	var results = make([]*T, 0)
 	err := db.boltDB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
@@ -193,7 +193,7 @@ func GetDataByQuery[T any](bucketName string, filter CustomFilterData) ([]*T, er
 }
 
 func GetDataByPrefix[T any](bucketName string, prefix string) ([]*T, error) {
-	var results []*T
+	var results = make([]*T, 0)
 	err := db.boltDB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {

@@ -10,7 +10,11 @@ class GroupService {
   }
 
   async queryNodes(id: string, data: any) {
-    return await httpClient.post<ResponseQuery<NodeInfo>>(`/webapi/group/${id}/query`, data).then(res => res.data)
+    return await httpClient.post<ResponseQuery<NodeInfo>>(`/webapi/group/${id}/node/query`, data).then(res => res.data)
+  }
+
+  async getNodes(id: string) {
+    return await httpClient.get<NodeInfo[]>(`/webapi/group/${id}/node/list`).then(res => res.data)
   }
 
   async create(data: any) {
@@ -21,8 +25,8 @@ class GroupService {
     return await httpClient.put<string>("/webapi/group", data).then(res => res.data)
   }
 
-  async updateNodes(data: any) {
-    return await httpClient.put<string>(`/webapi/group/nodes`, data).then(res => res.data)
+  async updateNodes(groupId: string, data: any) {
+    return await httpClient.put<string>(`/webapi/group/${groupId}/node`, data).then(res => res.data)
   }
 
   async delete(id: string) {

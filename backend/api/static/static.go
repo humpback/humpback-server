@@ -75,11 +75,11 @@ func readFileToCache(htmlDir string) (map[string]*staticResourceInfo, error) {
 
 // web  每次从文件读取静态资源
 func web(c *gin.Context) {
-	htmlDir := config.HtmlArgs()
-	if c.Request.URL.String() != "/" && utils.FileExist(fmt.Sprintf("%s/%s", htmlDir, c.Request.URL.Path)) {
-		c.File(fmt.Sprintf("%s/%s", htmlDir, c.Request.URL.Path))
+	htmlConfig := config.HtmlArgs()
+	if c.Request.URL.String() != "/" && utils.FileExist(fmt.Sprintf("%s/%s", htmlConfig.Dir, c.Request.URL.Path)) {
+		c.File(fmt.Sprintf("%s/%s", htmlConfig.Dir, c.Request.URL.Path))
 	} else {
-		c.File(fmt.Sprintf("%s/index.html", htmlDir))
+		c.File(fmt.Sprintf("%s/index.html", htmlConfig.Dir))
 	}
 }
 

@@ -75,8 +75,8 @@ defineExpose({ validate })
       <div v-for="(volume, index) in volumes" :key="volume.id" class="d-flex gap-3">
         <el-form-item>
           <el-radio-group v-model="volumes![index].readonly" class="volume-type" fill="var(--el-color-info-light-3)" text-color="#ffffff">
-            <el-radio-button :label="t('label.writable')" :value="false" />
-            <el-radio-button :label="t('label.readonly')" :value="true" />
+            <el-radio :label="t('label.writable')" :value="false" />
+            <el-radio :label="t('label.readonly')" :value="true" />
           </el-radio-group>
         </el-form-item>
         <el-form-item :prop="`${index}.target`" :rules="rules.containerVolume" class="flex-1">

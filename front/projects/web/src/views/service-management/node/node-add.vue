@@ -82,7 +82,7 @@ async function save() {
   )
   isAction.value = true
   return await groupService
-    .updateNodes({
+    .updateNodes(stateStore.getGroup()?.groupId, {
       groupId: stateStore.getGroup()?.groupId,
       nodes: nodes,
       isDelete: false
@@ -170,7 +170,9 @@ defineExpose({ open })
     <v-alert v-if="dialogInfo.selectedNodes.length === 0" type="warning">{{ t("tips.selectLastOneNode") }}</v-alert>
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button :disabled="dialogInfo.selectedNodes.length === 0" :loading="isAction" type="primary" @click="save">{{ t("btn.save") }}</el-button>
+      <el-button :disabled="dialogInfo.selectedNodes.length === 0" :loading="isAction" type="primary" @click="save">
+        {{ t("btn.save") }}
+      </el-button>
     </template>
   </v-dialog>
 </template>
