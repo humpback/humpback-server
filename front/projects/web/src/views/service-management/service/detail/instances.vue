@@ -1,42 +1,119 @@
 <script lang="ts" setup>
-import { ref, reactive, toRefs, onBeforeMount, onMounted, watchEffect, computed } from "vue"
-import { useRoute, useRouter } from "vue-router"
+import { SetWebTitle } from "@/utils"
+import VContainerStatus from "@/components/business/v-container/VContainerStatus.vue"
 
-/**
- * 路由对象
- */
+const { t } = useI18n()
 const route = useRoute()
+const stateStore = useStateStore()
 
-/**
- * 路由实例
- */
-const router = useRouter()
+const isLoading = ref(false)
 
-//console.log('1-开始创建组件-setup')
-/**
- * 数据部分
- */
-const data = reactive({})
+const groupId = ref(route.params.groupId as string)
+const serviceId = ref(route.params.serviceId as string)
+const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
 
-onBeforeMount(() => {
-  //console.log('2.组件挂载页面之前执行----onBeforeMount')
-})
+async function getGroupInfo() {
+  return await groupService.info(groupId.value).then(info => {
+    stateStore.setGroup(groupId.value, info)
+  })
+}
 
-onMounted(() => {
-  //console.log('3.-组件挂载到页面之后执行-------onMounted')
-})
+async function getServiceInfo() {
+  return await serviceService.info(groupId.value, serviceId.value).then(info => {
+    serviceInfo.value = info
+    stateStore.setService(serviceId.value, info)
+    serviceInfo.value.containers = [
+      {
+        containerId: "FSJLFJLFJPQJT03QWGHQOGLANG;AHNGAHNG;KLANG",
+        containerName: "humpback-losjfljsofwoj-lsfjlsj-jfslf",
+        nodeId: "SLFJOPQW2JRFO",
+        status: "running",
+        statusInfo: "",
+        errorMsg: "",
+        image: "",
+        command: "",
+        network: "",
+        created: 1740818013735,
+        started: 1740818013735,
+        lastHeartbeat: 1740818013735,
+        labels: { test: "skyler" },
+        env: [],
+        mounts: [],
+        ports: []
+      }
+    ]
+  })
+}
 
-watchEffect(() => {})
+async function search() {
+  isLoading.value = true
+  await Promise.all([getGroupInfo(), getServiceInfo()]).finally(() => (isLoading.value = false))
+}
 
-// 使用toRefs解构
-// let { } = { ...toRefs(data) }
-defineExpose({
-  ...toRefs(data)
+onMounted(async () => {
+  await search()
+  SetWebTitle(`${t("webTitle.serviceInfo")} - ${stateStore.getService()?.serviceName}`)
 })
 </script>
 
 <template>
-  <h1>Instance</h1>
+  <div class="d-flex gap-3">
+    <strong>
+      <el-text>{{ t("label.instanceOverview") }}</el-text>
+    </strong>
+    <div>
+      <el-button plain size="small" type="success">{{ t("btn.refresh") }}</el-button>
+      <el-button plain size="small" type="primary">{{ t("btn.viewMonitor") }}</el-button>
+    </div>
+  </div>
+  <v-table :data="serviceInfo.containers" border class="mt-5">
+    <el-table-column type="expand">
+      <template #default="scope">
+        <div class="expand-content">
+          <el-row :gutter="12">
+            <el-col :span="12">aaa</el-col>
+            <el-col :span="12"></el-col>
+          </el-row>
+        </div>
+      </template>
+    </el-table-column>
+    <el-table-column :label="t('label.name')" min-width="300" prop="containerName" sortable />
+    <el-table-column :label="t('label.ip')" min-width="240"></el-table-column>
+    <el-table-column :label="t('label.status')" min-width="200">
+      <template #default="scope">
+        <v-container-status :status="scope.row.status" />
+      </template>
+    </el-table-column>
+    <el-table-column :label="t('label.action')" width="200">
+      <template #default="scope">
+        <el-button :title="t('label.restart')" link type="success">
+          <el-icon :size="16">
+            <IconMdiRestart />
+          </el-icon>
+        </el-button>
+        <el-button :title="t('label.start')" link type="success">
+          <el-icon :size="16">
+            <IconMdiPlay />
+          </el-icon>
+        </el-button>
+        <el-button :title="t('label.stop')" link type="danger">
+          <el-icon :size="16">
+            <IconMdiSquare />
+          </el-icon>
+        </el-button>
+        <el-button :title="t('label.log')" link type="primary">
+          <el-icon :size="16">
+            <IconMdiNoteText />
+          </el-icon>
+        </el-button>
+      </template>
+    </el-table-column>
+  </v-table>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.expand-content {
+  box-sizing: border-box;
+  padding: 20px;
+}
+</style>

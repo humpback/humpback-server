@@ -13,6 +13,8 @@ export default {
     "duplicateIPAddress": "Duplicate IP address",
     "duplicateLabelKey": "Duplicate label key",
     "duplicate": "Duplicate",
+    "formatErrCron": "Invalid cron",
+    "formatErrTimeout": "Invalid timeout text",
 
     "alreadyExists": "Already exists, cannot be repeated",
     "completeAddress": "Please complete address information.",

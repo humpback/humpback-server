@@ -47,6 +47,8 @@ export default {
     "addVolume": "Add Volume",
     "addEnvironment": "Add Environment",
     "addOption": "Add Option",
-    "addPlacementConstraint": "Add Placement Constraint"
+    "addPlacementConstraint": "Add Placement Constraint",
+    "addSchedule": "Add Schedule",
+    "viewMonitor": "View Monitor"
   }
 }

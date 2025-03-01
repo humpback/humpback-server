@@ -1,16 +1,20 @@
 <script lang="ts" setup>
 import { FormInstance, FormRules } from "element-plus"
-import { RulePleaseEnter, SetWebTitle } from "@/utils"
-import { PageGroupDetail, RuleLength } from "@/models"
-import { filter, map, uniq, uniqWith } from "lodash-es"
+import { SetWebTitle } from "@/utils"
+import { PageGroupDetail } from "@/models"
+import { filter, map, toLower, uniq, uniqWith } from "lodash-es"
 import { groupService } from "services/group-service.ts"
+import VCronInput from "@/components/business/v-corn/VCornInput.vue"
+import cronstrue from "cronstrue"
 
 interface ServiceValidDeploymentInfo extends ServiceDeploymentInfo {
   hasPlacements: boolean
   validPlacements: Array<{ id: string; mode: string; key: string; value: string; isEqual: boolean }>
+  enableTimeout: boolean
+  enableSchedules: boolean
 }
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const stateStore = useStateStore()
@@ -26,17 +30,14 @@ const groupNodes = ref<NodeInfo[]>([])
 const deploymentInfo = ref<ServiceValidDeploymentInfo>({
   hasPlacements: false,
   validPlacements: [],
+  enableTimeout: false,
+  enableSchedules: false,
   ...NewServiceDeploymentInfo()
 })
 
 const formRef = useTemplateRef<FormInstance>("formRef")
-const rules = ref<FormRules>({
-  serviceName: [
-    { required: true, validator: RulePleaseEnter("label.name"), trigger: "blur" },
-    { required: true, validator: RuleLimitRange(RuleLength.ServiceName.Min, RuleLength.ServiceName.Max), trigger: "blur" }
-  ],
-  description: [{ validator: RuleLimitMax(RuleLength.Description.Max), trigger: "blur" }]
-})
+const cronInputRef = useTemplateRef<InstanceType<typeof VCronInput>>("cronInputRef")
+const rules = ref<FormRules>({ timeout: [{ validator: checkTimeout, trigger: "blur" }] })
 
 const labelList = computed(() => {
   const result: Array<{ key: string; value: string }> = []
@@ -45,6 +46,15 @@ const labelList = computed(() => {
   })
   return uniqWith(result, (a, b) => a.key === b.key && a.value === b.value)
 })
+
+function checkTimeout(rule: any, value: any, callback: any) {
+  const v = value ? (value as string) : ""
+
+  if (v && !/^-?\d+(\.\d+)?(ns|us|µs|ms|s|m|h)+$/.test(v)) {
+    return callback(new Error(t("rules.formatErrTimeout")))
+  }
+  callback()
+}
 
 function cancel() {
   router.push({ name: "groupDetail", params: { groupId: groupId.value, mode: PageGroupDetail.Services } })
@@ -73,6 +83,40 @@ function removePlacementConstraint(index: number) {
   deploymentInfo.value.validPlacements.splice(index, 1)
 }
 
+function editSchedule(index: number) {
+  if (index !== -1) {
+    cronInputRef.value?.openDialog(deploymentInfo.value.schedule.rules[index], index)
+  } else {
+    cronInputRef.value?.openDialog("", index)
+  }
+}
+
+function changeSchedule(corn: string, index: number) {
+  if (index !== -1) {
+    deploymentInfo.value.schedule.rules[index] = corn
+  } else {
+    deploymentInfo.value.schedule.rules.push(corn)
+  }
+}
+
+function removeSchedule(index: number) {
+  deploymentInfo.value.schedule.rules.splice(index, 1)
+}
+
+function parseCronToText(corn: string) {
+  try {
+    return cronstrue.toString(corn, {
+      use24HourTimeFormat: true,
+      throwExceptionOnParseError: true,
+      verbose: false,
+      locale: toLower(locale.value) === "zh-cn" ? "zh_CN" : "en"
+    })
+  } catch (error) {
+    console.log(error)
+    return t("tips.invalidCorn")
+  }
+}
+
 async function getGroupNodes() {
   return await groupService.getNodes(groupId.value).then(nodes => {
     groupNodes.value = nodes
@@ -92,6 +136,8 @@ async function getServiceInfo() {
     const tempInfo = info.deployment || NewServiceDeploymentInfo()
     deploymentInfo.value = {
       hasPlacements: tempInfo.placements.length > 0,
+      enableSchedules: tempInfo.schedule.rules.length > 0,
+      enableTimeout: !!tempInfo.schedule.timeout,
       validPlacements: map(tempInfo.placements, x => Object.assign({ id: GenerateUUID() }, x)),
       ...tempInfo
     }
@@ -103,7 +149,11 @@ async function search(init?: boolean) {
   await Promise.all([init ? getGroupNodes() : undefined, getGroupInfo(), getServiceInfo()]).finally(() => (isLoading.value = false))
 }
 
-async function save() {}
+async function save() {
+  if (!(await formRef.value?.validate())) {
+    return
+  }
+}
 
 onMounted(async () => {
   await search(true)
@@ -114,7 +164,7 @@ onMounted(async () => {
 <template>
   <el-form ref="formRef" v-loading="isLoading" :model="deploymentInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
     <el-form-item :label="t('label.dispatchMode')" prop="mode">
-      <div class="d-flex gap-5">
+      <div class="d-flex gap-5 mt-3">
         <el-radio-group v-model="deploymentInfo.mode">
           <el-radio :value="ServiceDeployMode.DeployModeGlobal">{{ t("label.global") }}</el-radio>
           <el-radio :value="ServiceDeployMode.DeployModeReplicate">{{ t("label.replicated") }}</el-radio>
@@ -129,16 +179,18 @@ onMounted(async () => {
     </el-form-item>
     <el-form-item>
       <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeGlobal">{{ t("tips.globalTips") }}</v-tips>
-      <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }} </v-tips>
+      <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }}</v-tips>
     </el-form-item>
-    <el-form-item>
+
+    <el-form-item class="mt-3">
       <el-checkbox v-model="deploymentInfo.hasPlacements">
         <strong>
           <el-text size="small">{{ t("label.placementConstraints") }}</el-text>
         </strong>
       </el-checkbox>
     </el-form-item>
-    <div v-if="deploymentInfo.hasPlacements" class="placement-constraints">
+
+    <div v-if="deploymentInfo.hasPlacements" class="content-box">
       <div v-for="(item, index) in deploymentInfo.validPlacements" :key="item.id" class="d-flex gap-3 flex-wrap" style="align-items: start">
         <el-form-item style="margin: 0">
           <el-radio-group v-model="deploymentInfo.validPlacements[index].mode" @change="changePlacementMode(index)">
@@ -213,11 +265,72 @@ onMounted(async () => {
         </el-button>
       </el-form-item>
     </div>
+
+    <el-form-item :label="t('label.schedulesInfo')" class="mt-5">
+      <el-checkbox v-model="deploymentInfo.enableSchedules" class="mt-3">
+        <strong>
+          <el-text size="small">{{ t("label.setSchedules") }}</el-text>
+        </strong>
+      </el-checkbox>
+    </el-form-item>
+
+    <div v-if="deploymentInfo.enableSchedules" class="content-box">
+      <div class="mb-3">
+        <v-tips>{{ t("tips.scheduleTips") }}</v-tips>
+      </div>
+      <div v-for="(corn, index) in deploymentInfo.schedule.rules" :key="index" class="mb-3 cron-line">
+        <div class="d-flex gap-3">
+          <strong>
+            <el-text> {{ t("label.cron") }}</el-text>
+          </strong>
+          <el-text>{{ corn }}</el-text>
+        </div>
+        <el-divider direction="vertical" />
+        <div class="flex-1 cron-text">
+          <el-text> {{ parseCronToText(corn) }}</el-text>
+        </div>
+        <div style="width: 100px">
+          <el-button link plain type="primary" @click="editSchedule(index)">
+            <el-icon :size="20">
+              <IconMdiSquareEditOutline />
+            </el-icon>
+          </el-button>
+          <el-button link plain type="danger" @click="removeSchedule(index)">
+            <el-icon :size="20">
+              <IconMdiClose />
+            </el-icon>
+          </el-button>
+        </div>
+      </div>
+
+      <el-button size="small" type="info" @click="editSchedule(-1)">
+        <template #icon>
+          <el-icon :size="20">
+            <IconMdiAdd />
+          </el-icon>
+        </template>
+        {{ t("btn.addSchedule") }}
+      </el-button>
+    </div>
+
+    <el-form-item v-if="deploymentInfo.enableSchedules" class="mt-3">
+      <el-checkbox v-model="deploymentInfo.enableTimeout">
+        <strong>
+          <el-text size="small">{{ t("label.enableTimeout") }}</el-text>
+        </strong>
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item v-if="deploymentInfo.enableTimeout" :rules="rules.timeout" prop="schedule.timeout">
+      <v-input v-model="deploymentInfo.schedule.timeout" :placeholder="t('placeholder.timeoutExample')" />
+    </el-form-item>
   </el-form>
+
   <div class="text-align-right pt-3">
     <el-button @click="cancel()">{{ t("btn.cancel") }}</el-button>
     <el-button :loading="isAction" type="primary" @click="save">{{ t("btn.save") }}</el-button>
   </div>
+
+  <v-corn-input ref="cronInputRef" @change="changeSchedule" />
 </template>
 
 <style lang="scss" scoped>
@@ -248,11 +361,26 @@ onMounted(async () => {
   }
 }
 
-.placement-constraints {
-  border: 1px solid var(--el-border-color);
+.content-box {
+  //border: 1px solid var(--el-border-color);
   padding: 16px;
   border-radius: 4px;
   box-sizing: border-box;
   background-color: #ecf0f5;
+}
+
+.cron-line {
+  padding: 4px 12px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background-color: #d6dde7;
+  }
+
+  .cron-text {
+    word-break: break-word;
+  }
 }
 </style>

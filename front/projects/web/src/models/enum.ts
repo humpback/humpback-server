@@ -88,3 +88,14 @@ export enum ServiceRestartPolicyMode {
   RestartPolicyModeOnFailure = "on-failure",
   RestartPolicyModeUnlessStopped = "unless-stopped"
 }
+
+export enum ContainerStatus {
+  ContainerStatusPending = "Pending",
+  ContainerStatusStarting = "Starting",
+  ContainerStatusCreated = "Created",
+  ContainerStatusRunning = "Running",
+  ContainerStatusFailed = "Failed",
+  ContainerStatusExited = "Exited",
+  ContainerStatusRemoved = "Removed",
+  ContainerStatusWarning = "Warning"
+}

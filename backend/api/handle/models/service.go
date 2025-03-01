@@ -154,3 +154,31 @@ func (s *ServiceQueryReqInfo) sort(list []*types.Service) []*types.Service {
 	})
 	return list
 }
+
+const (
+	ServiceUpdateBasicInfo   = "basic-info"
+	ServiceUpdateApplication = "application"
+	ServiceUpdateDeployment  = "deployment"
+)
+
+type ServiceUpdateReqInfo struct {
+	Type string `json:"type"`
+	Data any    `json:"data"`
+}
+
+func (s *ServiceUpdateReqInfo) Check() error {
+	switch strings.ToLower(s.Type) {
+	case ServiceUpdateBasicInfo:
+		description := s.Data.(string)
+		if err := verify.CheckLengthLimit(description, 0, enum.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
+			return err
+		}
+		s.Data = description
+	case ServiceUpdateApplication:
+
+	case ServiceUpdateDeployment:
+	default:
+		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+	}
+	return nil
+}

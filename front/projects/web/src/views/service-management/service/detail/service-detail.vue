@@ -5,6 +5,7 @@ import Deployment from "./deployment.vue"
 import Instances from "./instances.vue"
 import Log from "./log.vue"
 import Performance from "./performance.vue"
+import VServiceStatusTag from "@/components/business/v-service/VServiceStatusTag.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -12,12 +13,9 @@ const router = useRouter()
 const stateStore = useStateStore()
 
 const serviceInfo = computed(() => stateStore.getService())
-const completedInfo = computed(() => {
-  return {
-    application: !!serviceInfo.value?.meta,
-    deployment: !!serviceInfo.value?.deployment
-  }
-})
+
+const applicationCompleted = computed(() => !!serviceInfo.value?.meta)
+const deploymentCompleted = computed(() => !!serviceInfo.value?.deployment)
 
 const activeMenu = ref(route.params.mode as string)
 
@@ -31,16 +29,16 @@ const menuOptions = ref<any[]>([
   {
     i18nLabel: "label.application",
     value: PageServiceDetail.Application,
-    isCompleted: completedInfo.value.application,
     isRequired: true,
-    component: shallowRef(Application)
+    component: shallowRef(Application),
+    unCompleted: !applicationCompleted.value
   },
   {
     i18nLabel: "label.deployment",
     value: PageServiceDetail.Deployment,
-    isCompleted: completedInfo.value.deployment,
     isRequired: true,
-    component: shallowRef(Deployment)
+    component: shallowRef(Deployment),
+    unCompleted: !deploymentCompleted.value
   },
   {
     i18nLabel: "label.monitor",
@@ -65,31 +63,31 @@ function menuChange(v: string) {
       <el-button v-else link loading />
     </div>
     <div class="header-actions">
-      <el-button type="info">
+      <el-button v-if="serviceInfo?.isEnabled" type="info">
         <el-icon :size="16">
           <IconMdiSquare />
         </el-icon>
         {{ t("btn.disable") }}
       </el-button>
-      <el-button type="primary">
+      <el-button v-if="!serviceInfo?.isEnabled && applicationCompleted && deploymentCompleted" type="primary">
         <el-icon :size="16">
           <IconMdiPlay />
         </el-icon>
         {{ t("btn.enable") }}
       </el-button>
-      <el-button type="success">
+      <el-button v-if="serviceInfo?.isEnabled" type="success">
         <el-icon :size="16">
           <IconMdiRestart />
         </el-icon>
         {{ t("btn.restart") }}
       </el-button>
-      <el-button type="success">
+      <el-button v-if="serviceInfo?.isEnabled" type="success">
         <el-icon :size="16">
           <IconMdiPlay />
         </el-icon>
         {{ t("btn.start") }}
       </el-button>
-      <el-button type="primary">
+      <el-button v-if="serviceInfo?.isEnabled" type="primary">
         <el-icon :size="16">
           <IconMdiSquare />
         </el-icon>
@@ -109,10 +107,11 @@ function menuChange(v: string) {
       </el-button>
     </div>
   </div>
+
   <div class="body">
     <div class="body-menu">
       <div class="mb-2">
-        <el-button size="small" style="padding: 0 8px" type="success">{{ t("label.enabled") }}</el-button>
+        <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :status="serviceInfo?.status" />
       </div>
       <div v-for="(item, index) in menuOptions" :key="index" class="menu-group">
         <div v-if="item.isGroup" class="menu-group-title">
@@ -123,6 +122,9 @@ function menuChange(v: string) {
           <div class="flex-1">
             <el-text :type="activeMenu === item.value ? 'info' : ''">{{ t(item.i18nLabel) }}</el-text>
             <el-text v-if="item.isRequired" type="danger"> *</el-text>
+          </div>
+          <div v-if="item.unCompleted" class="pr-3">
+            <el-text type="danger">{{ t("label.incomplete") }}</el-text>
           </div>
         </div>
       </div>

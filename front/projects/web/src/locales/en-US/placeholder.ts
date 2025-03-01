@@ -17,6 +17,7 @@ export default {
     "egImage": "e.g. image-name:image-tag",
     "containerVolume": "e.g. /path/in/container",
     "hostVolume": "e.g. /path/on/container",
-    "defaultLoggingDriver": "Default Logging Driver"
+    "defaultLoggingDriver": "Default Logging Driver",
+    "timeoutExample": "e.g.  30s、10m or 5h"
   }
 }

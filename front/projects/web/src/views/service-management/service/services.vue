@@ -4,8 +4,8 @@ import { SetWebTitle, TableHeight } from "@/utils"
 import { Action } from "@/models"
 import { QueryServicesInfo } from "./common.ts"
 import { serviceService } from "services/service-client.ts"
-import ServiceCreate from "./service-create.vue"
-import ServiceDelete from "./service-delete.vue"
+import ServiceCreate from "./action/service-create.vue"
+import ServiceDelete from "./action/service-delete.vue"
 
 const { t } = useI18n()
 const route = useRoute()

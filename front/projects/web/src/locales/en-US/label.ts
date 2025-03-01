@@ -117,6 +117,16 @@ export default {
     "replicated": "Replicated",
     "instanceNum": "Instance Num",
     "placementConstraints": "Placement Constraints",
-    "schedulesInfo": "Schedules Info"
+    "schedulesInfo": "Schedules Info",
+    "enableTimeout": "Enable Timeout",
+    "setSchedules": "Set Schedules",
+    "cron": "Cron",
+    "text": "Text",
+    "form": "Form",
+    "incomplete": "Incomplete",
+    "instanceOverview": "Instance Overview",
+    "start": "Start",
+    "stop": "Stop",
+    "restart": "Restart"
   }
 }

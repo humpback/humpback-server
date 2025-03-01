@@ -50,8 +50,8 @@ type AgentTask struct {
 }
 
 type MounteInfo struct {
-	Source      string `json:"Source"`
-	Destination string `json:"Destination"`
+	Source      string `json:"source"`
+	Destination string `json:"destination"`
 }
 
 type ContainerPort struct {
@@ -121,23 +121,44 @@ type ScheduleInfo struct {
 	Rules   []string `json:"rules"`
 }
 
-// type ScheduleRule struct {
-// 	Id          string `json:"id"`
-// 	Enabled     bool   `json:"enabled"`
-// 	Mode        string `json:"mode"`
-// 	StartDateAt int64  `json:"startAt"`
-// 	EndDateAt   int64  `json:"endAt"`
-// 	StartTimeAt int64  `json:"startTimeAt"`
-// }
-
 type ServiceMetaDocker struct {
 	Image         string            `json:"image"`
 	AlwaysPull    bool              `json:"alwaysPull"`
 	Command       string            `json:"command"`
 	Envs          []string          `json:"env"`
 	Labels        map[string]string `json:"labels"`
+	Privileged    bool              `json:"privileged"`
+	Capabilities  []string          `json:"capabilities"`
+	LogConfig     *ServiceLogConfig `json:"logConfig"`
+	Resources     *ServiceResources `json:"resources"`
+	Volumes       []*ServiceVolume  `json:"volumes"`
 	Network       *NetworkInfo      `json:"network"`
 	RestartPolicy *RestartPolicy    `json:"restartPolicy"`
+}
+
+type ServiceLogConfig struct {
+	Type   string            `json:"type"`
+	Config map[string]string `json:"config"`
+}
+
+type ServiceResources struct {
+	Memory            uint64 `json:"memory"`
+	MemoryReservation uint64 `json:"memoryReservation"`
+	MaxCpuUsage       uint64 `json:"maxCpuUsage"`
+}
+
+type ServiceVolumeType string
+
+var (
+	ServiceVolumeTypeBind   ServiceVolumeType = "bind"
+	ServiceVolumeTypeVolume ServiceVolumeType = "volume"
+)
+
+type ServiceVolume struct {
+	Type     ServiceVolumeType `json:"type"`
+	Target   string            `json:"target"`
+	Source   string            `json:"source"`
+	Readonly bool              `json:"readOnly"`
 }
 
 type NetworkMode string
@@ -149,10 +170,11 @@ var (
 )
 
 type NetworkInfo struct {
-	Mode        NetworkMode `json:"mode"`        // custom模式需要创建网络
-	Hostname    string      `json:"hostname"`    // bridge及custom模式时可设置，用户容器的hostname
-	NetworkName string      `json:"networkName"` //custom模式使用
-	Ports       []*PortInfo `json:"ports"`
+	Mode               NetworkMode `json:"mode"`        // custom模式需要创建网络
+	Hostname           string      `json:"hostname"`    // bridge及custom模式时可设置，用户容器的hostname
+	NetworkName        string      `json:"networkName"` //custom模式使用
+	UseMachineHostname bool        `json:"useMachineHostname"`
+	Ports              []*PortInfo `json:"ports"`
 }
 
 type PortInfo struct {

@@ -101,6 +101,10 @@ export interface ServiceContainerStatusInfo {
   created: number
   started: number
   lastHeartbeat: number
+  labels: { [key: string]: string }
+  env: string[]
+  mounts: Array<{ source: string; destination: string }>
+  ports: Array<{ bindIP: string; privatePort: number; publicPort: number; type: string }>
 }
 
 export function NewServiceEmptyInfo(): ServiceInfo {
