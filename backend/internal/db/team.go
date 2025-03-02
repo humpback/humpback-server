@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	bolt "go.etcd.io/bbolt"
 	"humpback/types"
+
+	bolt "go.etcd.io/bbolt"
 )
 
 func TeamsGetAll() ([]*types.Team, error) {
@@ -28,7 +29,7 @@ func TeamsGetByName(name string, isLower bool) ([]*types.Team, error) {
 	}
 	var result []*types.Team
 	for _, team := range teams {
-		if isLower && strings.ToLower(team.Name) == strings.ToLower(name) {
+		if isLower && strings.EqualFold(team.Name, name) {
 			result = append(result, team)
 		}
 		if !isLower && team.Name == name {

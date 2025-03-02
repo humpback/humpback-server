@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	bolt "go.etcd.io/bbolt"
 	"humpback/types"
+
+	bolt "go.etcd.io/bbolt"
 )
 
 func UserGetSupperAdmin() (*types.User, error) {
@@ -37,7 +38,7 @@ func UsersGetByName(name string, isLower bool) ([]*types.User, error) {
 	}
 	var result []*types.User
 	for _, user := range users {
-		if isLower && strings.ToLower(user.Username) == strings.ToLower(name) {
+		if isLower && strings.EqualFold(user.Username, name) {
 			result = append(result, user)
 		}
 		if !isLower && user.Username == name {
@@ -52,7 +53,7 @@ func UsersGetByIds(ids []string, ignoreNotExist bool) ([]*types.User, error) {
 }
 
 func UserUpdate(id string, data *types.User) error {
-	return SaveData[*types.User](BucketUsers, id, data)
+	return SaveData(BucketUsers, id, data)
 }
 
 func UserUpdateAndTeams(userInfo *types.User, teams []*types.Team) (string, error) {

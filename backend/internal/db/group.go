@@ -37,7 +37,7 @@ func GroupsGetByName(name string, isLower bool) ([]*types.NodesGroups, error) {
 	}
 	var result []*types.NodesGroups
 	for _, group := range groups {
-		if isLower && strings.ToLower(group.GroupName) == strings.ToLower(name) {
+		if isLower && strings.EqualFold(group.GroupName, name) {
 			result = append(result, group)
 		}
 		if !isLower && group.GroupName == name {
@@ -48,7 +48,7 @@ func GroupsGetByName(name string, isLower bool) ([]*types.NodesGroups, error) {
 }
 
 func GroupUpdate(info *types.NodesGroups) error {
-	return SaveData[*types.NodesGroups](BucketNodesGroups, info.GroupId, info)
+	return SaveData(BucketNodesGroups, info.GroupId, info)
 }
 
 func GroupDelete(id string) error {

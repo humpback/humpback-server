@@ -62,8 +62,8 @@ var (
 )
 
 var (
-	ErrKeyNotExist    = errors.New("Key not found")
-	ErrBucketNotExist = errors.New("Bucket not exists")
+	ErrKeyNotExist    = errors.New("key not found")
+	ErrBucketNotExist = errors.New("bucket not exists")
 )
 
 var db *dbHelper
@@ -73,7 +73,7 @@ func InitDB() error {
 	db = &dbHelper{}
 	boltDB, err := bolt.Open(config.DBArgs().Root, 0600, nil)
 	if err != nil {
-		return fmt.Errorf("Open db failed: %s", err)
+		return fmt.Errorf("open db failed: %s", err)
 	}
 	db.boltDB = boltDB
 	if err = db.boltDB.Batch(func(tx *bolt.Tx) error {
@@ -84,7 +84,7 @@ func InitDB() error {
 		}
 		return nil
 	}); err != nil {
-		return fmt.Errorf("Init Buckets failed: %s", err)
+		return fmt.Errorf("init Buckets failed: %s", err)
 	}
 	slog.Info("[Init DB] Check all buckets completed.")
 	return nil
