@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"humpback/internal/db"
@@ -94,6 +95,17 @@ func getAllServices(c *gin.Context) {
 	}
 }
 
+func getAllConfig(c *gin.Context) {
+
+	svcs, err := db.GetDataAll[types.Config](db.BucketConfigs)
+
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+	} else {
+		c.JSON(http.StatusOK, svcs)
+	}
+}
+
 func mockGatewayServices(c *gin.Context) {
 	gId := c.Param("groupId")
 	svc := &types.Service{
@@ -153,6 +165,7 @@ func mockWebServices(c *gin.Context) {
 			RestartPolicy: &types.RestartPolicy{
 				Mode: types.RestartPolicyModeAlways,
 			},
+			Envs: []string{"a=b", "name={name}"},
 		},
 	}
 
@@ -227,6 +240,17 @@ func mockServiceAction(c *gin.Context) {
 	svc, _ := db.GetDataById[types.Service](db.BucketServices, svcId)
 
 	if svc != nil {
+
+		if strings.EqualFold(action, types.ServiceActionDelete) {
+			svc.IsDelete = true
+		} else if strings.EqualFold(action, types.ServiceActionDisable) {
+			svc.IsEnabled = false
+		} else {
+			svc.Action = action
+		}
+
+		db.SaveData(db.BucketServices, svc.ServiceId, svc)
+
 		svcChange := ServiceChangeInfo{
 			ServiceId: svc.ServiceId,
 			Version:   svc.Version,
@@ -236,6 +260,20 @@ func mockServiceAction(c *gin.Context) {
 		sc := c.MustGet("scheduler").(*HumpbackScheduler)
 		sc.ServiceChangeChan <- svcChange
 	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+}
+
+func mockConfigs(c *gin.Context) {
+	config1 := &types.Config{
+		ConfigId:    utils.GenerateRandomStringWithLength(8),
+		ConfigName:  "name",
+		ConfigType:  types.ConfigTypeStatic,
+		ConfigValue: "james yang",
+		CreatedAt:   time.Now().Unix(),
+	}
+
+	db.SaveData(db.BucketConfigs, config1.ConfigId, config1)
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
 }

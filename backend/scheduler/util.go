@@ -3,6 +3,7 @@ package scheduler
 import (
 	"humpback/pkg/utils"
 	"humpback/types"
+	"regexp"
 	"strings"
 )
 
@@ -67,5 +68,19 @@ func isPlacementMatched(node *types.Node, p *types.PlacementInfo) bool {
 		} else {
 			return false
 		}
+	}
+}
+
+func hasConfigValue(value string) string {
+	re := regexp.MustCompile(`^\{([^}]+)\}$`)
+
+	// 查找匹配项
+	match := re.FindStringSubmatch(value)
+
+	// 判断是否匹配
+	if len(match) == 2 {
+		return match[1]
+	} else {
+		return ""
 	}
 }

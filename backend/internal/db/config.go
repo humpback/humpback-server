@@ -21,7 +21,7 @@ func ConfigsGetByName(name string, isLower bool) ([]*types.Config, error) {
 	}
 	var result []*types.Config
 	for _, config := range configs {
-		if isLower && strings.ToLower(config.ConfigName) == strings.ToLower(name) {
+		if isLower && strings.EqualFold(config.ConfigName, name) {
 			result = append(result, config)
 		}
 		if !isLower && config.ConfigName == name {
@@ -32,7 +32,7 @@ func ConfigsGetByName(name string, isLower bool) ([]*types.Config, error) {
 }
 
 func ConfigUpdate(info *types.Config) error {
-	return SaveData[*types.Config](BucketConfigs, info.ConfigId, info)
+	return SaveData(BucketConfigs, info.ConfigId, info)
 }
 
 func ConfigDelete(id string) error {

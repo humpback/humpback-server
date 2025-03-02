@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"humpback/config"
+	"humpback/internal/db"
 	"humpback/types"
 
 	"github.com/gin-gonic/gin"
@@ -67,6 +68,8 @@ func (scheduler *HumpbackScheduler) Start() {
 
 		e.POST("/api/health", doHealth)
 
+		e.GET("/api/config/:name", getConfigByName)
+
 		e.GET("/mock/nodes", mockNodes)
 
 		e.GET("/nodes", getAllNodes)
@@ -75,9 +78,13 @@ func (scheduler *HumpbackScheduler) Start() {
 
 		e.GET("/services", getAllServices)
 
+		e.GET("/configs", getAllConfig)
+
 		e.GET("/mock/service/:groupId/gateway", mockGatewayServices)
 
 		e.GET("/mock/service/:groupId/web", mockWebServices)
+
+		e.GET("/mock/configs", mockConfigs)
 
 		e.GET("/mock/service/:groupId/schedule", mockScheduleServices)
 
@@ -97,4 +104,14 @@ func (scheduler *HumpbackScheduler) Start() {
 
 func (scheduler *HumpbackScheduler) Close(c context.Context) error {
 	return scheduler.httpSrv.Shutdown(c)
+}
+
+func getConfigByName(c *gin.Context) {
+	configName := c.Param("name")
+	configValue, err := db.ConfigsGetByName(configName, true)
+	if err != nil {
+		c.String(http.StatusInternalServerError, err.Error())
+	} else {
+		c.JSON(http.StatusOK, configValue)
+	}
 }

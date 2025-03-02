@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"fmt"
 	"log/slog"
 	"math/rand/v2"
 	"slices"
@@ -154,6 +155,26 @@ func (sm *ServiceManager) PrepareMeta() {
 
 	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName]; !ok || label != sm.ServiceInfo.ServiceName {
 		sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName] = sm.ServiceInfo.ServiceName
+	}
+
+	if sm.ServiceInfo.Meta.Envs != nil {
+		for i, env := range sm.ServiceInfo.Meta.Envs {
+			if strings.Contains(env, "=") {
+				kv := strings.Split(env, "=")
+				configName := hasConfigValue(kv[1])
+				if configName != "" {
+					configs, err := db.ConfigsGetByName(configName, false)
+					if err == nil && len(configs) > 0 {
+						for _, configValue := range configs {
+							if configValue.ConfigType == types.ConfigTypeStatic {
+								sm.ServiceInfo.Meta.Envs[i] = fmt.Sprintf("%s=%s", kv[0], configValue.ConfigValue)
+								break
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
