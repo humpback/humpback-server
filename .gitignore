@@ -24,7 +24,7 @@
 *.sw?
 *.db
 **/package-lock.json
-**/pnpm-lock.yaml
+#**/pnpm-lock.yaml
 *.exe
 **/humpback_linux
 **/humpback
