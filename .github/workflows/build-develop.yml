@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies and build front
         working-directory: ./front
         run: |
-          npm install -g pnpm
+          npm install -g pnpm@9.15.2
           pnpm install
           pnpm run build
       
