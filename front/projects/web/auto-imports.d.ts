@@ -10,6 +10,7 @@ declare global {
   const ChangeEventType: typeof import('./src/utils/event')['ChangeEventType']
   const CloseChannelMessage: typeof import('./src/utils/event')['CloseChannelMessage']
   const ConfigType: typeof import('./src/models/enum')['ConfigType']
+  const ContainerStatus: typeof import('./src/models/enum')['ContainerStatus']
   const CopyToClipboard: typeof import('./src/utils/copy')['CopyToClipboard']
   const Debounce: typeof import('./src/utils/time')['Debounce']
   const EffectScope: typeof import('vue')['EffectScope']
@@ -410,7 +411,7 @@ declare global {
   export type { HttpRequestOptions } from './src/services/http-client'
   import('./src/services/http-client')
   // @ts-ignore
-  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode } from './src/models/enum'
+  export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode, ContainerStatus, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode, ContainerStatus } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
   export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageUserRelated, PageGroupDetail, PageServiceDetail } from './src/models/page'
@@ -447,6 +448,7 @@ declare module 'vue' {
     readonly ChangeEventType: UnwrapRef<typeof import('./src/utils/event')['ChangeEventType']>
     readonly CloseChannelMessage: UnwrapRef<typeof import('./src/utils/event')['CloseChannelMessage']>
     readonly ConfigType: UnwrapRef<typeof import('./src/models/enum')['ConfigType']>
+    readonly ContainerStatus: UnwrapRef<typeof import('./src/models/enum')['ContainerStatus']>
     readonly CopyToClipboard: UnwrapRef<typeof import('./src/utils/copy')['CopyToClipboard']>
     readonly Debounce: UnwrapRef<typeof import('./src/utils/time')['Debounce']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>

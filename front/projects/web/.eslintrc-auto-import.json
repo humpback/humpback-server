@@ -9,6 +9,7 @@
     "ComputedRef": true,
     "ConfigInfo": true,
     "ConfigType": true,
+    "ContainerStatus": true,
     "CopyToClipboard": true,
     "Debounce": true,
     "DirectiveBinding": true,

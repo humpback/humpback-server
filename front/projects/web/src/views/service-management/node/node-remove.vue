@@ -28,7 +28,7 @@ async function remove() {
   }
   isAction.value = true
   return await groupService
-    .updateNodes(stateStore.getGroup()?.groupId, {
+    .updateNodes(stateStore.getGroup()!.groupId, {
       groupId: stateStore.getGroup()?.groupId,
       isDelete: true,
       nodes: [dialogInfo.value.info.nodeId]

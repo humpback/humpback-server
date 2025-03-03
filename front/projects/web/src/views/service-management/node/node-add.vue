@@ -82,7 +82,7 @@ async function save() {
   )
   isAction.value = true
   return await groupService
-    .updateNodes(stateStore.getGroup()?.groupId, {
+    .updateNodes(stateStore.getGroup()!.groupId, {
       groupId: stateStore.getGroup()?.groupId,
       nodes: nodes,
       isDelete: false
