@@ -13,7 +13,11 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
+	"humpback/common/locales"
 	"humpback/common/response"
+	"humpback/config"
+	"humpback/internal/controller"
+	"humpback/types"
 )
 
 const (
@@ -33,10 +37,7 @@ func Log() gin.HandlerFunc {
 		}
 		startTime := time.Now()
 		c.Next()
-		if strings.HasPrefix(c.Request.URL.Path, "/webapi") ||
-			strings.HasPrefix(c.Request.URL.Path, "/platform-api") ||
-			strings.HasPrefix(c.Request.URL.Path, "/extern-api") ||
-			strings.HasPrefix(c.Request.URL.Path, "/object-api") {
+		if strings.HasPrefix(c.Request.URL.Path, "/webapi") {
 			slog.Info("request", c.Request.Method, c.Request.URL, "T", time.Now().Sub(startTime).String())
 			v, ok := c.Get("Body")
 			if ok {
@@ -107,23 +108,48 @@ func GetErrCodeMap(c *gin.Context) map[string]string {
 func CheckLogin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		startUp := strings.ToLower(c.Query("startup")) == "true"
-		sessionId, err := GetUserCookie(c)
+		sessionId, err := GetCookieSession(c)
 		if err != nil {
 			AbortErr(c, response.NewRespUnauthorized(startUp))
 			return
 		}
-		SetUserSessionId(c, sessionId)
-		//userInfo, expired, err := controller.CommonCtl().SessionCheckAndRefresh(sessionId)
-		//if err != nil {
-		//	AbortErr(c, err)
-		//	return
-		//}
-		//if expired {
-		//	SetUserCookie(c, sessionId, 0)
-		//	AbortErr(c, response.NewRespUnauthorized(startUp))
-		//	return
-		//}
-		//SetUserCookie(c, sessionId, int(config.RedisArgs().SessionTTL.Seconds()))
-		//SetUserInfo(c, userInfo)
+		SetSessionId(c, sessionId)
+		userInfo, expired, err := controller.SessionGetAndRefresh(sessionId)
+		if err != nil {
+			AbortErr(c, err)
+			return
+		}
+		if expired {
+			SetCookieSession(c, sessionId, 0)
+			AbortErr(c, response.NewRespUnauthorized(startUp))
+			return
+		}
+		SetCookieSession(c, sessionId, int(config.DBArgs().SessionTimeout.Seconds()))
+		SetUserInfo(c, userInfo)
+	}
+}
+
+func CheckAdminPermissions() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userInfo := GetUserInfo(c)
+		if userInfo.Role != types.UserRoleAdmin && userInfo.Role != types.UserRoleSupperAdmin {
+			AbortErr(c, response.NewBadRequestErr(locales.CodeNoPermission))
+			return
+		}
+	}
+}
+
+func CheckInGroup() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userInfo := GetUserInfo(c)
+		groupId := c.Param("groupId")
+		if groupId == "" {
+			AbortErr(c, response.NewBadRequestErr(locales.CodeRequestParamsInvalid))
+			return
+		}
+		if _, err := controller.Group(userInfo, groupId); err != nil {
+			AbortErr(c, err)
+			return
+		}
 	}
 }

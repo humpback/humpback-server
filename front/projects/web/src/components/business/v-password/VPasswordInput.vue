@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { RuleLength } from "@/models"
+
 const props = defineProps<{
   modelValue: string
   clearable?: boolean
@@ -9,6 +11,7 @@ const props = defineProps<{
   minlength?: number | string
   label?: string
 }>()
+
 const emits = defineEmits<{ (e: "update:model-value", v: string): void }>()
 
 const slots = useSlots()
@@ -34,8 +37,8 @@ function focus(evt: FocusEvent) {
     :aria-label="props.label"
     :clearable="props.clearable"
     :disabled="props.disabled"
-    :maxlength="props.maxlength"
-    :minlength="props.minlength"
+    :maxlength="props.maxlength || RuleLength.Password.Max"
+    :minlength="props.minlength || RuleLength.Password.Min"
     :model-value="props.modelValue || ''"
     :placeholder="props.placeholder"
     :show-password="showPWD"

@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"humpback/types"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -10,25 +11,25 @@ const (
 	UserCookieKey = "sessionId"
 )
 
-func GetUserInfo(c *gin.Context) *types.UserInfo {
+func GetUserInfo(c *gin.Context) *types.User {
 	info, _ := c.Get(UserInfoKey)
-	return info.(*types.UserInfo)
+	return info.(*types.User)
 }
 
-func SetUserInfo(c *gin.Context, usreInfo *types.UserInfo) {
-	c.Set(UserInfoKey, usreInfo)
+func SetUserInfo(c *gin.Context, userInfo *types.User) {
+	c.Set(UserInfoKey, userInfo)
 }
 
-func SetUserSessionId(c *gin.Context, sessionId string) {
+func SetSessionId(c *gin.Context, sessionId string) {
 	c.Set(UserCookieKey, sessionId)
 }
 
-func GetUserSessionId(c *gin.Context) string {
+func GetSessionId(c *gin.Context) string {
 	id, _ := c.Get(UserCookieKey)
 	return id.(string)
 }
 
-func SetUserCookie(c *gin.Context, sessionId string, maxAge int) {
+func SetCookieSession(c *gin.Context, sessionId string, maxAge int) {
 	if maxAge > 0 {
 		c.SetCookie(UserCookieKey, sessionId, maxAge, "/webapi", "", false, true)
 		return
@@ -36,6 +37,6 @@ func SetUserCookie(c *gin.Context, sessionId string, maxAge int) {
 	c.SetCookie(UserCookieKey, sessionId, -1, "/webapi", "", false, true)
 }
 
-func GetUserCookie(c *gin.Context) (string, error) {
+func GetCookieSession(c *gin.Context) (string, error) {
 	return c.Cookie(UserCookieKey)
 }

@@ -1,0 +1,618 @@
+<script lang="ts" setup>
+import { GenerateUUID, RulePleaseEnter, SetWebTitle } from "@/utils"
+import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode, ServiceVolumeType } from "@/models"
+import { FormInstance, FormRules } from "element-plus"
+import { NewServiceMetaDockerEmptyInfo } from "@/types"
+import { cloneDeep, filter, find, findIndex, groupBy, map, toLower } from "lodash-es"
+import VolumesPage from "./application-advanced/volumes.vue"
+import EnvironmentsPage from "./application-advanced/environments.vue"
+import LabelsPage from "./application-advanced/labels.vue"
+import CapabilitiesPage from "./application-advanced/capabilities.vue"
+import ResourcesLogConfigPage from "./application-advanced/resources-log-config.vue"
+
+interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
+  imageDomain: string
+  imageName: string
+  advancedMode: "volumes" | "environments" | "labels" | "resourcesAndLogs" | "capabilities"
+  validEnv: Array<{ id: string; name: string; value: string }>
+  validLabel: Array<{ id: string; name: string; value: string }>
+  validVolumes: Array<{
+    id: string
+    type: ServiceVolumeType.VolumeTypeBind | ServiceVolumeType.VolumeTypeVolume
+    target: string
+    source: string
+    "readonly": boolean
+  }>
+  validLogConfig: { type: string; options: Array<{ id: string; name: string; value: string }> }
+  ports: Array<{
+    id: string
+    hostPort?: number
+    containerPort?: number
+    protocol: string
+  }>
+}
+
+const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
+const stateStore = useStateStore()
+
+const isLoading = ref(false)
+const isAction = ref(false)
+
+const groupId = ref(route.params.groupId as string)
+const serviceId = ref(route.params.serviceId as string)
+const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
+const registries = ref<RegistryInfo[]>([])
+
+const advancedOptions = ref<Array<{ label: string; value: string; color?: string }>>([
+  { label: "label.volumes", value: "volumes" },
+  { label: "label.environments", value: "environments" },
+  { label: "label.labels", value: "labels" },
+  { label: "label.resourcesAndLogs", value: "resourcesAndLogs" },
+  { label: "label.capabilities", value: "capabilities" }
+])
+
+const metaInfo = ref<ServiceApplicationInfo>({
+  imageDomain: "",
+  imageName: "",
+  ports: [],
+  validVolumes: [],
+  validEnv: [],
+  validLabel: [],
+  advancedMode: "volumes",
+  validLogConfig: { type: "", options: [] },
+  ...NewServiceMetaDockerEmptyInfo()
+})
+
+const formRef = useTemplateRef<FormInstance>("formRef")
+const volumeRef = useTemplateRef<InstanceType<typeof VolumesPage>>("volumeRef")
+const environmentRef = useTemplateRef<InstanceType<typeof EnvironmentsPage>>("environmentRef")
+const labelRef = useTemplateRef<InstanceType<typeof LabelsPage>>("labelRef")
+const resourcesAndLogsRef = useTemplateRef<InstanceType<typeof ResourcesLogConfigPage>>("resourcesAndLogsRef")
+
+const rules = ref<FormRules>({
+  imageName: [
+    { required: true, validator: RulePleaseEnter("label.image"), trigger: "blur" },
+    { required: true, validator: RuleLimitRange(RuleLength.ServiceName.Min, RuleLength.ServiceName.Max), trigger: "blur" }
+  ],
+  networkName: [{ required: true, validator: RulePleaseEnter("label.networkName"), trigger: "blur" }],
+  containerPort: [{ required: true, validator: checkContainerPort, trigger: "blur" }],
+  hostPort: [{ required: true, validator: checkHostPort, trigger: "blur" }]
+})
+
+function checkContainerPort(rule: any, value: any, callback: any) {
+  const containerPort = value ? (value as number) : 0
+  if (!containerPort) {
+    return callback(new Error(`${t("rules.pleaseEnter")} ${t("label.containerPort")}`))
+  }
+  if (filter(metaInfo.value.ports, x => x.containerPort === containerPort).length > 1) {
+    return callback(new Error(`${t("rules.duplicate")} ${t("label.containerPort")}`))
+  }
+  return callback()
+}
+
+function checkHostPort(rule: any, value: any, callback: any) {
+  const hostPort = value ? (value as number) : 0
+  if (hostPort && filter(metaInfo.value.ports, x => x.hostPort === hostPort).length > 1) {
+    return callback(new Error(`${t("rules.duplicate")} ${t("label.hostPort")}`))
+  }
+  return callback()
+}
+
+function cancel() {
+  router.push({ name: "groupDetail", params: { groupId: groupId.value, mode: PageGroupDetail.Services } })
+}
+
+function parseMetaInfo() {
+  const defaultImage = find(registries.value, x => x.isDefault)
+  const domain = defaultImage ? defaultImage.url : registries.value.length > 0 ? registries.value[0].url : ""
+  let meta = serviceInfo.value.meta ? serviceInfo.value.meta : NewServiceMetaDockerEmptyInfo()
+  const imageSplit = meta.image.indexOf("/")
+  metaInfo.value = {
+    imageDomain: imageSplit > 0 ? meta.image.slice(0, imageSplit) : domain,
+    imageName: imageSplit > 0 ? meta.image.slice(imageSplit) : "",
+    advancedMode: "volumes",
+    validEnv: filter(
+      map(meta.env, x => {
+        const s = x.split("=")
+        return {
+          id: GenerateUUID(),
+          name: s.length > 0 ? s[0] : "",
+          value: s.length > 1 ? s[1] : ""
+        }
+      }),
+      d => !!d.name && !!d.value
+    ),
+    validLabel: map(Object.keys(meta.labels), x => ({ id: GenerateUUID(), name: x, value: meta.labels[x] })),
+    validVolumes: map(meta.volumes, x => ({
+      id: GenerateUUID(),
+      type: x.type,
+      target: x.target,
+      source: x.source,
+      readonly: x.readonly
+    })),
+    validLogConfig: {
+      type: meta.logConfig.type,
+      options: map(Object.keys(meta.logConfig.config), x => ({
+        id: GenerateUUID(),
+        name: x,
+        value: meta.logConfig.config[x]
+      }))
+    },
+    ports: map(meta.network.ports, x => ({
+      id: GenerateUUID(),
+      containerPort: x.containerPort || undefined,
+      protocol: x.protocol,
+      hostPort: x.hostPort || undefined
+    })),
+    ...meta
+  }
+}
+
+function addPort() {
+  metaInfo.value.ports.push({
+    id: GenerateUUID(),
+    containerPort: undefined,
+    protocol: ServiceNetworkProtocol.NetworkProtocolTCP,
+    hostPort: undefined
+  })
+}
+
+function removePort(index: number) {
+  metaInfo.value.ports.splice(index, 1)
+}
+
+async function getGroupInfo() {
+  return await groupService.info(groupId.value).then(info => {
+    stateStore.setGroup(groupId.value, info)
+  })
+}
+
+async function getServiceInfo() {
+  return await serviceService.info(groupId.value, serviceId.value).then(info => {
+    serviceInfo.value = info
+    stateStore.setService(serviceId.value, info)
+  })
+}
+
+async function getRegistryList() {
+  return await registryService.list().then(list => {
+    registries.value = list
+  })
+}
+
+async function search(init?: boolean) {
+  isLoading.value = true
+  await Promise.all([getGroupInfo(), getServiceInfo(), init ? getRegistryList() : undefined])
+    .then(() => {
+      parseMetaInfo()
+    })
+    .finally(() => (isLoading.value = false))
+}
+
+function checkVolumes(isAddErrCheck?: boolean) {
+  let isFailed = false
+  for (const volume of metaInfo.value.validVolumes) {
+    if (!volume.target || !volume.source) {
+      isFailed = true
+      break
+    }
+  }
+  const obj = groupBy(metaInfo.value.validVolumes, "target")
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === "volumes")
+  if (index != -1) {
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
+    }
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+}
+
+function checkEnvironment(isAddErrCheck?: boolean) {
+  let isFailed = false
+  const envs = cloneDeep(metaInfo.value.validEnv)
+  for (const env of envs) {
+    env.name = toLower(env.name)
+    if (!env.name || !env.value) {
+      isFailed = true
+      break
+    }
+  }
+  const obj = groupBy(envs, "name")
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === "environments")
+  if (index != -1) {
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
+    }
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+}
+
+function checkLabels(isAddErrCheck?: boolean) {
+  let isFailed = false
+  const labels = cloneDeep(metaInfo.value.validLabel)
+  for (const label of labels) {
+    label.name = toLower(label.name)
+    if (!label.name || !label.value) {
+      isFailed = true
+      break
+    }
+  }
+  const obj = groupBy(labels, "name")
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === "labels")
+  if (index != -1) {
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
+    }
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+}
+
+function checkLogConfig(isAddErrCheck?: boolean) {
+  let isFailed = false
+  const logConfigs = cloneDeep(metaInfo.value.validLogConfig)
+  for (const logConfig of logConfigs.options) {
+    logConfig.name = toLower(logConfig.name)
+    if (!logConfig.name || !logConfig.value) {
+      isFailed = true
+      break
+    }
+  }
+  const obj = groupBy(logConfigs.options, "name")
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === "resourcesAndLogs")
+  if (index != -1) {
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
+    }
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+}
+
+async function validate() {
+  checkVolumes(true)
+  checkEnvironment(true)
+  checkLabels(true)
+  checkLogConfig(true)
+  const validList = await Promise.all([
+    formRef.value?.validate().catch(() => false),
+    volumeRef.value?.validate().catch(() => false),
+    environmentRef.value?.validate().catch(() => false),
+    labelRef.value?.validate().catch(() => false),
+    resourcesAndLogsRef.value?.validate().catch(() => false)
+  ])
+  return filter(validList, x => !x).length <= 0
+}
+
+async function save() {
+  if (!(await validate())) {
+    return
+  }
+}
+
+onMounted(async () => {
+  await search(true)
+  SetWebTitle(`${t("webTitle.serviceInfo")} - ${stateStore.getService()?.serviceName}`)
+})
+</script>
+
+<template>
+  <el-form ref="formRef" v-loading="isLoading" :model="metaInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
+    <el-row :gutter="12">
+      <el-col :span="24">
+        <el-form-item :label="t('label.image')" prop="imageName">
+          <v-input v-model="metaInfo.imageName" :maxlength="RuleLength.ImageName?.Max" :placeholder="t('placeholder.egImage')" clearable show-word-limit>
+            <template #prepend>
+              <el-dropdown trigger="click" @command="metaInfo.imageDomain = $event">
+                <div class="registry-domain">
+                  <div style="width: auto">{{ metaInfo.imageDomain }}</div>
+                  <el-icon :size="18">
+                    <IconMdiChevronDown />
+                  </el-icon>
+                </div>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+            <template #append>
+              <el-checkbox v-model="metaInfo.alwaysPull">{{ t("label.alwaysPull") }}</el-checkbox>
+            </template>
+          </v-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="24">
+        <el-form-item :label="t('label.command')">
+          <v-description-input v-model="metaInfo.command" />
+        </el-form-item>
+      </el-col>
+
+      <el-col :md="metaInfo.restartPolicy.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure ? 12 : 24">
+        <el-form-item :label="t('label.restartPolicy')">
+          <el-select v-model="metaInfo.restartPolicy.mode">
+            <el-option :label="t('label.no')" :value="ServiceRestartPolicyMode.RestartPolicyModeNo" />
+            <el-option :label="t('label.always')" :value="ServiceRestartPolicyMode.RestartPolicyModeAlways" />
+            <el-option :label="t('label.onFailure')" :value="ServiceRestartPolicyMode.RestartPolicyModeOnFailure" />
+            <el-option :label="t('label.unlessStopped')" :value="ServiceRestartPolicyMode.RestartPolicyModeUnlessStopped" />
+          </el-select>
+        </el-form-item>
+      </el-col>
+
+      <el-col v-if="metaInfo.restartPolicy.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure" :md="12">
+        <el-form-item :label="t('label.maxRetryCount')">
+          <v-input-number v-model="metaInfo.restartPolicy.maxRetryCount" :min="0" style="width: 100%" />
+        </el-form-item>
+      </el-col>
+
+      <el-col
+        :span="metaInfo.network.mode === ServiceNetworkMode.NetworkModeHost ? 24 : metaInfo.network.mode === ServiceNetworkMode.NetworkModeBridge ? 10 : 6">
+        <el-form-item :label="t('label.network')">
+          <el-select v-model="metaInfo.network.mode">
+            <el-option :label="t('label.host')" :value="ServiceNetworkMode.NetworkModeHost" />
+            <el-option :label="t('label.bridge')" :value="ServiceNetworkMode.NetworkModeBridge" />
+            <el-option :label="t('label.custom')" :value="ServiceNetworkMode.NetworkModeCustom" />
+          </el-select>
+        </el-form-item>
+      </el-col>
+
+      <el-col v-if="metaInfo.network.mode === ServiceNetworkMode.NetworkModeCustom" :span="6">
+        <el-form-item :label="t('label.networkName')" :rules="rules.networkName" prop="network.networkName">
+          <v-input v-model="metaInfo.network.networkName" />
+        </el-form-item>
+      </el-col>
+
+      <el-col
+        v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost"
+        :span="metaInfo.network.mode === ServiceNetworkMode.NetworkModeBridge ? 14 : 12">
+        <el-form-item :label="t('label.hostname')" prop="network.hostname">
+          <v-input v-model="metaInfo.network.hostname" :disabled="metaInfo.network.useMachineHostname">
+            <template #prepend>
+              <el-checkbox v-model="metaInfo.network.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
+            </template>
+          </v-input>
+        </el-form-item>
+      </el-col>
+
+      <el-col v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost">
+        <div class="network-box">
+          <div class="mb-3">
+            <v-tips>{{ t("tips.networkPortTips") }}</v-tips>
+          </div>
+          <el-row :gutter="12">
+            <el-col v-for="(portInfo, index) in metaInfo.ports" :key="index" :span="24">
+              <div class="d-flex gap-2">
+                <el-form-item :prop="`ports.${index}.containerPort`" :rules="rules.containerPort" class="flex-1">
+                  <v-input-number
+                    v-model="metaInfo.ports[index].containerPort"
+                    :controls="false"
+                    :min="0"
+                    :placeholder="t('placeholder.containerPort')"
+                    style="width: 100%">
+                  </v-input-number>
+                </el-form-item>
+                <el-form-item :prop="`ports.${index}.protocol`">
+                  <el-select v-model="metaInfo.ports[index].protocol" :placeholder="t('placeholder.protocol')" style="width: 200px">
+                    <el-option :label="t('label.tcp')" :value="ServiceNetworkProtocol.NetworkProtocolTCP" />
+                    <el-option :label="t('label.udp')" :value="ServiceNetworkProtocol.NetworkProtocolUDP" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item :prop="`ports.${index}.hostPort`" :rules="rules.hostPort" class="flex-1">
+                  <v-input-number v-model="metaInfo.ports[index].hostPort" :controls="false" :placeholder="t('placeholder.hostPort')" class="flex-1" />
+                </el-form-item>
+                <el-form-item>
+                  <el-button plain style="padding: 4px 12px" text type="danger" @click="removePort(index)">
+                    <el-icon :size="26">
+                      <IconMdiClose />
+                    </el-icon>
+                  </el-button>
+                </el-form-item>
+              </div>
+            </el-col>
+            <el-col>
+              <el-button size="small" type="info" @click="addPort">
+                <template #icon>
+                  <el-icon :size="20">
+                    <IconMdiAdd />
+                  </el-icon>
+                </template>
+                {{ t("btn.addPort") }}
+              </el-button>
+            </el-col>
+          </el-row>
+        </div>
+      </el-col>
+
+      <el-col>
+        <el-form-item class="w-100 mt-5">
+          <el-segmented v-model="metaInfo.advancedMode" :options="advancedOptions" block class="advanced-segmented w-100">
+            <template #default="{ item }">
+              <span :class="(item as any).color">{{ t((item as any).label as string) }}</span>
+            </template>
+          </el-segmented>
+        </el-form-item>
+      </el-col>
+
+      <el-col>
+        <div class="advanced-box">
+          <div class="advanced-content">
+            <volumes-page
+              v-if="metaInfo.advancedMode === 'volumes'"
+              ref="volumeRef"
+              v-model="metaInfo.validVolumes"
+              :has-valid="!!find(advancedOptions, x => x.value === 'volumes')?.color"
+              @check="checkVolumes()" />
+
+            <environments-page
+              v-if="metaInfo.advancedMode === 'environments'"
+              ref="environmentRef"
+              v-model="metaInfo.validEnv"
+              :has-valid="!!find(advancedOptions, x => x.value === 'environments')?.color"
+              @check="checkEnvironment()" />
+
+            <labels-page
+              v-if="metaInfo.advancedMode === 'labels'"
+              ref="labelRef"
+              v-model="metaInfo.validLabel"
+              :has-valid="!!find(advancedOptions, x => x.value === 'labels')?.color"
+              @check="checkLabels()" />
+
+            <resources-log-config-page
+              v-if="metaInfo.advancedMode === 'resourcesAndLogs'"
+              ref="resourcesAndLogsRef"
+              v-model:log-config="metaInfo.validLogConfig"
+              v-model:resources="metaInfo.resources"
+              :has-valid="!!find(advancedOptions, x => x.value === 'resourcesAndLogs')?.color"
+              @check="checkLogConfig()" />
+
+            <capabilities-page v-if="metaInfo.advancedMode === 'capabilities'" v-model="metaInfo.capabilities" />
+          </div>
+        </div>
+      </el-col>
+
+      <el-col>
+        <el-form-item class="mt-5">
+          <el-checkbox v-model="metaInfo.privileged">
+            <strong>
+              <el-text size="small">{{ t("label.privilegedMode") }}</el-text>
+            </strong>
+          </el-checkbox>
+          <v-tips>{{ t("tips.privilegedTips") }}</v-tips>
+        </el-form-item>
+      </el-col>
+    </el-row>
+  </el-form>
+  <div class="text-align-right pt-5">
+    <el-button @click="cancel()">{{ t("btn.cancel") }}</el-button>
+    <el-button :loading="isAction" type="primary" @click="save">{{ t("btn.save") }}</el-button>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.registry-domain {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 80px;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.7;
+  }
+}
+
+.form-box {
+  :deep(.el-form-item__label) {
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+}
+
+.network-box {
+  border: 1px solid var(--el-border-color);
+  padding: 16px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #ecf0f5;
+}
+
+.advanced-segmented {
+  --hp-active-segmented-bg-color: #e3e3e4;
+  padding: 0;
+  border: 1px solid var(--el-border-color);
+  border-right: none;
+
+  :deep(.el-segmented__group) {
+    .el-segmented__item-selected {
+      display: none !important;
+    }
+
+    .el-segmented__item {
+      border-right: 1px solid var(--el-border-color);
+      background-color: #ffffff;
+
+      &:has(.validator-error) {
+        background-color: var(--el-color-danger);
+        color: #ffffff;
+      }
+
+      &:not(:has(.validator-error)):hover {
+        background-color: #f5f7fa;
+      }
+
+      &.is-selected:not(:has(.validator-error)) {
+        background-color: var(--hp-active-segmented-bg-color);
+        color: #2f4050ff;
+      }
+    }
+  }
+
+  .el-radio-button {
+    flex: 1;
+
+    .span {
+      flex: 1;
+    }
+  }
+}
+
+.advanced-box {
+  border: 1px solid var(--el-border-color);
+  border-top: none;
+  margin-top: -18px;
+  padding: 20px;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  box-sizing: border-box;
+
+  .advanced-content {
+    border: 1px solid var(--el-border-color);
+    padding: 16px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #ecf0f5;
+  }
+
+  .volume-type {
+    :deep(.el-radio-button):not(.is-active) {
+      & .el-radio-button__inner:hover {
+        color: var(--el-text-color-regular);
+      }
+    }
+  }
+}
+</style>

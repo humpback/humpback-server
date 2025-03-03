@@ -39,8 +39,8 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
     min-width: 320px;
     height: var(--hp-header-height);
     box-sizing: border-box;
-    border-bottom: 1px solid #d3d0d0;
-    box-shadow: 0 1px 1px #d3d0d0;
+    border-bottom: 1px solid var(--el-border-color);
+    //box-shadow: 0 1px 1px var(--el-border-color);
     background-color: var(--hp-header-bg-color);
   }
 

@@ -12,13 +12,11 @@
   --hp-aside-active-bg-color: var(--el-color-info);
   --hp-menu-padding: 10px;
   --hp-menu-item-height: 42px;
-  //---------
-  --table-current-color: #c5c8ca;
-  --table-hover-color: #e7e8e9;
-  --card-header-background-color: #eeeff0;
-  --status-near-expiration-color: #f4c4c4;
+  --hp-table-header-bg-color: #f5f7fa;
+  --hp-card-header-bg-color: #eeeff0;
   background-color: var(--hp-bg-color);
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;;
+  //---------
   //--font-family: Poppins, "Open Sans", "Microsoft YaHei", "Ping Fang SC", Helvetica, Arial, sans-serif;
   //--el-font-family: var(--font-family) !important;
   //--vxe-ui-font-family: var(--font-family) !important;
@@ -28,7 +26,4 @@ body {
   margin: 0;
 }
 
-.fw-500 {
-  font-weight: 500;
-}
 

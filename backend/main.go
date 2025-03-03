@@ -15,7 +15,6 @@ import (
 
 func init() {
 	glog.Open(glog.WithOutputSource(glog.OutputTypeStd), glog.WithOutputFormat(glog.OutputFormatDefault))
-
 	if err := config.InitConfig(); err != nil {
 		panic(err)
 	}
@@ -24,14 +23,17 @@ func init() {
 }
 
 func main() {
-	application := app.InitApp()
+	application, err := app.InitApp()
+	if err != nil {
+		panic(err)
+	}
 
-	slog.Info("[APP] new completed.")
+	slog.Info("[APP] The init app is completed, next step startup.")
 
 	// Start server
 	application.Startup()
 
-	slog.Info("[APP] startup completed.")
+	slog.Info("[APP] Startup completed.")
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
@@ -42,6 +44,6 @@ func main() {
 	if err := application.Close(ctx); err != nil {
 		slog.Error(err.Error())
 	}
-
+	glog.Close()
 	slog.Info("[App] quit...")
 }

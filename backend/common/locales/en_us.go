@@ -1,6 +1,12 @@
 package locales
 
-var baseMsg = map[string]string{
+import (
+	"fmt"
+
+	"humpback/common/enum"
+)
+
+var enUSMsg = map[string]string{
 	CodeSucceed:              "Succeed",
 	CodeServerErr:            "Server Error, please contact the administrator!",
 	CodeRequestParamsInvalid: "Invalid request parameter.",
@@ -8,8 +14,80 @@ var baseMsg = map[string]string{
 	CodeNotLogin:             "Not logged in.",
 	CodeNoPermission:         "You don't have permission to operate.",
 
-	CodeUserIdNotEmpty:        "The user id cannot be empty.",
-	CodeUserNotExist:          "The user does not exist.",
-	CodeUserStatusIsDeactived: "The user has been suspended.",
-	CodeUserIsInvalid:         "The user is invalid.",
+	CodeUserNameLimitLength:  fmt.Sprintf("The user name length limit is %d to %d.", enum.LimitUsername.Min, enum.LimitUsername.Max),
+	CodeUserNameIsInvalid:    "The user name is invalid",
+	CodeUserNameNotEmpty:     "The user name cannot be empty.",
+	CodeUserNotExist:         "The user does not exist.",
+	CodeUserIdNotEmpty:       "The user ID cannot be empty.",
+	CodeUserAlreadyExist:     "The user already exists.",
+	CodeUserNameAlreadyExist: "The user name already exists.",
+	CodeUserIsOwner:          "Can't update yourself.",
+
+	CodeUserRoleIsInvalid: "The user role is invalid",
+
+	CodeTeamNameNotEmpty:     "The team name cannot be empty.",
+	CodeTeamNameLimitLength:  fmt.Sprintf("The team name length limit is %d to %d.", enum.LimitTeamName.Min, enum.LimitTeamName.Max),
+	CodeTeamIdNotEmpty:       "The team ID cannot be empty.",
+	CodeTeamNotExist:         "The team does not exist.",
+	CodeTeamAlreadyExist:     "The team already exists.",
+	CodeTeamNameAlreadyExist: "The team name already exists.",
+
+	CodeEmailIsInvalid:   "The email address is invalid",
+	CodeEmailLimitLength: fmt.Sprintf("The email address length limit is %d.", enum.LimitEmail.Max),
+
+	CodePhoneLimitLength: fmt.Sprintf("The phone number length limit is %d.", enum.LimitPhone.Max),
+	CodePhoneIsInvalid:   "The phone number is invalid",
+
+	CodeDescriptionLimitLength: fmt.Sprintf("The description length limit is %d.", enum.LimitDescription.Max),
+
+	CodePasswordLimitLength:    fmt.Sprintf("The password length limit is %d to %d.", enum.LimitPassword.Min, enum.LimitPassword.Max),
+	CodePasswordIsWrong:        "Wrong password",
+	CodePasswordNotEmpty:       "The password cannot be empty.",
+	CodeOldPasswordNotEmpty:    "The old password cannot be empty.",
+	CodeOldPasswordLimitLength: fmt.Sprintf("The old password length limit is %d to %d.", enum.LimitPassword.Min, enum.LimitPassword.Max),
+	CodeOldPasswordIsWrong:     "The old password is wrong.",
+	CodeNewPasswordNotEmpty:    "The new password cannot be empty.",
+	CodeNewPasswordLimitLength: fmt.Sprintf("The new password length limit is %d to %d.", enum.LimitPassword.Min, enum.LimitPassword.Max),
+
+	CodeConfigNameNotEmpty:           "The configuration name cannot be empty.",
+	CodeConfigNameLimitLength:        fmt.Sprintf("The configuration name length limit is %d to %d.", enum.LimitConfigName.Min, enum.LimitConfigName.Max),
+	CodeConfigNameAlreadyExist:       "The configuration name already exists.",
+	CodeConfigNotExist:               "The configuration does not exist.",
+	CodeConfigValueNotEmpty:          "The configuration value cannot be empty.",
+	CodeConfigStaticValueLimitLength: fmt.Sprintf("The configuration value length limit is %d.", enum.LimitConfigValue.Max/2),
+	CodeConfigVolumeValueLimitLength: fmt.Sprintf("The configuration value length limit is %d.", enum.LimitConfigValue.Max),
+	CodeConfigTypeIsInvalid:          "The configuration type is invalid.",
+	CodeConfigIdNotEmpty:             "The configuration ID cannot be empty.",
+
+	CodeRegistryNotExist:            "The registry does not exist.",
+	CodeRegistryIdNotEmpty:          "The registry ID cannot be empty.",
+	CodeRegistryUrlNotEmpty:         "The registry url cannot be empty.",
+	CodeRegistryUrlLimitLength:      fmt.Sprintf("The registry url length limit is %d.", enum.LimitRegistryUrl.Max),
+	CodeRegistryUrlAlreadyExist:     "The registry url already exists.",
+	CodeRegistryUrlIsInvalid:        "The registry url is invalid.",
+	CodeRegistryUsernameLimitLength: fmt.Sprintf("The registry username length limit is %d.", enum.LimitRegistryUsername.Max),
+	CodeRegistryPasswordLimitLength: fmt.Sprintf("The registry password length limit is %d.", enum.LimitRegistryPassword.Max),
+	CodeRegistryDefaultNotDelete:    "The repository docker.io cannot be deleted.",
+
+	CodeNodesNotEmpty:              "The nodes cannot be empty.",
+	CodeNodesIdNotEmpty:            "The node ID cannot be empty.",
+	CodeNodesNotExist:              "The node does not exist.",
+	CodeNodesIpAddressInvalid:      "The IP address is invalid.",
+	CodeNodesLabelKeyIsEmpty:       "The label key cannot be empty.",
+	CodeNodesLabelValueIsEmpty:     "The label value cannot be empty.",
+	CodeNodesLabelKeyIsDuplicated:  "The label key is duplicated.",
+	CodeNodesIpAddressAlreadyExist: "The IP address is already.",
+
+	CodeGroupIdNotEmpty:       "The group ID cannot be empty.",
+	CodeGroupNotExist:         "The group does not exist.",
+	CodeGroupNameAlreadyExist: "The group name already exists.",
+	CodeGroupNameLimitLength:  fmt.Sprintf("The group name length limit is %d to %d.", enum.LimitGroupName.Min, enum.LimitGroupName.Max),
+	CodeGroupNameNotEmpty:     "The group name cannot be empty.",
+	CodeGroupNoPermission:     "You do not have the group permission",
+
+	CodeServiceNotExist:         "The service does not exist.",
+	CodeServiceNameNotEmpty:     "The service name cannot be empty.",
+	CodeServiceNameLimitLength:  fmt.Sprintf("The service name length limit is %d to %d.", enum.LimitServiceName.Min, enum.LimitServiceName.Max),
+	CodeServiceNameAlreadyExist: "The service name already exists.",
+	CodeServiceIdNotEmpty:       "The service ID cannot be empty.",
 }

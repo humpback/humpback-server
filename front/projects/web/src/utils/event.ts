@@ -1,4 +1,4 @@
-const ChannelKey = "HUMPBACK_USER_CHANGE"
+const ChannelKey = "HUMPBACK_EVENT_CHANGE"
 const bc = new BroadcastChannel(ChannelKey)
 const code = GenerateUUID()
 

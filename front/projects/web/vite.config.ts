@@ -39,6 +39,13 @@ export default defineConfig({
     //导入时要省略的扩展名列表
     extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json"]
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/styles/theme.scss" as *;`
+      }
+    }
+  },
   plugins: [
     vue(),
     Icons({
@@ -116,7 +123,7 @@ export default defineConfig({
     strictPort: true,
     open: true,
     proxy: {
-      "/webapi": "http://localhost:8566"
+      "/webapi": "http://localhost:8800"
     }
   },
   preview: {

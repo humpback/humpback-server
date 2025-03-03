@@ -1,14 +1,19 @@
 import { NewUserEmptyInfo, UserInfo } from "#/index.ts"
+import { GetUserRole, IsAdmin, IsSupperAdmin, IsUser } from "@/utils"
 
 export default defineStore("user", () => {
   const userInfo = ref<UserInfo>(NewUserEmptyInfo())
 
-  const isLogined = computed(() => !!userInfo.value.userId)
+  const isLogged = computed(() => !!userInfo.value.userId)
+  const userRole = computed(() => GetUserRole(userInfo.value.role))
+  const isAdmin = computed(() => IsAdmin(userInfo.value.role))
+  const isSupperAdmin = computed(() => IsSupperAdmin(userInfo.value.role))
+  const isUser = computed(() => IsUser(userInfo.value.role))
 
   const init = async () => {
-    // return await userService.getUserInfo(true).then(data => {
-    //   userInfo.value = data
-    // })
+    return await userService.getMe(true).then(data => {
+      userInfo.value = data
+    })
   }
 
   function setUserInfo(info: UserInfo) {
@@ -21,7 +26,11 @@ export default defineStore("user", () => {
 
   return {
     userInfo,
-    isLogined,
+    userRole,
+    isAdmin,
+    isSupperAdmin,
+    isUser,
+    isLogged,
     init,
     setUserInfo,
     clearUserInfo

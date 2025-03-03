@@ -14,12 +14,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// var Router RouterInterface
-
-// type RouterInterface interface {
-// 	Start() error
-// }
-
 type Router struct {
 	engine  *gin.Engine
 	httpSrv *http.Server
@@ -27,9 +21,8 @@ type Router struct {
 
 func InitRouter() *Router {
 	gin.SetMode(gin.ReleaseMode)
-	r := &Router{
-		engine: gin.New(),
-	}
+	gin.Default()
+	r := &Router{engine: gin.New()}
 	r.setMiddleware()
 	r.setRoute()
 	return r
@@ -37,17 +30,14 @@ func InitRouter() *Router {
 
 func (api *Router) Start() {
 	go func() {
-		if err := static.InitStaticsResource(); err != nil {
-			slog.Error(fmt.Sprintf("init front static resource to cache failed: %s", err))
-		}
 		listeningAddress := fmt.Sprintf("%s:%s", config.NodeArgs().HostIp, config.NodeArgs().SitePort)
-		slog.Info("[Api] listening...", "Address", listeningAddress)
+		slog.Info("[Api] Listening...", "Address", listeningAddress)
 		api.httpSrv = &http.Server{
 			Addr:    listeningAddress,
 			Handler: api.engine,
 		}
 		if err := api.httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error(fmt.Sprintf("listening %s failed: %s", listeningAddress, err))
+			slog.Error(fmt.Sprintf("[Api] Listening %s failed: %s", listeningAddress, err))
 		}
 	}()
 }
@@ -57,13 +47,21 @@ func (api *Router) Close(c context.Context) error {
 }
 
 func (api *Router) setMiddleware() {
-	api.engine.Use(gin.Recovery(), middleware.Log(), middleware.CorsCheck(), middleware.HandleError())
+	api.engine.Use(middleware.Log(), middleware.CorsCheck(), middleware.HandleError())
 }
 
 func (api *Router) setRoute() {
 	var routes = map[string]map[string][]any{
 		"/webapi": {
-			"/user": {handle.RouteUser},
+			"/common":                 {handle.RouteCommon},
+			"/user":                   {handle.RouteUser},
+			"/team":                   {middleware.CheckLogin(), handle.RouteTeam},
+			"/config":                 {middleware.CheckLogin(), handle.RouteConfig},
+			"/registry":               {middleware.CheckLogin(), handle.RouteRegistry},
+			"/node":                   {middleware.CheckLogin(), handle.RouteNodes},
+			"/group":                  {middleware.CheckLogin(), handle.RouteGroup},
+			"/group/:groupId/service": {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteService},
+			"/group/:groupId/node":    {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteGroupNode},
 		},
 	}
 

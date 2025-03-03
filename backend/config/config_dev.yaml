@@ -1,3 +1,4 @@
-location: dev  # local / dev / prd
-htmlDir:
-  default: "./html/web"
+location: dev # local / dev / prd
+html:
+  dir: './html/web'
+  load: true

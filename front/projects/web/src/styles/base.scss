@@ -8,16 +8,16 @@ $px-length: list.length($px-values);
     margin: list.nth($px-values, $i);
   }
   .mt-#{$index} {
-    margin: list.nth($px-values, $i);
+    margin-top: list.nth($px-values, $i);
   }
   .mr-#{$index} {
-    margin: list.nth($px-values, $i);
+    margin-right: list.nth($px-values, $i);
   }
   .mb-#{$index} {
-    margin: list.nth($px-values, $i);
+    margin-bottom: list.nth($px-values, $i);
   }
   .ml-#{$index} {
-    margin: list.nth($px-values, $i);
+    margin-left: list.nth($px-values, $i);
   }
   .mx-#{$index} {
     margin: 0 list.nth($px-values, $i);
@@ -26,19 +26,19 @@ $px-length: list.length($px-values);
     margin: list.nth($px-values, $i) 0;
   }
   .pa-#{$index} {
-    margin: list.nth($px-values, $i);
+    padding: list.nth($px-values, $i);
   }
   .pt-#{$index} {
-    margin: list.nth($px-values, $i);
+    padding-top: list.nth($px-values, $i);
   }
   .pr-#{$index} {
-    margin: list.nth($px-values, $i);
+    padding-right: list.nth($px-values, $i);
   }
   .pb-#{$index} {
-    margin: list.nth($px-values, $i);
+    margin-bottom: list.nth($px-values, $i);
   }
   .pl-#{$index} {
-    margin: list.nth($px-values, $i);
+    margin-left: list.nth($px-values, $i);
   }
   .px-#{$index} {
     margin: 0 list.nth($px-values, $i);
@@ -56,6 +56,7 @@ $keywords: (
   'success':var(--el-color-success),
   'primary':var(--el-color-primary),
   'info':var(--el-color-info),
+  'warning':var(--el-color-warning),
   'default':var(--el-color-default),
 );
 @each $name, $color in $keywords {
@@ -63,7 +64,6 @@ $keywords: (
   .keywords-#{$name} {
     color: $color;
     font-weight: bold;
-    font-size: 14px;
   }
 }
 
@@ -134,3 +134,9 @@ $wh: (
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.fw-500 {
+  font-weight: 500;
+}
+
+

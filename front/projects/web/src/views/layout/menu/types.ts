@@ -1,14 +1,14 @@
 import { shallowRef } from "vue"
+import { PageUserRelated } from "@/models"
 
 export interface MenuInfo {
   icon: any
   name: string
+  routeName?: string
   params?: any
   query?: any
   path?: string
-  showTips?: boolean
   children?: MenuInfo[]
-  ignoreUserInfoComplete?: boolean
   rolesLimit?: number[]
 }
 
@@ -21,11 +21,17 @@ export const menuList: MenuInfo[] = [
   },
   {
     icon: shallowRef(IconMdiCompany),
-    name: "serviceManagement"
+    name: "serviceManagement",
+    routeName: "groups"
+  },
+  {
+    icon: shallowRef(IconMdiTextBoxOutline),
+    name: "configs"
   },
   {
     icon: shallowRef(IconMdiCogOutline),
     name: "administration",
+    rolesLimit: [UserRole.SupperAdmin, UserRole.Admin],
     children: [
       {
         icon: shallowRef(IconMdiAlphaCBoxOutline),
@@ -36,12 +42,9 @@ export const menuList: MenuInfo[] = [
         name: "nodes"
       },
       {
-        icon: shallowRef(IconMdiTextBoxOutline),
-        name: "configs"
-      },
-      {
         icon: shallowRef(IconMdiAccount),
-        name: "userRelated"
+        name: "userRelated",
+        params: { mode: PageUserRelated.Users }
       }
     ]
   }

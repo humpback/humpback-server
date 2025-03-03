@@ -4,8 +4,15 @@ import App from "./App.vue"
 import i18n from "@/locales"
 import router from "./router"
 import useUserStore from "@/stores/use-user-store.ts"
+import "@vue-js-cron/element-plus/dist/element-plus.css"
+import CronElementPlusPlugin from "@vue-js-cron/element-plus"
+import { ElButton, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon } from "element-plus"
+// 注册组件
+import { init } from "@/app/app.ts"
 
-const app = createApp(App).use(stores).use(i18n)
+const app = createApp(App).use(stores).use(i18n).use(CronElementPlusPlugin)
+
+app.use(ElDropdown).use(ElDropdownMenu).use(ElDropdownItem).use(ElIcon).use(ElButton)
 
 app.config.errorHandler = (err: any, vm: any, info: any) => {
   if (err.isAxiosError) {
@@ -17,8 +24,10 @@ app.config.errorHandler = (err: any, vm: any, info: any) => {
   console.error(err)
 }
 
-useUserStore()
-  .init()
-  .finally(() => {
-    app.use(router).mount("#app")
-  })
+init().then(() => {
+  useUserStore()
+    .init()
+    .finally(() => {
+      app.use(router).mount("#app")
+    })
+})

@@ -1,61 +1,45 @@
-import { NewOperateUserInfo, OperateUserInfo } from "#/index.ts"
+import { BaseInfo, NewBaseEmptyInfo } from "#/base.ts"
 
-export interface OrgInfo {
-  orgId: string
-  address?: {
-    street: string
-    city: string
-    state: string
-  }
-  companyName: string
-  enterpriseCode: string
-}
-
-export function NewOrgEmptyInfo(): OrgInfo {
-  return {
-    orgId: "",
-    address: {
-      street: "",
-      city: "",
-      state: ""
-    },
-    companyName: "",
-    enterpriseCode: ""
-  }
-}
-
-export interface UserInfo extends OperateUserInfo {
-  orgId: string
+export interface UserInfo extends BaseInfo {
   userId: string
-  name: string
+  username: string
   email: string
+  password: string
+  description: string
   phone: string
   role: number
-  notes: string
-  status: number
-  orgInfo: OrgInfo
+  teams: string[]
 }
 
 export function NewUserEmptyInfo(): UserInfo {
   return {
-    ...NewOperateUserInfo(),
-    orgId: "",
+    ...NewBaseEmptyInfo(),
     userId: "",
-    name: "",
+    username: "",
     email: "",
+    password: "",
+    description: "",
     phone: "",
-    role: -1,
-    notes: "",
-    status: -1,
-    orgInfo: NewOrgEmptyInfo()
+    role: UserRole.User,
+    teams: []
   }
 }
 
-export interface UserBill {
-  orgId: string
-  userId: string
-  orderNO: string
-  creditCard: string
-  orderAmount: number
-  deductionTime: number
+export interface TeamInfo extends BaseInfo {
+  teamId: string
+  name: string
+  description: string
+  users: string[]
+}
+
+export function NewTeamEmptyInfo(): TeamInfo {
+  return {
+    ...NewBaseEmptyInfo(),
+    teamId: "",
+    name: "",
+    description: "",
+    createdAt: 0,
+    updatedAt: 0,
+    users: []
+  }
 }

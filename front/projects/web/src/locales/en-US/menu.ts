@@ -8,7 +8,7 @@ export default {
     "nodes": "Nodes",
     "configs": "Configs",
     "help": "Help",
-    "userProfile": "User Profile",
+    "myAccount": "My Account",
     "logout": "Logout",
     header: {
       "dashboard": "Dashboard",
@@ -18,8 +18,23 @@ export default {
       "nodes": "Nodes",
       "configs": "Configs",
       "help": "Help",
-      "userProfile": "User Profile"
+      "myAccount": "My Account",
+      "groups": "Groups"
     }
   },
-  webTitle: {}
+  webTitle: {
+    "login": "Login",
+    "dashboard": "Dashboard",
+    "myAccount": "My Account",
+    "userRelated": "User Related",
+    "users": "Users",
+    "teams": "Teams",
+    "configs": "Configs",
+    "nodes": "Nodes",
+    "registries": "Registries",
+    "groups": "Groups",
+    "services": "Services",
+    "serviceInfo": "Service Info",
+    "serviceCreate": "Service Create"
+  }
 }

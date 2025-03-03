@@ -1,3 +1,36 @@
 export default {
-  header: {}
+  header: {
+    "changePassword": "Change Password",
+    "users": "Users",
+    "teams": "Teams",
+    "deleteUser": "Delete User",
+    "addUser": "Add User",
+    "editUser": "Edit User",
+    "deleteTeam": "Delete Team",
+    "addTeam": "Add Team",
+    "editTeam": "Edit Team",
+    "addConfig": "Add Config",
+    "editConfig": "Edit Config",
+    "deleteConfig": "Delete Config",
+    "config": "Config",
+    "addNodes": "Add Nodes",
+    "deleteNode": "Delete Node",
+    "removeNode": "Remove Node",
+    "enableNode": "Enable Node",
+    "disableNode": "Enable Node",
+    "addRegistry": "Add Registry",
+    "editRegistry": "Edit Registry",
+    "deleteRegistry": "Delete Registry",
+    "viewRegistry": "View Registry",
+    "command": "Command",
+    "editLabel": "Edit Label",
+    "addGroup": "Add Group",
+    "editGroup": "Edit Group",
+    "deleteGroup": "Delete Group",
+    "nodes": "Nodes",
+    "services": "Services",
+    "addService": "Add Service",
+    "addSchedule": "Add Schedule",
+    "editSchedule": "Edit Schedule"
+  }
 }

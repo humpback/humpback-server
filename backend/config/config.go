@@ -13,26 +13,42 @@ import (
 var configuration *config
 
 type NodeConfig struct {
-	HostIp      string `yaml:"hostIp" json:"hostIp" env:"HOST_IP"`
-	SitePort    string `yaml:"sitePort" json:"sitePort" env:"SITE_PORT"`
-	BackendPort string `yaml:"backendPort" json:"backendPort" env:"BACKEND_PORT"`
+	HostIp   string `yaml:"hostIp" json:"hostIp" env:"HOST_IP"`
+	SitePort string `yaml:"sitePort" json:"sitePort" env:"SITE_PORT"`
 }
 
-type HtmlDirConfig struct {
-	Default string `yaml:"default" json:"default" env:"HTML_DEFAULT_DIR"`
+type BackendConfig struct {
+	BackendPort          string `yaml:"backendPort" json:"backendPort" env:"BACKEND_PORT"`
+	CheckInterval        int    `yaml:"checkInterval" json:"checkInterval" env:"BACKEND_CHECKINTERVAL"`
+	ServiceCheckInterval int    `yaml:"serviceCheckInterval" json:"serviceCheckInterval" env:"BACKEND_SERVICECHECKINTERVAL"`
+	CheckThreshold       int    `yaml:"checkThreshold" json:"checkThreshold" env:"BACKEND_CHECKTHRESHOLD"`
+}
+
+type HtmlConfig struct {
+	Dir  string `yaml:"dir" json:"dir" env:"STATIC_DIR"`
+	Load bool   `yaml:"load" json:"load" env:"STATIC_LOAD"`
 }
 
 type DBConfig struct {
-	Root    string        `yaml:"root" json:"root" env:"DB_ROOT"`
-	Timeout time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
+	Root              string        `yaml:"root" json:"root" env:"DB_ROOT"`
+	Timeout           time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
+	SessionTimeout    time.Duration `yaml:"sessionTimeout" json:"sessionTimeout" env:"DB_SESSION_TIMEOUT"`
+	SessionGCInterval time.Duration `yaml:"sessionGCInterval" json:"sessionGCInterval" env:"DB_SESSION_GC_INTERVAL"`
+}
+
+type AdminConfig struct {
+	Username string `yaml:"username" json:"name" env:"ADMIN_USERNAME"`
+	Password string `yaml:"password" json:"password" env:"ADMIN_PASSWORD"`
 }
 
 type config struct {
 	Version  string        `yaml:"version" json:"version"`
 	Location string        `yaml:"location" json:"location" env:"LOCATION"`
-	HtmlDir  HtmlDirConfig `yaml:"htmlDir" json:"htmlDir"`
+	Html     HtmlConfig    `yaml:"html" json:"html"`
 	Node     NodeConfig    `yaml:"node" json:"node"`
 	DB       DBConfig      `yaml:"db" json:"db"`
+	Backend  BackendConfig `yaml:"backend" json:"backend"`
+	Admin    AdminConfig   `yaml:"admin" json:"admin"`
 }
 
 func InitConfig() error {
@@ -40,8 +56,8 @@ func InitConfig() error {
 	if err := readConfigFile("./config/config.yaml"); err != nil {
 		return err
 	}
-	location := getEnvLocation()
-	if location != "" {
+
+	if location := getEnvLocation(); location != "" {
 		if err := readConfigFile(fmt.Sprintf("./config/config_%s.yaml", strings.ToLower(location))); err != nil {
 			return err
 		}
@@ -53,6 +69,7 @@ func InitConfig() error {
 }
 
 func (c *config) check() error {
+	//todo 后续添加配置检查，检查不通过则退出程序
 	return nil
 }
 
@@ -78,16 +95,24 @@ func Location() string {
 	return configuration.Location
 }
 
-func HtmlDir() HtmlDirConfig {
-	return configuration.HtmlDir
+func HtmlArgs() HtmlConfig {
+	return configuration.Html
 }
 
 func NodeArgs() NodeConfig {
 	return configuration.Node
 }
 
+func BackendArgs() BackendConfig {
+	return configuration.Backend
+}
+
 func DBArgs() DBConfig {
 	return configuration.DB
+}
+
+func AdminArgs() AdminConfig {
+	return configuration.Admin
 }
 
 func Config() any {

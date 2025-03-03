@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { CardProps } from "element-plus"
-import { omit } from "lodash"
+import { omit } from "lodash-es"
 
 type Props = Partial<
   CardProps & {
@@ -12,10 +12,14 @@ type Props = Partial<
     showHeaderColor?: boolean
     round?: boolean
     bodyPaddingNone?: boolean
+    showPageTitle?: boolean
   }
 >
 
 const props = withDefaults(defineProps<Props>(), { shadow: "never" })
+
+const { t } = useI18n()
+const route = useRoute()
 const slots = useSlots()
 
 const style = computed(() => {
@@ -39,6 +43,10 @@ const style = computed(() => {
       <slot name="header" />
     </template>
     <template v-if="!!slots.default" #default>
+      <slot v-if="!!slots.bodyTitle" name="bodyTitle" />
+      <div v-else-if="props.showPageTitle" class="card-title">
+        {{ t("menu.header." + (route.name as string)) }}
+      </div>
       <slot />
     </template>
     <template v-if="!!slots.footer" #footer>
@@ -62,7 +70,7 @@ const style = computed(() => {
 
 .header-color {
   :deep(.el-card__header) {
-    background-color: var(--card-header-background-color);
+    background-color: var(--hp-card-header-bg-color);
     color: #2b2b2b;
   }
 }
@@ -71,5 +79,11 @@ const style = computed(() => {
   :deep(.el-card__body) {
     padding: 0;
   }
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
 }
 </style>

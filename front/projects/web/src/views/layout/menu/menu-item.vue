@@ -6,7 +6,7 @@ const { t } = useI18n()
 const router = useRouter()
 
 function navigateToRoute(event: MouseEvent, href: string) {
-  if (event.ctrlKey) {
+  if (event.ctrlKey || event.metaKey) {
     window.open(href, "_blank")
   } else {
     router.push(href)
@@ -17,7 +17,9 @@ function navigateToRoute(event: MouseEvent, href: string) {
 <template>
   <router-link v-slot="{ href }" custom to="">
     <div @click="navigateToRoute($event, href)">
-      <el-menu-item :index="props.menuInfo.name" :route="{ name: props.menuInfo.name }">
+      <el-menu-item
+        :index="props.menuInfo?.routeName || props.menuInfo.name"
+        :route="{ name: props.menuInfo?.routeName || props.menuInfo.name, params: props.menuInfo.params }">
         <template #title>
           {{ t(`${menuI18nPrefix}.${props.menuInfo.name}`) }}
         </template>

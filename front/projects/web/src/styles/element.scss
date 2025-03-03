@@ -1,11 +1,6 @@
 //@import "element-plus/dist/index.css"
 //@import "element-plus/theme-chalk/src/message.scss";
 //@import "element-plus/theme-chalk/src/notification.scss";
-/*弹出框及抽屉的样式*/
-.aside_drawer_box .el-drawer__body {
-  padding: 0 !important;
-}
-
 //弹出框菜单菜单样式
 .el-popper.website-menu-popover {
   --el-menu-bg-color: var(--hp-aside-bg-color);
@@ -14,7 +9,6 @@
   --el-menu-base-level-padding: var(--hp-menu-padding);
   --el-menu-sub-item-height: var(--hp-menu-item-height);
   --el-menu-item-height: var(--hp-menu-item-height);
-
   border-radius: 8px;
 
   .el-menu--popup-container.website-menu-popover {
@@ -39,22 +33,31 @@
   }
 }
 
+// message消息样式
+.messageBox {
+  z-index: 9999 !important;
+}
 
-//dialog样式
-.custom-dialog {
+.el-button.focus-outline-none:focus-visible {
+  outline: none;
+}
+
+//el-dialog样式
+.el-dialog.custom-dialog {
   --el-dialog-border-radius: 8px !important;
+  --el-dialog-padding-primary: 20px !important;
+  padding: 24px 20px;
 
   .el-dialog__header {
-    background-color: #eeeff0;
-    color: #2b2b2b;
-    margin: -16px -16px 20px -16px;
-    padding: 12px;
-    border-top-left-radius: var(--el-dialog-border-radius);
-    border-top-right-radius: var(--el-dialog-border-radius);
+    .el-dialog__headerbtn .el-dialog__close {
+      padding-top: 12px;
+      transform: scale(1.3);
+    }
   }
 }
 
-//抽屉样式
+//----------------待定----------------
+/*弹出框及抽屉的样式*/
 .custom-drawer {
   .el-drawer__header {
     background-color: #eeeff0;
@@ -67,19 +70,6 @@
   }
 }
 
-// message消息样式
-.messageBox {
-  z-index: 9999 !important;
-}
-
-// chassisNO 自动补全输入框样式
-.chassis-autocomplete {
-  .el-input--default {
-    vertical-align: baseline;
-  }
-}
-
-//----------------待定----------------
 .custom-popover.el-popover--plain {
   border-radius: 8px !important;
   box-shadow: var(--el-box-shadow-light) !important;

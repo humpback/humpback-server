@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { omit } from "lodash"
+import { omit } from "lodash-es"
 import { DrawerProps } from "element-plus"
 
 type Props = Partial<DrawerProps>

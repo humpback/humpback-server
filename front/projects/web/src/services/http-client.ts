@@ -1,12 +1,11 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from "axios"
-import { isEmpty } from "lodash"
-import useUserStore from "@/stores/use-user-store.ts"
+import { isEmpty } from "lodash-es"
 import { GetCurrentLocale, GetI18nMessage } from "@/locales"
 import { disposeStore } from "@/stores"
-import globalLoading from "@/utils/loading.ts"
+import { globalLoading } from "utils/index.ts"
 
 export interface HttpRequestOptions extends AxiosRequestConfig {
-  disableLoading?: boolean | false
+  showLoading?: boolean | false
   disableErrMsg?: boolean | false
   loadingMessage?: string
   isFile?: boolean
@@ -47,16 +46,13 @@ class HttpClientService {
       let body = err.response.data
       if (!isEmpty(body)) {
         if (body.statusCode === 401) {
-          const userStore = useUserStore()
           switch (body.code) {
             case "R40101":
               ShowErrMsg(body.errMsg)
-              userStore.clearUserInfo()
               disposeStore()
-              window.location.href = "/pub/sign-in"
+              window.location.href = "/login"
               break
             case "R40102":
-              userStore.clearUserInfo()
               disposeStore()
               console.error(body.errMsg)
               break
@@ -113,9 +109,9 @@ class HttpClientService {
       }
     }
 
-    if (!options || !options.disableLoading) {
+    if (options?.showLoading) {
       loading.value = true
-      if (!loading.value) {
+      if (loading.value) {
         globalLoading.show(options.loadingMessage)
       }
     }
@@ -132,7 +128,7 @@ class HttpClientService {
       })
       .catch<AxiosResponse<T>>(this.handleInnerErr(options))
       .finally(() => {
-        if (!options || !options.disableLoading) {
+        if (options?.showLoading) {
           loading.value = false
           if (!loading.value) {
             globalLoading.close()
