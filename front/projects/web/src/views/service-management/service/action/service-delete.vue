@@ -34,6 +34,7 @@ async function confirmDelete() {
   //     emits("refresh")
   //   })
   //   .finally(() => (isAction.value = false))
+  emits("refresh")
 }
 
 defineExpose({ open })

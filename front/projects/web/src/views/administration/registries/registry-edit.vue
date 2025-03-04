@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { RegistryInfo, NewRegistryEmptyInfo } from "@/types"
-import { cloneDeep, replace } from "lodash-es"
+import { cloneDeep } from "lodash-es"
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
 import { RuleLength } from "@/models"

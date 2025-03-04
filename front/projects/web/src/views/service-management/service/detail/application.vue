@@ -3,7 +3,7 @@ import { GenerateUUID, RulePleaseEnter, SetWebTitle } from "@/utils"
 import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode, ServiceVolumeType } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
 import { NewServiceMetaDockerEmptyInfo } from "@/types"
-import { cloneDeep, filter, find, findIndex, groupBy, map, toLower } from "lodash-es"
+import { cloneDeep, filter, find, findIndex, groupBy, map, omit, toLower } from "lodash-es"
 import VolumesPage from "./application-advanced/volumes.vue"
 import EnvironmentsPage from "./application-advanced/environments.vue"
 import LabelsPage from "./application-advanced/labels.vue"
@@ -76,7 +76,6 @@ const rules = ref<FormRules>({
     { required: true, validator: RulePleaseEnter("label.image"), trigger: "blur" },
     { required: true, validator: RuleLimitRange(RuleLength.ServiceName.Min, RuleLength.ServiceName.Max), trigger: "blur" }
   ],
-  networkName: [{ required: true, validator: RulePleaseEnter("label.networkName"), trigger: "blur" }],
   containerPort: [{ required: true, validator: checkContainerPort, trigger: "blur" }],
   hostPort: [{ required: true, validator: checkHostPort, trigger: "blur" }]
 })
@@ -215,6 +214,7 @@ function checkVolumes(isAddErrCheck?: boolean) {
       advancedOptions.value[index].color = undefined
     }
   }
+  return !isFailed
 }
 
 function checkEnvironment(isAddErrCheck?: boolean) {
@@ -243,6 +243,7 @@ function checkEnvironment(isAddErrCheck?: boolean) {
       advancedOptions.value[index].color = undefined
     }
   }
+  return !isFailed
 }
 
 function checkLabels(isAddErrCheck?: boolean) {
@@ -271,6 +272,7 @@ function checkLabels(isAddErrCheck?: boolean) {
       advancedOptions.value[index].color = undefined
     }
   }
+  return !isFailed
 }
 
 function checkLogConfig(isAddErrCheck?: boolean) {
@@ -299,27 +301,71 @@ function checkLogConfig(isAddErrCheck?: boolean) {
       advancedOptions.value[index].color = undefined
     }
   }
+  return !isFailed
 }
 
 async function validate() {
-  checkVolumes(true)
-  checkEnvironment(true)
-  checkLabels(true)
-  checkLogConfig(true)
   const validList = await Promise.all([
+    checkVolumes(true),
+    checkEnvironment(true),
+    checkLabels(true),
+    checkLogConfig(true),
     formRef.value?.validate().catch(() => false),
     volumeRef.value?.validate().catch(() => false),
     environmentRef.value?.validate().catch(() => false),
     labelRef.value?.validate().catch(() => false),
     resourcesAndLogsRef.value?.validate().catch(() => false)
   ])
-  return filter(validList, x => !x).length <= 0
+  return filter(validList, x => typeof x !== "undefined" && !x).length <= 0
+}
+
+function parseArrayToMap(arr: any[]) {
+  const result: any = {}
+  map(arr, x => {
+    result[x.name] = x.value
+  })
+  return result
+}
+
+function parseBody(info: ServiceApplicationInfo) {
+  return {
+    type: "application",
+    serviceId: serviceId.value,
+    data: {
+      image: `${info.imageDomain}/${info.imageName}`,
+      alwaysPull: info.alwaysPull,
+      command: info.command,
+      env: map(info.validEnv, x => `${x.name}=${x.value}`) || [],
+      labels: parseArrayToMap(info.validLabel),
+      privileged: info.privileged,
+      capabilities: info.capabilities,
+      logConfig: {
+        type: info.validLogConfig.type,
+        config: parseArrayToMap(info.validLogConfig.options)
+      },
+      resources: info.resources,
+      volumes: map(info.validVolumes, x => omit(x, ["id"])) || [],
+      network: {
+        mode: info.network.mode,
+        hostname: info.network.hostname,
+        networkName: info.network.networkName,
+        useMachineHostname: info.network.useMachineHostname,
+        ports: map(info.ports, x => omit(x, ["id"])) || []
+      },
+      restartPolicy: info.restartPolicy
+    }
+  }
 }
 
 async function save() {
   if (!(await validate())) {
     return
   }
+  const body = parseBody(metaInfo.value)
+  isAction.value = true
+  await serviceService.update(groupId.value, body).finally(() => (isAction.value = false))
+  ShowSuccessMsg(t("message.saveSuccess"))
+  await search()
 }
 
 onMounted(async () => {
@@ -344,7 +390,7 @@ onMounted(async () => {
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
+                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -390,7 +436,7 @@ onMounted(async () => {
       </el-col>
 
       <el-col v-if="metaInfo.network.mode === ServiceNetworkMode.NetworkModeCustom" :span="6">
-        <el-form-item :label="t('label.networkName')" :rules="rules.networkName" prop="network.networkName">
+        <el-form-item :label="t('label.networkName')">
           <v-input v-model="metaInfo.network.networkName" />
         </el-form-item>
       </el-col>
@@ -401,7 +447,7 @@ onMounted(async () => {
         <el-form-item :label="t('label.hostname')" prop="network.hostname">
           <v-input v-model="metaInfo.network.hostname" :disabled="metaInfo.network.useMachineHostname">
             <template #prepend>
-              <el-checkbox v-model="metaInfo.network.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
+              <el-checkbox v-model="metaInfo.network.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
             </template>
           </v-input>
         </el-form-item>
@@ -517,7 +563,7 @@ onMounted(async () => {
   </el-form>
   <div class="text-align-right pt-5">
     <el-button @click="cancel()">{{ t("btn.cancel") }}</el-button>
-    <el-button :loading="isAction" type="primary" @click="save">{{ t("btn.save") }}</el-button>
+    <el-button :loading="isAction" type="primary" @click="save()">{{ t("btn.save") }}</el-button>
   </div>
 </template>
 

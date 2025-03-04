@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+	"time"
 
 	"humpback/common/enum"
 	"humpback/common/locales"
@@ -11,10 +12,12 @@ import (
 	"humpback/common/verify"
 	"humpback/pkg/utils"
 	"humpback/types"
+
+	cronv3 "github.com/robfig/cron/v3"
 )
 
 type ServiceCreateReqInfo struct {
-	GroupId     string `json:"groupId"`
+	GroupId     string `json:"-"`
 	ServiceName string `json:"serviceName"`
 	Description string `json:"description"`
 }
@@ -162,23 +165,238 @@ const (
 )
 
 type ServiceUpdateReqInfo struct {
-	Type string `json:"type"`
-	Data any    `json:"data"`
+	Type           string                   `json:"type"`
+	ServiceId      string                   `json:"serviceId"`
+	GroupId        string                   `json:"groupId"`
+	Data           any                      `json:"data"`
+	Desctiption    string                   `json:"-"`
+	MetaInfo       *types.ServiceMetaDocker `json:"-"`
+	DeploymentInfo *types.Deployment        `json:"-"`
 }
 
 func (s *ServiceUpdateReqInfo) Check() error {
+	if err := verify.CheckIsEmpty(s.ServiceId, locales.CodeServiceIdNotEmpty); err != nil {
+		return err
+	}
 	switch strings.ToLower(s.Type) {
 	case ServiceUpdateBasicInfo:
-		description := s.Data.(string)
-		if err := verify.CheckLengthLimit(description, 0, enum.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
+		desctiption, ok := s.Data.(string)
+		if !ok {
+			return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+		}
+		s.Desctiption = desctiption
+		if err := verify.CheckLengthLimit(s.Desctiption, 0, enum.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
 			return err
 		}
-		s.Data = description
 	case ServiceUpdateApplication:
-
+		data, ok := s.Data.(map[string]any)
+		if !ok {
+			return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+		}
+		metaInfo := new(types.ServiceMetaDocker)
+		if err := ParseMapToStructConvert(data, metaInfo); err != nil {
+			return err
+		}
+		s.MetaInfo = metaInfo
+		if err := s.checkMetaInfo(); err != nil {
+			return err
+		}
 	case ServiceUpdateDeployment:
+		data, ok := s.Data.(map[string]any)
+		if !ok {
+			return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+		}
+		deploymentInfo := new(types.Deployment)
+		if err := ParseMapToStructConvert(data, deploymentInfo); err != nil {
+			return err
+		}
+		s.DeploymentInfo = deploymentInfo
+		if err := s.checkDeployment(); err != nil {
+			return err
+		}
 	default:
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+	}
+	return nil
+}
+
+func (s *ServiceUpdateReqInfo) checkMetaInfo() error {
+	if s.MetaInfo == nil {
+		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+	}
+	info := s.MetaInfo
+	if err := verify.CheckIsEmpty(info.Image, locales.CodeServiceImageNotEmpty); err != nil {
+		return err
+	}
+	if err := verify.CheckRequiredAndLengthLimit(info.Image, enum.LimitImageName.Min, enum.LimitImageName.Max, locales.CodeServiceImageNotEmpty, locales.CodeServiceImageLimitLength); err != nil {
+		return err
+	}
+	if len(info.Envs) == 0 {
+		info.Envs = make([]string, 0)
+	}
+	if len(info.Labels) == 0 {
+		info.Labels = make(map[string]string)
+	}
+	for k, v := range info.Labels {
+		if strings.TrimSpace(k) == "" {
+			return response.NewBadRequestErr(locales.CodeServiceLabelNameNotEmpty)
+		}
+		if strings.TrimSpace(v) == "" {
+			return response.NewBadRequestErr(locales.CodeServiceLabelValueNotEmpty)
+		}
+	}
+	info.Capabilities = removeEmptyStrings(info.Capabilities)
+	if info.LogConfig == nil {
+		info.LogConfig = &types.ServiceLogConfig{
+			Type:   "",
+			Config: make(map[string]string),
+		}
+	}
+	if info.LogConfig.Config == nil {
+		info.LogConfig.Config = make(map[string]string)
+	}
+
+	if info.Resources == nil {
+		info.Resources = &types.ServiceResources{
+			Memory:            0,
+			MemoryReservation: 0,
+			MaxCpuUsage:       0,
+		}
+	}
+	if info.Resources.Memory < uint64(enum.LimitMemoryLimit.Min) || info.Resources.Memory > uint64(enum.LimitMemoryLimit.Max) {
+		return response.NewBadRequestErr(locales.CodeServiceResourceMemoryLimitLimitMax)
+	}
+	if info.Resources.MemoryReservation < uint64(enum.LimitMemoryReservation.Min) || info.Resources.MemoryReservation > uint64(enum.LimitMemoryReservation.Max) {
+		return response.NewBadRequestErr(locales.CodeServiceResourceMemoryReservationLimitMax)
+	}
+	if info.Resources.MaxCpuUsage < uint64(enum.LimitMaxCpuUsage.Min) || info.Resources.MaxCpuUsage > uint64(enum.LimitMaxCpuUsage.Max) {
+		return response.NewBadRequestErr(locales.CodeServiceResourceMaxCpuUsageInvalid)
+	}
+	if len(info.Volumes) == 0 {
+		info.Volumes = make([]*types.ServiceVolume, 0)
+	}
+	volumeMap := make(map[string]bool)
+	for _, volume := range info.Volumes {
+		if volume.Type != types.ServiceVolumeTypeBind && volume.Type != types.ServiceVolumeTypeVolume {
+			return response.NewBadRequestErr(locales.CodeServiceContainerVolumeTypeInvlaid)
+		}
+		if strings.TrimSpace(volume.Target) == "" {
+			return response.NewBadRequestErr(locales.CodeServiceContainerVolumeNotEmpty)
+		}
+		if strings.TrimSpace(volume.Source) == "" {
+			return response.NewBadRequestErr(locales.CodeServiceHostVolumeNotEmpty)
+		}
+		if volumeMap[volume.Target] {
+			return response.NewBadRequestErr(locales.CodeServiceContainerVolumeIsDuplicated)
+		}
+		volumeMap[volume.Target] = true
+	}
+
+	if info.Network == nil {
+		info.Network = &types.NetworkInfo{
+			Mode:               types.NetworkModeHost,
+			Hostname:           "",
+			NetworkName:        "",
+			UseMachineHostname: false,
+			Ports:              make([]*types.PortInfo, 0),
+		}
+	}
+	if info.Network.Ports == nil {
+		info.Network.Ports = make([]*types.PortInfo, 0)
+	}
+
+	if info.Network.Mode != types.NetworkModeHost && info.Network.Mode != types.NetworkModeBridge && info.Network.Mode != types.NetworkModeCustom {
+		return response.NewBadRequestErr(locales.CodeServiceNetworkModeInvalid)
+	}
+	containerPorts := make(map[uint64]bool)
+	hostPorts := make(map[uint64]bool)
+	for _, p := range info.Network.Ports {
+		if p.Protocol != "TCP" && p.Protocol != "UDP" {
+			return response.NewBadRequestErr(locales.CodeServiceProtocolInvalid)
+		}
+		if p.ContainerPort <= 0 {
+			return response.NewBadRequestErr(locales.CodeServiceContainerPortNotEmpty)
+		}
+		if p.HostPort < 0 {
+			p.HostPort = 0
+		}
+		if containerPorts[p.ContainerPort] {
+			return response.NewBadRequestErr(locales.CodeServiceContainerPortIsDuplicated)
+		} else {
+			containerPorts[p.ContainerPort] = true
+		}
+		if p.HostPort > 0 {
+			if hostPorts[p.ContainerPort] {
+				return response.NewBadRequestErr(locales.CodeServiceHostPortIsDuplicated)
+			}
+			hostPorts[p.ContainerPort] = true
+		}
+	}
+
+	if info.RestartPolicy == nil {
+		info.RestartPolicy = &types.RestartPolicy{
+			Mode:          types.RestartPolicyModeNo,
+			MaxRetryCount: 0,
+		}
+	}
+	if info.RestartPolicy.Mode != types.RestartPolicyModeNo &&
+		info.RestartPolicy.Mode != types.RestartPolicyModeAlways &&
+		info.RestartPolicy.Mode != types.RestartPolicyModeOnFail &&
+		info.RestartPolicy.Mode != types.RestartPolicyModeUnlessStopped {
+		return response.NewBadRequestErr(locales.CodeServiceRestartPolicyInvalid)
+	}
+	return nil
+}
+
+func (s *ServiceUpdateReqInfo) checkDeployment() error {
+	if s.DeploymentInfo == nil {
+		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+	}
+	info := s.DeploymentInfo
+	if info.Mode != types.DeployModeGlobal && info.Mode != types.DeployModeReplicate {
+		return response.NewBadRequestErr(locales.CodeServiceDispatchModeInvalid)
+	}
+	if info.Mode == types.DeployModeGlobal {
+		info.Replicas = 1
+	}
+	if info.Replicas < enum.LimitInstanceNum.Min || info.Replicas > enum.LimitInstanceNum.Max {
+		return response.NewBadRequestErr(locales.CodeServiceInstanceNumInvalid)
+	}
+	if info.Placements == nil {
+		info.Placements = make([]*types.PlacementInfo, 0)
+	}
+	for _, placement := range info.Placements {
+		if placement.Mode != types.PlacementModeIP && placement.Mode != types.PlacementModeLabel {
+			return response.NewBadRequestErr(locales.CodeServicePlacementModeInvalid)
+		}
+		if placement.Mode == types.PlacementModeLabel && strings.TrimSpace(placement.Key) == "" {
+			return response.NewBadRequestErr(locales.CodeServicePlacementLabelNotEmpty)
+		}
+		if strings.TrimSpace(placement.Value) == "" {
+			return response.NewBadRequestErr(locales.CodeServicePlacementValueNotEmpty)
+		}
+	}
+	if info.Schedule == nil || info.Schedule.Rules == nil {
+		info.Schedule = &types.ScheduleInfo{
+			Timeout: "",
+			Rules:   make([]string, 0),
+		}
+	}
+	for _, cron := range info.Schedule.Rules {
+		if strings.TrimSpace(cron) == "" {
+			return response.NewBadRequestErr(locales.CodeServiceScheduleCronNotEmpty)
+		}
+		if _, err := cronv3.ParseStandard(cron); err != nil {
+			return response.NewBadRequestErr(locales.CodeServiceScheduleCronInvalid)
+		}
+	}
+	if len(info.Schedule.Rules) > 0 && info.Schedule.Timeout != "" {
+		_, err := time.ParseDuration(info.Schedule.Timeout)
+		if err != nil {
+			return response.NewBadRequestErr(locales.CodeServiceScheduleTimeoutInvalid)
+		}
+	} else {
+		info.Schedule.Timeout = ""
 	}
 	return nil
 }

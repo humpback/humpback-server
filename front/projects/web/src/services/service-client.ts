@@ -13,12 +13,12 @@ class ServiceService {
     return await httpClient.get<number>(`/webapi/group/${groupId}/service/total`).then(res => res.data)
   }
 
-  async create(data: any) {
-    return await httpClient.post<string>(`/webapi/group/${data.groupId}/service`, data).then(res => res.data)
+  async create(groupId: string, data: any) {
+    return await httpClient.post<string>(`/webapi/group/${groupId}/service`, data).then(res => res.data)
   }
 
-  async update(data: any) {
-    return await httpClient.put<string>(`/webapi/group/${data.groupId}/service`, data).then(res => res.data)
+  async update(groupId: string, data: any) {
+    return await httpClient.put<string>(`/webapi/group/${groupId}/service`, data).then(res => res.data)
   }
 
   async delete(groupId: string, id: string) {

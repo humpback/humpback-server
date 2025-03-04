@@ -178,8 +178,8 @@ type NetworkInfo struct {
 }
 
 type PortInfo struct {
-	HostPort      uint   `json:"hostPort"`
-	ContainerPort uint   `json:"containerPort"`
+	HostPort      uint64 `json:"hostPort"`
+	ContainerPort uint64 `json:"containerPort"`
 	Protocol      string `json:"protocol"`
 }
 
@@ -194,5 +194,5 @@ var (
 
 type RestartPolicy struct {
 	Mode          RestartPolicyMode `json:"mode"`
-	MaxRetryCount int               `json:"maxRetryCount"`
+	MaxRetryCount uint64            `json:"maxRetryCount"`
 }

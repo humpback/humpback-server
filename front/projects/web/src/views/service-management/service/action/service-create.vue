@@ -44,10 +44,9 @@ async function save() {
 
   isAction.value = true
   serviceService
-    .create({
+    .create(groupId.value, {
       serviceName: dialogInfo.value.info.serviceName,
-      description: dialogInfo.value.info.description,
-      groupId: groupId.value
+      description: dialogInfo.value.info.description
     })
     .then(() => {
       ShowSuccessMsg(t("message.addSuccess"))

@@ -30,15 +30,13 @@ const menuOptions = ref<any[]>([
     i18nLabel: "label.application",
     value: PageServiceDetail.Application,
     isRequired: true,
-    component: shallowRef(Application),
-    unCompleted: !applicationCompleted.value
+    component: shallowRef(Application)
   },
   {
     i18nLabel: "label.deployment",
     value: PageServiceDetail.Deployment,
     isRequired: true,
-    component: shallowRef(Deployment),
-    unCompleted: !deploymentCompleted.value
+    component: shallowRef(Deployment)
   },
   {
     i18nLabel: "label.monitor",
@@ -123,7 +121,11 @@ function menuChange(v: string) {
             <el-text :type="activeMenu === item.value ? 'info' : ''">{{ t(item.i18nLabel) }}</el-text>
             <el-text v-if="item.isRequired" type="danger"> *</el-text>
           </div>
-          <div v-if="item.unCompleted" class="pr-3">
+          <div
+            v-if="
+              (item.value === PageServiceDetail.Deployment && !deploymentCompleted) || (item.value === PageServiceDetail.Application && !applicationCompleted)
+            "
+            class="pr-3">
             <el-text type="danger">{{ t("label.incomplete") }}</el-text>
           </div>
         </div>

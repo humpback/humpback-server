@@ -13,7 +13,7 @@ func RouteService(router *gin.RouterGroup) {
 	router.POST("/query", serviceQuery)
 	router.GET("/total", serviceTotal)
 	router.POST("", serviceCreate)
-	//router.PUT("", serviceUpdate)
+	router.PUT("", serviceUpdate)
 	router.GET("/info/:serviceId", serviceInfo)
 	//router.DELETE("/:serviceId", serviceDelete)
 }
@@ -43,11 +43,23 @@ func serviceTotal(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func serviceInfo(c *gin.Context) {
+	groupId := c.Param("groupId")
+	serviceId := c.Param("serviceId")
+	result, err := controller.Service(groupId, serviceId)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
 func serviceCreate(c *gin.Context) {
 	body := new(models.ServiceCreateReqInfo)
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
+	body.GroupId = c.Param("groupId")
 	result, err := controller.ServiceCreate(body)
 	if err != nil {
 		middleware.AbortErr(c, err)
@@ -56,10 +68,13 @@ func serviceCreate(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func serviceInfo(c *gin.Context) {
-	groupId := c.Param("groupId")
-	serviceId := c.Param("serviceId")
-	result, err := controller.Service(groupId, serviceId)
+func serviceUpdate(c *gin.Context) {
+	body := new(models.ServiceUpdateReqInfo)
+	if !middleware.BindAndCheckBody(c, body) {
+		return
+	}
+	body.GroupId = c.Param("groupId")
+	result, err := controller.ServiceUpdate(body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return

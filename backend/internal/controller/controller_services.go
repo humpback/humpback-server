@@ -8,6 +8,7 @@ import (
 	"humpback/common/locales"
 	"humpback/common/response"
 	"humpback/internal/db"
+	"humpback/pkg/utils"
 	"humpback/types"
 )
 
@@ -52,6 +53,27 @@ func ServiceCreate(info *models.ServiceCreateReqInfo) (string, error) {
 		return "", response.NewRespServerErr(err.Error())
 	}
 	return newService.ServiceId, nil
+}
+
+func ServiceUpdate(info *models.ServiceUpdateReqInfo) (string, error) {
+	service, err := Service(info.GroupId, info.ServiceId)
+	if err != nil {
+		return "", err
+	}
+	switch info.Type {
+	case models.ServiceUpdateBasicInfo:
+		service.Description = info.Desctiption
+	case models.ServiceUpdateApplication:
+		service.Meta = info.MetaInfo
+	case models.ServiceUpdateDeployment:
+		service.Deployment = info.DeploymentInfo
+	}
+	service.UpdatedAt = utils.NewActionTimestamp()
+	if err = db.ServiceUpdate(service); err != nil {
+		return "", response.NewRespServerErr(err.Error())
+	}
+	//todo 检查状态后，往schedule发送消息
+	return service.ServiceId, nil
 }
 
 func Service(groupId, serviceId string) (*types.Service, error) {

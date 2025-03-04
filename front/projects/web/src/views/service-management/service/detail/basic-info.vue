@@ -51,19 +51,16 @@ async function save() {
     return
   }
 
-  // isAction.value = true
-  // serviceService
-  //   .create({
-  //     serviceName: dialogInfo.value.info.serviceName,
-  //     description: dialogInfo.value.info.description,
-  //     groupId: groupId.value
-  //   })
-  //   .then(() => {
-  //     ShowSuccessMsg(t("message.addSuccess"))
-  //     dialogInfo.value.show = false
-  //     emits("refresh")
-  //   })
-  //   .finally(() => (isAction.value = false))
+  isAction.value = true
+  await serviceService
+    .update(groupId.value, {
+      serviceId: serviceId.value,
+      type: "basic-info",
+      data: serviceInfo.value.description
+    })
+    .finally(() => (isAction.value = false))
+  ShowSuccessMsg(t("message.saveSuccess"))
+  await search()
 }
 
 onMounted(async () => {

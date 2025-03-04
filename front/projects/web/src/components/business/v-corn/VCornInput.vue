@@ -48,7 +48,7 @@ function parseCronToText(corn: string) {
       text: text
     }
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return {
       valid: false,
       text: t("tips.invalidCorn")

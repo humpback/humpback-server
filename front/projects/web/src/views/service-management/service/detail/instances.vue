@@ -68,7 +68,7 @@ onMounted(async () => {
   </div>
   <v-table :data="serviceInfo.containers" border class="mt-5">
     <el-table-column type="expand">
-      <template #default="scope">
+      <template>
         <div class="expand-content">
           <el-row :gutter="12">
             <el-col :span="12">aaa</el-col>
@@ -85,7 +85,7 @@ onMounted(async () => {
       </template>
     </el-table-column>
     <el-table-column :label="t('label.action')" width="200">
-      <template #default="scope">
+      <template>
         <el-button :title="t('label.restart')" link type="success">
           <el-icon :size="16">
             <IconMdiRestart />
