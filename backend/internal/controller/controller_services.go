@@ -62,7 +62,7 @@ func ServiceUpdate(info *models.ServiceUpdateReqInfo) (string, error) {
 	}
 	switch info.Type {
 	case models.ServiceUpdateBasicInfo:
-		service.Description = info.Desctiption
+		service.Description = info.Description
 	case models.ServiceUpdateApplication:
 		service.Meta = info.MetaInfo
 	case models.ServiceUpdateDeployment:

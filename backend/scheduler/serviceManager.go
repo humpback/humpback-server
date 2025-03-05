@@ -434,7 +434,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 		ct.Network = cs.Network
 		ct.Labels = cs.Labels
 		ct.Env = cs.Env
-		ct.Mountes = cs.Mountes
+		ct.Mounts = cs.Mounts
 		ct.Ports = cs.Ports
 		if ct.Status == types.ContainerStatusRunning {
 			ct.ErrorMsg = ""

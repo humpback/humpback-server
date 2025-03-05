@@ -11,8 +11,8 @@ export interface ServiceInfo extends BaseInfo {
   isEnabled: boolean
   isDelete: boolean
   status: string
-  meta: ServiceMetaDockerInfo
-  deployment: ServiceDeploymentInfo
+  meta?: ServiceMetaDockerInfo
+  deployment?: ServiceDeploymentInfo
   containers: ServiceContainerStatusInfo[]
 }
 
@@ -23,12 +23,17 @@ export interface ServiceMetaDockerInfo {
   env: string[]
   labels: { [key: string]: string }
   privileged: boolean
-  capabilities: string[]
-  logConfig: ServiceLogConfigInfo
-  resources: ServiceResourcesInfo
+  capabilities?: ServiceCapabilitiesInfo
+  logConfig?: ServiceLogConfigInfo
+  resources?: ServiceResourcesInfo
   volumes: ServiceVolumeInfo[]
-  network: ServiceNetworkInfo
-  restartPolicy: ServiceRestartPolicyInfo
+  network?: ServiceNetworkInfo
+  restartPolicy?: ServiceRestartPolicyInfo
+}
+
+export interface ServiceCapabilitiesInfo {
+  capAdd: string[]
+  capDrop: string[]
 }
 
 export interface ServiceLogConfigInfo {
@@ -92,14 +97,16 @@ export interface ServiceContainerStatusInfo {
   containerId: string
   containerName: string
   nodeId: string
+  ip: string
   status: string
   statusInfo: string
   errorMsg: string
   image: string
   command: string
   network: string
-  created: number
-  started: number
+  createAt: number
+  startAt: number
+  nextAt: number
   lastHeartbeat: number
   labels: { [key: string]: string }
   env: string[]
@@ -134,7 +141,49 @@ export function NewServiceMetaDockerEmptyInfo(): ServiceMetaDockerInfo {
     labels: {},
     volumes: [],
     privileged: false,
-    capabilities: [],
+    capabilities: {
+      capAdd: [
+        "AUDIT_WRITE",
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER",
+        "FSETID",
+        "KILL",
+        "MKNOD",
+        "NET_BIND_SERVICE",
+        "NET_RAW",
+        "SETFCAP",
+        "SETGID",
+        "SETPCAP",
+        "SETUID",
+        "SYS_CHROOT"
+      ],
+      capDrop: [
+        "AUDIT_CONTROL",
+        "BLOCK_SUSPEND",
+        "DAC_READ_SEARCH",
+        "IPC_LOCK",
+        "IPC_OWNER",
+        "LEASE",
+        "LINUX_IMMUTABLE",
+        "MAC_ADMIN",
+        "MAC_OVERRIDE",
+        "NET_ADMIN",
+        "NET_BROADCAST",
+        "SYSLOG",
+        "SYS_ADMIN",
+        "SYS_BOOT",
+        "SYS_MODULE",
+        "SYS_NICE",
+        "SYS_PACCT",
+        "SYS_PTRACE",
+        "SYS_RAWIO",
+        "SYS_RESOURCE",
+        "SYS_TIME",
+        "SYS_TTY_CONFIG",
+        "WAKE_ALARM"
+      ]
+    },
     logConfig: {
       type: "json-file",
       config: {

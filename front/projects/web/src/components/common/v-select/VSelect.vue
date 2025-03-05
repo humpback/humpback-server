@@ -52,7 +52,7 @@ const labelClass = computed(() => {
 
 <template>
   <div class="select-box">
-    <div v-if="props.showOutLabel" :class="labelClass" :style="{ width: props.outLabelWidth }">{{ props.outLabel }}</div>
+    <div v-if="props.showOutLabel" :class="labelClass" :style="{ width: props.outLabelWidth }">{{ props.outLabel }} </div>
     <el-select
       class="select-content"
       v-bind="{ ...attrs }"
@@ -108,6 +108,7 @@ const labelClass = computed(() => {
     border-bottom-left-radius: 4px;
     border-right: none;
     padding: 0 12px;
+    font-size: 14px;
     display: flex;
     align-items: center;
   }

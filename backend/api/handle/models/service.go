@@ -23,9 +23,6 @@ type ServiceCreateReqInfo struct {
 }
 
 func (s *ServiceCreateReqInfo) Check() error {
-	if err := verify.CheckIsEmpty(s.GroupId, locales.CodeGroupIdNotEmpty); err != nil {
-		return err
-	}
 	if err := verify.CheckRequiredAndLengthLimit(s.ServiceName, enum.LimitServiceName.Min, enum.LimitServiceName.Max, locales.CodeServiceNameNotEmpty, locales.CodeServiceNameLimitLength); err != nil {
 		return err
 	}
@@ -169,7 +166,7 @@ type ServiceUpdateReqInfo struct {
 	ServiceId      string                   `json:"serviceId"`
 	GroupId        string                   `json:"groupId"`
 	Data           any                      `json:"data"`
-	Desctiption    string                   `json:"-"`
+	Description    string                   `json:"-"`
 	MetaInfo       *types.ServiceMetaDocker `json:"-"`
 	DeploymentInfo *types.Deployment        `json:"-"`
 }
@@ -180,12 +177,12 @@ func (s *ServiceUpdateReqInfo) Check() error {
 	}
 	switch strings.ToLower(s.Type) {
 	case ServiceUpdateBasicInfo:
-		desctiption, ok := s.Data.(string)
+		description, ok := s.Data.(string)
 		if !ok {
 			return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 		}
-		s.Desctiption = desctiption
-		if err := verify.CheckLengthLimit(s.Desctiption, 0, enum.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
+		s.Description = description
+		if err := verify.CheckLengthLimit(s.Description, 0, enum.LimitDescription.Max, locales.CodeDescriptionLimitLength); err != nil {
 			return err
 		}
 	case ServiceUpdateApplication:
@@ -245,7 +242,20 @@ func (s *ServiceUpdateReqInfo) checkMetaInfo() error {
 			return response.NewBadRequestErr(locales.CodeServiceLabelValueNotEmpty)
 		}
 	}
-	info.Capabilities = removeEmptyStrings(info.Capabilities)
+	if info.Capabilities == nil {
+		info.Capabilities = &types.Capabilities{
+			CapAdd:  make([]string, 0),
+			CapDrop: make([]string, 0),
+		}
+	}
+	if info.Capabilities.CapAdd == nil {
+		info.Capabilities.CapAdd = make([]string, 0)
+	}
+	if info.Capabilities.CapDrop == nil {
+		info.Capabilities.CapDrop = make([]string, 0)
+	}
+	info.Capabilities.CapAdd = removeEmptyStrings(info.Capabilities.CapAdd)
+	info.Capabilities.CapDrop = removeEmptyStrings(info.Capabilities.CapDrop)
 	if info.LogConfig == nil {
 		info.LogConfig = &types.ServiceLogConfig{
 			Type:   "",

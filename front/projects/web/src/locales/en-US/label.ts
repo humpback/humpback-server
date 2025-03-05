@@ -127,6 +127,20 @@ export default {
     "instanceOverview": "Instance Overview",
     "start": "Start",
     "stop": "Stop",
-    "restart": "Restart"
+    "restart": "Restart",
+    "createTime": "Create Time",
+    "startTime": "Start Time",
+    "nextTime": "Next Time",
+    "instance": "Instance",
+    "autoRefresh": "Auto Refresh",
+    "lines": "Lines",
+    "showTimestamp": "Show timestamp",
+    "timeRange": "Time Range",
+    "last10Minutes": "Last 10 Minutes",
+    "lastHour": "Last hour",
+    "lastDay": "Last day",
+    "endTime": "End Time",
+    "to": "To",
+    "instanceLogs": "Instance Logs"
   }
 }

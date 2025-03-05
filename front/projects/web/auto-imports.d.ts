@@ -435,7 +435,7 @@ declare global {
   export type { ConfigInfo, RegistryInfo, NodeInfo } from './src/types/setting'
   import('./src/types/setting')
   // @ts-ignore
-  export type { ServiceInfo, ServiceMetaDockerInfo, ServiceLogConfigInfo, ServiceResourcesInfo, ServiceVolumeInfo, ServiceNetworkInfo, ServicePortInfo, ServiceRestartPolicyInfo, ServiceDeploymentInfo, ServicePlacementInfo, ServiceScheduleInfo, ServiceContainerStatusInfo } from './src/types/service'
+  export type { ServiceInfo, ServiceMetaDockerInfo, ServiceCapabilitiesInfo, ServiceLogConfigInfo, ServiceResourcesInfo, ServiceVolumeInfo, ServiceNetworkInfo, ServicePortInfo, ServiceRestartPolicyInfo, ServiceDeploymentInfo, ServicePlacementInfo, ServiceScheduleInfo, ServiceContainerStatusInfo } from './src/types/service'
   import('./src/types/service')
 }
 

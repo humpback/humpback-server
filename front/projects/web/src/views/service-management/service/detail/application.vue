@@ -1,36 +1,15 @@
 <script lang="ts" setup>
 import { GenerateUUID, RulePleaseEnter, SetWebTitle } from "@/utils"
-import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode, ServiceVolumeType } from "@/models"
+import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol, ServiceRestartPolicyMode } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
 import { NewServiceMetaDockerEmptyInfo } from "@/types"
-import { cloneDeep, filter, find, findIndex, groupBy, map, omit, toLower } from "lodash-es"
+import { cloneDeep, filter, find, findIndex, groupBy, toLower, trim } from "lodash-es"
 import VolumesPage from "./application-advanced/volumes.vue"
 import EnvironmentsPage from "./application-advanced/environments.vue"
 import LabelsPage from "./application-advanced/labels.vue"
 import CapabilitiesPage from "./application-advanced/capabilities.vue"
 import ResourcesLogConfigPage from "./application-advanced/resources-log-config.vue"
-
-interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
-  imageDomain: string
-  imageName: string
-  advancedMode: "volumes" | "environments" | "labels" | "resourcesAndLogs" | "capabilities"
-  validEnv: Array<{ id: string; name: string; value: string }>
-  validLabel: Array<{ id: string; name: string; value: string }>
-  validVolumes: Array<{
-    id: string
-    type: ServiceVolumeType.VolumeTypeBind | ServiceVolumeType.VolumeTypeVolume
-    target: string
-    source: string
-    "readonly": boolean
-  }>
-  validLogConfig: { type: string; options: Array<{ id: string; name: string; value: string }> }
-  ports: Array<{
-    id: string
-    hostPort?: number
-    containerPort?: number
-    protocol: string
-  }>
-}
+import { NewApplicationInfo, ParseMetaInfo, ServiceApplicationInfo } from "./application.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -53,17 +32,8 @@ const advancedOptions = ref<Array<{ label: string; value: string; color?: string
   { label: "label.capabilities", value: "capabilities" }
 ])
 
-const metaInfo = ref<ServiceApplicationInfo>({
-  imageDomain: "",
-  imageName: "",
-  ports: [],
-  validVolumes: [],
-  validEnv: [],
-  validLabel: [],
-  advancedMode: "volumes",
-  validLogConfig: { type: "", options: [] },
-  ...NewServiceMetaDockerEmptyInfo()
-})
+const advancedMode = ref<"volumes" | "environments" | "labels" | "resourcesAndLogs" | "capabilities">("volumes")
+const metaInfo = ref<ServiceApplicationInfo>(NewApplicationInfo(registries.value, NewServiceMetaDockerEmptyInfo()))
 
 const formRef = useTemplateRef<FormInstance>("formRef")
 const volumeRef = useTemplateRef<InstanceType<typeof VolumesPage>>("volumeRef")
@@ -74,18 +44,32 @@ const resourcesAndLogsRef = useTemplateRef<InstanceType<typeof ResourcesLogConfi
 const rules = ref<FormRules>({
   imageName: [
     { required: true, validator: RulePleaseEnter("label.image"), trigger: "blur" },
-    { required: true, validator: RuleLimitRange(RuleLength.ServiceName.Min, RuleLength.ServiceName.Max), trigger: "blur" }
+    {
+      required: true,
+      validator: RuleLimitRange(RuleLength.ServiceName.Min, RuleLength.ServiceName.Max),
+      trigger: "blur"
+    },
+    { required: true, validator: checkImage, trigger: "blur" }
   ],
   containerPort: [{ required: true, validator: checkContainerPort, trigger: "blur" }],
   hostPort: [{ required: true, validator: checkHostPort, trigger: "blur" }]
 })
+
+function checkImage(rule: any, value: any, callback: any) {
+  const image = value as string
+  const list = image.split(":")
+  if (list.length < 2 || trim(list[0]) === "" || trim(list[1]) === "") {
+    return callback(new Error(t("rules.invalidImage")))
+  }
+  return callback()
+}
 
 function checkContainerPort(rule: any, value: any, callback: any) {
   const containerPort = value ? (value as number) : 0
   if (!containerPort) {
     return callback(new Error(`${t("rules.pleaseEnter")} ${t("label.containerPort")}`))
   }
-  if (filter(metaInfo.value.ports, x => x.containerPort === containerPort).length > 1) {
+  if (filter(metaInfo.value.validPorts, x => x.containerPort === containerPort).length > 1) {
     return callback(new Error(`${t("rules.duplicate")} ${t("label.containerPort")}`))
   }
   return callback()
@@ -93,7 +77,7 @@ function checkContainerPort(rule: any, value: any, callback: any) {
 
 function checkHostPort(rule: any, value: any, callback: any) {
   const hostPort = value ? (value as number) : 0
-  if (hostPort && filter(metaInfo.value.ports, x => x.hostPort === hostPort).length > 1) {
+  if (hostPort && filter(metaInfo.value.validPorts, x => x.hostPort === hostPort).length > 1) {
     return callback(new Error(`${t("rules.duplicate")} ${t("label.hostPort")}`))
   }
   return callback()
@@ -103,54 +87,8 @@ function cancel() {
   router.push({ name: "groupDetail", params: { groupId: groupId.value, mode: PageGroupDetail.Services } })
 }
 
-function parseMetaInfo() {
-  const defaultImage = find(registries.value, x => x.isDefault)
-  const domain = defaultImage ? defaultImage.url : registries.value.length > 0 ? registries.value[0].url : ""
-  let meta = serviceInfo.value.meta ? serviceInfo.value.meta : NewServiceMetaDockerEmptyInfo()
-  const imageSplit = meta.image.indexOf("/")
-  metaInfo.value = {
-    imageDomain: imageSplit > 0 ? meta.image.slice(0, imageSplit) : domain,
-    imageName: imageSplit > 0 ? meta.image.slice(imageSplit) : "",
-    advancedMode: "volumes",
-    validEnv: filter(
-      map(meta.env, x => {
-        const s = x.split("=")
-        return {
-          id: GenerateUUID(),
-          name: s.length > 0 ? s[0] : "",
-          value: s.length > 1 ? s[1] : ""
-        }
-      }),
-      d => !!d.name && !!d.value
-    ),
-    validLabel: map(Object.keys(meta.labels), x => ({ id: GenerateUUID(), name: x, value: meta.labels[x] })),
-    validVolumes: map(meta.volumes, x => ({
-      id: GenerateUUID(),
-      type: x.type,
-      target: x.target,
-      source: x.source,
-      readonly: x.readonly
-    })),
-    validLogConfig: {
-      type: meta.logConfig.type,
-      options: map(Object.keys(meta.logConfig.config), x => ({
-        id: GenerateUUID(),
-        name: x,
-        value: meta.logConfig.config[x]
-      }))
-    },
-    ports: map(meta.network.ports, x => ({
-      id: GenerateUUID(),
-      containerPort: x.containerPort || undefined,
-      protocol: x.protocol,
-      hostPort: x.hostPort || undefined
-    })),
-    ...meta
-  }
-}
-
 function addPort() {
-  metaInfo.value.ports.push({
+  metaInfo.value.validPorts.push({
     id: GenerateUUID(),
     containerPort: undefined,
     protocol: ServiceNetworkProtocol.NetworkProtocolTCP,
@@ -159,7 +97,7 @@ function addPort() {
 }
 
 function removePort(index: number) {
-  metaInfo.value.ports.splice(index, 1)
+  metaInfo.value.validPorts.splice(index, 1)
 }
 
 async function getGroupInfo() {
@@ -185,9 +123,35 @@ async function search(init?: boolean) {
   isLoading.value = true
   await Promise.all([getGroupInfo(), getServiceInfo(), init ? getRegistryList() : undefined])
     .then(() => {
-      parseMetaInfo()
+      metaInfo.value = NewApplicationInfo(registries.value, serviceInfo.value.meta)
     })
     .finally(() => (isLoading.value = false))
+}
+
+function checkArrayDuplicateKey(
+  isFailed: boolean,
+  list: any[],
+  groupByField: string,
+  advancedMode: "volumes" | "environments" | "labels" | "resourcesAndLogs" | "capabilities",
+  isAddErrCheck?: boolean
+) {
+  const obj = groupBy(list, groupByField)
+  for (const key in obj) {
+    if (obj[key].length > 1) {
+      isFailed = true
+      break
+    }
+  }
+  const index = findIndex(advancedOptions.value, x => x.value === advancedMode)
+  if (index != -1) {
+    if (isAddErrCheck) {
+      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
+    }
+    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
+      advancedOptions.value[index].color = undefined
+    }
+  }
+  return !isFailed
 }
 
 function checkVolumes(isAddErrCheck?: boolean) {
@@ -198,23 +162,7 @@ function checkVolumes(isAddErrCheck?: boolean) {
       break
     }
   }
-  const obj = groupBy(metaInfo.value.validVolumes, "target")
-  for (const key in obj) {
-    if (obj[key].length > 1) {
-      isFailed = true
-      break
-    }
-  }
-  const index = findIndex(advancedOptions.value, x => x.value === "volumes")
-  if (index != -1) {
-    if (isAddErrCheck) {
-      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
-    }
-    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
-      advancedOptions.value[index].color = undefined
-    }
-  }
-  return !isFailed
+  return checkArrayDuplicateKey(isFailed, metaInfo.value.validVolumes, "target", "volumes", isAddErrCheck)
 }
 
 function checkEnvironment(isAddErrCheck?: boolean) {
@@ -227,23 +175,7 @@ function checkEnvironment(isAddErrCheck?: boolean) {
       break
     }
   }
-  const obj = groupBy(envs, "name")
-  for (const key in obj) {
-    if (obj[key].length > 1) {
-      isFailed = true
-      break
-    }
-  }
-  const index = findIndex(advancedOptions.value, x => x.value === "environments")
-  if (index != -1) {
-    if (isAddErrCheck) {
-      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
-    }
-    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
-      advancedOptions.value[index].color = undefined
-    }
-  }
-  return !isFailed
+  return checkArrayDuplicateKey(isFailed, envs, "name", "environments", isAddErrCheck)
 }
 
 function checkLabels(isAddErrCheck?: boolean) {
@@ -256,23 +188,7 @@ function checkLabels(isAddErrCheck?: boolean) {
       break
     }
   }
-  const obj = groupBy(labels, "name")
-  for (const key in obj) {
-    if (obj[key].length > 1) {
-      isFailed = true
-      break
-    }
-  }
-  const index = findIndex(advancedOptions.value, x => x.value === "labels")
-  if (index != -1) {
-    if (isAddErrCheck) {
-      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
-    }
-    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
-      advancedOptions.value[index].color = undefined
-    }
-  }
-  return !isFailed
+  return checkArrayDuplicateKey(isFailed, labels, "name", "labels", isAddErrCheck)
 }
 
 function checkLogConfig(isAddErrCheck?: boolean) {
@@ -285,23 +201,7 @@ function checkLogConfig(isAddErrCheck?: boolean) {
       break
     }
   }
-  const obj = groupBy(logConfigs.options, "name")
-  for (const key in obj) {
-    if (obj[key].length > 1) {
-      isFailed = true
-      break
-    }
-  }
-  const index = findIndex(advancedOptions.value, x => x.value === "resourcesAndLogs")
-  if (index != -1) {
-    if (isAddErrCheck) {
-      advancedOptions.value[index].color = isFailed ? "validator-error" : undefined
-    }
-    if (!isAddErrCheck && advancedOptions.value[index].color && !isFailed) {
-      advancedOptions.value[index].color = undefined
-    }
-  }
-  return !isFailed
+  return checkArrayDuplicateKey(isFailed, logConfigs.options, "name", "resourcesAndLogs", isAddErrCheck)
 }
 
 async function validate() {
@@ -319,51 +219,18 @@ async function validate() {
   return filter(validList, x => typeof x !== "undefined" && !x).length <= 0
 }
 
-function parseArrayToMap(arr: any[]) {
-  const result: any = {}
-  map(arr, x => {
-    result[x.name] = x.value
-  })
-  return result
-}
-
-function parseBody(info: ServiceApplicationInfo) {
-  return {
-    type: "application",
-    serviceId: serviceId.value,
-    data: {
-      image: `${info.imageDomain}/${info.imageName}`,
-      alwaysPull: info.alwaysPull,
-      command: info.command,
-      env: map(info.validEnv, x => `${x.name}=${x.value}`) || [],
-      labels: parseArrayToMap(info.validLabel),
-      privileged: info.privileged,
-      capabilities: info.capabilities,
-      logConfig: {
-        type: info.validLogConfig.type,
-        config: parseArrayToMap(info.validLogConfig.options)
-      },
-      resources: info.resources,
-      volumes: map(info.validVolumes, x => omit(x, ["id"])) || [],
-      network: {
-        mode: info.network.mode,
-        hostname: info.network.hostname,
-        networkName: info.network.networkName,
-        useMachineHostname: info.network.useMachineHostname,
-        ports: map(info.ports, x => omit(x, ["id"])) || []
-      },
-      restartPolicy: info.restartPolicy
-    }
-  }
-}
-
 async function save() {
   if (!(await validate())) {
     return
   }
-  const body = parseBody(metaInfo.value)
   isAction.value = true
-  await serviceService.update(groupId.value, body).finally(() => (isAction.value = false))
+  await serviceService
+    .update(groupId.value, {
+      type: "application",
+      serviceId: serviceId.value,
+      data: ParseMetaInfo(metaInfo.value)
+    })
+    .finally(() => (isAction.value = false))
   ShowSuccessMsg(t("message.saveSuccess"))
   await search()
 }
@@ -390,7 +257,7 @@ onMounted(async () => {
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
+                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -407,9 +274,9 @@ onMounted(async () => {
         </el-form-item>
       </el-col>
 
-      <el-col :md="metaInfo.restartPolicy.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure ? 12 : 24">
+      <el-col :md="metaInfo.restartPolicy!.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure ? 12 : 24">
         <el-form-item :label="t('label.restartPolicy')">
-          <el-select v-model="metaInfo.restartPolicy.mode">
+          <el-select v-model="metaInfo.restartPolicy!.mode">
             <el-option :label="t('label.no')" :value="ServiceRestartPolicyMode.RestartPolicyModeNo" />
             <el-option :label="t('label.always')" :value="ServiceRestartPolicyMode.RestartPolicyModeAlways" />
             <el-option :label="t('label.onFailure')" :value="ServiceRestartPolicyMode.RestartPolicyModeOnFailure" />
@@ -418,16 +285,16 @@ onMounted(async () => {
         </el-form-item>
       </el-col>
 
-      <el-col v-if="metaInfo.restartPolicy.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure" :md="12">
+      <el-col v-if="metaInfo.restartPolicy!.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure" :md="12">
         <el-form-item :label="t('label.maxRetryCount')">
-          <v-input-number v-model="metaInfo.restartPolicy.maxRetryCount" :min="0" style="width: 100%" />
+          <v-input-number v-model="metaInfo.restartPolicy!.maxRetryCount" :min="0" style="width: 100%" />
         </el-form-item>
       </el-col>
 
       <el-col
-        :span="metaInfo.network.mode === ServiceNetworkMode.NetworkModeHost ? 24 : metaInfo.network.mode === ServiceNetworkMode.NetworkModeBridge ? 10 : 6">
+        :span="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeHost ? 24 : metaInfo.network!.mode === ServiceNetworkMode.NetworkModeBridge ? 10 : 6">
         <el-form-item :label="t('label.network')">
-          <el-select v-model="metaInfo.network.mode">
+          <el-select v-model="metaInfo.network!.mode">
             <el-option :label="t('label.host')" :value="ServiceNetworkMode.NetworkModeHost" />
             <el-option :label="t('label.bridge')" :value="ServiceNetworkMode.NetworkModeBridge" />
             <el-option :label="t('label.custom')" :value="ServiceNetworkMode.NetworkModeCustom" />
@@ -435,49 +302,49 @@ onMounted(async () => {
         </el-form-item>
       </el-col>
 
-      <el-col v-if="metaInfo.network.mode === ServiceNetworkMode.NetworkModeCustom" :span="6">
+      <el-col v-if="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeCustom" :span="6">
         <el-form-item :label="t('label.networkName')">
-          <v-input v-model="metaInfo.network.networkName" />
+          <v-input v-model="metaInfo.network!.networkName" />
         </el-form-item>
       </el-col>
 
       <el-col
-        v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost"
-        :span="metaInfo.network.mode === ServiceNetworkMode.NetworkModeBridge ? 14 : 12">
+        v-if="metaInfo.network!.mode !== ServiceNetworkMode.NetworkModeHost"
+        :span="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeBridge ? 14 : 12">
         <el-form-item :label="t('label.hostname')" prop="network.hostname">
-          <v-input v-model="metaInfo.network.hostname" :disabled="metaInfo.network.useMachineHostname">
+          <v-input v-model="metaInfo.network!.hostname" :disabled="metaInfo.network!.useMachineHostname">
             <template #prepend>
-              <el-checkbox v-model="metaInfo.network.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
+              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
             </template>
           </v-input>
         </el-form-item>
       </el-col>
 
-      <el-col v-if="metaInfo.network.mode !== ServiceNetworkMode.NetworkModeHost">
+      <el-col v-if="metaInfo.network!.mode !== ServiceNetworkMode.NetworkModeHost">
         <div class="network-box">
           <div class="mb-3">
             <v-tips>{{ t("tips.networkPortTips") }}</v-tips>
           </div>
           <el-row :gutter="12">
-            <el-col v-for="(portInfo, index) in metaInfo.ports" :key="index" :span="24">
+            <el-col v-for="(portInfo, index) in metaInfo.validPorts" :key="index" :span="24">
               <div class="d-flex gap-2">
-                <el-form-item :prop="`ports.${index}.containerPort`" :rules="rules.containerPort" class="flex-1">
+                <el-form-item :prop="`validPorts.${index}.containerPort`" :rules="rules.containerPort" class="flex-1">
                   <v-input-number
-                    v-model="metaInfo.ports[index].containerPort"
+                    v-model="metaInfo.validPorts[index].containerPort"
                     :controls="false"
                     :min="0"
                     :placeholder="t('placeholder.containerPort')"
                     style="width: 100%">
                   </v-input-number>
                 </el-form-item>
-                <el-form-item :prop="`ports.${index}.protocol`">
-                  <el-select v-model="metaInfo.ports[index].protocol" :placeholder="t('placeholder.protocol')" style="width: 200px">
+                <el-form-item :prop="`validPorts.${index}.protocol`">
+                  <el-select v-model="metaInfo.validPorts[index].protocol" :placeholder="t('placeholder.protocol')" style="width: 200px">
                     <el-option :label="t('label.tcp')" :value="ServiceNetworkProtocol.NetworkProtocolTCP" />
                     <el-option :label="t('label.udp')" :value="ServiceNetworkProtocol.NetworkProtocolUDP" />
                   </el-select>
                 </el-form-item>
-                <el-form-item :prop="`ports.${index}.hostPort`" :rules="rules.hostPort" class="flex-1">
-                  <v-input-number v-model="metaInfo.ports[index].hostPort" :controls="false" :placeholder="t('placeholder.hostPort')" class="flex-1" />
+                <el-form-item :prop="`validPorts.${index}.hostPort`" :rules="rules.hostPort" class="flex-1">
+                  <v-input-number v-model="metaInfo.validPorts[index].hostPort" :controls="false" :placeholder="t('placeholder.hostPort')" class="flex-1" />
                 </el-form-item>
                 <el-form-item>
                   <el-button plain style="padding: 4px 12px" text type="danger" @click="removePort(index)">
@@ -504,7 +371,7 @@ onMounted(async () => {
 
       <el-col>
         <el-form-item class="w-100 mt-5">
-          <el-segmented v-model="metaInfo.advancedMode" :options="advancedOptions" block class="advanced-segmented w-100">
+          <el-segmented v-model="advancedMode" :options="advancedOptions" block class="advanced-segmented w-100">
             <template #default="{ item }">
               <span :class="(item as any).color">{{ t((item as any).label as string) }}</span>
             </template>
@@ -516,35 +383,38 @@ onMounted(async () => {
         <div class="advanced-box">
           <div class="advanced-content">
             <volumes-page
-              v-if="metaInfo.advancedMode === 'volumes'"
+              v-if="advancedMode === 'volumes'"
               ref="volumeRef"
               v-model="metaInfo.validVolumes"
               :has-valid="!!find(advancedOptions, x => x.value === 'volumes')?.color"
               @check="checkVolumes()" />
 
             <environments-page
-              v-if="metaInfo.advancedMode === 'environments'"
+              v-if="advancedMode === 'environments'"
               ref="environmentRef"
               v-model="metaInfo.validEnv"
               :has-valid="!!find(advancedOptions, x => x.value === 'environments')?.color"
               @check="checkEnvironment()" />
 
             <labels-page
-              v-if="metaInfo.advancedMode === 'labels'"
+              v-if="advancedMode === 'labels'"
               ref="labelRef"
               v-model="metaInfo.validLabel"
               :has-valid="!!find(advancedOptions, x => x.value === 'labels')?.color"
               @check="checkLabels()" />
 
             <resources-log-config-page
-              v-if="metaInfo.advancedMode === 'resourcesAndLogs'"
+              v-if="advancedMode === 'resourcesAndLogs'"
               ref="resourcesAndLogsRef"
               v-model:log-config="metaInfo.validLogConfig"
               v-model:resources="metaInfo.resources"
               :has-valid="!!find(advancedOptions, x => x.value === 'resourcesAndLogs')?.color"
               @check="checkLogConfig()" />
 
-            <capabilities-page v-if="metaInfo.advancedMode === 'capabilities'" v-model="metaInfo.capabilities" />
+            <capabilities-page
+              v-if="advancedMode === 'capabilities'"
+              v-model:cap-add="metaInfo.capabilities!.capAdd"
+              v-model:cap-drop="metaInfo.capabilities!.capDrop" />
           </div>
         </div>
       </el-col>

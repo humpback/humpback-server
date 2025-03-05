@@ -2,7 +2,8 @@
 import { find, findIndex } from "lodash-es"
 
 const { t } = useI18n()
-const capabilities = defineModel<string[]>()
+const capAdd = defineModel<string[]>("capAdd")
+const capDrop = defineModel<string[]>("capDrop")
 
 const options = ref<Array<{ label: string; i18nTips: string }>>([
   { label: "AUDIT_CONTROL", i18nTips: "tips.AUDIT_CONTROL" },
@@ -45,16 +46,23 @@ const options = ref<Array<{ label: string; i18nTips: string }>>([
 ])
 
 function changeValue(label: string) {
-  const index = findIndex(capabilities.value, x => x === label)
-  if (index === -1) {
-    capabilities.value?.push(label)
+  const addIndex = findIndex(capAdd.value, x => x === label)
+  const dropIndex = findIndex(capDrop.value, x => x === label)
+  if (addIndex === -1) {
+    capAdd.value?.push(label)
+    if (dropIndex !== -1) {
+      capDrop.value?.slice(dropIndex, 1)
+    }
   } else {
-    capabilities.value?.splice(index, 1)
+    capAdd.value?.splice(addIndex, 1)
+    if (dropIndex === -1) {
+      capDrop.value?.push(label)
+    }
   }
 }
 
 function getValue(label: string) {
-  return !!find(capabilities.value, x => x === label)
+  return !!find(capAdd.value, x => x === label)
 }
 </script>
 

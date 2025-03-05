@@ -49,7 +49,7 @@ type AgentTask struct {
 	*ScheduleInfo
 }
 
-type MounteInfo struct {
+type MountInfo struct {
 	Source      string `json:"source"`
 	Destination string `json:"destination"`
 }
@@ -65,18 +65,20 @@ type ContainerStatus struct {
 	ContainerId   string            `json:"containerId"`
 	ContainerName string            `json:"containerName"`
 	NodeId        string            `json:"nodeId"`
+	Ip            string            `json:"ip"`
 	Status        string            `json:"state"`
 	StatusInfo    string            `json:"status"`
 	ErrorMsg      string            `json:"errorMsg"`
 	Image         string            `json:"image"`
 	Command       string            `json:"command"`
 	Network       string            `json:"network"`
-	CreateAt      int64             `json:"created"`
-	StartAt       int64             `json:"started"`
+	CreateAt      int64             `json:"createAt"`
+	StartAt       int64             `json:"startAt"`
+	NextAt        int64             `json:"nextAt"`
 	LastHeartbeat int64             `json:"lastHeartbeat"`
 	Labels        map[string]string `json:"labels"`
 	Env           []string          `json:"env"`
-	Mountes       []MounteInfo      `json:"mounts"`
+	Mounts        []MountInfo       `json:"mounts"`
 	Ports         []ContainerPort   `json:"ports"`
 }
 
@@ -128,12 +130,17 @@ type ServiceMetaDocker struct {
 	Envs          []string          `json:"env"`
 	Labels        map[string]string `json:"labels"`
 	Privileged    bool              `json:"privileged"`
-	Capabilities  []string          `json:"capabilities"`
+	Capabilities  *Capabilities     `json:"capabilities"`
 	LogConfig     *ServiceLogConfig `json:"logConfig"`
 	Resources     *ServiceResources `json:"resources"`
 	Volumes       []*ServiceVolume  `json:"volumes"`
 	Network       *NetworkInfo      `json:"network"`
 	RestartPolicy *RestartPolicy    `json:"restartPolicy"`
+}
+
+type Capabilities struct {
+	CapAdd  []string `json:"capAdd"`
+	CapDrop []string `json:"capDrop"`
 }
 
 type ServiceLogConfig struct {

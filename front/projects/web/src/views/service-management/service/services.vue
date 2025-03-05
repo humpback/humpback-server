@@ -156,7 +156,7 @@ onMounted(async () => {
 
   <service-delete ref="deleteRef" @refresh="search()" />
 
-  <service-create ref="createRef" @refresh="search()" />
+  <service-create ref="createRef" />
 </template>
 
 <style lang="scss" scoped></style>

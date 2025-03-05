@@ -1,18 +1,12 @@
 <script lang="ts" setup>
 import { FormInstance, FormRules } from "element-plus"
 import { SetWebTitle } from "@/utils"
-import { PageGroupDetail, RuleLength, ServiceDeployType } from "@/models"
-import { filter, map, omit, toLower, uniq, uniqWith } from "lodash-es"
+import { PageGroupDetail, RuleLength } from "@/models"
+import { filter, map, toLower, uniq, uniqWith } from "lodash-es"
 import { groupService } from "services/group-service.ts"
 import VCronInput from "@/components/business/v-corn/VCornInput.vue"
+import { NewValidDeploymentInfo, ParseDeploymentInfo, ServiceValidDeploymentInfo } from "./deployment.ts"
 import cronstrue from "cronstrue"
-
-interface ServiceValidDeploymentInfo extends ServiceDeploymentInfo {
-  hasPlacements: boolean
-  validPlacements: Array<{ id: string; mode: string; key: string; value: string; isEqual: boolean }>
-  enableTimeout: boolean
-  enableSchedules: boolean
-}
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -27,13 +21,7 @@ const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
 const groupNodes = ref<NodeInfo[]>([])
 
-const deploymentInfo = ref<ServiceValidDeploymentInfo>({
-  hasPlacements: false,
-  validPlacements: [],
-  enableTimeout: false,
-  enableSchedules: false,
-  ...NewServiceDeploymentInfo()
-})
+const deploymentInfo = ref<ServiceValidDeploymentInfo>(NewValidDeploymentInfo())
 
 const formRef = useTemplateRef<FormInstance>("formRef")
 const cronInputRef = useTemplateRef<InstanceType<typeof VCronInput>>("cronInputRef")
@@ -140,14 +128,7 @@ async function getServiceInfo() {
   return await serviceService.info(groupId.value, serviceId.value).then(info => {
     serviceInfo.value = info
     stateStore.setService(serviceId.value, info)
-    const tempInfo = info.deployment || NewServiceDeploymentInfo()
-    deploymentInfo.value = {
-      hasPlacements: tempInfo.placements.length > 0,
-      enableSchedules: tempInfo.schedule.rules.length > 0,
-      enableTimeout: !!tempInfo.schedule.timeout,
-      validPlacements: map(tempInfo.placements, x => Object.assign({ id: GenerateUUID() }, x)),
-      ...tempInfo
-    }
+    deploymentInfo.value = NewValidDeploymentInfo(info.deployment)
   })
 }
 
@@ -161,28 +142,14 @@ async function save() {
     return
   }
 
-  const body = {
-    serviceId: serviceId.value,
-    type: "deployment",
-    data: {
-      type: deploymentInfo.value.schedule.rules.length > 0 ? ServiceDeployType.DeployTypeSchedule : ServiceDeployType.DeployTypeBackground,
-      mode: deploymentInfo.value.mode,
-      replicas: deploymentInfo.value.mode === ServiceDeployMode.DeployModeGlobal ? 1 : deploymentInfo.value.replicas,
-      placements:
-        deploymentInfo.value.hasPlacements && deploymentInfo.value.validPlacements.length > 0
-          ? map(deploymentInfo.value.validPlacements, x => omit(x, ["id"]))
-          : [],
-      schedule: {
-        timeout:
-          deploymentInfo.value.enableSchedules && deploymentInfo.value.enableTimeout && deploymentInfo.value.schedule.rules.length > 0
-            ? deploymentInfo.value.schedule.timeout
-            : "",
-        rules: deploymentInfo.value.enableTimeout ? deploymentInfo.value.schedule.rules : []
-      }
-    }
-  }
   isAction.value = true
-  await serviceService.update(groupId.value, body).finally(() => (isAction.value = false))
+  await serviceService
+    .update(groupId.value, {
+      serviceId: serviceId.value,
+      type: "deployment",
+      data: ParseDeploymentInfo(deploymentInfo.value)
+    })
+    .finally(() => (isAction.value = false))
   ShowSuccessMsg(t("message.saveSuccess"))
   await search()
 }
@@ -215,7 +182,7 @@ onMounted(async () => {
     </el-form-item>
     <el-form-item>
       <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeGlobal">{{ t("tips.globalTips") }}</v-tips>
-      <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }}</v-tips>
+      <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }} </v-tips>
     </el-form-item>
 
     <el-form-item class="mt-3">

@@ -430,6 +430,7 @@
     "IconMdiLogoutVariant": true,
     "IconMdiTextBoxOutline": true,
     "IconMdiUserOutline": true,
-    "IconMdiViewDashboard": true
+    "IconMdiViewDashboard": true,
+    "ServiceCapabilitiesInfo": true
   }
 }
