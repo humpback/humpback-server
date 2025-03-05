@@ -4,6 +4,7 @@ package types
 type HostInfo struct {
 	Hostname      string   `json:"hostname"`
 	IpAddress     []string `json:"hostIPs"`
+	Port          int      `json:"hostPort"`
 	OsInformation string   `json:"osInformation"`
 	KernelVersion string   `json:"kernelVersion"`
 	TotalCPU      int      `json:"totalCPU"`

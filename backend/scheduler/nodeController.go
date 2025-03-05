@@ -15,6 +15,7 @@ import (
 type NodeSimpleInfo struct {
 	NodeId          string
 	IpAddress       string
+	Port            int
 	Status          string
 	LastHeartbeat   int64
 	OnlineThreshold int
@@ -107,7 +108,7 @@ func (nc *NodeController) CheckNodesCore() {
 			}
 		}
 
-		err := db.NodeUpdateStatus(nodeId, nodeInfo.Status, nodeInfo.LastHeartbeat, nodeInfo.CPUUsage, nodeInfo.MemoryUsage)
+		err := db.NodeUpdateStatus(nodeId, nodeInfo.Port, nodeInfo.Status, nodeInfo.LastHeartbeat, nodeInfo.CPUUsage, nodeInfo.MemoryUsage)
 		if err != nil {
 			slog.Info("[Node Controller] update node status to DB failed", "error", err)
 		}
@@ -136,6 +137,7 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 			nc.NodesInfo[nodeId] = &NodeSimpleInfo{
 				NodeId:          n.NodeId,
 				IpAddress:       n.IpAddress,
+				Port:            n.Port,
 				Status:          types.NodeStatusOffline,
 				LastHeartbeat:   ts,
 				OnlineThreshold: 1,

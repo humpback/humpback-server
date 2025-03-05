@@ -13,11 +13,12 @@ func NodesGetAll() ([]*types.Node, error) {
 	return GetDataAll[types.Node](BucketNodes)
 }
 
-func NodeUpdateStatus(nodeId string, status string, lastUpdate int64, cpuUsage float32, memoryUsage float32) error {
+func NodeUpdateStatus(nodeId string, port int, status string, lastUpdate int64, cpuUsage float32, memoryUsage float32) error {
 	node, err := GetDataById[types.Node](BucketNodes, nodeId)
 	if err != nil {
 		return err
 	}
+	node.Port = port
 	node.Status = status
 	node.UpdatedAt = lastUpdate
 	node.CPUUsage = cpuUsage
