@@ -18,10 +18,10 @@ func NewCacheManager() {
 	nodeCache = tlcache.NewLRUWithTTLCache(1000, 60*time.Minute)
 }
 
-func MatchNodeWithIpAddress(ipAddress []string) string {
+func MatchNodeWithIpAddress(ipAddress []string) (string, string) {
 	for _, ip := range ipAddress {
 		if v, ok := cache.Get(ip); ok {
-			return v.(string)
+			return v.(string), ip
 		}
 	}
 
@@ -31,14 +31,16 @@ func MatchNodeWithIpAddress(ipAddress []string) string {
 	})
 
 	id := ""
+	ip := ""
 	if err == nil && len(n) > 0 {
 		id = n[0].NodeId
+		ip = n[0].IpAddress
 		cache.Add(n[0].IpAddress, id)
 	} else {
 		cache.Add(ipAddress[0], id)
 	}
 
-	return id
+	return id, ip
 }
 
 func GetNodeInfo(nodeId string) *types.Node {

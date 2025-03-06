@@ -12,20 +12,9 @@ import (
 	"math/rand/v2"
 )
 
-type NodeSimpleInfo struct {
-	NodeId          string
-	IpAddress       string
-	Port            int
-	Status          string
-	LastHeartbeat   int64
-	OnlineThreshold int
-	CPUUsage        float32
-	MemoryUsage     float32
-}
-
 type NodeController struct {
-	NodesInfo           map[string]*NodeSimpleInfo
-	NodeHeartbeatChan   chan NodeSimpleInfo
+	NodesInfo           map[string]*types.NodeSimpleInfo
+	NodeHeartbeatChan   chan types.NodeSimpleInfo
 	ContainerChangeChan chan types.ContainerStatus
 	CheckInterval       int64
 	CheckThreshold      int
@@ -33,9 +22,9 @@ type NodeController struct {
 	sync.RWMutex
 }
 
-func NewNodeController(nodeChan chan NodeSimpleInfo, containerChan chan types.ContainerStatus) *NodeController {
+func NewNodeController(nodeChan chan types.NodeSimpleInfo, containerChan chan types.ContainerStatus) *NodeController {
 	nc := &NodeController{
-		NodesInfo:           make(map[string]*NodeSimpleInfo),
+		NodesInfo:           make(map[string]*types.NodeSimpleInfo),
 		NodeHeartbeatChan:   nodeChan,
 		ContainerChangeChan: containerChan,
 		CheckInterval:       int64(config.BackendArgs().CheckInterval),
@@ -59,7 +48,7 @@ func (nc *NodeController) RestoreNodes() {
 	}
 
 	for _, node := range nodes {
-		nc.NodesInfo[node.NodeId] = &NodeSimpleInfo{
+		nc.NodesInfo[node.NodeId] = &types.NodeSimpleInfo{
 			NodeId:          node.NodeId,
 			IpAddress:       node.IpAddress,
 			Status:          node.Status,
@@ -108,7 +97,7 @@ func (nc *NodeController) CheckNodesCore() {
 			}
 		}
 
-		err := db.NodeUpdateStatus(nodeId, nodeInfo.Port, nodeInfo.Status, nodeInfo.LastHeartbeat, nodeInfo.CPUUsage, nodeInfo.MemoryUsage)
+		err := db.NodeUpdateStatus(nodeInfo)
 		if err != nil {
 			slog.Info("[Node Controller] update node status to DB failed", "error", err)
 		}
@@ -134,10 +123,11 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 	} else {
 		n, err := db.NodeGetById(nodeId)
 		if err == nil {
-			nc.NodesInfo[nodeId] = &NodeSimpleInfo{
+			nc.NodesInfo[nodeId] = &types.NodeSimpleInfo{
 				NodeId:          n.NodeId,
 				IpAddress:       n.IpAddress,
-				Port:            n.Port,
+				Name:            healthInfo.HostInfo.Hostname,
+				Port:            healthInfo.HostInfo.Port,
 				Status:          types.NodeStatusOffline,
 				LastHeartbeat:   ts,
 				OnlineThreshold: 1,
@@ -152,6 +142,7 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 func (nc *NodeController) CheckContainers(healthInfo types.HealthInfo) {
 	for _, container := range healthInfo.ContainerList {
 		container.NodeId = healthInfo.NodeId
+		container.Ip = healthInfo.IpAddress
 		nc.ContainerChangeChan <- container
 	}
 }

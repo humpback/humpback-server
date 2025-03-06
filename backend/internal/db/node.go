@@ -13,17 +13,18 @@ func NodesGetAll() ([]*types.Node, error) {
 	return GetDataAll[types.Node](BucketNodes)
 }
 
-func NodeUpdateStatus(nodeId string, port int, status string, lastUpdate int64, cpuUsage float32, memoryUsage float32) error {
-	node, err := GetDataById[types.Node](BucketNodes, nodeId)
+func NodeUpdateStatus(nodeInfo *types.NodeSimpleInfo) error {
+	node, err := GetDataById[types.Node](BucketNodes, nodeInfo.NodeId)
 	if err != nil {
 		return err
 	}
-	node.Port = port
-	node.Status = status
-	node.UpdatedAt = lastUpdate
-	node.CPUUsage = cpuUsage
-	node.MemoryUsage = memoryUsage
-	return SaveData(BucketNodes, nodeId, node)
+	node.Name = nodeInfo.Name
+	node.Port = nodeInfo.Port
+	node.Status = nodeInfo.Status
+	node.UpdatedAt = nodeInfo.LastHeartbeat
+	node.CPUUsage = nodeInfo.CPUUsage
+	node.MemoryUsage = nodeInfo.MemoryUsage
+	return SaveData(BucketNodes, nodeInfo.NodeId, node)
 }
 
 func NodeGetById(nodeId string) (*types.Node, error) {

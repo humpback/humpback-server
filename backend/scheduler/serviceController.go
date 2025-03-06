@@ -17,13 +17,13 @@ type ServiceChangeInfo struct {
 // Service管理入口，每个service一个Manager
 type ServiceController struct {
 	ServiceCtrls        map[string]*ServiceManager
-	NodeChangeChan      chan NodeSimpleInfo
+	NodeChangeChan      chan types.NodeSimpleInfo
 	ContainerChangeChan chan types.ContainerStatus
 	ContainerRemoveChan chan types.ContainerStatus
 	ServiceChangeChan   chan ServiceChangeInfo
 }
 
-func NewServiceController(nodeChan chan NodeSimpleInfo, containerChan chan types.ContainerStatus, serviceChan chan ServiceChangeInfo) *ServiceController {
+func NewServiceController(nodeChan chan types.NodeSimpleInfo, containerChan chan types.ContainerStatus, serviceChan chan ServiceChangeInfo) *ServiceController {
 	sc := &ServiceController{
 		ServiceCtrls:        make(map[string]*ServiceManager),
 		NodeChangeChan:      nodeChan,
@@ -86,7 +86,7 @@ func (sc *ServiceController) HandleNodeChanged() {
 }
 
 // 机器上下线时需要通知该机器所属的Group，去检查Group中所有service的状态
-func (sc *ServiceController) HandleNodeStatusChanged(nodeInfo NodeSimpleInfo) {
+func (sc *ServiceController) HandleNodeStatusChanged(nodeInfo types.NodeSimpleInfo) {
 	groupIds := db.GroupGetByNodeId(nodeInfo.NodeId)
 	for _, gId := range groupIds {
 		for _, serviceManager := range sc.ServiceCtrls {
