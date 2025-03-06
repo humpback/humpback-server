@@ -6,6 +6,7 @@ import Instances from "./instances.vue"
 import Log from "./log.vue"
 import Performance from "./performance.vue"
 import VServiceStatusTag from "@/components/business/v-service/VServiceStatusTag.vue"
+import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -56,10 +57,8 @@ function menuChange(v: string) {
 
 <template>
   <div class="header">
-    <div class="card-title">
-      <span v-if="serviceInfo">{{ serviceInfo?.serviceName }}</span>
-      <el-button v-else link loading />
-    </div>
+    <v-page-title :title="serviceInfo?.serviceName" show-breadcrumbs />
+
     <div class="header-actions">
       <el-button v-if="serviceInfo?.isEnabled" type="info">
         <el-icon :size="16">
@@ -143,12 +142,6 @@ function menuChange(v: string) {
 
 <style lang="scss" scoped>
 .header {
-  .card-title {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 20px;
-  }
-
   .header-actions {
     display: flex;
     align-items: center;

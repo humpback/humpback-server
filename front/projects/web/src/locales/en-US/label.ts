@@ -141,6 +141,10 @@ export default {
     "lastDay": "Last day",
     "endTime": "End Time",
     "to": "To",
-    "instanceLogs": "Instance Logs"
+    "instanceLogs": "Instance Logs",
+    "groupList": "Group List",
+    "configs": "Configs",
+    "userRelated": "User Related",
+    "registries": "Registries"
   }
 }

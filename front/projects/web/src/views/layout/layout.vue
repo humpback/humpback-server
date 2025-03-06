@@ -55,7 +55,7 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
 
   #page-main {
     box-sizing: border-box;
-    padding: calc(var(--hp-header-height) + 8px) 10px 0 10px;
+    padding: calc(var(--hp-header-height) + 12px) 12px 0 12px;
     max-width: 100%;
   }
 }

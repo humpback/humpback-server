@@ -3,6 +3,7 @@ import { TabPaneName } from "element-plus"
 import TeamPage from "./team/teams.vue"
 import UserPage from "./user/users.vue"
 import { PageUserRelated } from "@/models"
+import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -22,6 +23,7 @@ const options = reactive<{ name: string; label: string; component: any }[]>([
 
 <template>
   <v-card class="tab-card">
+    <v-page-title :title="t('label.userRelated')" />
     <el-tabs :model-value="activeTab" class="tab-box" @update:modelValue="changeTab">
       <template v-for="item in options" :key="item.name">
         <el-tab-pane :label="t(item.label)" :name="item.name">

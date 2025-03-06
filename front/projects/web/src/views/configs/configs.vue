@@ -6,12 +6,13 @@ import { QueryConfigsInfo } from "./common.ts"
 import ConfigEdit from "./config-edit.vue"
 import ConfigDelete from "./config-delete.vue"
 import ConfigView from "./config-view.vue"
+import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const tableHeight = computed(() => TableHeight(252))
+const tableHeight = computed(() => TableHeight(272))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryConfigsInfo>(new QueryConfigsInfo(route.query))
@@ -57,6 +58,7 @@ onMounted(() => search())
 
 <template>
   <v-card>
+    <v-page-title :title="t('label.configs')" />
     <el-form @submit.prevent="search">
       <el-form-item>
         <div class="d-flex gap-3 w-100 flex-wrap">

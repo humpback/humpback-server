@@ -53,7 +53,11 @@ const serviceManagement = <RouteRecordRaw[]>[
       currentMenu: "groups",
       webTitle: {
         params: "mode"
-      }
+      },
+      breadcrumb: [
+        { routeName: "groups", i18nLabel: "breadcrumb.groupOverview", isLink: true },
+        { isLink: false, customName: "group" }
+      ]
     }
   },
   {
@@ -76,7 +80,13 @@ const serviceManagement = <RouteRecordRaw[]>[
         : next({ name: "404" })
     },
     meta: {
-      currentMenu: "groups"
+      currentMenu: "groups",
+      breadcrumb: [
+        { routeName: "groups", i18nLabel: "breadcrumb.groupOverview", isLink: true },
+        { routeName: "groupDetail", routeParams: { mode: PageGroupDetail.Services }, isLink: true, customName: "group" },
+        { i18nLabel: "breadcrumb.serviceOverview", isLink: false },
+        { isLink: false, customName: "service" }
+      ]
     }
   }
 ]

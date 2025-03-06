@@ -12,7 +12,7 @@ const route = useRoute()
 const router = useRouter()
 const stateStore = useStateStore()
 
-const tableHeight = computed(() => TableHeight(252))
+const tableHeight = computed(() => TableHeight(352))
 
 const groupId = ref(route.params?.groupId as string)
 

@@ -95,7 +95,7 @@ type DeployType string
 
 var (
 	DeployModeGlobal    DeployMode = "global"
-	DeployModeReplicate DeployMode = "replicate"
+	DeployModeReplicate DeployMode = "replicated"
 )
 
 var (

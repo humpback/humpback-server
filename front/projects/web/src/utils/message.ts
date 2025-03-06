@@ -2,6 +2,7 @@ import { GetI18nMessage } from "@/locales"
 import { ElNotification } from "element-plus"
 
 const defaultDuration = 3000
+const successDuration = 1000
 
 // function showMessage(type: "info" | "success" | "warning" | "error", message: string, showClose?: boolean) {
 //   ElMessage({
@@ -19,7 +20,7 @@ function notifyMsg(type: "info" | "success" | "warning" | "error", message: stri
     title: title,
     message: message,
     showClose: showClose,
-    duration: defaultDuration,
+    duration: type === "success" ? successDuration : defaultDuration,
     customClass: "messageBox"
   })
 }
