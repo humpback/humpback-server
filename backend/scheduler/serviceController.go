@@ -8,22 +8,16 @@ import (
 	"humpback/types"
 )
 
-type ServiceChangeInfo struct {
-	ServiceId string
-	Action    string
-	Version   string
-}
-
 // Service管理入口，每个service一个Manager
 type ServiceController struct {
 	ServiceCtrls        map[string]*ServiceManager
 	NodeChangeChan      chan types.NodeSimpleInfo
 	ContainerChangeChan chan types.ContainerStatus
 	ContainerRemoveChan chan types.ContainerStatus
-	ServiceChangeChan   chan ServiceChangeInfo
+	ServiceChangeChan   chan types.ServiceChangeInfo
 }
 
-func NewServiceController(nodeChan chan types.NodeSimpleInfo, containerChan chan types.ContainerStatus, serviceChan chan ServiceChangeInfo) *ServiceController {
+func NewServiceController(nodeChan chan types.NodeSimpleInfo, containerChan chan types.ContainerStatus, serviceChan chan types.ServiceChangeInfo) *ServiceController {
 	sc := &ServiceController{
 		ServiceCtrls:        make(map[string]*ServiceManager),
 		NodeChangeChan:      nodeChan,

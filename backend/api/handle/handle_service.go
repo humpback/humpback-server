@@ -76,7 +76,7 @@ func serviceUpdate(c *gin.Context) {
 		return
 	}
 	body.GroupId = c.Param("groupId")
-	result, err := controller.ServiceUpdate(body)
+	result, err := controller.ServiceUpdate(middleware.GetServiceChangeChannel(c), body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return

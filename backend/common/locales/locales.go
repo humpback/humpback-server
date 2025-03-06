@@ -126,4 +126,6 @@ const (
 	CodeServiceProtocolInvalid                   = "R4Service-030"
 	CodeServiceOperateInvalid                    = "R4Service-031"
 	CodeServiceIsNotEnable                       = "R4Service-032"
+	CodeServiceIsEnabled                         = "R4Service-033"
+	CodeServiceIsDisabled                        = "R4Service-034"
 )

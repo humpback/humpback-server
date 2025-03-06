@@ -48,8 +48,7 @@ function handleUserMenuClick(v: string) {
   <div class="header-box">
     <div class="search-input">
       <v-input :placeholder="t('placeholder.searchGroupService')" size="small">
-        <template #prefix
-          >.
+        <template #prefix>
           <el-icon :size="14">
             <IconMdiSearch />
           </el-icon>

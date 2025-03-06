@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"humpback/common/locales"
 	"humpback/common/response"
+	"humpback/types"
 )
 
 type CheckInterface interface {
@@ -41,4 +42,20 @@ func CheckBody(c *gin.Context, body CheckInterface) bool {
 func AbortErr(c *gin.Context, err error) {
 	c.Error(err)
 	c.Abort()
+}
+
+func GetNodeChannel(c *gin.Context) chan types.NodeSimpleInfo {
+	ch, exist := c.Get(KeyNodeEventChannel)
+	if !exist {
+		return nil
+	}
+	return ch.(chan types.NodeSimpleInfo)
+}
+
+func GetServiceChangeChannel(c *gin.Context) chan types.ServiceChangeInfo {
+	ch, exist := c.Get(KeyServiceEventChannel)
+	if !exist {
+		return nil
+	}
+	return ch.(chan types.ServiceChangeInfo)
 }

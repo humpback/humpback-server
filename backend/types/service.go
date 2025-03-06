@@ -26,6 +26,12 @@ const (
 	ContainerLabelGroupId     = "Humpback-GroupId"
 )
 
+type ServiceChangeInfo struct {
+	ServiceId string
+	Action    string
+	Version   string
+}
+
 type Service struct {
 	ServiceId   string             `json:"serviceId"`
 	GroupId     string             `json:"groupId"`

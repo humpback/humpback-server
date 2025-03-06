@@ -20,14 +20,14 @@ type HumpbackScheduler struct {
 	serviceCtrl         *ServiceController
 	NodeHeartbeatChan   chan types.NodeSimpleInfo
 	ContainerChangeChan chan types.ContainerStatus
-	ServiceChangeChan   chan ServiceChangeInfo
+	ServiceChangeChan   chan types.ServiceChangeInfo
 }
 
 func NewHumpbackScheduler() *HumpbackScheduler {
 	hs := &HumpbackScheduler{}
 	hs.NodeHeartbeatChan = make(chan types.NodeSimpleInfo, 100)
 	hs.ContainerChangeChan = make(chan types.ContainerStatus, 100)
-	hs.ServiceChangeChan = make(chan ServiceChangeInfo, 100)
+	hs.ServiceChangeChan = make(chan types.ServiceChangeInfo, 100)
 	hs.serviceCtrl = NewServiceController(hs.NodeHeartbeatChan, hs.ContainerChangeChan, hs.ServiceChangeChan)
 	hs.nodeCtrl = NewNodeController(hs.NodeHeartbeatChan, hs.ContainerChangeChan)
 

@@ -10,6 +10,7 @@ import (
 	"humpback/api/middleware"
 	"humpback/api/static"
 	"humpback/config"
+	"humpback/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,11 +20,11 @@ type Router struct {
 	httpSrv *http.Server
 }
 
-func InitRouter() *Router {
+func InitRouter(nodeCh chan types.NodeSimpleInfo, serviceCh chan types.ServiceChangeInfo) *Router {
 	gin.SetMode(gin.ReleaseMode)
 	gin.Default()
 	r := &Router{engine: gin.New()}
-	r.setMiddleware()
+	r.setMiddleware(nodeCh, serviceCh)
 	r.setRoute()
 	return r
 }
@@ -46,8 +47,8 @@ func (api *Router) Close(c context.Context) error {
 	return api.httpSrv.Shutdown(c)
 }
 
-func (api *Router) setMiddleware() {
-	api.engine.Use(middleware.Log(), middleware.CorsCheck(), middleware.HandleError())
+func (api *Router) setMiddleware(nodeCh chan types.NodeSimpleInfo, serviceCh chan types.ServiceChangeInfo) {
+	api.engine.Use(middleware.Log(), middleware.CorsCheck(), middleware.HandleError(), middleware.SetEventChannel(nodeCh, serviceCh))
 }
 
 func (api *Router) setRoute() {

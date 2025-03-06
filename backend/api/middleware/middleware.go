@@ -21,7 +21,9 @@ import (
 )
 
 const (
-	KeyErrCodeMap = "KeyErrCodeMap"
+	KeyErrCodeMap          = "KeyErrCodeMap"
+	KeyNodeEventChannel    = "KeyNodeEventChannel"
+	KeyServiceEventChannel = "KeyServiceEventChannel"
 )
 
 func Log() gin.HandlerFunc {
@@ -151,5 +153,12 @@ func CheckInGroup() gin.HandlerFunc {
 			AbortErr(c, err)
 			return
 		}
+	}
+}
+
+func SetEventChannel(nodeCh chan types.NodeSimpleInfo, serviceCh chan types.ServiceChangeInfo) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set(KeyNodeEventChannel, nodeCh)
+		c.Set(KeyServiceEventChannel, serviceCh)
 	}
 }

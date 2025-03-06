@@ -55,7 +55,7 @@ func ServiceCreate(info *models.ServiceCreateReqInfo) (string, error) {
 	return newService.ServiceId, nil
 }
 
-func ServiceUpdate(info *models.ServiceUpdateReqInfo) (string, error) {
+func ServiceUpdate(serviceChangeChan chan types.ServiceChangeInfo, info *models.ServiceUpdateReqInfo) (string, error) {
 	service, err := Service(info.GroupId, info.ServiceId)
 	if err != nil {
 		return "", err
@@ -69,9 +69,15 @@ func ServiceUpdate(info *models.ServiceUpdateReqInfo) (string, error) {
 		service.Deployment = info.DeploymentInfo
 	}
 	service.UpdatedAt = utils.NewActionTimestamp()
+	if service.IsEnabled {
+		service.Version = utils.GenerateRandomStringWithLength(5)
+	}
 	if err = db.ServiceUpdate(service); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
+	//if service.IsEnabled {
+	//	sendServiceEvent(serviceChangeChan, service.ServiceId, service.Version, service.Action)
+	//}
 	//todo 检查状态后，往schedule发送消息
 	return service.ServiceId, nil
 }
@@ -97,9 +103,16 @@ func ServiceOperate(info *models.ServiceOperateReqInfo) (string, error) {
 	}
 	switch info.Aciton {
 	case types.ServiceActionEnable:
+		if service.IsEnabled {
+			return "", response.NewBadRequestErr(locales.CodeServiceIsEnabled)
+		}
+		service.Version = utils.GenerateRandomStringWithLength(5)
 		//todo 判断enable和disable状态是否不一致
 		service.IsEnabled = true
 	case types.ServiceActionDisable:
+		if service.IsEnabled {
+			return "", response.NewBadRequestErr(locales.CodeServiceIsDisabled)
+		}
 		service.IsEnabled = false
 	case types.ServiceActionStart, types.ServiceActionRestart, types.ServiceActionStop:
 		if !service.IsEnabled {

@@ -17,9 +17,10 @@ type App struct {
 }
 
 func InitApp() (*App, error) {
+	scheduler := scheduler.NewHumpbackScheduler()
 	app := &App{
-		webSite:   api.InitRouter(),
-		scheduler: scheduler.NewHumpbackScheduler(),
+		webSite:   api.InitRouter(scheduler.NodeHeartbeatChan, scheduler.ServiceChangeChan),
+		scheduler: scheduler,
 		stopCh:    make(chan struct{}),
 	}
 	if err := db.InitDB(); err != nil {
@@ -35,9 +36,6 @@ func InitApp() (*App, error) {
 }
 
 func (app *App) Startup() {
-	// app.scheduler.NodeHeartbeatChan
-	// app.scheduler.ServiceChangeChan
-	// website 可以用这两个channel通知调度器节点变动和服务变动
 	app.scheduler.Start()
 	app.webSite.Start()
 	controller.Start(app.stopCh)

@@ -126,7 +126,7 @@ func mockGatewayServices(c *gin.Context) {
 
 	sc := c.MustGet("scheduler").(*HumpbackScheduler)
 
-	svcChange := ServiceChangeInfo{
+	svcChange := types.ServiceChangeInfo{
 		ServiceId: svc.ServiceId,
 		Version:   svc.Version,
 	}
@@ -173,7 +173,7 @@ func mockWebServices(c *gin.Context) {
 
 	sc := c.MustGet("scheduler").(*HumpbackScheduler)
 
-	svcChange := ServiceChangeInfo{
+	svcChange := types.ServiceChangeInfo{
 		ServiceId: svc.ServiceId,
 		Version:   svc.Version,
 	}
@@ -223,7 +223,7 @@ func mockScheduleServices(c *gin.Context) {
 
 	sc := c.MustGet("scheduler").(*HumpbackScheduler)
 
-	svcChange := ServiceChangeInfo{
+	svcChange := types.ServiceChangeInfo{
 		ServiceId: svc.ServiceId,
 		Version:   svc.Version,
 	}
@@ -251,7 +251,7 @@ func mockServiceAction(c *gin.Context) {
 
 		db.SaveData(db.BucketServices, svc.ServiceId, svc)
 
-		svcChange := ServiceChangeInfo{
+		svcChange := types.ServiceChangeInfo{
 			ServiceId: svc.ServiceId,
 			Version:   svc.Version,
 			Action:    action,

@@ -117,4 +117,6 @@ var enUSMsg = map[string]string{
 	CodeServiceProtocolInvalid:                   "The protocol is invalid. support 'TCP'/'UCP' .",
 	CodeServiceOperateInvalid:                    "Invalid action.",
 	CodeServiceIsNotEnable:                       "The service is not enabled.",
+	CodeServiceIsEnabled:                         "The service is enabled.",
+	CodeServiceIsDisabled:                        "The service is disabled.",
 }
