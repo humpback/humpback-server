@@ -30,6 +30,7 @@ export default {
     "nodes": "Nodes",
     "services": "Services",
     "addService": "Add Service",
+    "deleteService": "Delete Service",
     "addSchedule": "Add Schedule",
     "editSchedule": "Edit Schedule"
   }

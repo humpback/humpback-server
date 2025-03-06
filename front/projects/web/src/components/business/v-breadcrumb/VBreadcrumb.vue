@@ -9,26 +9,15 @@ const stateStore = useStateStore()
 const breadcrumbs = computed(() => {
   const list = cloneDeep(route.meta.breadcrumb) || []
   for (const b of list) {
-    if (!b.isLink) {
-      switch (b.customName) {
-        case "service":
-          b.name = stateStore.getService()?.serviceName
-          break
-        case "group":
-          b.name = stateStore.getGroup()?.groupName
-          break
-      }
-    } else {
-      switch (b.customName) {
-        case "service":
-          b.routeParams = Object.assign({}, b.routeParams, { serviceId: stateStore.getService()?.serviceId }, props.params)
-          b.name = stateStore.getService()?.serviceName
-          break
-        case "group":
-          b.routeParams = Object.assign({}, b.routeParams, { groupId: stateStore.getGroup()?.groupId }, props.params)
-          b.name = stateStore.getGroup()?.groupName
-          break
-      }
+    switch (b.customName) {
+      case "service":
+        b.routeParams = b.isLink ? Object.assign({}, b.routeParams, { serviceId: stateStore.getService()?.serviceId }, props.params) : b.routeParams
+        b.name = stateStore.getService()?.serviceName
+        break
+      case "group":
+        b.routeParams = b.isLink ? Object.assign({}, b.routeParams, { groupId: stateStore.getGroup()?.groupId }, props.params) : b.routeParams
+        b.name = stateStore.getGroup()?.groupName
+        break
     }
   }
   return list
@@ -37,8 +26,8 @@ const breadcrumbs = computed(() => {
 
 <template>
   <el-breadcrumb v-if="breadcrumbs.length > 0" separator="/">
-    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index" :to="item.isLink ? { name: item.routeName, params: item.routeParams } : undefined">
-      {{ item.name || t(item.i18nLabel) }}
+    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index" :to="item.isLink ? { name: item?.routeName, params: item?.routeParams } : undefined">
+      {{ item?.name ? item.name : item?.i18nLabel ? t(item?.i18nLabel) : "" }}
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>

@@ -46,8 +46,15 @@ function handleUserMenuClick(v: string) {
 
 <template>
   <div class="header-box">
-    <div>
-      <el-text> {{ t("menu.header." + (route.name as string)) }}</el-text>
+    <div class="search-input">
+      <v-input :placeholder="t('placeholder.searchGroupService')" size="small">
+        <template #prefix
+          >.
+          <el-icon :size="14">
+            <IconMdiSearch />
+          </el-icon>
+        </template>
+      </v-input>
     </div>
     <div class="d-flex">
       <div class="d-flex gap-5 mr-5">
@@ -98,6 +105,12 @@ function handleUserMenuClick(v: string) {
   align-items: center;
   justify-content: space-between;
   color: inherit;
+
+  :deep(.search-input) {
+    .el-input__wrapper {
+      border-radius: 16px;
+    }
+  }
 
   .el-dropdown:focus-visible {
     outline: none;

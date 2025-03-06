@@ -21,3 +21,7 @@ func ServiceGetById(serviceId string) (*types.Service, error) {
 func ServiceUpdate(data *types.Service) error {
 	return SaveData(BucketServices, data.ServiceId, data)
 }
+
+func ServiceDelete(id string) error {
+	return DeleteData(BucketServices, id)
+}

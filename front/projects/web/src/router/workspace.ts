@@ -55,15 +55,15 @@ const serviceManagement = <RouteRecordRaw[]>[
         params: "mode"
       },
       breadcrumb: [
-        { routeName: "groups", i18nLabel: "breadcrumb.groupOverview", isLink: true },
-        { isLink: false, customName: "group" }
+        { routeName: "groups", routeParams: {}, i18nLabel: "breadcrumb.groupOverview", isLink: true },
+        { routeName: "", routeParams: {}, i18nLabel: "", isLink: false, customName: "group" }
       ]
     }
   },
   {
     path: "/ws/group/:groupId/service/:serviceId/:mode",
     name: "serviceInfo",
-    component: () => import("@/views/service-management/service/detail/service-detail.vue"),
+    component: () => import("@/views/service-management/service/service-detail.vue"),
     beforeEnter: (to, from, next) => {
       return find(
         [
@@ -82,10 +82,10 @@ const serviceManagement = <RouteRecordRaw[]>[
     meta: {
       currentMenu: "groups",
       breadcrumb: [
-        { routeName: "groups", i18nLabel: "breadcrumb.groupOverview", isLink: true },
-        { routeName: "groupDetail", routeParams: { mode: PageGroupDetail.Services }, isLink: true, customName: "group" },
-        { i18nLabel: "breadcrumb.serviceOverview", isLink: false },
-        { isLink: false, customName: "service" }
+        { routeName: "groups", routeParams: {}, i18nLabel: "breadcrumb.groupOverview", isLink: true },
+        { routeName: "groupDetail", routeParams: { mode: PageGroupDetail.Services }, i18nLabel: "", isLink: true, customName: "group" },
+        { routeName: "", routeParams: {}, i18nLabel: "breadcrumb.serviceOverview", isLink: false },
+        { routeName: "", routeParams: {}, i18nLabel: "", isLink: false, customName: "service" }
       ]
     }
   }

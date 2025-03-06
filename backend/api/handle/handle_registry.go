@@ -15,7 +15,7 @@ import (
 func RouteRegistry(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), registryCreate)
 	router.PUT("", middleware.CheckAdminPermissions(), registryUpdate)
-	router.GET("/info/:id", registry)
+	router.GET("/:id/info", registry)
 	router.POST("/query", registryQuery)
 	router.GET("/list", registries)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), registryDelete)

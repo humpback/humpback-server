@@ -13,9 +13,9 @@ import (
 func RouteGroup(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), groupCreate)
 	router.PUT("", groupUpdate)
-	router.GET("/info/:id", groupInfo)
+	router.GET("/:groupId/info", groupInfo)
 	router.POST("/query", groupQuery)
-	router.DELETE("/:id", middleware.CheckAdminPermissions(), groupDelete)
+	router.DELETE("/:groupId", middleware.CheckAdminPermissions(), groupDelete)
 }
 
 func groupCreate(c *gin.Context) {
@@ -46,7 +46,7 @@ func groupUpdate(c *gin.Context) {
 }
 
 func groupInfo(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("groupId")
 	userInfo := middleware.GetUserInfo(c)
 	info, err := controller.Group(userInfo, id)
 	if err != nil {
@@ -71,7 +71,7 @@ func groupQuery(c *gin.Context) {
 }
 
 func groupDelete(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("groupId")
 	if err := controller.GroupDelete(id); err != nil {
 		middleware.AbortErr(c, err)
 		return

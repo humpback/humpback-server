@@ -22,7 +22,7 @@ class UserService {
   }
 
   async info(id: string, includePassword?: boolean) {
-    let url = includePassword ? `/webapi/user/info/${id}?p=true` : `/webapi/user/info/${id}`
+    let url = includePassword ? `/webapi/user/${id}/info?p=true` : `/webapi/user/${id}/info`
     return await httpClient.get<UserInfo>(url).then(res => res.data)
   }
 

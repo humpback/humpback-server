@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"humpback/api/handle/models"
 	"humpback/api/middleware"
+	"humpback/common/response"
 	"humpback/internal/controller"
 )
 
@@ -14,8 +15,9 @@ func RouteService(router *gin.RouterGroup) {
 	router.GET("/total", serviceTotal)
 	router.POST("", serviceCreate)
 	router.PUT("", serviceUpdate)
-	router.GET("/info/:serviceId", serviceInfo)
-	//router.DELETE("/:serviceId", serviceDelete)
+	router.GET("/:serviceId/info", serviceInfo)
+	router.PUT("/operate", serviceOperate)
+	router.DELETE("/:serviceId", serviceDelete)
 }
 
 func serviceQuery(c *gin.Context) {
@@ -80,4 +82,28 @@ func serviceUpdate(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, result)
+}
+
+func serviceOperate(c *gin.Context) {
+	body := new(models.ServiceOperateReqInfo)
+	if !middleware.BindAndCheckBody(c, body) {
+		return
+	}
+	body.GroupId = c.Param("groupId")
+	result, err := controller.ServiceOperate(body)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+func serviceDelete(c *gin.Context) {
+	serviceId := c.Param("serviceId")
+	groupId := c.Param("groupId")
+	if err := controller.ServiceDelete(groupId, serviceId); err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, response.NewRespSucceed())
 }

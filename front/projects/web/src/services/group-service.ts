@@ -2,7 +2,7 @@ import { GroupInfo, ResponseQuery, ResponseSuccess } from "@/types"
 
 class GroupService {
   async info(id: string) {
-    return await httpClient.get<GroupInfo>(`/webapi/group/info/${id}`).then(res => res.data)
+    return await httpClient.get<GroupInfo>(`/webapi/group/${id}/info`).then(res => res.data)
   }
 
   async query(data: any) {

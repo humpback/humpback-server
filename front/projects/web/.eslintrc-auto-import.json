@@ -431,6 +431,9 @@
     "IconMdiTextBoxOutline": true,
     "IconMdiUserOutline": true,
     "IconMdiViewDashboard": true,
-    "ServiceCapabilitiesInfo": true
+    "ServiceCapabilitiesInfo": true,
+    "IconMdiPlay": true,
+    "IconMdiRestart": true,
+    "IconMdiSquare": true
   }
 }

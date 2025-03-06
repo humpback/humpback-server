@@ -1,3 +1,4 @@
+import { shallowRef } from "vue"
 import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
 import { cloneDeep, find, omitBy } from "lodash-es"
 import { NodeSwitch, ServiceStatus } from "@/models"
@@ -37,3 +38,16 @@ export class QueryServicesInfo extends QueryInfo {
     return omitBy(this, (value, key) => key.startsWith("_"))
   }
 }
+
+export const ActionOptions: Array<{
+  action: string
+  type: "default" | "info" | "success" | "primary" | "text" | "warning" | "danger"
+  i18nLabel: string
+  icon: any
+}> = [
+  { action: "Enable", type: "success", i18nLabel: "btn.enable", icon: shallowRef(IconMdiPlay) },
+  { action: "Disable", type: "info", i18nLabel: "btn.disable", icon: shallowRef(IconMdiSquare) },
+  { action: "Start", type: "success", i18nLabel: "btn.start", icon: shallowRef(IconMdiPlay) },
+  { action: "Restart", type: "success", i18nLabel: "btn.restart", icon: shallowRef(IconMdiRestart) },
+  { action: "Stop", type: "primary", i18nLabel: "btn.stop", icon: shallowRef(IconMdiSquare) }
+]

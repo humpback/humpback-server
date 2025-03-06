@@ -2,7 +2,7 @@
 import { ServiceInfo } from "@/types"
 import { SetWebTitle, TableHeight } from "@/utils"
 import { Action } from "@/models"
-import { QueryServicesInfo } from "./common.ts"
+import { ActionOptions, QueryServicesInfo } from "./common.ts"
 import { serviceService } from "services/service-client.ts"
 import ServiceCreate from "./action/service-create.vue"
 import ServiceDelete from "./action/service-delete.vue"
@@ -56,6 +56,11 @@ async function search() {
   await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
   await Promise.all([getGroupInfo(), getServiceTotal(), getServices()]).finally(() => (isLoading.value = false))
+}
+
+async function operateService(serviceId: string, action: "Start" | "Stop" | "Restart" | "Enable" | "Disable") {
+  await serviceService.operate(stateStore.getGroup()!.groupId, { serviceId: serviceId, action: action })
+  ShowSuccessMsg(t("message.succeed"))
 }
 
 function openAction(action: string, info?: ServiceInfo) {
@@ -221,10 +226,31 @@ onMounted(async () => {
         <v-date-view :timestamp="scope.row.updatedAt" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
+    <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="140">
       <template #default="scope">
-        <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.action") }}</el-button>
-        <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
+        <div class="d-flex gap-3">
+          <el-dropdown @command="operateService(scope.row.serviceId, $event)">
+            <el-button class="d-flex gap-1" link type="primary">
+              {{ t("btn.action") }}
+              <el-icon>
+                <IconMdiChevronDown />
+              </el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <template v-for="item in ActionOptions" :key="item.action">
+                  <el-dropdown-item :command="item.action">
+                    <el-button :type="item.type" link>
+                      {{ t(item.i18nLabel) }}
+                    </el-button>
+                  </el-dropdown-item>
+                </template>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <!--        <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.action") }}</el-button>-->
+          <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
+        </div>
       </template>
     </el-table-column>
   </v-table>

@@ -40,40 +40,40 @@ async function getServiceInfo() {
   return await serviceService.info(groupId.value, serviceId.value).then(info => {
     serviceInfo.value = info
     stateStore.setService(serviceId.value, info)
-    serviceInfo.value.containers = [
-      {
-        containerId: "FSJLFJLFJPQJT03QWGHQOGLANG;AHNGAHNG;KLANG",
-        containerName: "humpback-losjfljsofwoj-lsfjlsj-jfslf",
-        nodeId: "SLFJOPQW2JRFO",
-        status: "running",
-        ip: "10.16.15.12",
-        statusInfo: "",
-        errorMsg: "exit code -1",
-        image: "docker.io/nginx:latest",
-        command: "nginx -g daemon off",
-        network: "",
-        createAt: 1740818013735,
-        startAt: 1740818013735,
-        nextAt: 1740818013735,
-        lastHeartbeat: 1740818013735,
-        labels: { test: "skyler" },
-        env: ["test=true", "amd=yesLJOQGOJQPGJOQP;JGO;EQJGPOQJGEJGNQ;LEJQG;LJGL;EWJGL;NA;GLNMA;LGMNPOQJGQP;GJ;QLJGL;ENMQG;LNMG;GQNMMGOQPHGJPQGOQHNGOQHNGO;"],
-        mounts: [
-          {
-            source: "/var/lib/docker",
-            destination: "/var/lib/docker"
-          }
-        ],
-        ports: [
-          {
-            bindIP: "0.0.0.0",
-            privatePort: 80,
-            publicPort: 800,
-            type: "TCP"
-          }
-        ]
-      }
-    ]
+    // serviceInfo.value.containers = [
+    //   {
+    //     containerId: "FSJLFJLFJPQJT03QWGHQOGLANG;AHNGAHNG;KLANG",
+    //     containerName: "humpback-losjfljsofwoj-lsfjlsj-jfslf",
+    //     nodeId: "SLFJOPQW2JRFO",
+    //     status: "running",
+    //     ip: "10.16.15.12",
+    //     statusInfo: "",
+    //     errorMsg: "exit code -1",
+    //     image: "docker.io/nginx:latest",
+    //     command: "nginx -g daemon off",
+    //     network: "",
+    //     createAt: 1740818013735,
+    //     startAt: 1740818013735,
+    //     nextAt: 1740818013735,
+    //     lastHeartbeat: 1740818013735,
+    //     labels: { test: "skyler" },
+    //     env: ["test=true", "amd=yesLJOQGOJQPGJOQP;JGO;EQJGPOQJGEJGNQ;LEJQG;LJGL;EWJGL;NA;GLNMA;LGMNPOQJGQP;GJ;QLJGL;ENMQG;LNMG;GQNMMGOQPHGJPQGOQHNGOQHNGO;"],
+    //     mounts: [
+    //       {
+    //         source: "/var/lib/docker",
+    //         destination: "/var/lib/docker"
+    //       }
+    //     ],
+    //     ports: [
+    //       {
+    //         bindIP: "0.0.0.0",
+    //         privatePort: 80,
+    //         publicPort: 800,
+    //         type: "TCP"
+    //       }
+    //     ]
+    //   }
+    // ]
   })
 }
 

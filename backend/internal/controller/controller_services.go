@@ -27,7 +27,7 @@ func ServiceQuery(groupId string, queryInfo *models.ServiceQueryReqInfo) (*respo
 func ServiceTotal(groupId string) (int, error) {
 	total, err := db.ServiceGetTotalByPrefix(groupId)
 	if err != nil {
-		if err == db.ErrBucketNotExist {
+		if err == db.ErrKeyNotExist {
 			return 0, response.NewBadRequestErr(locales.CodeGroupNotExist)
 		}
 		return 0, response.NewRespServerErr(err.Error())
@@ -38,7 +38,7 @@ func ServiceTotal(groupId string) (int, error) {
 func ServiceCreate(info *models.ServiceCreateReqInfo) (string, error) {
 	services, err := db.ServicesGetByPrefix(info.GroupId)
 	if err != nil {
-		if err == db.ErrBucketNotExist {
+		if err == db.ErrKeyNotExist {
 			return "", response.NewBadRequestErr(locales.CodeGroupNotExist)
 		}
 		return "", response.NewRespServerErr(err.Error())
@@ -79,7 +79,7 @@ func ServiceUpdate(info *models.ServiceUpdateReqInfo) (string, error) {
 func Service(groupId, serviceId string) (*types.Service, error) {
 	service, err := db.ServiceGetById(serviceId)
 	if err != nil {
-		if err != db.ErrBucketNotExist {
+		if err == db.ErrKeyNotExist {
 			return nil, response.NewBadRequestErr(locales.CodeServiceNotExist)
 		}
 		return nil, response.NewRespServerErr(err.Error())
@@ -88,4 +88,49 @@ func Service(groupId, serviceId string) (*types.Service, error) {
 		return nil, response.NewBadRequestErr(locales.CodeServiceNotExist)
 	}
 	return service, nil
+}
+
+func ServiceOperate(info *models.ServiceOperateReqInfo) (string, error) {
+	service, err := Service(info.GroupId, info.ServiceId)
+	if err != nil {
+		return "", err
+	}
+	switch info.Aciton {
+	case types.ServiceActionEnable:
+		//todo 判断enable和disable状态是否不一致
+		service.IsEnabled = true
+	case types.ServiceActionDisable:
+		service.IsEnabled = false
+	case types.ServiceActionStart, types.ServiceActionRestart, types.ServiceActionStop:
+		if !service.IsEnabled {
+			return "", response.NewBadRequestErr(locales.CodeServiceIsNotEnable)
+		}
+		service.Action = info.Aciton
+	}
+	service.UpdatedAt = utils.NewActionTimestamp()
+	if err = db.ServiceUpdate(service); err != nil {
+		return "", response.NewRespServerErr(err.Error())
+	}
+	//todo 检查状态后，往schedule发送消息
+	return service.ServiceId, nil
+}
+
+func ServiceDelete(groupId, serviceId string) error {
+	service, err := db.ServiceGetById(serviceId)
+	if err != nil {
+		if err == db.ErrKeyNotExist {
+			return nil
+		}
+		return response.NewRespServerErr(err.Error())
+	}
+	if service.GroupId != groupId {
+		return nil
+	}
+	if err = db.ServiceDelete(serviceId); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	if service.IsEnabled {
+		//todo 检查状态后，往schedule发送消息
+	}
+	return nil
 }

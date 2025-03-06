@@ -1,40 +1,45 @@
 <script lang="ts" setup>
 import { cloneDeep } from "lodash-es"
 import { ServiceInfo } from "@/types"
+import { PageGroupDetail } from "@/models"
 
 const emits = defineEmits<{
   (e: "refresh"): void
 }>()
 
 const { t } = useI18n()
+const router = useRouter()
 
 const isAction = ref(false)
 const isChecked = ref(false)
 const dialogInfo = ref({
   show: false,
-  info: {} as ServiceInfo
+  info: {} as ServiceInfo,
+  isJumpToList: false
 })
 
-function open(info: ServiceInfo) {
+function open(info: ServiceInfo, isJumpToList?: boolean) {
   isChecked.value = false
   dialogInfo.value.info = cloneDeep(info)
   dialogInfo.value.show = true
+  dialogInfo.value.isJumpToList = !!isJumpToList
 }
 
 async function confirmDelete() {
   if (!isChecked.value) {
     return
   }
-  // isAction.value = true
-  // return await serviceService
-  //   .delete(dialogInfo.value.info.serviceId)
-  //   .then(() => {
-  //     ShowSuccessMsg(t("message.deleteSuccess"))
-  //     dialogInfo.value.show = false
-  //     emits("refresh")
-  //   })
-  //   .finally(() => (isAction.value = false))
-  emits("refresh")
+
+  isAction.value = true
+  await serviceService.delete(dialogInfo.value.info.groupId, dialogInfo.value.info.serviceId).finally(() => (isAction.value = false))
+  ShowSuccessMsg(t("message.deleteSuccess"))
+
+  if (dialogInfo.value.isJumpToList) {
+    await router.push({ name: "groupDetail", params: { groupId: dialogInfo.value.info.groupId, mode: PageGroupDetail.Services } })
+  } else {
+    dialogInfo.value.show = false
+    emits("refresh")
+  }
 }
 
 defineExpose({ open })
@@ -43,7 +48,7 @@ defineExpose({ open })
 <template>
   <v-dialog v-model="dialogInfo.show" width="600px">
     <template #header>{{ t("header.deleteService") }}</template>
-    <v-alert type="warning">{{ t("tips.deleteServiceTips") }}</v-alert>
+    <v-alert v-if="dialogInfo.info.containers.length > 0" type="warning">{{ t("tips.deleteServiceTips") }}</v-alert>
     <div class="my-3">
       <strong>{{ t("notify.delete") }}</strong>
     </div>

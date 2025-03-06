@@ -2,7 +2,7 @@ import { ConfigInfo, ResponseQuery, ResponseSuccess } from "@/types"
 
 class ConfigService {
   async info(id: string) {
-    return await httpClient.get<ConfigInfo>(`/webapi/config/info/${id}`).then(res => res.data)
+    return await httpClient.get<ConfigInfo>(`/webapi/config/${id}/info`).then(res => res.data)
   }
 
   async query(data: any) {

@@ -8,6 +8,7 @@ import (
 
 	"humpback/config"
 	"humpback/internal/db"
+	"humpback/internal/node"
 	"humpback/types"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +31,7 @@ func NewHumpbackScheduler() *HumpbackScheduler {
 	hs.serviceCtrl = NewServiceController(hs.NodeHeartbeatChan, hs.ContainerChangeChan, hs.ServiceChangeChan)
 	hs.nodeCtrl = NewNodeController(hs.NodeHeartbeatChan, hs.ContainerChangeChan)
 
-	NewCacheManager()
+	node.NewCacheManager()
 
 	return hs
 }
@@ -43,7 +44,7 @@ func doHealth(c *gin.Context) {
 		return
 	}
 
-	nodeId := MatchNodeWithIpAddress(payload.HostInfo.IpAddress)
+	nodeId := node.MatchNodeWithIpAddress(payload.HostInfo.IpAddress)
 	if nodeId == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "node not found"})
 		return

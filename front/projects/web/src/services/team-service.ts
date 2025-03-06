@@ -2,7 +2,7 @@ import { ResponseQuery, ResponseSuccess, TeamInfo } from "@/types"
 
 class TeamService {
   async info(id: string) {
-    return await httpClient.get<TeamInfo>(`/webapi/team/info/${id}`).then(res => res.data)
+    return await httpClient.get<TeamInfo>(`/webapi/team/${id}/info`).then(res => res.data)
   }
 
   async list() {

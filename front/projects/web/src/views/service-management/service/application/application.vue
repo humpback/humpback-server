@@ -4,11 +4,11 @@ import { PageGroupDetail, RuleLength, ServiceNetworkMode, ServiceNetworkProtocol
 import { FormInstance, FormRules } from "element-plus"
 import { NewServiceMetaDockerEmptyInfo } from "@/types"
 import { cloneDeep, filter, find, findIndex, groupBy, toLower, trim } from "lodash-es"
-import VolumesPage from "./application-advanced/volumes.vue"
-import EnvironmentsPage from "./application-advanced/environments.vue"
-import LabelsPage from "./application-advanced/labels.vue"
-import CapabilitiesPage from "./application-advanced/capabilities.vue"
-import ResourcesLogConfigPage from "./application-advanced/resources-log-config.vue"
+import VolumesPage from "./advanced/volumes.vue"
+import EnvironmentsPage from "./advanced/environments.vue"
+import LabelsPage from "./advanced/labels.vue"
+import CapabilitiesPage from "./advanced/capabilities.vue"
+import ResourcesLogConfigPage from "./advanced/resources-log-config.vue"
 import { NewApplicationInfo, ParseMetaInfo, ServiceApplicationInfo } from "./application.ts"
 
 const { t } = useI18n()
@@ -257,7 +257,7 @@ onMounted(async () => {
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
+                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -314,7 +314,7 @@ onMounted(async () => {
         <el-form-item :label="t('label.hostname')" prop="network.hostname">
           <v-input v-model="metaInfo.network!.hostname" :disabled="metaInfo.network!.useMachineHostname">
             <template #prepend>
-              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
+              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
             </template>
           </v-input>
         </el-form-item>

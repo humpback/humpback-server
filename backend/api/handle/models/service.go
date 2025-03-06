@@ -410,3 +410,26 @@ func (s *ServiceUpdateReqInfo) checkDeployment() error {
 	}
 	return nil
 }
+
+type ServiceOperateReqInfo struct {
+	ServiceId string `json:"serviceId"`
+	GroupId   string `json:"-"`
+	Aciton    string `json:"aciton"`
+}
+
+func (s *ServiceOperateReqInfo) Check() error {
+	if err := verify.CheckIsEmpty(s.ServiceId, locales.CodeServiceIdNotEmpty); err != nil {
+		return err
+	}
+	var actions = []string{
+		types.ServiceActionStart,
+		types.ServiceActionStop,
+		types.ServiceActionRestart,
+		types.ServiceActionEnable,
+		types.ServiceActionDisable,
+	}
+	if slices.Index(actions, s.Aciton) == -1 {
+		return response.NewBadRequestErr(locales.CodeServiceOperateInvalid)
+	}
+	return nil
+}

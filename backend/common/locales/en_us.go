@@ -101,9 +101,6 @@ var enUSMsg = map[string]string{
 	CodeServiceContainerVolumeIsDuplicated:       "The container volume is duplicated.",
 	CodeServiceContainerVolumeTypeInvlaid:        "The container volume type is invalid.",
 	CodeServiceHostVolumeNotEmpty:                "The host volume cannot be empty.",
-	CodeServiceEnvNameNotEmpty:                   "The environment name cannot be empty.",
-	CodeServiceEnvNameIsDuplicated:               "The environment name is duplicated.",
-	CodeServiceEnvValueNotEmpty:                  "The environment value cannot be empty.",
 	CodeServiceLabelNameNotEmpty:                 "The label name cannot be empty.",
 	CodeServiceLabelValueNotEmpty:                "The label value cannot be empty.",
 	CodeServiceResourceMemoryLimitLimitMax:       fmt.Sprintf("The memory limit is %d to %d", enum.LimitMemoryLimit.Min, enum.LimitMemoryLimit.Max),
@@ -118,4 +115,6 @@ var enUSMsg = map[string]string{
 	CodeServiceScheduleCronInvalid:               "The schedule cron is invalid.",
 	CodeServiceScheduleTimeoutInvalid:            "The schedule timeout is invalid.",
 	CodeServiceProtocolInvalid:                   "The protocol is invalid. support 'TCP'/'UCP' .",
+	CodeServiceOperateInvalid:                    "Invalid action.",
+	CodeServiceIsNotEnable:                       "The service is not enabled.",
 }

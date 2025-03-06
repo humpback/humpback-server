@@ -12,6 +12,7 @@ import (
 
 	"humpback/config"
 	"humpback/internal/db"
+	"humpback/internal/node"
 	"humpback/types"
 
 	"github.com/samber/lo"
@@ -179,7 +180,7 @@ func (sm *ServiceManager) PrepareMeta() {
 }
 
 func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string, containerId string) error {
-	RemoveNodeContainer(nodeId, containerId)
+	node.RemoveNodeContainer(nodeId, containerId)
 
 	sm.ServiceInfo.Containers = lo.Filter(sm.ServiceInfo.Containers, func(cs *types.ContainerStatus, index int) bool {
 		return cs.ContainerName != containerName
@@ -345,7 +346,7 @@ func (sm *ServiceManager) StartNextContainer() {
 		return
 	}
 
-	cerr := StartNewContainer(nodeId, sm.ServiceInfo)
+	cerr := node.StartNewContainer(nodeId, GenerateContainerName(sm.ServiceInfo.ServiceId, sm.ServiceInfo.Version), sm.ServiceInfo)
 	if cerr != nil {
 		slog.Error("[Service Manager] Start New Container error", "ServiceId", sm.ServiceInfo.ServiceId, "error", cerr.Error())
 		return
@@ -485,7 +486,7 @@ func (sm *ServiceManager) DoServiceAction(action string) {
 	for _, c := range sm.ServiceInfo.Containers {
 		nodeId := c.NodeId
 		containerId := c.ContainerId
-		err := OperateNodeContainer(nodeId, containerId, action)
+		err := node.OperateNodeContainer(nodeId, containerId, action)
 		if err != nil {
 			c.ErrorMsg = err.Error()
 		}

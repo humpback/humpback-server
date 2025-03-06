@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"humpback/internal/db"
+	"humpback/internal/node"
 	"humpback/types"
 )
 
@@ -113,7 +114,7 @@ func (sc *ServiceController) HandleContainerChanged() {
 func (sc *ServiceController) HandleContainerRemove() {
 	for containerStatus := range sc.ContainerRemoveChan {
 		if containerStatus.Status != types.ContainerStatusRemoved {
-			RemoveNodeContainer(containerStatus.NodeId, containerStatus.ContainerId)
+			node.RemoveNodeContainer(containerStatus.NodeId, containerStatus.ContainerId)
 		}
 	}
 }

@@ -2,7 +2,7 @@ import { ResponseQuery, ResponseSuccess } from "@/types"
 
 class NodeService {
   async info(id: string) {
-    return await httpClient.get<NodeInfo>(`/webapi/node/info/${id}`).then(res => res.data)
+    return await httpClient.get<NodeInfo>(`/webapi/node/${id}/info`).then(res => res.data)
   }
 
   async list() {

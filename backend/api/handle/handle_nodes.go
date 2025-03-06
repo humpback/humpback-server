@@ -17,7 +17,7 @@ func RouteNodes(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), nodesCreate)
 	router.PUT("/labels", middleware.CheckAdminPermissions(), nodeUpdateLabels)
 	router.PUT("/switch", middleware.CheckAdminPermissions(), nodeUpdateSwitch)
-	router.GET("/info/:id", node)
+	router.GET("/:id/info", node)
 	router.POST("/query", nodesQuery)
 	router.GET("/list", nodes)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), nodeDelete)
