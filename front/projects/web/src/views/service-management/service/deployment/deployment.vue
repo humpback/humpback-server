@@ -3,9 +3,9 @@ import { FormInstance, FormRules } from "element-plus"
 import { SetWebTitle } from "@/utils"
 import { PageGroupDetail, RuleLength } from "@/models"
 import { filter, map, toLower, uniq, uniqWith } from "lodash-es"
-import { groupService } from "services/group-service.ts"
 import VCronInput from "@/components/business/v-corn/VCornInput.vue"
 import { NewValidDeploymentInfo, ParseDeploymentInfo, ServiceValidDeploymentInfo } from "./deployment.ts"
+import { refreshData } from "../common.ts"
 import cronstrue from "cronstrue"
 
 const { t, locale } = useI18n()
@@ -18,8 +18,6 @@ const isAction = ref(false)
 
 const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
-const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
-const groupNodes = ref<NodeInfo[]>([])
 
 const deploymentInfo = ref<ServiceValidDeploymentInfo>(NewValidDeploymentInfo())
 
@@ -31,9 +29,11 @@ const rules = ref<FormRules>({
   placementValue: [{ required: true, validator: RuleCannotBeEmpty, trigger: "change" }]
 })
 
+const nodeList = computed(() => stateStore.getGroup(groupId.value)?.nodeList || [])
+
 const labelList = computed(() => {
   const result: Array<{ key: string; value: string }> = []
-  map(groupNodes.value, x => {
+  map(nodeList.value, x => {
     result.push(...map(Object.keys(x.labels), l => ({ key: l, value: x.labels[l] })))
   })
   return uniqWith(result, (a, b) => a.key === b.key && a.value === b.value)
@@ -112,29 +112,13 @@ function parseCronToText(corn: string) {
   }
 }
 
-async function getGroupNodes() {
-  return await groupService.getNodes(groupId.value).then(nodes => {
-    groupNodes.value = nodes
-  })
-}
-
-async function getGroupInfo() {
-  return await groupService.info(groupId.value).then(info => {
-    stateStore.setGroup(groupId.value, info)
-  })
-}
-
-async function getServiceInfo() {
-  return await serviceService.info(groupId.value, serviceId.value).then(info => {
-    serviceInfo.value = info
-    stateStore.setService(serviceId.value, info)
-    deploymentInfo.value = NewValidDeploymentInfo(info.deployment)
-  })
-}
-
 async function search(init?: boolean) {
   isLoading.value = true
-  await Promise.all([init ? getGroupNodes() : undefined, getGroupInfo(), getServiceInfo()]).finally(() => (isLoading.value = false))
+  await refreshData(groupId.value, serviceId.value, "deployment", init)
+    .then(() => {
+      deploymentInfo.value = NewValidDeploymentInfo(stateStore.getService(serviceId.value)?.deployment)
+    })
+    .finally(() => (isLoading.value = false))
 }
 
 async function save() {
@@ -244,7 +228,7 @@ onMounted(async () => {
                   :value="item.value" />
               </template>
               <template v-else>
-                <el-option v-for="item in groupNodes" :key="item.ipAddress" :label="item.ipAddress" :value="item.ipAddress" />
+                <el-option v-for="item in nodeList" :key="item.ipAddress" :label="item.ipAddress" :value="item.ipAddress" />
               </template>
             </v-select>
           </el-form-item>

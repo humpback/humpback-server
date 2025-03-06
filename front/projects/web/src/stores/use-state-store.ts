@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash-es"
-import { GroupInfo } from "@/types"
+import { GroupInfo, NodeInfo } from "@/types"
 import { PageGroupDetail, SessionStorageCurrentGroupId } from "@/models"
 
 type TotalKey = PageGroupDetail.Services | PageGroupDetail.Nodes
@@ -8,6 +8,7 @@ interface StateGroupInfo extends GroupInfo {
   total: {
     [key in TotalKey]: number
   }
+  nodeList: NodeInfo[]
 }
 
 export default defineStore("state", () => {
@@ -20,19 +21,36 @@ export default defineStore("state", () => {
     sessionStorage.setItem(SessionStorageCurrentGroupId, id)
     const info = groups.value[id]
     const total = { services: info?.total.services || 0, nodes: groupInfo.nodes.length }
-    groups.value[id] = { ...cloneDeep(groupInfo), total: total } as StateGroupInfo
+    groups.value[id] = { ...cloneDeep(groupInfo), total: total, nodeList: info?.nodeList || [] } as StateGroupInfo
+  }
+
+  function setGroupNodeList(id: string, nodeList: NodeInfo[]) {
+    sessionStorage.setItem(SessionStorageCurrentGroupId, id)
+    let groupInfo =
+      groups.value[id] ||
+      Object.assign({}, NewGroupEmptyInfo(), {
+        groupId: id,
+        total: { services: 0, nodes: 0 },
+        nodeList: nodeList
+      })
+    groupInfo.nodeList = nodeList
+    groups.value[id] = groupInfo
   }
 
   function setGroupTotal(id?: string, serviceTotal?: number, nodeTotal?: number) {
     const key = id || (route.params["groupId"] as string)
-    const info = cloneDeep(groups.value[key])
-    if (info) {
-      info.total = {
-        services: typeof serviceTotal === "undefined" ? info.total.services : serviceTotal,
-        nodes: typeof nodeTotal === "undefined" ? info.total.nodes : nodeTotal
-      }
-      groups.value[key] = info
+    const info =
+      cloneDeep(groups.value[key]) ||
+      Object.assign({}, NewGroupEmptyInfo(), {
+        groupId: key,
+        total: { services: 0, nodes: 0 },
+        nodeList: []
+      })
+    info.total = {
+      services: typeof serviceTotal === "undefined" ? info.total.services : serviceTotal,
+      nodes: typeof nodeTotal === "undefined" ? info.total.nodes : nodeTotal
     }
+    groups.value[key] = info
   }
 
   function getGroup(id?: string): StateGroupInfo | undefined {
@@ -58,6 +76,7 @@ export default defineStore("state", () => {
   return {
     setGroup,
     setGroupTotal,
+    setGroupNodeList,
     getGroup,
     setService,
     getService,

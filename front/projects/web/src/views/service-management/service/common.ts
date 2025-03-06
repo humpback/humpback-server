@@ -1,7 +1,7 @@
-import { shallowRef } from "vue"
-import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
+import { NewPageInfo, NewSortInfo, QueryInfo, ServiceInfo } from "@/types"
 import { cloneDeep, find, omitBy } from "lodash-es"
 import { NodeSwitch, ServiceStatus } from "@/models"
+import { groupService } from "services/group-service.ts"
 
 export const sortOptions = ["serviceName", "updatedAt", "createdAt"]
 
@@ -40,14 +40,71 @@ export class QueryServicesInfo extends QueryInfo {
 }
 
 export const ActionOptions: Array<{
-  action: string
+  action: "Start" | "Stop" | "Restart" | "Enable" | "Disable"
   type: "default" | "info" | "success" | "primary" | "text" | "warning" | "danger"
   i18nLabel: string
   icon: any
 }> = [
-  { action: "Enable", type: "success", i18nLabel: "btn.enable", icon: shallowRef(IconMdiPlay) },
-  { action: "Disable", type: "info", i18nLabel: "btn.disable", icon: shallowRef(IconMdiSquare) },
-  { action: "Start", type: "success", i18nLabel: "btn.start", icon: shallowRef(IconMdiPlay) },
-  { action: "Restart", type: "success", i18nLabel: "btn.restart", icon: shallowRef(IconMdiRestart) },
-  { action: "Stop", type: "primary", i18nLabel: "btn.stop", icon: shallowRef(IconMdiSquare) }
+  { action: "Enable", type: "primary", i18nLabel: "btn.enable", icon: IconMdiPlay },
+  { action: "Disable", type: "info", i18nLabel: "btn.disable", icon: IconMdiSquare },
+  { action: "Start", type: "success", i18nLabel: "btn.start", icon: IconMdiPlay },
+  { action: "Restart", type: "success", i18nLabel: "btn.restart", icon: IconMdiRestart },
+  { action: "Stop", type: "primary", i18nLabel: "btn.stop", icon: IconMdiSquare }
 ]
+
+async function getGroupInfo(groupId: string) {
+  return await groupService.info(groupId).then(info => {
+    useStateStore().setGroup(groupId, info)
+  })
+}
+
+async function getServiceInfo(groupId: string, serviceId: string) {
+  return await serviceService.info(groupId, serviceId).then(info => {
+    useStateStore().setService(serviceId, info)
+  })
+}
+
+async function getGroupNodes(groupId: string) {
+  return await groupService.getNodes(groupId).then(nodes => {
+    useStateStore().setGroupNodeList(groupId, nodes)
+  })
+}
+
+export async function refreshData(
+  groupId: string,
+  serviceId: string,
+  mode: "global" | "basic-info" | "application" | "deployment" | "instances" | "log",
+  init?: boolean
+) {
+  const taskList: Array<Promise<void> | undefined> = [
+    getGroupInfo(groupId),
+    getServiceInfo(groupId, serviceId),
+    mode === "application" && init ? useRegistryStore().refreshRegistries() : undefined,
+    mode === "deployment" && init ? getGroupNodes(groupId) : undefined
+  ]
+  return await Promise.all(taskList)
+}
+
+export function showAction(serviceInfo?: ServiceInfo, action?: "Start" | "Stop" | "Restart" | "Enable" | "Disable") {
+  if (!serviceInfo) {
+    return false
+  }
+  switch (action) {
+    case "Start":
+    case "Stop":
+    case "Restart":
+    case "Disable":
+      {
+        if (serviceInfo.isEnabled) {
+          return true
+        }
+      }
+      break
+    case "Enable": {
+      if (!serviceInfo.isEnabled && !!serviceInfo.meta && !!serviceInfo.deployment) {
+        return true
+      }
+    }
+  }
+  return false
+}

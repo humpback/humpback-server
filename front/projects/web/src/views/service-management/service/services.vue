@@ -2,7 +2,7 @@
 import { ServiceInfo } from "@/types"
 import { SetWebTitle, TableHeight } from "@/utils"
 import { Action } from "@/models"
-import { ActionOptions, QueryServicesInfo } from "./common.ts"
+import { ActionOptions, QueryServicesInfo, showAction } from "./common.ts"
 import { serviceService } from "services/service-client.ts"
 import ServiceCreate from "./action/service-create.vue"
 import ServiceDelete from "./action/service-delete.vue"
@@ -59,8 +59,9 @@ async function search() {
 }
 
 async function operateService(serviceId: string, action: "Start" | "Stop" | "Restart" | "Enable" | "Disable") {
-  await serviceService.operate(stateStore.getGroup()!.groupId, { serviceId: serviceId, action: action })
+  await serviceService.operate(groupId.value, { serviceId: serviceId, action: action })
   ShowSuccessMsg(t("message.succeed"))
+  await search()
 }
 
 function openAction(action: string, info?: ServiceInfo) {
@@ -226,21 +227,24 @@ onMounted(async () => {
         <v-date-view :timestamp="scope.row.updatedAt" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="140">
+    <el-table-column :label="t('label.action')" :show-overflow-tooltip="false" align="right" fixed="right" header-align="center" width="140">
       <template #default="scope">
         <div class="d-flex gap-3">
-          <el-dropdown @command="operateService(scope.row.serviceId, $event)">
-            <el-button class="d-flex gap-1" link type="primary">
+          <el-dropdown placement="bottom-end" trigger="click" @command="operateService(scope.row.serviceId, $event)">
+            <el-link :underline="false" class="d-flex gap-1" link type="primary">
               {{ t("btn.action") }}
               <el-icon>
                 <IconMdiChevronDown />
               </el-icon>
-            </el-button>
+            </el-link>
             <template #dropdown>
               <el-dropdown-menu>
                 <template v-for="item in ActionOptions" :key="item.action">
-                  <el-dropdown-item :command="item.action">
-                    <el-button :type="item.type" link>
+                  <el-dropdown-item v-if="showAction(scope.row, item.action)" :command="item.action">
+                    <el-button :type="item.type" link size="small">
+                      <el-icon :size="14">
+                        <component :is="item.icon" />
+                      </el-icon>
                       {{ t(item.i18nLabel) }}
                     </el-button>
                   </el-dropdown-item>
@@ -248,7 +252,6 @@ onMounted(async () => {
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <!--        <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.action") }}</el-button>-->
           <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
         </div>
       </template>

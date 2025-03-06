@@ -67,7 +67,6 @@ declare module 'vue' {
     IconMdiClockTimeThreeOutline: typeof import('~icons/mdi/clock-time-three-outline')['default']
     IconMdiClose: typeof import('~icons/mdi/close')['default']
     IconMdiContentCopy: typeof import('~icons/mdi/content-copy')['default']
-    IconMdiExternalLink: typeof import('~icons/mdi/external-link')['default']
     IconMdiFileDocumentOutline: typeof import('~icons/mdi/file-document-outline')['default']
     IconMdiFileOutline: typeof import('~icons/mdi/file-outline')['default']
     IconMdiFormatIndentDecrease: typeof import('~icons/mdi/format-indent-decrease')['default']

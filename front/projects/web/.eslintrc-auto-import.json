@@ -434,6 +434,7 @@
     "ServiceCapabilitiesInfo": true,
     "IconMdiPlay": true,
     "IconMdiRestart": true,
-    "IconMdiSquare": true
+    "IconMdiSquare": true,
+    "useRegistryStore": true
   }
 }

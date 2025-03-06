@@ -10,10 +10,12 @@ import LabelsPage from "./advanced/labels.vue"
 import CapabilitiesPage from "./advanced/capabilities.vue"
 import ResourcesLogConfigPage from "./advanced/resources-log-config.vue"
 import { NewApplicationInfo, ParseMetaInfo, ServiceApplicationInfo } from "./application.ts"
+import { refreshData } from "@/views/service-management/service/common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const registryStore = useRegistryStore()
 const stateStore = useStateStore()
 
 const isLoading = ref(false)
@@ -21,8 +23,6 @@ const isAction = ref(false)
 
 const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
-const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
-const registries = ref<RegistryInfo[]>([])
 
 const advancedOptions = ref<Array<{ label: string; value: string; color?: string }>>([
   { label: "label.volumes", value: "volumes" },
@@ -33,7 +33,7 @@ const advancedOptions = ref<Array<{ label: string; value: string; color?: string
 ])
 
 const advancedMode = ref<"volumes" | "environments" | "labels" | "resourcesAndLogs" | "capabilities">("volumes")
-const metaInfo = ref<ServiceApplicationInfo>(NewApplicationInfo(registries.value, NewServiceMetaDockerEmptyInfo()))
+const metaInfo = ref<ServiceApplicationInfo>(NewApplicationInfo(registryStore.registries, NewServiceMetaDockerEmptyInfo()))
 
 const formRef = useTemplateRef<FormInstance>("formRef")
 const volumeRef = useTemplateRef<InstanceType<typeof VolumesPage>>("volumeRef")
@@ -98,34 +98,6 @@ function addPort() {
 
 function removePort(index: number) {
   metaInfo.value.validPorts.splice(index, 1)
-}
-
-async function getGroupInfo() {
-  return await groupService.info(groupId.value).then(info => {
-    stateStore.setGroup(groupId.value, info)
-  })
-}
-
-async function getServiceInfo() {
-  return await serviceService.info(groupId.value, serviceId.value).then(info => {
-    serviceInfo.value = info
-    stateStore.setService(serviceId.value, info)
-  })
-}
-
-async function getRegistryList() {
-  return await registryService.list().then(list => {
-    registries.value = list
-  })
-}
-
-async function search(init?: boolean) {
-  isLoading.value = true
-  await Promise.all([getGroupInfo(), getServiceInfo(), init ? getRegistryList() : undefined])
-    .then(() => {
-      metaInfo.value = NewApplicationInfo(registries.value, serviceInfo.value.meta)
-    })
-    .finally(() => (isLoading.value = false))
 }
 
 function checkArrayDuplicateKey(
@@ -219,6 +191,15 @@ async function validate() {
   return filter(validList, x => typeof x !== "undefined" && !x).length <= 0
 }
 
+async function search(init?: boolean) {
+  isLoading.value = true
+  await refreshData(groupId.value, serviceId.value, "application", init)
+    .then(() => {
+      metaInfo.value = NewApplicationInfo(registryStore.registries, stateStore.getService(serviceId.value)?.meta)
+    })
+    .finally(() => (isLoading.value = false))
+}
+
 async function save() {
   if (!(await validate())) {
     return
@@ -257,7 +238,7 @@ onMounted(async () => {
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="item in registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
+                    <el-dropdown-item v-for="item in registryStore.registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -314,7 +295,7 @@ onMounted(async () => {
         <el-form-item :label="t('label.hostname')" prop="network.hostname">
           <v-input v-model="metaInfo.network!.hostname" :disabled="metaInfo.network!.useMachineHostname">
             <template #prepend>
-              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
+              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
             </template>
           </v-input>
         </el-form-item>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { RegistryInfo, NewRegistryEmptyInfo } from "@/types"
+import { NewRegistryEmptyInfo, RegistryInfo } from "@/types"
 import { cloneDeep } from "lodash-es"
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
@@ -11,6 +11,7 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const registryStore = useRegistryStore()
 
 const isLoading = ref(false)
 const isAction = ref(false)
@@ -64,6 +65,7 @@ async function save() {
     registryService
       .update(body)
       .then(() => {
+        registryStore.refreshRegistries()
         ShowSuccessMsg(t("message.saveSuccess"))
         dialogInfo.value.show = false
         emits("refresh")
@@ -73,6 +75,7 @@ async function save() {
     registryService
       .create(body)
       .then(() => {
+        registryStore.refreshRegistries()
         ShowSuccessMsg(t("message.addSuccess"))
         dialogInfo.value.show = false
         emits("refresh")

@@ -24,7 +24,13 @@ const status = computed({
   }
 })
 
-const options = computed(() => [
+const options = computed<
+  Array<{
+    label: string
+    value: string
+    type: "info" | "success" | "warning" | "primary" | "danger"
+  }>
+>(() => [
   { label: "label.enabled", value: NodeSwitch.Enabled, type: "success" },
   { label: "label.disabled", value: NodeSwitch.Disabled, type: "info" },
   { label: "label.notReady", value: ServiceStatus.ServiceStatusNotReady, type: "warning" },

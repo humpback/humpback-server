@@ -1,96 +1,57 @@
 <script lang="ts" setup>
 import { SetWebTitle } from "@/utils"
-import { DynamicIntervalTimer } from "./instances.ts"
+import { refreshData } from "@/views/service-management/service/common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
 const stateStore = useStateStore()
 
-const isLoading = ref(false)
-
 const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
-const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
+const serviceInfo = computed<ServiceInfo | undefined>(() => stateStore.getService(serviceId.value))
 
-const timer = ref<DynamicIntervalTimer>(new DynamicIntervalTimer())
+const timer = ref<any>(null)
+const interval = ref(5000)
 
-async function startIncreasingTimer(initialDelay: number, increment: number) {
-  let delay = initialDelay
-
-  async function executeTask() {
-    setTimeout(async () => {
-      await executeTask()
-    }, delay)
-    delay += increment
+async function resetLoopSearch() {
+  if (timer.value) {
+    clearInterval(timer.value)
+    timer.value = null
   }
-
-  await executeTask()
-}
-
-// 启动定时器：初始间隔 3 秒，每次增加 3 秒
-startIncreasingTimer(3000, 3000)
-
-async function getGroupInfo() {
-  return await groupService.info(groupId.value).then(info => {
-    stateStore.setGroup(groupId.value, info)
-  })
-}
-
-async function getServiceInfo() {
-  return await serviceService.info(groupId.value, serviceId.value).then(info => {
-    serviceInfo.value = info
-    stateStore.setService(serviceId.value, info)
-    // serviceInfo.value.containers = [
-    //   {
-    //     containerId: "FSJLFJLFJPQJT03QWGHQOGLANG;AHNGAHNG;KLANG",
-    //     containerName: "humpback-losjfljsofwoj-lsfjlsj-jfslf",
-    //     nodeId: "SLFJOPQW2JRFO",
-    //     status: "running",
-    //     ip: "10.16.15.12",
-    //     statusInfo: "",
-    //     errorMsg: "exit code -1",
-    //     image: "docker.io/nginx:latest",
-    //     command: "nginx -g daemon off",
-    //     network: "",
-    //     createAt: 1740818013735,
-    //     startAt: 1740818013735,
-    //     nextAt: 1740818013735,
-    //     lastHeartbeat: 1740818013735,
-    //     labels: { test: "skyler" },
-    //     env: ["test=true", "amd=yesLJOQGOJQPGJOQP;JGO;EQJGPOQJGEJGNQ;LEJQG;LJGL;EWJGL;NA;GLNMA;LGMNPOQJGQP;GJ;QLJGL;ENMQG;LNMG;GQNMMGOQPHGJPQGOQHNGOQHNGO;"],
-    //     mounts: [
-    //       {
-    //         source: "/var/lib/docker",
-    //         destination: "/var/lib/docker"
-    //       }
-    //     ],
-    //     ports: [
-    //       {
-    //         bindIP: "0.0.0.0",
-    //         privatePort: 80,
-    //         publicPort: 800,
-    //         type: "TCP"
-    //       }
-    //     ]
-    //   }
-    // ]
-  })
+  interval.value = 5000
+  loopSearch()
 }
 
 async function search() {
-  isLoading.value = true
-  await Promise.all([getGroupInfo(), getServiceInfo()]).finally(() => (isLoading.value = false))
+  await refreshData(groupId.value, serviceId.value, "instances")
+}
+
+function loopSearch() {
+  timer.value = setTimeout(async () => {
+    await search()
+    if (serviceInfo.value?.status === ServiceStatus.ServiceStatusRunning) {
+      interval.value = 1000
+    }
+    if (serviceInfo.value?.isEnabled) {
+      loopSearch()
+    }
+  }, interval.value)
 }
 
 onMounted(async () => {
   await search()
   SetWebTitle(`${t("webTitle.serviceInfo")} - ${stateStore.getService()?.serviceName}`)
-  timer.value.start(search)
+  loopSearch()
 })
 
 onUnmounted(() => {
-  timer.value.stop()
+  if (timer.value) {
+    clearTimeout(timer.value)
+    timer.value = null
+  }
 })
+
+defineExpose({ resetLoopSearch })
 </script>
 
 <template>
@@ -103,7 +64,7 @@ onUnmounted(() => {
       <el-button plain size="small" type="primary">{{ t("btn.viewMonitor") }}</el-button>
     </div>
   </div>
-  <v-table :data="serviceInfo.containers" border class="mt-5" row-key="containerId">
+  <v-table :data="serviceInfo?.containers || []" border class="mt-5" row-key="containerId">
     <el-table-column type="expand">
       <template #default="scope">
         <div class="expand-content">

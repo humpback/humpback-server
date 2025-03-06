@@ -8,6 +8,7 @@ import Performance from "./performance/performance.vue"
 import ServiceDelete from "./action/service-delete.vue"
 import { shallowRef } from "vue"
 import { find } from "lodash-es"
+import { ActionOptions, refreshData, showAction } from "@/views/service-management/service/common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -18,9 +19,11 @@ const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = computed(() => stateStore.getService())
 
-const applicationCompleted = computed(() => !!serviceInfo.value?.meta)
-const deploymentCompleted = computed(() => !!serviceInfo.value?.deployment)
+const isLoading = ref("")
 
+const timer = ref<any>(null)
+
+const compRef = ref<any>()
 const deleteRef = useTemplateRef<InstanceType<typeof ServiceDelete>>("deleteRef")
 
 const activeMenu = ref(route.params.mode as string)
@@ -31,7 +34,12 @@ const menuOptions = ref<any[]>([
     iconClass: "icon_mdi--settings-outline",
     isGroup: true
   },
-  { i18nLabel: "label.basicInfo", value: PageServiceDetail.BasicInfo, isRequired: true, component: shallowRef(BasicInfo) },
+  {
+    i18nLabel: "label.basicInfo",
+    value: PageServiceDetail.BasicInfo,
+    isRequired: true,
+    component: shallowRef(BasicInfo)
+  },
   {
     i18nLabel: "label.application",
     value: PageServiceDetail.Application,
@@ -49,56 +57,26 @@ const menuOptions = ref<any[]>([
     iconClass: "icon_mdi--gauge",
     isGroup: true
   },
-  { i18nLabel: "label.instances", value: PageServiceDetail.Instances, isRequired: false, component: shallowRef(Instances) },
+  {
+    i18nLabel: "label.instances",
+    value: PageServiceDetail.Instances,
+    isRequired: false,
+    component: shallowRef(Instances)
+  },
   { i18nLabel: "label.log", value: PageServiceDetail.Log, isRequired: false, component: shallowRef(Log) },
-  { i18nLabel: "label.performance", value: PageServiceDetail.Performance, isRequired: false, component: shallowRef(Performance) }
-])
-
-const actionOptions = ref<
-  Array<{
-    action: "Start" | "Stop" | "Restart" | "Enable" | "Disable"
-    type: "default" | "info" | "success" | "primary" | "text" | "warning" | "danger"
-    i18nLabel: string
-    icon: any
-    isAction: boolean
-  }>
->([
-  { action: "Enable", type: "primary", i18nLabel: "btn.enable", icon: shallowRef(IconMdiPlay), isAction: false },
-  { action: "Disable", type: "info", i18nLabel: "btn.disable", icon: shallowRef(IconMdiSquare), isAction: false },
-  { action: "Start", type: "success", i18nLabel: "btn.start", icon: shallowRef(IconMdiPlay), isAction: false },
-  { action: "Restart", type: "success", i18nLabel: "btn.restart", icon: shallowRef(IconMdiRestart), isAction: false },
-  { action: "Stop", type: "primary", i18nLabel: "btn.stop", icon: shallowRef(IconMdiSquare), isAction: false }
-])
-
-function showAction(action: "Start" | "Stop" | "Restart" | "Enable" | "Disable") {
-  if (!serviceInfo.value) {
-    return false
+  {
+    i18nLabel: "label.performance",
+    value: PageServiceDetail.Performance,
+    isRequired: false,
+    component: shallowRef(Performance)
   }
-  switch (action) {
-    case "Start":
-    case "Stop":
-    case "Restart":
-    case "Disable":
-      {
-        if (serviceInfo.value.isEnabled) {
-          return true
-        }
-      }
-      break
-    case "Enable": {
-      if (!serviceInfo.value.isEnabled && applicationCompleted.value && deploymentCompleted.value) {
-        return true
-      }
-    }
-  }
-  return false
-}
+])
 
 function showIncomplete(v: string) {
-  if (v === PageServiceDetail.Application && !applicationCompleted.value) {
+  if (v === PageServiceDetail.Application && !serviceInfo.value?.meta) {
     return true
   }
-  return v === PageServiceDetail.Deployment && !deploymentCompleted.value
+  return v === PageServiceDetail.Deployment && !serviceInfo.value?.deployment
 }
 
 function menuChange(v: string) {
@@ -122,24 +100,54 @@ async function search() {
   await Promise.all([getGroupInfo(), getServiceInfo()])
 }
 
+function loopSearch() {
+  const tempPage = [PageServiceDetail.Instances, PageServiceDetail.Log, PageServiceDetail.Performance]
+  timer.value = setTimeout(async () => {
+    if (!find(tempPage, x => x === activeMenu.value)) {
+      await refreshData(groupId.value, serviceId.value, "global").catch(() => {})
+    }
+    if (serviceInfo.value?.isEnabled) {
+      loopSearch()
+    }
+  }, 10000)
+}
+
 async function operateService(action: "Start" | "Stop" | "Restart" | "Enable" | "Disable") {
-  const actinInfo = find(actionOptions.value, x => x.action === action)
+  const actinInfo = find(ActionOptions, x => x.action === action)
   if (!actinInfo) {
     return false
   }
-  actinInfo.isAction = true
+
+  isLoading.value = action
   await serviceService
-    .operate(stateStore.getGroup()!.groupId, { serviceId: serviceInfo.value!.serviceId, action: action })
-    .then(async () => {
-      return await search()
+    .operate(stateStore.getGroup()!.groupId, {
+      serviceId: serviceInfo.value!.serviceId,
+      action: action
     })
-    .finally(() => (actinInfo.isAction = false))
+    .then(async () => {
+      await search()
+      if (activeMenu.value == PageServiceDetail.Instances && compRef.value) {
+        compRef.value?.resetLoopSearch()
+      }
+    })
+    .finally(() => (isLoading.value = ""))
   ShowSuccessMsg(t("message.succeed"))
 }
 
 async function deleteService() {
   deleteRef.value?.open(serviceInfo.value!, true)
 }
+
+onMounted(() => {
+  loopSearch()
+})
+
+onUnmounted(() => {
+  if (timer.value) {
+    clearTimeout(timer.value)
+    timer.value = null
+  }
+})
 </script>
 
 <template>
@@ -147,8 +155,8 @@ async function deleteService() {
     <v-page-title :title="serviceInfo?.serviceName" show-breadcrumbs />
 
     <div class="header-actions">
-      <template v-for="item in actionOptions" :key="item.action">
-        <el-button v-if="showAction(item.action)" v-loading="item.isAction" :type="item.type" @click="operateService(item.action)">
+      <template v-for="item in ActionOptions" :key="item.action">
+        <el-button v-if="showAction(serviceInfo, item.action)" :loading="isLoading === item.action" :type="item.type" @click="operateService(item.action)">
           <el-icon :size="16">
             <IconMdiSquare />
           </el-icon>
@@ -196,7 +204,7 @@ async function deleteService() {
     <v-card class="body-content">
       <template v-for="(item, index) in menuOptions" :key="index">
         <div v-if="!item.isGroup && item.value === activeMenu">
-          <component :is="item.component" />
+          <component :is="item.component" :ref="(el: any) => (compRef = el)" />
         </div>
       </template>
     </v-card>
@@ -223,7 +231,7 @@ async function deleteService() {
   margin-top: 12px;
   display: flex;
   align-items: start;
-  gap: 20px;
+  gap: 12px;
 
   .body-menu {
     flex: 25%;

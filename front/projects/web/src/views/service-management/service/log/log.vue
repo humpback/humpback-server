@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import VMonacoView from "@/components/common/v-monaco/VMonacoView.vue"
 import { SetWebTitle } from "@/utils"
+import { refreshData } from "@/views/service-management/service/common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -11,7 +12,7 @@ const isAction = ref(false)
 
 const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
-const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
+const serviceInfo = computed<ServiceInfo | undefined>(() => stateStore.getService(serviceId.value))
 
 const searchInfo = ref({
   autoRefresh: false,
@@ -24,22 +25,9 @@ const searchInfo = ref({
 
 const logViewRef = useTemplateRef<InstanceType<typeof VMonacoView>>("logViewRef")
 
-async function getGroupInfo() {
-  return await groupService.info(groupId.value).then(info => {
-    stateStore.setGroup(groupId.value, info)
-  })
-}
-
-async function getServiceInfo() {
-  return await serviceService.info(groupId.value, serviceId.value).then(info => {
-    serviceInfo.value = info
-    stateStore.setService(serviceId.value, info)
-  })
-}
-
 async function search() {
   isLoading.value = true
-  await Promise.all([getGroupInfo(), getServiceInfo()]).finally(() => (isLoading.value = false))
+  await refreshData(groupId.value, serviceId.value, "log").finally(() => (isLoading.value = false))
 }
 
 onMounted(async () => {
@@ -64,7 +52,7 @@ onMounted(async () => {
     <div class="d-flex gap-3 flex-wrap mt-5">
       <div class="flex-1" style="min-width: 300px; max-width: 400px">
         <v-select v-model="searchInfo.instance" :out-label="t('label.instance')" out-label-width="100px" placeholder="" show-out-label>
-          <el-option v-for="item in serviceInfo.containers" :key="item.containerId" :label="item.containerName" :value="item.containerId" />
+          <el-option v-for="item in serviceInfo?.containers" :key="item.containerId" :label="item.containerName" :value="item.containerId" />
         </v-select>
       </div>
       <div class="flex-1" style="min-width: 500px; max-width: 600px">
