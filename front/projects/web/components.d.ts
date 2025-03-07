@@ -112,6 +112,8 @@ declare module 'vue' {
     VInput: typeof import('./src/components/common/v-input/VInput.vue')['default']
     VInputNumber: typeof import('./src/components/common/v-input/VInputNumber.vue')['default']
     VLabelTableView: typeof import('./src/components/business/v-label/VLabelTableView.vue')['default']
+    Vloading: typeof import('./src/components/common/v-loading/Vloading.vue')['default']
+    VLoading: typeof import('./src/components/common/v-loading/VLoading.vue')['default']
     VLogo: typeof import('./src/components/business/logo/VLogo.vue')['default']
     VLogSearchTimeRange: typeof import('./src/components/business/v-log/VLogSearchTimeRange.vue')['default']
     VMonacoEdit: typeof import('./src/components/common/v-monaco/VMonacoEdit.vue')['default']

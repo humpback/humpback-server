@@ -6,9 +6,11 @@ import Instances from "./instance/instances.vue"
 import Log from "./log/log.vue"
 import Performance from "./performance/performance.vue"
 import ServiceDelete from "./action/service-delete.vue"
+import ServiceClone from "./action/servcie-clone.vue"
 import { shallowRef } from "vue"
 import { find } from "lodash-es"
 import { ActionOptions, refreshData, showAction } from "@/views/service-management/service/common.ts"
+import VLoading from "@/components/common/v-loading/VLoading.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -19,11 +21,14 @@ const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = computed(() => stateStore.getService())
 
-const isLoading = ref("")
+const isReset = ref(false)
+const isLoading = ref(false)
+const isLoadingComponent = ref("")
 
 const timer = ref<any>(null)
 
 const compRef = ref<any>()
+const cloneRef = useTemplateRef<InstanceType<typeof ServiceClone>>("cloneRef")
 const deleteRef = useTemplateRef<InstanceType<typeof ServiceDelete>>("deleteRef")
 
 const activeMenu = ref(route.params.mode as string)
@@ -103,12 +108,13 @@ async function search() {
 function loopSearch() {
   const tempPage = [PageServiceDetail.Instances, PageServiceDetail.Log, PageServiceDetail.Performance]
   timer.value = setTimeout(async () => {
-    if (!find(tempPage, x => x === activeMenu.value)) {
-      await refreshData(groupId.value, serviceId.value, "global").catch(() => {})
+    if (!find(tempPage, x => x === activeMenu.value && serviceInfo.value?.isEnabled)) {
+      isLoading.value = true
+      await refreshData(groupId.value, serviceId.value, "global")
+        .catch(() => {})
+        .finally(() => (isLoading.value = false))
     }
-    if (serviceInfo.value?.isEnabled) {
-      loopSearch()
-    }
+    loopSearch()
   }, 10000)
 }
 
@@ -118,7 +124,7 @@ async function operateService(action: "Start" | "Stop" | "Restart" | "Enable" | 
     return false
   }
 
-  isLoading.value = action
+  isLoadingComponent.value = action
   await serviceService
     .operate(stateStore.getGroup()!.groupId, {
       serviceId: serviceInfo.value!.serviceId,
@@ -130,12 +136,26 @@ async function operateService(action: "Start" | "Stop" | "Restart" | "Enable" | 
         compRef.value?.resetLoopSearch()
       }
     })
-    .finally(() => (isLoading.value = ""))
+    .finally(() => (isLoadingComponent.value = ""))
   ShowSuccessMsg(t("message.succeed"))
+}
+
+async function cloneService() {
+  cloneRef.value?.open(serviceInfo.value!)
 }
 
 async function deleteService() {
   deleteRef.value?.open(serviceInfo.value!, true)
+}
+
+function resetInit() {
+  groupId.value = route.params.groupId as string
+  serviceId.value = route.params.serviceId as string
+  activeMenu.value = PageServiceDetail.BasicInfo
+  isReset.value = true
+  setTimeout(() => {
+    isReset.value = false
+  }, 500)
 }
 
 onMounted(() => {
@@ -156,7 +176,11 @@ onUnmounted(() => {
 
     <div class="header-actions">
       <template v-for="item in ActionOptions" :key="item.action">
-        <el-button v-if="showAction(serviceInfo, item.action)" :loading="isLoading === item.action" :type="item.type" @click="operateService(item.action)">
+        <el-button
+          v-if="showAction(serviceInfo, item.action)"
+          :loading="isLoadingComponent === item.action"
+          :type="item.type"
+          @click="operateService(item.action)">
           <el-icon :size="16">
             <IconMdiSquare />
           </el-icon>
@@ -164,7 +188,7 @@ onUnmounted(() => {
         </el-button>
       </template>
 
-      <el-button plain type="primary">
+      <el-button plain type="primary" @click="cloneService()">
         <el-icon :size="16">
           <IconMdiCheckboxMultipleBlank />
         </el-icon>
@@ -181,8 +205,9 @@ onUnmounted(() => {
 
   <div class="body">
     <div class="body-menu">
-      <div class="mb-2">
-        <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :status="serviceInfo?.status" />
+      <div class="mb-2 d-flex gap-1">
+        <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :is-loading="isLoading" :status="serviceInfo?.status" />
+        <v-loading v-if="isLoading" />
       </div>
       <div v-for="(item, index) in menuOptions" :key="index" class="menu-group">
         <div v-if="item.isGroup" class="menu-group-title">
@@ -201,14 +226,19 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <v-card class="body-content">
+    <v-card v-loading="isReset" class="body-content">
       <template v-for="(item, index) in menuOptions" :key="index">
         <div v-if="!item.isGroup && item.value === activeMenu">
-          <component :is="item.component" :ref="(el: any) => (compRef = el)" />
+          <div v-if="isReset" class="reset-loading">
+            <v-loading :size="80" />
+          </div>
+          <component :is="item.component" v-else :ref="(el: any) => (compRef = el)" />
         </div>
       </template>
     </v-card>
   </div>
+
+  <service-clone ref="cloneRef" @refresh="resetInit()" />
 
   <service-delete ref="deleteRef" />
 </template>
@@ -282,6 +312,13 @@ onUnmounted(() => {
 
   .body-content {
     flex: 75%;
+
+    .reset-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+    }
   }
 }
 </style>

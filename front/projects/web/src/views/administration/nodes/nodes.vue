@@ -203,7 +203,7 @@ onMounted(() => search())
         <template #default="scope">
           <div class="d-flex gap-2">
             <v-node-enable-tag :enabled="scope.row.isEnable" />
-            <v-router-link :href="`/ws/node/${scope.row.nodeId}/detail`" :text="scope.row.ipAddress" :type="scope.row.isEnable ? 'primary' : 'info'" />
+            <v-router-link :href="`/ws/node/${scope.row.nodeId}/detail`" :text="scope.row.ipAddress" :type="scope.row.isEnable ? 'primary' : 'info'" disabled />
           </div>
         </template>
       </el-table-column>

@@ -145,6 +145,7 @@ export default {
     "groupList": "Group List",
     "configs": "Configs",
     "userRelated": "User Related",
-    "registries": "Registries"
+    "registries": "Registries",
+    "targetGroup": "Target Group"
   }
 }

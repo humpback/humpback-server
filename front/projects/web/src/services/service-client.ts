@@ -17,6 +17,10 @@ class ServiceService {
     return await httpClient.post<string>(`/webapi/group/${groupId}/service`, data).then(res => res.data)
   }
 
+  async clone(groupId: string, data: any) {
+    return await httpClient.post<string>(`/webapi/group/${groupId}/service/clone`, data).then(res => res.data)
+  }
+
   async update(groupId: string, data: any) {
     return await httpClient.put<string>(`/webapi/group/${groupId}/service`, data).then(res => res.data)
   }

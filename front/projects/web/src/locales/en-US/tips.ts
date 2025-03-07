@@ -26,6 +26,7 @@ export default {
       "In replicated mode, the service is migrated to other available nodes after the machine goes offline, and the number of instances represents the total number of instances deployed in the current service, and the number of instances is scheduled on the eligible machines according to the resources (cpu/memory).",
     "invalidCorn": "Invalid Corn",
     "scheduleTips": "Linux Crontab expressions are employed.",
+    "cloneServiceTips": "Select a different group to clear the placement constraints.",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",
