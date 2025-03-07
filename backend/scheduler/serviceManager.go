@@ -66,6 +66,9 @@ func (sm *ServiceManager) Reconcile() {
 	}()
 
 	if sm.IsNeedCheckAll.Load().(bool) {
+
+		slog.Info("[Service Manager] Reload service and check all.", "ServiceId", sm.ServiceInfo.ServiceId)
+
 		sm.IsNeedCheckAll.Store(false)
 		svc, err := db.ServiceGetById(sm.ServiceInfo.ServiceId)
 		if err != nil {
@@ -238,6 +241,10 @@ func (sm *ServiceManager) GetMatchedNodes(nodes []*types.Node) {
 				sm.unavailableNodes = append(sm.unavailableNodes, n.NodeId)
 			}
 		}
+	}
+
+	if len(sm.availableNodes) == 0 {
+		slog.Info("[Service Manager] Match available nodes but 0 matched", "ServiceId", sm.ServiceInfo.ServiceId)
 	}
 }
 
