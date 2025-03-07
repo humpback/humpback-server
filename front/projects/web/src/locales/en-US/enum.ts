@@ -14,7 +14,12 @@ export default {
       waring: "Waring",
       failed: "Failed",
       pending: "Pending",
-      removed: "Removed"
+      removed: "Removed",
+      idle: "Idle"
     }
+  },
+  breadcrumb: {
+    "groupOverview": "Group Overview",
+    "serviceOverview": "Service Overview"
   }
 }

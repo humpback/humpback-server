@@ -13,7 +13,7 @@ import (
 func RouteConfig(router *gin.RouterGroup) {
 	router.POST("", configCreate)
 	router.PUT("", configUpdate)
-	router.GET("/info/:id", configInfo)
+	router.GET("/:id/info", configInfo)
 	router.POST("/query", configQuery)
 	router.DELETE("/:id", configDelete)
 }

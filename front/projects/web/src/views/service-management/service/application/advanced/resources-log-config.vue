@@ -3,6 +3,7 @@ import { ServiceResourcesInfo } from "@/types"
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
 import { filter, toLower } from "lodash-es"
+import { RuleLength } from "@/models"
 
 const props = defineProps<{ hasValid?: boolean }>()
 const emits = defineEmits<{
@@ -37,17 +38,23 @@ function checkLogConfigName(rule: any, value: any, callback: any) {
 }
 
 function formatMemoryLimit(v: number) {
-  if (!v) return t("label.unLimited")
+  if (!v) {
+    return t("label.unLimited")
+  }
   return `${v} ${t("label.mb")}`
 }
 
 function formatMemoryReservation(v: number) {
-  if (!v || (resources.value?.memory && v > resources.value?.memory)) return t("label.unLimited")
+  if (!v || (resources.value?.memory && v > resources.value?.memory)) {
+    return t("label.unLimited")
+  }
   return `${v} ${t("label.mb")}`
 }
 
 function formatMaxCpuUsage(v: number) {
-  if (!v || v === 100) return t("label.unLimited")
+  if (!v || v === 100) {
+    return t("label.unLimited")
+  }
   return `${v}%`
 }
 
@@ -106,7 +113,13 @@ defineExpose({ validate })
           <el-slider v-model="resources!.memory" :format-tooltip="formatMemoryLimit" :max="20480" :min="0" :step="20" />
         </div>
         <div>
-          <v-input-number v-model="resources!.memory" :controls="false" :max="20480" :min="0" :precision="0" :step="20">
+          <v-input-number
+            v-model="resources!.memory"
+            :controls="false"
+            :max="RuleLength.MemoryLimit.Max"
+            :min="RuleLength.MemoryLimit.Min"
+            :precision="0"
+            :step="20">
             <template #suffix>{{ t("label.mb") }}</template>
           </v-input-number>
         </div>
@@ -129,7 +142,13 @@ defineExpose({ validate })
           <el-slider v-model="resources!.memoryReservation" :format-tooltip="formatMemoryReservation" :max="20480" :min="0" :step="20" />
         </div>
         <div>
-          <v-input-number v-model="resources!.memoryReservation" :controls="false" :max="20480" :min="0" :precision="0" :step="20">
+          <v-input-number
+            v-model="resources!.memoryReservation"
+            :controls="false"
+            :max="RuleLength.MemoryReservation.Max"
+            :min="RuleLength.MemoryReservation.Min"
+            :precision="0"
+            :step="20">
             <template #suffix>{{ t("label.mb") }}</template>
           </v-input-number>
         </div>
@@ -152,7 +171,7 @@ defineExpose({ validate })
           <el-slider v-model="resources!.maxCpuUsage" :format-tooltip="formatMaxCpuUsage" :max="100" :min="0" />
         </div>
         <div>
-          <v-input-number v-model="resources!.maxCpuUsage" :controls="false" :max="100" :min="0" :precision="0">
+          <v-input-number v-model="resources!.maxCpuUsage" :controls="false" :max="RuleLength.MaxCpuUsage.Max" :min="RuleLength.MaxCpuUsage.Min" :precision="0">
             <template #suffix>%</template>
           </v-input-number>
         </div>

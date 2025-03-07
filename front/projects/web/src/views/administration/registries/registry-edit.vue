@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { RegistryInfo, NewRegistryEmptyInfo } from "@/types"
-import { cloneDeep, replace } from "lodash-es"
+import { NewRegistryEmptyInfo, RegistryInfo } from "@/types"
+import { cloneDeep } from "lodash-es"
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
 import { RuleLength } from "@/models"
@@ -11,6 +11,7 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const registryStore = useRegistryStore()
 
 const isLoading = ref(false)
 const isAction = ref(false)
@@ -29,8 +30,8 @@ const rules = ref<FormRules>({
   password: [{ validator: RuleLimitMax(RuleLength.RegistryPassword.Max), trigger: "blur" }]
 })
 
-function inputUrl(v: string) {
-  dialogInfo.value.info.url = v.replaceAll("/", "")
+function clearTail() {
+  dialogInfo.value.info.url = dialogInfo.value.info.url.replace(/\/+/g, "/").replace(/^\/|\/$/g, "")
 }
 
 function open(info?: RegistryInfo) {
@@ -64,6 +65,7 @@ async function save() {
     registryService
       .update(body)
       .then(() => {
+        registryStore.refreshRegistries()
         ShowSuccessMsg(t("message.saveSuccess"))
         dialogInfo.value.show = false
         emits("refresh")
@@ -73,6 +75,7 @@ async function save() {
     registryService
       .create(body)
       .then(() => {
+        registryStore.refreshRegistries()
         ShowSuccessMsg(t("message.addSuccess"))
         dialogInfo.value.show = false
         emits("refresh")
@@ -92,7 +95,7 @@ defineExpose({ open })
       <el-form ref="formRef" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
         <el-form-item :label="t('label.url')" prop="url">
           <div class="d-flex gap-3 w-100">
-            <v-input :maxlength="RuleLength.RegistryUrl.Max" :model-value="dialogInfo.info.url" clearable show-word-limit @update:model-value="inputUrl" />
+            <v-input v-model="dialogInfo.info.url" :maxlength="RuleLength.RegistryUrl.Max" clearable show-word-limit @blur="clearTail()" />
             <el-checkbox v-model="dialogInfo.info.isDefault" :label="t('label.isDefault')" border />
           </div>
         </el-form-item>

@@ -27,3 +27,15 @@ type NodesGroups struct {
 	Teams       []string `json:"teams"`
 	Nodes       []string `json:"nodes"`
 }
+
+type NodeSimpleInfo struct {
+	NodeId          string
+	Name            string
+	IpAddress       string
+	Port            int
+	Status          string
+	LastHeartbeat   int64
+	OnlineThreshold int
+	CPUUsage        float32
+	MemoryUsage     float32
+}

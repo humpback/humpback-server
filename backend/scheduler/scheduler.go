@@ -8,6 +8,7 @@ import (
 
 	"humpback/config"
 	"humpback/internal/db"
+	"humpback/internal/node"
 	"humpback/types"
 
 	"github.com/gin-gonic/gin"
@@ -17,20 +18,20 @@ type HumpbackScheduler struct {
 	httpSrv             *http.Server
 	nodeCtrl            *NodeController
 	serviceCtrl         *ServiceController
-	NodeHeartbeatChan   chan NodeSimpleInfo
+	NodeHeartbeatChan   chan types.NodeSimpleInfo
 	ContainerChangeChan chan types.ContainerStatus
-	ServiceChangeChan   chan ServiceChangeInfo
+	ServiceChangeChan   chan types.ServiceChangeInfo
 }
 
 func NewHumpbackScheduler() *HumpbackScheduler {
 	hs := &HumpbackScheduler{}
-	hs.NodeHeartbeatChan = make(chan NodeSimpleInfo, 100)
+	hs.NodeHeartbeatChan = make(chan types.NodeSimpleInfo, 100)
 	hs.ContainerChangeChan = make(chan types.ContainerStatus, 100)
-	hs.ServiceChangeChan = make(chan ServiceChangeInfo, 100)
+	hs.ServiceChangeChan = make(chan types.ServiceChangeInfo, 100)
 	hs.serviceCtrl = NewServiceController(hs.NodeHeartbeatChan, hs.ContainerChangeChan, hs.ServiceChangeChan)
 	hs.nodeCtrl = NewNodeController(hs.NodeHeartbeatChan, hs.ContainerChangeChan)
 
-	NewCacheManager()
+	node.NewCacheManager()
 
 	return hs
 }
@@ -43,13 +44,13 @@ func doHealth(c *gin.Context) {
 		return
 	}
 
-	nodeId := MatchNodeWithIpAddress(payload.HostInfo.IpAddress)
+	nodeId, ip := node.MatchNodeWithIpAddress(payload.HostInfo.IpAddress)
 	if nodeId == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "node not found"})
 		return
 	}
 	payload.NodeId = nodeId
-
+	payload.IpAddress = ip
 	sc := c.MustGet("scheduler").(*HumpbackScheduler)
 	sc.nodeCtrl.HeartBeat(payload)
 	c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -111,7 +112,9 @@ func getConfigByName(c *gin.Context) {
 	configValue, err := db.ConfigsGetByName(configName, true)
 	if err != nil {
 		c.String(http.StatusInternalServerError, err.Error())
+	} else if len(configValue) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "config not found"})
 	} else {
-		c.JSON(http.StatusOK, configValue)
+		c.String(http.StatusOK, configValue[0].ConfigValue)
 	}
 }

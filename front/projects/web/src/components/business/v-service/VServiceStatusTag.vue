@@ -1,7 +1,15 @@
 <script lang="ts" setup>
 import { toLower } from "lodash-es"
 
-const props = defineProps<{ isEnabled?: boolean; status?: string }>()
+const props = withDefaults(
+  defineProps<{
+    isEnabled?: boolean
+    status?: string
+    isText?: boolean
+    effect?: "dark" | "light" | "plain"
+  }>(),
+  { effect: "dark" }
+)
 
 const { t } = useI18n()
 
@@ -33,7 +41,8 @@ const statusInfo = computed<{ type: "primary" | "success" | "info" | "warning" |
 </script>
 
 <template>
-  <el-tag :type="statusInfo.type" effect="dark">{{ t(statusInfo.i18nText) }}</el-tag>
+  <el-text v-if="props.isText" :type="statusInfo.type">{{ t(statusInfo.i18nText) }}</el-text>
+  <el-tag v-else :type="statusInfo.type" effect="dark"> {{ t(statusInfo.i18nText) }}</el-tag>
 </template>
 
 <style lang="scss" scoped></style>

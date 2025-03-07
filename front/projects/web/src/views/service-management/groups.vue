@@ -5,13 +5,14 @@ import { Action } from "@/models"
 import GroupEdit from "./group-edit.vue"
 import GroupDelete from "./group-delete.vue"
 import { QueryGroupsInfo } from "./common.ts"
+import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const tableHeight = computed(() => TableHeight(252))
+const tableHeight = computed(() => TableHeight(272))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryGroupsInfo>(new QueryGroupsInfo(route.query))
@@ -55,6 +56,7 @@ onMounted(() => search())
 
 <template>
   <v-card>
+    <v-page-title :title="t('label.groupList')" />
     <el-form @submit.prevent="search">
       <el-form-item>
         <div class="d-flex gap-3 w-100 flex-wrap">

@@ -8,6 +8,7 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const registryStore = useRegistryStore()
 
 const isAction = ref(false)
 const isChecked = ref(false)
@@ -30,6 +31,7 @@ async function confirmDelete() {
   return await registryService
     .delete(dialogInfo.value.info.registryId)
     .then(() => {
+      registryStore.refreshRegistries()
       ShowSuccessMsg(t("message.deleteSuccess"))
       dialogInfo.value.show = false
       emits("refresh")

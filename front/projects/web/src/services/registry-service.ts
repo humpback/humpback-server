@@ -2,7 +2,7 @@ import { RegistryInfo, ResponseQuery, ResponseSuccess } from "@/types"
 
 class RegistryService {
   async info(id: string, hasAuth?: boolean) {
-    const url = hasAuth ? `/webapi/registry/info/${id}?hasAuth=true` : `/webapi/registry/info/${id}`
+    const url = hasAuth ? `/webapi/registry/${id}/info?hasAuth=true` : `/webapi/registry/${id}/info`
     return await httpClient.get<RegistryInfo>(url).then(res => res.data)
   }
 

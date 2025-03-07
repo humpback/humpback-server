@@ -21,16 +21,16 @@ export function TimestampToTime(timestamp?: number, formatType?: number): string
     case 2:
       return date.format("HH:mm:ss")
     case 3:
-      return date.format("MM/DD")
+      return date.format("MM-DD")
     case 4:
-      return date.format("MM/DD/YYYY")
+      return date.format("YYYY-MM-DD")
     case 5:
-      return date.format("MM/DD HH:mm")
+      return date.format("YYYY-MM-DD HH:mm")
     case 6:
       return date.format("MM/DD HH:mm:ss")
     case 7:
-      return date.format("MM/DD/YYYY HH:mm")
+      return date.format("YYYY-MM-DD HH:mm")
     default:
-      return date.format("MM/DD/YYYY HH:mm:ss")
+      return date.format("YYYY-MM-DD HH:mm:ss")
   }
 }

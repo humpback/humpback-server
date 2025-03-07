@@ -2,17 +2,19 @@
 import { ServiceInfo } from "@/types"
 import { SetWebTitle, TableHeight } from "@/utils"
 import { Action } from "@/models"
-import { QueryServicesInfo } from "./common.ts"
+import { ActionOptions, QueryServicesInfo, showAction } from "./common.ts"
 import { serviceService } from "services/service-client.ts"
 import ServiceCreate from "./action/service-create.vue"
 import ServiceDelete from "./action/service-delete.vue"
+import VServiceStatusTag from "@/components/business/v-service/VServiceStatusTag.vue"
+import { capitalize } from "lodash-es"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const stateStore = useStateStore()
 
-const tableHeight = computed(() => TableHeight(252))
+const tableHeight = computed(() => TableHeight(352))
 
 const groupId = ref(route.params?.groupId as string)
 
@@ -26,6 +28,10 @@ const tableList = ref({
   total: 0,
   data: [] as Array<ServiceInfo>
 })
+
+const setRowClass = ({ row }) => {
+  return row.containers.length === 0 ? "hide-expand-icon" : ""
+}
 
 async function getGroupInfo() {
   return await groupService.info(groupId.value).then(info => {
@@ -50,6 +56,12 @@ async function search() {
   await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
   await Promise.all([getGroupInfo(), getServiceTotal(), getServices()]).finally(() => (isLoading.value = false))
+}
+
+async function operateService(serviceId: string, action: "Start" | "Stop" | "Restart" | "Enable" | "Disable") {
+  await serviceService.operate(groupId.value, { serviceId: serviceId, action: action })
+  ShowSuccessMsg(t("message.succeed"))
+  await search()
 }
 
 function openAction(action: string, info?: ServiceInfo) {
@@ -108,9 +120,77 @@ onMounted(async () => {
     v-model:sort-info="queryInfo.sortInfo"
     :data="tableList.data"
     :max-height="tableHeight"
+    :row-class-name="setRowClass"
     :total="tableList.total"
     @page-change="search"
     @sort-change="search">
+    <el-table-column fixed="left" type="expand">
+      <template #default="scope">
+        <div class="pa-5">
+          <v-table :data="scope.row.containers" :max-height="500" border headerCellClassName="">
+            <el-table-column :label="t('label.instanceName')" min-width="200">
+              <template #default="cscope">
+                <el-text>{{ cscope.row.contianerName }}</el-text>
+              </template>
+            </el-table-column>
+            <el-table-column :label="t('label.status')" min-width="160">
+              <template #default="cscope">
+                <div class="d-flex gap-3">
+                  <v-container-status :status="cscope.row.status" size="small" />
+                  <v-tooltip v-if="cscope.row.errorMsg">
+                    <template #content>
+                      <el-text type="danger">{{ cscope.row.errorMsg }}</el-text>
+                    </template>
+                    <el-icon :size="20" color="var(--el-color-danger)">
+                      <IconMdiWarningCircleOutline />
+                    </el-icon>
+                  </v-tooltip>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column :label="t('label.ip')" min-width="160">
+              <template #default="cscope">
+                <el-text type="primary">{{ cscope.row.ip }}</el-text>
+              </template>
+            </el-table-column>
+            <el-table-column :label="t('label.createTime')" min-width="140">
+              <template #default="scope">
+                <v-date-view :timestamp="scope.row.createAt" />
+              </template>
+            </el-table-column>
+            <el-table-column :label="t('label.startTime')" min-width="140">
+              <template #default="scope">
+                <v-date-view :timestamp="scope.row.startDate" />
+              </template>
+            </el-table-column>
+            <el-table-column :label="t('label.action')" width="180">
+              <template #default>
+                <el-button :title="t('label.restart')" link type="success">
+                  <el-icon :size="16">
+                    <IconMdiRestart />
+                  </el-icon>
+                </el-button>
+                <el-button :title="t('label.start')" link type="success">
+                  <el-icon :size="16">
+                    <IconMdiPlay />
+                  </el-icon>
+                </el-button>
+                <el-button :title="t('label.stop')" link type="danger">
+                  <el-icon :size="16">
+                    <IconMdiSquare />
+                  </el-icon>
+                </el-button>
+                <el-button :title="t('label.log')" link type="primary">
+                  <el-icon :size="16">
+                    <IconMdiNoteText />
+                  </el-icon>
+                </el-button>
+              </template>
+            </el-table-column>
+          </v-table>
+        </div>
+      </template>
+    </el-table-column>
     <el-table-column :label="t('label.service')" fixed="left" min-width="200" prop="serviceName" sortable="custom">
       <template #default="scope">
         <v-router-link :href="`/ws/group/${groupId}/service/${scope.row.serviceId}/basic-info`" :text="scope.row.serviceName" />
@@ -121,24 +201,25 @@ onMounted(async () => {
         <v-table-column-none :text="scope.row.description" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.status')" min-width="200" prop="description">
+    <el-table-column :label="t('label.status')" min-width="130" prop="description">
       <template #default="scope">
-        <v-table-column-none :text="scope.row.status" />
+        <v-service-status-tag :is-enabled="scope.row.isEnabled" :status="scope.row.status" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.image')" min-width="200" prop="description">
+    <el-table-column :label="t('label.image')" min-width="200" prop="image">
       <template #default="scope">
         <v-table-column-none :text="scope.row.meta?.image" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.deployMode')" min-width="200" prop="description">
+    <el-table-column :label="t('label.deployMode')" min-width="200">
       <template #default="scope">
-        <v-table-column-none :text="scope.row.deployment?.type" />
-      </template>
-    </el-table-column>
-    <el-table-column :label="t('label.ports')" min-width="200" prop="description">
-      <template #default="scope">
-        <v-table-column-none :text="scope.row.description" />
+        <div v-if="scope.row.deployment">
+          <el-text>{{ capitalize(scope.row.deployment.mode) }}</el-text>
+          <el-text v-if="scope.row.deployment.mode === ServiceDeployMode.DeployModeReplicate" type="primary">
+            {{ ` (${scope.row.deployment.replicas})` }}
+          </el-text>
+        </div>
+        <span v-else>--</span>
       </template>
     </el-table-column>
     <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
@@ -146,17 +227,44 @@ onMounted(async () => {
         <v-date-view :timestamp="scope.row.updatedAt" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
+    <el-table-column :label="t('label.action')" :show-overflow-tooltip="false" align="right" fixed="right" header-align="center" width="140">
       <template #default="scope">
-        <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.action") }}</el-button>
-        <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
+        <div class="d-flex gap-3">
+          <el-dropdown placement="bottom-end" trigger="click" @command="operateService(scope.row.serviceId, $event)">
+            <el-link :underline="false" class="d-flex gap-1" link type="primary">
+              {{ t("btn.action") }}
+              <el-icon>
+                <IconMdiChevronDown />
+              </el-icon>
+            </el-link>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <template v-for="item in ActionOptions" :key="item.action">
+                  <el-dropdown-item v-if="showAction(scope.row, item.action)" :command="item.action">
+                    <el-button :type="item.type" link size="small">
+                      <el-icon :size="14">
+                        <component :is="item.icon" />
+                      </el-icon>
+                      {{ t(item.i18nLabel) }}
+                    </el-button>
+                  </el-dropdown-item>
+                </template>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
+        </div>
       </template>
     </el-table-column>
   </v-table>
 
   <service-delete ref="deleteRef" @refresh="search()" />
 
-  <service-create ref="createRef" @refresh="search()" />
+  <service-create ref="createRef" />
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+:deep(.hide-expand-icon) .el-table__expand-icon {
+  display: none;
+}
+</style>

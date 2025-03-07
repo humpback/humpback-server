@@ -3,6 +3,7 @@ import PageServices from "@/views/service-management/service/services.vue"
 import PageNodes from "@/views/service-management/node/nodes.vue"
 import { TabPaneName } from "element-plus"
 import { PageGroupDetail } from "@/models"
+import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -26,10 +27,7 @@ async function changeTab(name: TabPaneName) {
 
 <template>
   <div>
-    <div class="card-title">
-      <span v-if="groupInfo">{{ groupInfo?.groupName }}</span>
-      <el-button v-else link loading />
-    </div>
+    <v-page-title :title="groupInfo?.groupName" show-breadcrumbs />
 
     <el-tabs :model-value="activeTab" class="tab-box" type="card" @update:modelValue="changeTab">
       <el-tab-pane v-for="item in options" :key="item.name" :name="item.name">
@@ -46,12 +44,6 @@ async function changeTab(name: TabPaneName) {
 </template>
 
 <style lang="scss" scoped>
-.card-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 20px;
-}
-
 .tab-box {
   :deep(.el-tabs__header.is-top) {
     --el-tabs-header-height: 48px;

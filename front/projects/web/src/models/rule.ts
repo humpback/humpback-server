@@ -18,6 +18,10 @@ interface RuleLength {
   GroupName: RuleLengthLimit
   ServiceName: RuleLengthLimit
   ImageName: RuleLengthLimit
+  MemoryLimit: RuleLengthLimit
+  MemoryReservation: RuleLengthLimit
+  MaxCpuUsage: RuleLengthLimit
+  InstanceNum: RuleLengthLimit
 }
 
 interface RuleFormat {

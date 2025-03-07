@@ -2,6 +2,7 @@
 import { PageGroupDetail, RuleLength } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter, SetWebTitle } from "@/utils"
+import { refreshData } from "../common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -28,22 +29,13 @@ function cancel() {
   router.push({ name: "groupDetail", params: { groupId: groupId.value, mode: PageGroupDetail.Services } })
 }
 
-async function getGroupInfo() {
-  return await groupService.info(groupId.value).then(info => {
-    stateStore.setGroup(groupId.value, info)
-  })
-}
-
-async function getServiceInfo() {
-  return await serviceService.info(groupId.value, serviceId.value).then(info => {
-    serviceInfo.value = info
-    stateStore.setService(serviceId.value, info)
-  })
-}
-
 async function search() {
   isLoading.value = true
-  await Promise.all([getGroupInfo(), getServiceInfo()]).finally(() => (isLoading.value = false))
+  await refreshData(groupId.value, serviceId.value, "basic-info")
+    .then(() => {
+      serviceInfo.value = stateStore.getService(serviceId.value)!
+    })
+    .finally(() => (isLoading.value = false))
 }
 
 async function save() {
@@ -51,19 +43,16 @@ async function save() {
     return
   }
 
-  // isAction.value = true
-  // serviceService
-  //   .create({
-  //     serviceName: dialogInfo.value.info.serviceName,
-  //     description: dialogInfo.value.info.description,
-  //     groupId: groupId.value
-  //   })
-  //   .then(() => {
-  //     ShowSuccessMsg(t("message.addSuccess"))
-  //     dialogInfo.value.show = false
-  //     emits("refresh")
-  //   })
-  //   .finally(() => (isAction.value = false))
+  isAction.value = true
+  await serviceService
+    .update(groupId.value, {
+      serviceId: serviceId.value,
+      type: "basic-info",
+      data: serviceInfo.value.description
+    })
+    .finally(() => (isAction.value = false))
+  ShowSuccessMsg(t("message.saveSuccess"))
+  await search()
 }
 
 onMounted(async () => {

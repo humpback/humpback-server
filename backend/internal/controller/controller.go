@@ -89,3 +89,22 @@ func initRegistry() error {
 	slog.Info("[Init Default Registry] Default Registry check completed.")
 	return nil
 }
+
+func sendServiceEvent(serviceChangeChan chan types.ServiceChangeInfo, serviceId, version, action string) {
+	if serviceChangeChan != nil {
+		serviceChangeChan <- types.ServiceChangeInfo{
+			Action:    action,
+			ServiceId: serviceId,
+			Version:   version,
+		}
+	}
+}
+
+func sendNodeEvent(nodeChangeChan chan types.NodeSimpleInfo, nodeId, status string) {
+	if nodeChangeChan != nil {
+		nodeChangeChan <- types.NodeSimpleInfo{
+			NodeId: nodeId,
+			Status: status,
+		}
+	}
+}

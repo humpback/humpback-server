@@ -1,14 +1,11 @@
 <script lang="ts" setup>
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
-import { RuleLength } from "@/models"
-
-const emits = defineEmits<{
-  (e: "refresh"): void
-}>()
+import { PageServiceDetail, RuleLength } from "@/models"
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 
 const groupId = ref(route.params.groupId as string)
 const isAction = ref(false)
@@ -44,15 +41,17 @@ async function save() {
 
   isAction.value = true
   serviceService
-    .create({
+    .create(groupId.value, {
       serviceName: dialogInfo.value.info.serviceName,
-      description: dialogInfo.value.info.description,
-      groupId: groupId.value
+      description: dialogInfo.value.info.description
     })
-    .then(() => {
+    .then(serviceId => {
       ShowSuccessMsg(t("message.addSuccess"))
       dialogInfo.value.show = false
-      emits("refresh")
+      router.push({
+        name: "serviceInfo",
+        params: { groupId: groupId.value, serviceId: serviceId, mode: PageServiceDetail.BasicInfo }
+      })
     })
     .finally(() => (isAction.value = false))
 }

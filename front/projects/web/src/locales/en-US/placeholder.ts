@@ -18,6 +18,7 @@ export default {
     "containerVolume": "e.g. /path/in/container",
     "hostVolume": "e.g. /path/on/container",
     "defaultLoggingDriver": "Default Logging Driver",
-    "timeoutExample": "e.g.  30s、10m or 5h"
+    "timeoutExample": "e.g.  30s、10m or 5h",
+    "searchGroupService": "name of group of service"
   }
 }

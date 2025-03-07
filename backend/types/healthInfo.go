@@ -4,6 +4,7 @@ package types
 type HostInfo struct {
 	Hostname      string   `json:"hostname"`
 	IpAddress     []string `json:"hostIPs"`
+	Port          int      `json:"hostPort"`
 	OsInformation string   `json:"osInformation"`
 	KernelVersion string   `json:"kernelVersion"`
 	TotalCPU      int      `json:"totalCPU"`
@@ -28,6 +29,7 @@ type DockerEngine struct {
 // HealthInfo 整体信息，包含主机信息、Docker 引擎信息和容器列表
 type HealthInfo struct {
 	NodeId        string
+	IpAddress     string
 	HostInfo      HostInfo          `json:"hostInfo"`
 	DockerEngine  DockerEngine      `json:"dockerEngine"`
 	ContainerList []ContainerStatus `json:"containers"`

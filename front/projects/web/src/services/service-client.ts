@@ -2,7 +2,7 @@ import { ResponseQuery, ResponseSuccess } from "@/types"
 
 class ServiceService {
   async info(groupId: string, id: string) {
-    return await httpClient.get<ServiceInfo>(`/webapi/group/${groupId}/service/info/${id}`).then(res => res.data)
+    return await httpClient.get<ServiceInfo>(`/webapi/group/${groupId}/service/${id}/info`).then(res => res.data)
   }
 
   async query(groupId: string, data: any) {
@@ -13,12 +13,20 @@ class ServiceService {
     return await httpClient.get<number>(`/webapi/group/${groupId}/service/total`).then(res => res.data)
   }
 
-  async create(data: any) {
-    return await httpClient.post<string>(`/webapi/group/${data.groupId}/service`, data).then(res => res.data)
+  async create(groupId: string, data: any) {
+    return await httpClient.post<string>(`/webapi/group/${groupId}/service`, data).then(res => res.data)
   }
 
-  async update(data: any) {
-    return await httpClient.put<string>(`/webapi/group/${data.groupId}/service`, data).then(res => res.data)
+  async clone(groupId: string, data: any) {
+    return await httpClient.post<string>(`/webapi/group/${groupId}/service/clone`, data).then(res => res.data)
+  }
+
+  async update(groupId: string, data: any) {
+    return await httpClient.put<string>(`/webapi/group/${groupId}/service`, data).then(res => res.data)
+  }
+
+  async operate(groupId: string, data: { serviceId: string; action: "Start" | "Stop" | "Restart" | "Enable" | "Disable" }) {
+    return await httpClient.put<string>(`/webapi/group/${groupId}/service/operate`, data).then(res => res.data)
   }
 
   async delete(groupId: string, id: string) {

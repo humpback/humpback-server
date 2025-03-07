@@ -8,12 +8,13 @@ import NodeEnable from "./node-enable.vue"
 import NodeEditLabel from "./node-edit-label.vue"
 import NodeViewCommand from "./node-view-command.vue"
 import { modeOptions, QueryNodesInfo, statusOptions } from "./common.ts"
+import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const tableHeight = computed(() => TableHeight(252))
+const tableHeight = computed(() => TableHeight(272))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryNodesInfo>(new QueryNodesInfo(route.query, []))
@@ -147,6 +148,7 @@ onMounted(() => search())
 
 <template>
   <v-card>
+    <v-page-title :title="t('label.nodes')" />
     <el-form @submit.prevent="search">
       <el-form-item>
         <div class="d-flex gap-3 w-100 flex-wrap">
@@ -201,7 +203,7 @@ onMounted(() => search())
         <template #default="scope">
           <div class="d-flex gap-2">
             <v-node-enable-tag :enabled="scope.row.isEnable" />
-            <v-router-link :href="`/ws/node/${scope.row.nodeId}/detail`" :text="scope.row.ipAddress" :type="scope.row.isEnable ? 'primary' : 'info'" />
+            <v-router-link :href="`/ws/node/${scope.row.nodeId}/detail`" :text="scope.row.ipAddress" :type="scope.row.isEnable ? 'primary' : 'info'" disabled />
           </div>
         </template>
       </el-table-column>

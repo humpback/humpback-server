@@ -12,6 +12,7 @@ import (
 
 	"humpback/config"
 	"humpback/internal/db"
+	"humpback/internal/node"
 	"humpback/types"
 
 	"github.com/samber/lo"
@@ -65,6 +66,9 @@ func (sm *ServiceManager) Reconcile() {
 	}()
 
 	if sm.IsNeedCheckAll.Load().(bool) {
+
+		slog.Info("[Service Manager] Reload service and check all.", "ServiceId", sm.ServiceInfo.ServiceId)
+
 		sm.IsNeedCheckAll.Store(false)
 		svc, err := db.ServiceGetById(sm.ServiceInfo.ServiceId)
 		if err != nil {
@@ -179,7 +183,7 @@ func (sm *ServiceManager) PrepareMeta() {
 }
 
 func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string, containerId string) error {
-	RemoveNodeContainer(nodeId, containerId)
+	node.RemoveNodeContainer(nodeId, containerId)
 
 	sm.ServiceInfo.Containers = lo.Filter(sm.ServiceInfo.Containers, func(cs *types.ContainerStatus, index int) bool {
 		return cs.ContainerName != containerName
@@ -237,6 +241,10 @@ func (sm *ServiceManager) GetMatchedNodes(nodes []*types.Node) {
 				sm.unavailableNodes = append(sm.unavailableNodes, n.NodeId)
 			}
 		}
+	}
+
+	if len(sm.availableNodes) == 0 {
+		slog.Info("[Service Manager] Match available nodes but 0 matched", "ServiceId", sm.ServiceInfo.ServiceId)
 	}
 }
 
@@ -345,7 +353,7 @@ func (sm *ServiceManager) StartNextContainer() {
 		return
 	}
 
-	cerr := StartNewContainer(nodeId, sm.ServiceInfo)
+	cerr := node.StartNewContainer(nodeId, GenerateContainerName(sm.ServiceInfo.ServiceId, sm.ServiceInfo.Version), sm.ServiceInfo)
 	if cerr != nil {
 		slog.Error("[Service Manager] Start New Container error", "ServiceId", sm.ServiceInfo.ServiceId, "error", cerr.Error())
 		return
@@ -434,7 +442,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 		ct.Network = cs.Network
 		ct.Labels = cs.Labels
 		ct.Env = cs.Env
-		ct.Mountes = cs.Mountes
+		ct.Mounts = cs.Mounts
 		ct.Ports = cs.Ports
 		if ct.Status == types.ContainerStatusRunning {
 			ct.ErrorMsg = ""
@@ -485,7 +493,7 @@ func (sm *ServiceManager) DoServiceAction(action string) {
 	for _, c := range sm.ServiceInfo.Containers {
 		nodeId := c.NodeId
 		containerId := c.ContainerId
-		err := OperateNodeContainer(nodeId, containerId, action)
+		err := node.OperateNodeContainer(nodeId, containerId, action)
 		if err != nil {
 			c.ErrorMsg = err.Error()
 		}

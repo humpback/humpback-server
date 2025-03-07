@@ -1,18 +1,12 @@
 <script lang="ts" setup>
 import { FormInstance, FormRules } from "element-plus"
 import { SetWebTitle } from "@/utils"
-import { PageGroupDetail } from "@/models"
+import { PageGroupDetail, RuleLength } from "@/models"
 import { filter, map, toLower, uniq, uniqWith } from "lodash-es"
-import { groupService } from "services/group-service.ts"
 import VCronInput from "@/components/business/v-corn/VCornInput.vue"
+import { NewValidDeploymentInfo, ParseDeploymentInfo, ServiceValidDeploymentInfo } from "./deployment.ts"
+import { refreshData } from "../common.ts"
 import cronstrue from "cronstrue"
-
-interface ServiceValidDeploymentInfo extends ServiceDeploymentInfo {
-  hasPlacements: boolean
-  validPlacements: Array<{ id: string; mode: string; key: string; value: string; isEqual: boolean }>
-  enableTimeout: boolean
-  enableSchedules: boolean
-}
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -24,24 +18,22 @@ const isAction = ref(false)
 
 const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
-const serviceInfo = ref<ServiceInfo>(NewServiceEmptyInfo())
-const groupNodes = ref<NodeInfo[]>([])
 
-const deploymentInfo = ref<ServiceValidDeploymentInfo>({
-  hasPlacements: false,
-  validPlacements: [],
-  enableTimeout: false,
-  enableSchedules: false,
-  ...NewServiceDeploymentInfo()
-})
+const deploymentInfo = ref<ServiceValidDeploymentInfo>(NewValidDeploymentInfo())
 
 const formRef = useTemplateRef<FormInstance>("formRef")
 const cronInputRef = useTemplateRef<InstanceType<typeof VCronInput>>("cronInputRef")
-const rules = ref<FormRules>({ timeout: [{ validator: checkTimeout, trigger: "blur" }] })
+const rules = ref<FormRules>({
+  timeout: [{ validator: checkTimeout, trigger: "blur" }],
+  placementKey: [{ required: true, validator: RuleCannotBeEmpty, trigger: "change" }],
+  placementValue: [{ required: true, validator: RuleCannotBeEmpty, trigger: "change" }]
+})
+
+const nodeList = computed(() => stateStore.getGroup(groupId.value)?.nodeList || [])
 
 const labelList = computed(() => {
   const result: Array<{ key: string; value: string }> = []
-  map(groupNodes.value, x => {
+  map(nodeList.value, x => {
     result.push(...map(Object.keys(x.labels), l => ({ key: l, value: x.labels[l] })))
   })
   return uniqWith(result, (a, b) => a.key === b.key && a.value === b.value)
@@ -49,8 +41,7 @@ const labelList = computed(() => {
 
 function checkTimeout(rule: any, value: any, callback: any) {
   const v = value ? (value as string) : ""
-
-  if (v && !/^-?\d+(\.\d+)?(ns|us|µs|ms|s|m|h)+$/.test(v)) {
+  if (deploymentInfo.value.enableSchedules && deploymentInfo.value.enableTimeout && v && !/^-?\d+(\.\d+)?(ns|us|µs|ms|s|m|h)+$/.test(v)) {
     return callback(new Error(t("rules.formatErrTimeout")))
   }
   callback()
@@ -65,7 +56,11 @@ function replicatedNumChange(v: number | undefined) {
 }
 
 function changePlacementMode(index: number) {
-  deploymentInfo.value.validPlacements[index].key = ""
+  if (deploymentInfo.value.validPlacements[index].mode === ServicePlacementMode.PlacementModeIP) {
+    deploymentInfo.value.validPlacements[index].key = "IP"
+  } else {
+    deploymentInfo.value.validPlacements[index].key = ""
+  }
   deploymentInfo.value.validPlacements[index].value = ""
 }
 
@@ -73,7 +68,7 @@ function addPlacementConstraint() {
   deploymentInfo.value.validPlacements.push({
     id: GenerateUUID(),
     mode: ServicePlacementMode.PlacementModeIP,
-    key: "",
+    key: "IP",
     value: "",
     isEqual: true
   })
@@ -112,47 +107,35 @@ function parseCronToText(corn: string) {
       locale: toLower(locale.value) === "zh-cn" ? "zh_CN" : "en"
     })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return t("tips.invalidCorn")
   }
 }
 
-async function getGroupNodes() {
-  return await groupService.getNodes(groupId.value).then(nodes => {
-    groupNodes.value = nodes
-  })
-}
-
-async function getGroupInfo() {
-  return await groupService.info(groupId.value).then(info => {
-    stateStore.setGroup(groupId.value, info)
-  })
-}
-
-async function getServiceInfo() {
-  return await serviceService.info(groupId.value, serviceId.value).then(info => {
-    serviceInfo.value = info
-    stateStore.setService(serviceId.value, info)
-    const tempInfo = info.deployment || NewServiceDeploymentInfo()
-    deploymentInfo.value = {
-      hasPlacements: tempInfo.placements.length > 0,
-      enableSchedules: tempInfo.schedule.rules.length > 0,
-      enableTimeout: !!tempInfo.schedule.timeout,
-      validPlacements: map(tempInfo.placements, x => Object.assign({ id: GenerateUUID() }, x)),
-      ...tempInfo
-    }
-  })
-}
-
 async function search(init?: boolean) {
   isLoading.value = true
-  await Promise.all([init ? getGroupNodes() : undefined, getGroupInfo(), getServiceInfo()]).finally(() => (isLoading.value = false))
+  await refreshData(groupId.value, serviceId.value, "deployment", init)
+    .then(() => {
+      deploymentInfo.value = NewValidDeploymentInfo(stateStore.getService(serviceId.value)?.deployment)
+    })
+    .finally(() => (isLoading.value = false))
 }
 
 async function save() {
   if (!(await formRef.value?.validate())) {
     return
   }
+
+  isAction.value = true
+  await serviceService
+    .update(groupId.value, {
+      serviceId: serviceId.value,
+      type: "deployment",
+      data: ParseDeploymentInfo(deploymentInfo.value)
+    })
+    .finally(() => (isAction.value = false))
+  ShowSuccessMsg(t("message.saveSuccess"))
+  await search()
 }
 
 onMounted(async () => {
@@ -169,17 +152,21 @@ onMounted(async () => {
           <el-radio :value="ServiceDeployMode.DeployModeGlobal">{{ t("label.global") }}</el-radio>
           <el-radio :value="ServiceDeployMode.DeployModeReplicate">{{ t("label.replicated") }}</el-radio>
         </el-radio-group>
-        <div class="flex-1 d-flex instances-box">
+        <div v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate" class="flex-1 d-flex instances-box">
           <div class="instances-prefix">
             <el-text>{{ t("label.instanceNum") }}</el-text>
           </div>
-          <v-input-number :max="100" :min="1" :model-value="deploymentInfo.replicas" @update:model-value="replicatedNumChange" />
+          <v-input-number
+            :max="RuleLength.InstanceNum.Max"
+            :min="RuleLength.InstanceNum.Min"
+            :model-value="deploymentInfo.replicas"
+            @update:model-value="replicatedNumChange" />
         </div>
       </div>
     </el-form-item>
     <el-form-item>
       <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeGlobal">{{ t("tips.globalTips") }}</v-tips>
-      <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }}</v-tips>
+      <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }} </v-tips>
     </el-form-item>
 
     <el-form-item class="mt-3">
@@ -200,10 +187,12 @@ onMounted(async () => {
         </el-form-item>
 
         <div class="d-flex gap-3 flex-1 ml-5" style="max-width: 800px; min-width: 500px">
-          <el-form-item :prop="`${index}.key`" class="flex-1">
-            <v-input v-if="deploymentInfo.validPlacements[index].mode === ServicePlacementMode.PlacementModeIP" disabled>
-              <template #prefix>{{ t("label.ip") }}</template>
-            </v-input>
+          <el-form-item :prop="`validPlacements.${index}.key`" :rules="rules.placementKey" class="flex-1">
+            <v-input
+              v-if="deploymentInfo.validPlacements[index].mode === ServicePlacementMode.PlacementModeIP"
+              v-model="deploymentInfo.validPlacements[index].key"
+              disabled />
+
             <v-select v-else v-model="deploymentInfo.validPlacements[index].key" :out-label="t('label.label')" placeholder="" show-out-label>
               <template v-if="deploymentInfo.validPlacements[index].mode === ServicePlacementMode.PlacementModeLabel">
                 <el-option
@@ -227,7 +216,7 @@ onMounted(async () => {
             </el-select>
           </el-form-item>
 
-          <el-form-item :prop="`${index}.value`" class="flex-1">
+          <el-form-item :prop="`validPlacements.${index}.value`" :rules="rules.placementValue" class="flex-1">
             <v-select v-model="deploymentInfo.validPlacements[index].value" :out-label="t('label.value')" placeholder="" show-out-label>
               <template v-if="deploymentInfo.validPlacements[index].mode === ServicePlacementMode.PlacementModeLabel">
                 <el-option
@@ -239,7 +228,7 @@ onMounted(async () => {
                   :value="item.value" />
               </template>
               <template v-else>
-                <el-option v-for="item in groupNodes" :key="item.ipAddress" :label="item.ipAddress" :value="item.ipAddress" />
+                <el-option v-for="item in nodeList" :key="item.ipAddress" :label="item.ipAddress" :value="item.ipAddress" />
               </template>
             </v-select>
           </el-form-item>

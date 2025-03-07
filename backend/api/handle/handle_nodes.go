@@ -17,7 +17,7 @@ func RouteNodes(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), nodesCreate)
 	router.PUT("/labels", middleware.CheckAdminPermissions(), nodeUpdateLabels)
 	router.PUT("/switch", middleware.CheckAdminPermissions(), nodeUpdateSwitch)
-	router.GET("/info/:id", node)
+	router.GET("/:id/info", node)
 	router.POST("/query", nodesQuery)
 	router.GET("/list", nodes)
 	router.DELETE("/:id", middleware.CheckAdminPermissions(), nodeDelete)
@@ -40,7 +40,7 @@ func nodeUpdateLabels(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.NodeUpdateLabel(body)
+	id, err := controller.NodeUpdateLabel(middleware.GetNodeChannel(c),body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -53,7 +53,7 @@ func nodeUpdateSwitch(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.NodeUpdateSwitch(body.NodeId, body.Enable)
+	id, err := controller.NodeUpdateSwitch(middleware.GetNodeChannel(c), body.NodeId, body.Enable)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -98,7 +98,7 @@ func nodesQuery(c *gin.Context) {
 
 func nodeDelete(c *gin.Context) {
 	id := c.Param("id")
-	if err := controller.NodeDelete(id); err != nil {
+	if err := controller.NodeDelete(middleware.GetNodeChannel(c), id); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}

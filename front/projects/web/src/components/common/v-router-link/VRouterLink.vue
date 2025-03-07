@@ -4,6 +4,7 @@ const props = withDefaults(
     text: string
     href: string
     underline?: boolean
+    disabled?: boolean
   }>(),
   {
     underline: false
@@ -13,6 +14,9 @@ const props = withDefaults(
 const router = useRouter()
 
 function navigateToRoute(event: MouseEvent) {
+  if (props.disabled) {
+    return
+  }
   if (event.ctrlKey || event.metaKey) {
     window.open(props.href, "_blank")
   } else {

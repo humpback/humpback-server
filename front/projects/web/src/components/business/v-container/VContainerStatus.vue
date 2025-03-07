@@ -2,7 +2,7 @@
 import { ContainerStatus } from "@/models"
 import { toLower } from "lodash-es"
 
-const props = defineProps<{ status?: string }>()
+const props = defineProps<{ status?: string; size?: "large" | "default" | "small" }>()
 
 const { t } = useI18n()
 
@@ -53,7 +53,7 @@ const statusInfo = computed<{ type: "primary" | "success" | "info" | "warning" |
 </script>
 
 <template>
-  <el-tag :type="statusInfo.type" effect="dark">{{ t(statusInfo.i18nText) }}</el-tag>
+  <el-tag :size="props.size" :type="statusInfo.type" effect="dark">{{ t(statusInfo.i18nText) }}</el-tag>
 </template>
 
 <style lang="scss" scoped></style>

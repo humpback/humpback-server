@@ -6,12 +6,13 @@ import RegistryEdit from "./registry-edit.vue"
 import RegistryDelete from "./registry-delete.vue"
 import RegistryView from "./registry-view.vue"
 import { isDefaultRegistry, QueryRegistryInfo } from "./common.ts"
+import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const tableHeight = computed(() => TableHeight(252))
+const tableHeight = computed(() => TableHeight(272))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryRegistryInfo>(new QueryRegistryInfo(route.query))
@@ -57,6 +58,7 @@ onMounted(() => search())
 
 <template>
   <v-card>
+    <v-page-title :title="t('label.registries')" />
     <el-form @submit.prevent="search">
       <el-form-item>
         <div class="d-flex gap-3 w-100 flex-wrap">

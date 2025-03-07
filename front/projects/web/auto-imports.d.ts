@@ -22,6 +22,9 @@ declare global {
   const IconMdiCogOutline: typeof import('~icons/mdi/cog-outline')['default']
   const IconMdiCompany: typeof import('~icons/mdi/company')['default']
   const IconMdiLogoutVariant: typeof import('~icons/mdi/logout-variant')['default']
+  const IconMdiPlay: typeof import('~icons/mdi/play')['default']
+  const IconMdiRestart: typeof import('~icons/mdi/restart')['default']
+  const IconMdiSquare: typeof import('~icons/mdi/square')['default']
   const IconMdiTextBoxOutline: typeof import('~icons/mdi/text-box-outline')['default']
   const IconMdiUserOutline: typeof import('~icons/mdi/user-outline')['default']
   const IconMdiViewDashboard: typeof import('~icons/mdi/view-dashboard')['default']
@@ -101,6 +104,7 @@ declare global {
   const createInjectionState: typeof import('@vueuse/core')['createInjectionState']
   const createPinia: typeof import('pinia')['createPinia']
   const createReactiveFn: typeof import('@vueuse/core')['createReactiveFn']
+  const createRef: typeof import('@vueuse/core')['createRef']
   const createReusableTemplate: typeof import('@vueuse/core')['createReusableTemplate']
   const createSharedComposable: typeof import('@vueuse/core')['createSharedComposable']
   const createTemplatePromise: typeof import('@vueuse/core')['createTemplatePromise']
@@ -240,6 +244,7 @@ declare global {
   const useCloned: typeof import('@vueuse/core')['useCloned']
   const useColorMode: typeof import('@vueuse/core')['useColorMode']
   const useConfirmDialog: typeof import('@vueuse/core')['useConfirmDialog']
+  const useCountdown: typeof import('@vueuse/core')['useCountdown']
   const useCounter: typeof import('@vueuse/core')['useCounter']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVar: typeof import('@vueuse/core')['useCssVar']
@@ -326,6 +331,7 @@ declare global {
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
+  const useRegistryStore: typeof import('./src/stores/use-registry-store')['default']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
   const useRoute: typeof import('vue-router')['useRoute']
   const useRouter: typeof import('vue-router')['useRouter']
@@ -435,7 +441,7 @@ declare global {
   export type { ConfigInfo, RegistryInfo, NodeInfo } from './src/types/setting'
   import('./src/types/setting')
   // @ts-ignore
-  export type { ServiceInfo, ServiceMetaDockerInfo, ServiceLogConfigInfo, ServiceResourcesInfo, ServiceVolumeInfo, ServiceNetworkInfo, ServicePortInfo, ServiceRestartPolicyInfo, ServiceDeploymentInfo, ServicePlacementInfo, ServiceScheduleInfo, ServiceContainerStatusInfo } from './src/types/service'
+  export type { ServiceInfo, ServiceMetaDockerInfo, ServiceCapabilitiesInfo, ServiceLogConfigInfo, ServiceResourcesInfo, ServiceVolumeInfo, ServiceNetworkInfo, ServicePortInfo, ServiceRestartPolicyInfo, ServiceDeploymentInfo, ServicePlacementInfo, ServiceScheduleInfo, ServiceContainerStatusInfo } from './src/types/service'
   import('./src/types/service')
 }
 
@@ -460,6 +466,9 @@ declare module 'vue' {
     readonly IconMdiCogOutline: UnwrapRef<typeof import('~icons/mdi/cog-outline')['default']>
     readonly IconMdiCompany: UnwrapRef<typeof import('~icons/mdi/company')['default']>
     readonly IconMdiLogoutVariant: UnwrapRef<typeof import('~icons/mdi/logout-variant')['default']>
+    readonly IconMdiPlay: UnwrapRef<typeof import('~icons/mdi/play')['default']>
+    readonly IconMdiRestart: UnwrapRef<typeof import('~icons/mdi/restart')['default']>
+    readonly IconMdiSquare: UnwrapRef<typeof import('~icons/mdi/square')['default']>
     readonly IconMdiTextBoxOutline: UnwrapRef<typeof import('~icons/mdi/text-box-outline')['default']>
     readonly IconMdiUserOutline: UnwrapRef<typeof import('~icons/mdi/user-outline')['default']>
     readonly IconMdiViewDashboard: UnwrapRef<typeof import('~icons/mdi/view-dashboard')['default']>
@@ -539,6 +548,7 @@ declare module 'vue' {
     readonly createInjectionState: UnwrapRef<typeof import('@vueuse/core')['createInjectionState']>
     readonly createPinia: UnwrapRef<typeof import('pinia')['createPinia']>
     readonly createReactiveFn: UnwrapRef<typeof import('@vueuse/core')['createReactiveFn']>
+    readonly createRef: UnwrapRef<typeof import('@vueuse/core')['createRef']>
     readonly createReusableTemplate: UnwrapRef<typeof import('@vueuse/core')['createReusableTemplate']>
     readonly createSharedComposable: UnwrapRef<typeof import('@vueuse/core')['createSharedComposable']>
     readonly createTemplatePromise: UnwrapRef<typeof import('@vueuse/core')['createTemplatePromise']>
@@ -678,6 +688,7 @@ declare module 'vue' {
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
     readonly useColorMode: UnwrapRef<typeof import('@vueuse/core')['useColorMode']>
     readonly useConfirmDialog: UnwrapRef<typeof import('@vueuse/core')['useConfirmDialog']>
+    readonly useCountdown: UnwrapRef<typeof import('@vueuse/core')['useCountdown']>
     readonly useCounter: UnwrapRef<typeof import('@vueuse/core')['useCounter']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVar: UnwrapRef<typeof import('@vueuse/core')['useCssVar']>
@@ -764,6 +775,7 @@ declare module 'vue' {
     readonly usePrevious: UnwrapRef<typeof import('@vueuse/core')['usePrevious']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>
     readonly useRefHistory: UnwrapRef<typeof import('@vueuse/core')['useRefHistory']>
+    readonly useRegistryStore: UnwrapRef<typeof import('./src/stores/use-registry-store')['default']>
     readonly useResizeObserver: UnwrapRef<typeof import('@vueuse/core')['useResizeObserver']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>

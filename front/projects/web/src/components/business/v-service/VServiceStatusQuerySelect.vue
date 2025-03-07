@@ -24,12 +24,18 @@ const status = computed({
   }
 })
 
-const options = computed(() => [
-  { label: "label.enabled", value: NodeSwitch.Enabled },
-  { label: "label.disabled", value: NodeSwitch.Disabled },
-  { label: "label.notReady", value: ServiceStatus.ServiceStatusNotReady },
-  { label: "label.running", value: ServiceStatus.ServiceStatusRunning },
-  { label: "label.failed", value: ServiceStatus.ServiceStatusFailed }
+const options = computed<
+  Array<{
+    label: string
+    value: string
+    type: "info" | "success" | "warning" | "primary" | "danger"
+  }>
+>(() => [
+  { label: "label.enabled", value: NodeSwitch.Enabled, type: "success" },
+  { label: "label.disabled", value: NodeSwitch.Disabled, type: "info" },
+  { label: "label.notReady", value: ServiceStatus.ServiceStatusNotReady, type: "warning" },
+  { label: "label.running", value: ServiceStatus.ServiceStatusRunning, type: "success" },
+  { label: "label.failed", value: ServiceStatus.ServiceStatusFailed, type: "danger" }
 ])
 
 function change() {
@@ -47,7 +53,9 @@ function change() {
     show-out-label
     @change="change()">
     <el-option :label="t('label.all')" :value="0" />
-    <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value" />
+    <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value">
+      <el-text :type="item.type">{{ t(item.label) }}</el-text>
+    </el-option>
   </v-select>
 </template>
 

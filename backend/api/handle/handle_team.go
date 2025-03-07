@@ -16,7 +16,7 @@ import (
 func RouteTeam(router *gin.RouterGroup) {
 	router.POST("", middleware.CheckAdminPermissions(), teamCreate)
 	router.PUT("", middleware.CheckAdminPermissions(), teamUpdate)
-	router.GET("/info/:id", middleware.CheckAdminPermissions(), team)
+	router.GET("/:id/info", middleware.CheckAdminPermissions(), team)
 	router.GET("/list", teams)
 	router.POST("/query", middleware.CheckAdminPermissions(), teamsQuery)
 	router.GET("/query-by-user/:userId", middleware.CheckAdminPermissions(), teamsByUserId)

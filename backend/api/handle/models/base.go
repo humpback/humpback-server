@@ -21,3 +21,13 @@ func ParseMapToStructConvert(m map[string]any, obj interface{}) error {
 	}
 	return nil
 }
+
+func removeEmptyStrings(arr []string) []string {
+	var result []string
+	for _, str := range arr {
+		if str != "" {
+			result = append(result, str)
+		}
+	}
+	return result
+}

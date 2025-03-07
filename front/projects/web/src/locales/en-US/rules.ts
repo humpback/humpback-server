@@ -10,6 +10,7 @@ export default {
     "inconsistentNewPassword": "Inconsistent with the new password",
     "invalidRole": "Invalid Role",
     "invalidIpAddress": "Invalid IP address",
+    "invalidImage": "Invalid image name",
     "duplicateIPAddress": "Duplicate IP address",
     "duplicateLabelKey": "Duplicate label key",
     "duplicate": "Duplicate",

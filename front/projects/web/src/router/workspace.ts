@@ -53,13 +53,17 @@ const serviceManagement = <RouteRecordRaw[]>[
       currentMenu: "groups",
       webTitle: {
         params: "mode"
-      }
+      },
+      breadcrumb: [
+        { routeName: "groups", routeParams: {}, i18nLabel: "breadcrumb.groupOverview", isLink: true },
+        { routeName: "", routeParams: {}, i18nLabel: "", isLink: false, customName: "group" }
+      ]
     }
   },
   {
     path: "/ws/group/:groupId/service/:serviceId/:mode",
     name: "serviceInfo",
-    component: () => import("@/views/service-management/service/detail/service-detail.vue"),
+    component: () => import("@/views/service-management/service/service-detail.vue"),
     beforeEnter: (to, from, next) => {
       return find(
         [
@@ -76,7 +80,13 @@ const serviceManagement = <RouteRecordRaw[]>[
         : next({ name: "404" })
     },
     meta: {
-      currentMenu: "groups"
+      currentMenu: "groups",
+      breadcrumb: [
+        { routeName: "groups", routeParams: {}, i18nLabel: "breadcrumb.groupOverview", isLink: true },
+        { routeName: "groupDetail", routeParams: { mode: PageGroupDetail.Services }, i18nLabel: "", isLink: true, customName: "group" },
+        { routeName: "", routeParams: {}, i18nLabel: "breadcrumb.serviceOverview", isLink: false },
+        { routeName: "", routeParams: {}, i18nLabel: "", isLink: false, customName: "service" }
+      ]
     }
   }
 ]

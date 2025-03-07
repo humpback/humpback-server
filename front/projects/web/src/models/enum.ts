@@ -53,7 +53,7 @@ export enum ServiceStatus {
 
 export enum ServiceDeployMode {
   DeployModeGlobal = "global",
-  DeployModeReplicate = "replicate"
+  DeployModeReplicate = "replicated"
 }
 
 export enum ServiceDeployType {
