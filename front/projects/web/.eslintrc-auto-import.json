@@ -72,6 +72,7 @@
     "RuleLimitRange": true,
     "RulePleaseEnter": true,
     "SendChannelMessage": true,
+    "ServiceCapabilitiesInfo": true,
     "ServiceContainerStatusInfo": true,
     "ServiceDeployMode": true,
     "ServiceDeployType": true,
@@ -126,6 +127,7 @@
     "createInjectionState": true,
     "createPinia": true,
     "createReactiveFn": true,
+    "createRef": true,
     "createReusableTemplate": true,
     "createSharedComposable": true,
     "createTemplatePromise": true,
@@ -265,6 +267,7 @@
     "useCloned": true,
     "useColorMode": true,
     "useConfirmDialog": true,
+    "useCountdown": true,
     "useCounter": true,
     "useCssModule": true,
     "useCssVar": true,
@@ -351,6 +354,7 @@
     "usePrevious": true,
     "useRafFn": true,
     "useRefHistory": true,
+    "useRegistryStore": true,
     "useResizeObserver": true,
     "useRoute": true,
     "useRouter": true,
@@ -431,10 +435,8 @@
     "IconMdiTextBoxOutline": true,
     "IconMdiUserOutline": true,
     "IconMdiViewDashboard": true,
-    "ServiceCapabilitiesInfo": true,
     "IconMdiPlay": true,
     "IconMdiRestart": true,
-    "IconMdiSquare": true,
-    "useRegistryStore": true
+    "IconMdiSquare": true
   }
 }
