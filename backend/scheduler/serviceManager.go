@@ -226,7 +226,7 @@ func (sm *ServiceManager) GetMatchedNodes(nodes []*types.Node) {
 	sm.unavailableNodes = make([]string, 0)
 
 	for _, n := range nodes {
-		if sm.ServiceInfo.Deployment.Placements != nil {
+		if len(sm.ServiceInfo.Deployment.Placements) > 0 {
 			for _, p := range sm.ServiceInfo.Deployment.Placements {
 				if isPlacementMatched(n, p) && n.Status == types.NodeStatusOnline {
 					sm.availableNodes = append(sm.availableNodes, n.NodeId)
