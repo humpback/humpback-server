@@ -57,81 +57,88 @@ onMounted(() => search())
 </script>
 
 <template>
-  <v-card>
-    <v-page-title :title="t('label.registries')" />
-    <el-form @submit.prevent="search">
-      <el-form-item>
-        <div class="d-flex gap-3 w-100 flex-wrap">
-          <div class="flex-1" style="min-width: 300px">
-            <v-input v-model="queryInfo.keywords">
-              <template #prepend>
-                <span>{{ t("label.url") }}</span>
-              </template>
-            </v-input>
+  <div>
+    <v-card>
+      <v-page-title :title="t('label.registries')" />
+      <el-form @submit.prevent="search">
+        <el-form-item>
+          <div class="d-flex gap-3 w-100 flex-wrap">
+            <div class="flex-1" style="min-width: 300px">
+              <v-input v-model="queryInfo.keywords">
+                <template #prepend>
+                  <span>{{ t("label.url") }}</span>
+                </template>
+              </v-input>
+            </div>
+            <div>
+              <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
+              <el-button plain type="primary" @click="openAction(Action.Add)">
+                <template #icon>
+                  <el-icon :size="20">
+                    <IconMdiAdd />
+                  </el-icon>
+                </template>
+                {{ t("btn.addRegistry") }}
+              </el-button>
+            </div>
           </div>
-          <div>
-            <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-            <el-button plain type="primary" @click="openAction(Action.Add)">
-              <template #icon>
-                <el-icon :size="20">
-                  <IconMdiAdd />
-                </el-icon>
-              </template>
-              {{ t("btn.addRegistry") }}
+        </el-form-item>
+      </el-form>
+
+      <v-table
+        v-loading="isLoading"
+        v-model:page-info="queryInfo.pageInfo"
+        v-model:sort-info="queryInfo.sortInfo"
+        :data="tableList.data"
+        :max-height="tableHeight"
+        :total="tableList.total"
+        @page-change="search"
+        @sort-change="search">
+        <el-table-column :label="t('label.url')" fixed="left" min-width="200" prop="url" sortable="custom" />
+        <el-table-column :label="t('label.isDefault')" align="center" min-width="140">
+          <template #default="scope">
+            <el-tag v-if="scope.row.isDefault" effect="dark" round size="small" type="warning">
+              {{ t("label.default") }}
+            </el-tag>
+            <span v-else>--</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.authentication')" align="center" min-width="140">
+          <template #default="scope">
+            <el-button v-if="scope.row?.hasAuth" link type="primary" @click="openAction(Action.View, scope.row)">
+              {{ t("btn.view") }}
             </el-button>
-          </div>
-        </div>
-      </el-form-item>
-    </el-form>
+            <span v-else>--</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
+          <template #default="scope">
+            <v-date-view :timestamp="scope.row.updatedAt" />
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.createDate')" min-width="140" prop="createdAt" sortable="custom">
+          <template #default="scope">
+            <v-date-view :timestamp="scope.row.createdAt" />
+          </template>
+        </el-table-column>
 
-    <v-table
-      v-loading="isLoading"
-      v-model:page-info="queryInfo.pageInfo"
-      v-model:sort-info="queryInfo.sortInfo"
-      :data="tableList.data"
-      :max-height="tableHeight"
-      :total="tableList.total"
-      @page-change="search"
-      @sort-change="search">
-      <el-table-column :label="t('label.url')" fixed="left" min-width="200" prop="url" sortable="custom" />
-      <el-table-column :label="t('label.isDefault')" align="center" min-width="140">
-        <template #default="scope">
-          <el-tag v-if="scope.row.isDefault" effect="dark" round size="small" type="warning">
-            {{ t("label.default") }}
-          </el-tag>
-          <span v-else>--</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.authentication')" align="center" min-width="140">
-        <template #default="scope">
-          <el-button v-if="scope.row?.hasAuth" link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
-          <span v-else>--</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
-        <template #default="scope">
-          <v-date-view :timestamp="scope.row.updatedAt" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.createDate')" min-width="140" prop="createdAt" sortable="custom">
-        <template #default="scope">
-          <v-date-view :timestamp="scope.row.createdAt" />
-        </template>
-      </el-table-column>
+        <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
+          <template #default="scope">
+            <el-button v-if="!isDefaultRegistry(scope.row.url)" link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }} </el-button>
+            <el-button v-if="!isDefaultRegistry(scope.row.url)" link type="danger" @click="openAction(Action.Delete, scope.row)"
+              >{{ t("btn.delete") }}
+            </el-button>
+          </template>
+        </el-table-column>
+      </v-table>
+    </v-card>
 
-      <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
-        <template #default="scope">
-          <el-button v-if="!isDefaultRegistry(scope.row.url)" link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
-          <el-button v-if="!isDefaultRegistry(scope.row.url)" link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
-        </template>
-      </el-table-column>
-    </v-table>
-  </v-card>
-  <registry-delete ref="registryDeleteRef" @refresh="search()" />
+    <registry-delete ref="registryDeleteRef" @refresh="search()" />
 
-  <registry-edit ref="registryEditRef" @refresh="search()" />
+    <registry-edit ref="registryEditRef" @refresh="search()" />
 
-  <registry-view ref="registryViewRef" />
+    <registry-view ref="registryViewRef" />
+  </div>
 </template>
 
 <style lang="scss" scoped></style>

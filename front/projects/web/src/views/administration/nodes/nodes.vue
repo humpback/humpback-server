@@ -147,150 +147,156 @@ onMounted(() => search())
 </script>
 
 <template>
-  <v-card>
-    <v-page-title :title="t('label.nodes')" />
-    <el-form @submit.prevent="search">
-      <el-form-item>
-        <div class="d-flex gap-3 w-100 flex-wrap">
-          <div style="width: 220px">
-            <v-select
-              v-model="queryInfo.filter.status"
-              :out-label="t('label.status')"
-              :placeholder="t('placeholder.all')"
-              clearable
-              out-label-width="80px"
-              show-out-label
-              @change="search">
-              <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value" />
-            </v-select>
-          </div>
-          <div class="flex-1" style="min-width: 300px">
-            <v-input
-              v-model="queryInfo.keywords"
-              :placeholder="queryInfo.mode === 'keywords' ? t('placeholder.enterIpOrHostname') : t('placeholder.enterLabelKey')">
-              <template #prepend>
-                <el-select v-model="queryInfo.mode" placeholder="" style="width: 120px">
-                  <el-option v-for="item in modeOptions" :key="item.value" :label="t(item.label)" :value="item.value" />
-                </el-select>
-              </template>
-            </v-input>
-          </div>
-          <div>
-            <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-            <el-button plain type="primary" @click="openAction(Action.Add)">
-              <template #icon>
-                <el-icon :size="20">
-                  <IconMdiAdd />
-                </el-icon>
-              </template>
-              {{ t("btn.addNodes") }}
-            </el-button>
-          </div>
-        </div>
-      </el-form-item>
-    </el-form>
-
-    <v-table
-      v-loading="isLoading"
-      v-model:page-info="queryInfo.pageInfo"
-      v-model:sort-info="queryInfo.sortInfo"
-      :data="tableList.data"
-      :max-height="tableHeight"
-      :total="tableList.total"
-      @page-change="search"
-      @sort-change="search">
-      <el-table-column :label="t('label.ip')" fixed="left" min-width="160" prop="ipAddress" sortable="custom">
-        <template #default="scope">
-          <div class="d-flex gap-2">
-            <v-node-enable-tag :enabled="scope.row.isEnable" />
-            <v-router-link :href="`/ws/node/${scope.row.nodeId}/detail`" :text="scope.row.ipAddress" :type="scope.row.isEnable ? 'primary' : 'info'" disabled />
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.hostname')" min-width="200" prop="name" sortable="custom">
-        <template #default="scope">
-          <v-table-column-none :text="scope.row.name" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.status')" min-width="400">
-        <template #default="scope">
-          <div class="custom-column">
-            <div class="status">
-              <div class="status-content">
-                <div class="status-cpu">
-                  <el-text size="small" type="info">
-                    <strong>{{ t("label.cpu") }}</strong>
-                    <div>{{ scope.row.cpu || "--/--" }} {{ t("label.core") }}</div>
-                  </el-text>
-                </div>
-                <div class="status-memory">
-                  <el-text size="small" type="info">
-                    <strong>{{ t("label.memoryUsed") }}</strong>
-                    <el-progress v-if="scope.row.memoryTotal" :percentage="Math.trunc(scope.row.memoryUsage * 100)" />
-                    <div v-if="scope.row.memoryTotal">
-                      {{ `${BytesToGB(scope.row.memoryUsed)} ${t("label.gb")} / ${BytesToGB(scope.row.memoryTotal)} ${t("label.gb")}` }}
-                    </div>
-                    <div v-else>
-                      {{ `--/-- ${t("label.gb")}` }}
-                    </div>
-                  </el-text>
-                </div>
-              </div>
-              <div class="status-tag">
-                <v-node-status-tag v-if="scope.row.isEnable" :status="scope.row.status" />
-              </div>
+  <div>
+    <v-card>
+      <v-page-title :title="t('label.nodes')" />
+      <el-form @submit.prevent="search">
+        <el-form-item>
+          <div class="d-flex gap-3 w-100 flex-wrap">
+            <div style="width: 220px">
+              <v-select
+                v-model="queryInfo.filter.status"
+                :out-label="t('label.status')"
+                :placeholder="t('placeholder.all')"
+                clearable
+                out-label-width="80px"
+                show-out-label
+                @change="search">
+                <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value" />
+              </v-select>
+            </div>
+            <div class="flex-1" style="min-width: 300px">
+              <v-input
+                v-model="queryInfo.keywords"
+                :placeholder="queryInfo.mode === 'keywords' ? t('placeholder.enterIpOrHostname') : t('placeholder.enterLabelKey')">
+                <template #prepend>
+                  <el-select v-model="queryInfo.mode" placeholder="" style="width: 120px">
+                    <el-option v-for="item in modeOptions" :key="item.value" :label="t(item.label)" :value="item.value" />
+                  </el-select>
+                </template>
+              </v-input>
+            </div>
+            <div>
+              <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
+              <el-button plain type="primary" @click="openAction(Action.Add)">
+                <template #icon>
+                  <el-icon :size="20">
+                    <IconMdiAdd />
+                  </el-icon>
+                </template>
+                {{ t("btn.addNodes") }}
+              </el-button>
             </div>
           </div>
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.labels')" min-width="240">
-        <template #default="scope">
-          <div class="custom-column">
-            <v-label-table-view :labels="scope.row.labels" :line="4" />
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column :label="t('label.action')" align="center" fixed="right" header-align="center" width="130">
-        <template #default="scope">
-          <el-button link type="primary" @click="openAction(Action.View, scope.row)">
-            {{ t("btn.command") }}
-          </el-button>
-          <el-dropdown class="ml-1" placement="bottom-end" @command="openAction($event, scope.row)">
-            <el-button link type="primary">
-              <el-icon :size="20">
-                <IconMdiMoreHoriz />
-              </el-icon>
+        </el-form-item>
+      </el-form>
+
+      <v-table
+        v-loading="isLoading"
+        v-model:page-info="queryInfo.pageInfo"
+        v-model:sort-info="queryInfo.sortInfo"
+        :data="tableList.data"
+        :max-height="tableHeight"
+        :total="tableList.total"
+        @page-change="search"
+        @sort-change="search">
+        <el-table-column :label="t('label.ip')" fixed="left" min-width="160" prop="ipAddress" sortable="custom">
+          <template #default="scope">
+            <div class="d-flex gap-2">
+              <v-node-enable-tag :enabled="scope.row.isEnable" />
+              <v-router-link
+                :href="`/ws/node/${scope.row.nodeId}/detail`"
+                :text="scope.row.ipAddress"
+                :type="scope.row.isEnable ? 'primary' : 'info'"
+                disabled />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.hostname')" min-width="200" prop="name" sortable="custom">
+          <template #default="scope">
+            <v-table-column-none :text="scope.row.name" />
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.status')" min-width="400">
+          <template #default="scope">
+            <div class="custom-column">
+              <div class="status">
+                <div class="status-content">
+                  <div class="status-cpu">
+                    <el-text size="small" type="info">
+                      <strong>{{ t("label.cpu") }}</strong>
+                      <div>{{ scope.row.cpu || "--/--" }} {{ t("label.core") }}</div>
+                    </el-text>
+                  </div>
+                  <div class="status-memory">
+                    <el-text size="small" type="info">
+                      <strong>{{ t("label.memoryUsed") }}</strong>
+                      <el-progress v-if="scope.row.memoryTotal" :percentage="Math.trunc(scope.row.memoryUsage * 100)" />
+                      <div v-if="scope.row.memoryTotal">
+                        {{ `${BytesToGB(scope.row.memoryUsed)} ${t("label.gb")} / ${BytesToGB(scope.row.memoryTotal)} ${t("label.gb")}` }}
+                      </div>
+                      <div v-else>
+                        {{ `--/-- ${t("label.gb")}` }}
+                      </div>
+                    </el-text>
+                  </div>
+                </div>
+                <div class="status-tag">
+                  <v-node-status-tag v-if="scope.row.isEnable" :status="scope.row.status" />
+                </div>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.labels')" min-width="240">
+          <template #default="scope">
+            <div class="custom-column">
+              <v-label-table-view :labels="scope.row.labels" :line="4" />
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.action')" align="center" fixed="right" header-align="center" width="130">
+          <template #default="scope">
+            <el-button link type="primary" @click="openAction(Action.View, scope.row)">
+              {{ t("btn.command") }}
             </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item :command="Action.EditLabel">
-                  <el-link :underline="false" type="primary">{{ t("btn.editLabel") }}</el-link>
-                </el-dropdown-item>
-                <el-dropdown-item :command="Action.Enable">
-                  <el-link :type="scope.row.isEnable ? 'info' : 'success'" :underline="false">
-                    {{ scope.row.isEnable ? t("btn.disable") : t("btn.enable") }}
-                  </el-link>
-                </el-dropdown-item>
-                <el-dropdown-item :command="Action.Delete">
-                  <el-link :underline="false" type="danger">{{ t("btn.delete") }}</el-link>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </template>
-      </el-table-column>
-    </v-table>
-  </v-card>
+            <el-dropdown class="ml-1" placement="bottom-end" @command="openAction($event, scope.row)">
+              <el-button link type="primary">
+                <el-icon :size="20">
+                  <IconMdiMoreHoriz />
+                </el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item :command="Action.EditLabel">
+                    <el-link :underline="false" type="primary">{{ t("btn.editLabel") }}</el-link>
+                  </el-dropdown-item>
+                  <el-dropdown-item :command="Action.Enable">
+                    <el-link :type="scope.row.isEnable ? 'info' : 'success'" :underline="false">
+                      {{ scope.row.isEnable ? t("btn.disable") : t("btn.enable") }}
+                    </el-link>
+                  </el-dropdown-item>
+                  <el-dropdown-item :command="Action.Delete">
+                    <el-link :underline="false" type="danger">{{ t("btn.delete") }}</el-link>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </v-table>
+    </v-card>
 
-  <node-add ref="addRef" @refresh="search()" />
+    <node-add ref="addRef" @refresh="search()" />
 
-  <node-view-command ref="viewValueRef" />
+    <node-view-command ref="viewValueRef" />
 
-  <node-edit-label ref="editLabelRef" @refresh="search()" />
+    <node-edit-label ref="editLabelRef" @refresh="search()" />
 
-  <node-enable ref="enableRef" @refresh="search()" />
+    <node-enable ref="enableRef" @refresh="search()" />
 
-  <node-delete ref="deleteRef" @refresh="search()" />
+    <node-delete ref="deleteRef" @refresh="search()" />
+  </div>
 </template>
 
 <style lang="scss" scoped>
