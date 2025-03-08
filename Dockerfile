@@ -2,7 +2,7 @@ FROM alpine:latest
 
 LABEL maintainer="skyler.w.yang"
 
-RUN  mkdir -p /workspace/config
+RUN mkdir -p /workspace/config
 
 COPY ./backend/config/*.yaml /workspace/config
 
