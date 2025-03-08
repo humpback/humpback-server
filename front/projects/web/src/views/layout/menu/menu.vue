@@ -33,6 +33,7 @@ watch(
     :default-openeds="defaultOpenMenus"
     class="website-menu"
     popper-class="website-menu-popover"
+    router
     text-color=""
     @select="emits('menuClick')">
     <menu-container v-for="item in menus" :key="item.name" :level="0" :menuInfo="item" />
