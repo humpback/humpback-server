@@ -42,6 +42,7 @@ type Service struct {
 	IsEnabled   bool               `json:"isEnabled"`
 	IsDelete    bool               `json:"isDelete"`
 	Status      string             `json:"status"`
+	Memo        string             `json:"memo"`
 	Meta        *ServiceMetaDocker `json:"meta"`
 	Deployment  *Deployment        `json:"deployment"`
 	Containers  []*ContainerStatus `json:"containers"`

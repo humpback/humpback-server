@@ -1,6 +1,6 @@
 import { ServiceVolumeType } from "@/models"
 import { NewServiceMetaDockerEmptyInfo, RegistryInfo, ServiceMetaDockerInfo } from "@/types"
-import { filter, find, map, omit, omitBy } from "lodash-es"
+import { filter, find, map, omit, omitBy, startsWith } from "lodash-es"
 import { GenerateUUID } from "@/utils"
 
 export interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
@@ -27,15 +27,11 @@ export interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
 export function NewApplicationInfo(registries: RegistryInfo[], info?: ServiceMetaDockerInfo): ServiceApplicationInfo {
   const validData = omitBy(info, (value, key) => value === undefined || value === null)
   const metaInfo = Object.assign({}, NewServiceMetaDockerEmptyInfo(), validData)
-
-  const defaultImage = find(registries, x => x.isDefault)
-  const domain = defaultImage ? defaultImage.url : registries.length > 0 ? registries[0].url : ""
-  const imageSplit = metaInfo.image.indexOf("/")
-
+  const imageInfo = parseImageInfo(registries, metaInfo.image)
   return {
     ...metaInfo,
-    imageDomain: imageSplit > 0 ? metaInfo.image.slice(0, imageSplit) : domain,
-    imageName: imageSplit > 0 ? metaInfo.image.slice(imageSplit + 1) : "",
+    imageDomain: imageInfo.domain,
+    imageName: imageInfo.imageName,
     validEnv: filter(
       map(metaInfo.env, x => {
         const s = x.split("=")
@@ -69,6 +65,25 @@ export function NewApplicationInfo(registries: RegistryInfo[], info?: ServiceMet
       protocol: x.protocol,
       hostPort: x.hostPort || undefined
     }))
+  }
+}
+
+function parseImageInfo(registries: RegistryInfo[], image: string) {
+  const defaultImage = find(registries, x => x.isDefault)?.url || ""
+  const matchRegistryUrls = map(
+    filter(registries, x => startsWith(image, x.url)),
+    r => r.url
+  )
+  const matchImageDomain = matchRegistryUrls.reduce((a, b) => (a.length > b.length ? a : b), "")
+  if (image) {
+    return {
+      domain: matchImageDomain || defaultImage,
+      imageName: image.replace(`${matchImageDomain}/`, "")
+    }
+  }
+  return {
+    domain: defaultImage || "docker.io",
+    imageName: ""
   }
 }
 

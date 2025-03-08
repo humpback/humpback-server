@@ -15,7 +15,7 @@ function navigateToRoute(event: MouseEvent, href: string) {
 </script>
 
 <template>
-  <router-link v-slot="{ href }" custom to="">
+  <router-link v-slot="{ href }" :to="{ name: props.menuInfo?.routeName || props.menuInfo.name, params: props.menuInfo.params }" custom>
     <div @click="navigateToRoute($event, href)">
       <el-menu-item
         :index="props.menuInfo?.routeName || props.menuInfo.name"

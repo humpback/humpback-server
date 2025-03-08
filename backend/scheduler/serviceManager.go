@@ -137,6 +137,7 @@ func (sm *ServiceManager) Reconcile() {
 		} else if sm.ServiceInfo.Deployment.Replicas == len(sm.ServiceInfo.Containers) {
 			slog.Info("[Service Manager] Service change status to running......", "ServiceId", sm.ServiceInfo.ServiceId)
 			sm.ServiceInfo.Status = types.ServiceStatusRunning
+			sm.ServiceInfo.Memo = ""
 		}
 
 		db.ServiceUpdate(sm.ServiceInfo)
@@ -226,7 +227,7 @@ func (sm *ServiceManager) GetMatchedNodes(nodes []*types.Node) {
 	sm.unavailableNodes = make([]string, 0)
 
 	for _, n := range nodes {
-		if sm.ServiceInfo.Deployment.Placements != nil {
+		if len(sm.ServiceInfo.Deployment.Placements) > 0 {
 			for _, p := range sm.ServiceInfo.Deployment.Placements {
 				if isPlacementMatched(n, p) && n.Status == types.NodeStatusOnline {
 					sm.availableNodes = append(sm.availableNodes, n.NodeId)
@@ -343,6 +344,7 @@ func (sm *ServiceManager) StartNextContainer() {
 
 	if len(nodes) == 0 {
 		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
+		sm.ServiceInfo.Memo = "Start Service error: No available nodes"
 		return
 	}
 
@@ -350,17 +352,16 @@ func (sm *ServiceManager) StartNextContainer() {
 
 	if nodeId == "" {
 		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
+		sm.ServiceInfo.Memo = "Start Service error: No available nodes"
 		return
 	}
 
 	cerr := node.StartNewContainer(nodeId, GenerateContainerName(sm.ServiceInfo.ServiceId, sm.ServiceInfo.Version), sm.ServiceInfo)
 	if cerr != nil {
 		slog.Error("[Service Manager] Start New Container error", "ServiceId", sm.ServiceInfo.ServiceId, "error", cerr.Error())
+		sm.ServiceInfo.Memo = "Start New Container error: " + cerr.Error()
 		return
 	}
-
-	db.ServiceUpdate(sm.ServiceInfo)
-
 }
 
 func (sm *ServiceManager) ChooseNextNodes(nodes []*types.Node) (nodeId string) {
