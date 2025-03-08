@@ -40,7 +40,7 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
     height: var(--hp-header-height);
     box-sizing: border-box;
     border-bottom: 1px solid var(--el-border-color);
-    //box-shadow: 0 1px 1px var(--el-border-color);
+    //box-shadow: 0 1px 2px var(--el-border-color);
     background-color: var(--hp-header-bg-color);
   }
 
@@ -54,8 +54,9 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
   }
 
   #page-main {
+    --hp-main-pading: 16px;
     box-sizing: border-box;
-    padding: calc(var(--hp-header-height) + 12px) 12px 0 12px;
+    padding: calc(var(--hp-header-height) + var(--hp-main-pading)) var(--hp-main-pading) var(--hp-main-pading) var(--hp-main-pading);
     max-width: 100%;
   }
 }

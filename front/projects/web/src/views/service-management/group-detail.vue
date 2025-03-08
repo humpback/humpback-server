@@ -48,6 +48,7 @@ async function changeTab(name: TabPaneName) {
   :deep(.el-tabs__header.is-top) {
     --el-tabs-header-height: 48px;
     margin-bottom: 0;
+    border: none;
 
     & .el-tabs__nav {
       border: 0;
@@ -58,11 +59,11 @@ async function changeTab(name: TabPaneName) {
 
       &.is-active {
         background-color: #ffffff;
-        border-top: 1px solid var(--el-border-color);
-        border-left: 1px solid var(--el-border-color);
-        border-right: 1px solid var(--el-border-color);
-        border-top-right-radius: 4px;
-        border-top-left-radius: 4px;
+        //border-top: 1px solid var(--el-border-color);
+        //border-left: 1px solid var(--el-border-color);
+        //border-right: 1px solid var(--el-border-color);
+        border-top-right-radius: 8px;
+        border-top-left-radius: 8px;
       }
     }
   }
@@ -70,11 +71,11 @@ async function changeTab(name: TabPaneName) {
   :deep(.el-tabs__content) {
     background-color: #ffffff;
     padding: 20px;
-    border: 1px solid var(--el-border-color);
-    border-top: none;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-right-radius: 4px;
+    //border: 1px solid var(--el-border-color);
+    //border-top: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
   }
 }
 </style>

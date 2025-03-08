@@ -207,7 +207,7 @@ onUnmounted(() => {
     <div class="body-menu">
       <div class="mb-2 d-flex gap-1">
         <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :is-loading="isLoading" :status="serviceInfo?.status" />
-        <v-loading />
+        <v-loading v-if="serviceInfo?.isEnabled && serviceInfo.status !== ServiceStatus.ServiceStatusRunning" />
       </div>
       <div v-for="(item, index) in menuOptions" :key="index" class="menu-group">
         <div v-if="item.isGroup" class="menu-group-title">
@@ -268,8 +268,8 @@ onUnmounted(() => {
     max-width: 25%;
     min-width: 240px;
     background-color: #ffffff;
-    border: 1px solid var(--el-border-color);
-    border-radius: 4px;
+    //border: 1px solid var(--el-border-color);
+    border-radius: 8px;
     padding: 20px 20px 28px 20px;
     box-sizing: border-box;
 
