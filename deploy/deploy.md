@@ -8,6 +8,6 @@ docker run -d \
 -e LOCATION=dev \
 -e SITE_PORT=8300 \
 -e BACKEND_PORT=8301 \
-registry.cn-hangzhou.aliyuncs.com/skyler_public/humpback:0.0.1
+a.newegg.org/newegg-docker/humpbacks/humpback-server:develop
 
 ```
