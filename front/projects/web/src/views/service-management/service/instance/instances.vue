@@ -215,7 +215,7 @@ defineExpose({ resetLoopSearch })
                       {{ t("label.labels") }}
                     </el-text>
                   </template>
-                  <div v-if="Object.keys(scope.row.labels)?.length > 0">
+                  <div v-if="Object.keys(scope.row.labels || {})?.length > 0">
                     <div v-for="(key, index) in Object.keys(scope.row.labels)" :key="index" class="form-line">
                       <div class="line-prefix">-</div>
                       <div> {{ `${key}:${scope.row.labels[key]}` }}</div>
