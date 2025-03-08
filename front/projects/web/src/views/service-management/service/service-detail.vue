@@ -207,7 +207,7 @@ onUnmounted(() => {
     <div class="body-menu">
       <div class="mb-2 d-flex gap-1">
         <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :is-loading="isLoading" :status="serviceInfo?.status" />
-        <v-loading v-if="isLoading" />
+        <v-loading />
       </div>
       <div v-for="(item, index) in menuOptions" :key="index" class="menu-group">
         <div v-if="item.isGroup" class="menu-group-title">

@@ -104,7 +104,7 @@ defineExpose({ resetLoopSearch })
                   <v-date-view :format="-1" :timestamp="scope.row.startAt" />
                 </el-form-item>
               </el-col>
-              <el-col :span="24">
+              <el-col v-if="scope.row.nextAt" :span="24">
                 <el-form-item>
                   <template #label>
                     <el-text size="small" type="success">
@@ -283,12 +283,12 @@ defineExpose({ resetLoopSearch })
   padding: 20px 60px;
 
   :deep(.el-form-item__label) {
-    margin-bottom: 4px;
+    margin-bottom: 12px;
   }
 
   :deep(.el-form-item__content) {
     padding-left: 12px;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 20px;
     word-break: break-all;
   }
