@@ -78,8 +78,6 @@ router.afterEach((to: RouteLocationNormalized, from: RouteLocationNormalized) =>
     SetWebTitle(`${GetI18nMessage("webTitle." + titleKey)}`)
   }
 
-  console.log(from, to)
-
   if (to.name !== from.name) {
     done()
   }

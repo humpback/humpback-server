@@ -1,27 +1,43 @@
 <script lang="ts" setup>
-const props = withDefaults(defineProps<{ size?: number }>(), { size: 14 })
+const props = withDefaults(defineProps<{ size?: number }>(), { size: 18 })
 </script>
 
 <template>
-  <div :style="{ width: `${props.size}px`, height: `${props.size}px` }" class="spinner" />
+  <div :style="{ width: `${props.size}px`, height: `${props.size}px` }" class="loader" />
 </template>
 
 <style lang="scss" scoped>
-.spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid #e3e2e2; /* 外圈颜色 */
-  border-top: 2px solid var(--el-color-primary); /* 内圈颜色 */
-  border-radius: 50%; /* 圆形 */
-  animation: spin 1s linear infinite; /* 旋转动画 */
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 30px;
+  aspect-ratio: 1;
+  display: grid;
+  -webkit-mask: conic-gradient(from 15deg, #0000, #000);
+  animation: l26 1.2s infinite steps(12);
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
+.loader,
+.loader:before,
+.loader:after {
+  background:
+    radial-gradient(closest-side at 50% 12.5%, var(--el-color-info) 96%, #0000) 50% 0/20% 80% repeat-y,
+    radial-gradient(closest-side at 12.5% 50%, var(--el-color-info) 96%, #0000) 0 50%/80% 20% repeat-x;
+}
+
+.loader:before,
+.loader:after {
+  content: "";
+  grid-area: 1/1;
+  transform: rotate(30deg);
+}
+
+.loader:after {
+  transform: rotate(60deg);
+}
+
+@keyframes l26 {
   100% {
-    transform: rotate(360deg);
+    transform: rotate(1turn);
   }
 }
 </style>

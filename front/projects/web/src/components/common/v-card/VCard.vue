@@ -16,7 +16,7 @@ type Props = Partial<
   }
 >
 
-const props = withDefaults(defineProps<Props>(), { shadow: "never" })
+const props = withDefaults(defineProps<Props>(), { shadow: "never", round: true })
 
 const { t } = useI18n()
 const route = useRoute()
@@ -58,6 +58,7 @@ const style = computed(() => {
 <style lang="scss" scoped>
 .custom-card {
   --el-box-shadow-light: var(--el-box-shadow-lighter);
+  border: none;
 
   :deep(.el-card__header) {
     padding: 12px 20px;

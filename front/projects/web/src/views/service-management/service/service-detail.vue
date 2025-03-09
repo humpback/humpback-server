@@ -171,76 +171,78 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="header">
-    <v-page-title :title="serviceInfo?.serviceName" show-breadcrumbs />
+  <div>
+    <div class="header">
+      <v-page-title :title="serviceInfo?.serviceName" show-breadcrumbs />
 
-    <div class="header-actions">
-      <template v-for="item in ActionOptions" :key="item.action">
-        <el-button
-          v-if="showAction(serviceInfo, item.action)"
-          :loading="isLoadingComponent === item.action"
-          :type="item.type"
-          @click="operateService(item.action)">
+      <div class="header-actions">
+        <template v-for="item in ActionOptions" :key="item.action">
+          <el-button
+            v-if="showAction(serviceInfo, item.action)"
+            :loading="isLoadingComponent === item.action"
+            :type="item.type"
+            @click="operateService(item.action)">
+            <el-icon :size="16">
+              <IconMdiSquare />
+            </el-icon>
+            {{ t(item.i18nLabel) }}
+          </el-button>
+        </template>
+
+        <el-button plain type="primary" @click="cloneService()">
           <el-icon :size="16">
-            <IconMdiSquare />
+            <IconMdiCheckboxMultipleBlank />
           </el-icon>
-          {{ t(item.i18nLabel) }}
+          {{ t("btn.clone") }}
         </el-button>
-      </template>
-
-      <el-button plain type="primary" @click="cloneService()">
-        <el-icon :size="16">
-          <IconMdiCheckboxMultipleBlank />
-        </el-icon>
-        {{ t("btn.clone") }}
-      </el-button>
-      <el-button type="danger" @click="deleteService()">
-        <el-icon :size="16">
-          <IconMdiTrash />
-        </el-icon>
-        {{ t("btn.delete") }}
-      </el-button>
-    </div>
-  </div>
-
-  <div class="body">
-    <div class="body-menu">
-      <div class="mb-2 d-flex gap-1">
-        <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :is-loading="isLoading" :status="serviceInfo?.status" />
-        <v-loading v-if="isLoading" />
-      </div>
-      <div v-for="(item, index) in menuOptions" :key="index" class="menu-group">
-        <div v-if="item.isGroup" class="menu-group-title">
-          <span :class="item.iconClass" style="width: 18px; height: 18px" />
-          <el-text>{{ t(item.i18nLabel) }}</el-text>
-        </div>
-        <div v-else :class="activeMenu === item.value && 'is-active'" class="menu-group-item" @click.stop="menuChange(item.value)">
-          <div class="flex-1">
-            <el-text :type="activeMenu === item.value ? 'info' : ''">{{ t(item.i18nLabel) }}</el-text>
-            <el-text v-if="item.isRequired" type="danger"> *</el-text>
-          </div>
-          <div v-if="showIncomplete(item.value)" class="pr-3">
-            <el-text type="danger">{{ t("label.incomplete") }}</el-text>
-          </div>
-        </div>
+        <el-button type="danger" @click="deleteService()">
+          <el-icon :size="16">
+            <IconMdiTrash />
+          </el-icon>
+          {{ t("btn.delete") }}
+        </el-button>
       </div>
     </div>
 
-    <v-card v-loading="isReset" class="body-content">
-      <template v-for="(item, index) in menuOptions" :key="index">
-        <div v-if="!item.isGroup && item.value === activeMenu">
-          <div v-if="isReset" class="reset-loading">
-            <v-loading :size="80" />
-          </div>
-          <component :is="item.component" v-else :ref="(el: any) => (compRef = el)" />
+    <div class="body">
+      <div class="body-menu">
+        <div class="mb-2 d-flex gap-1">
+          <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :is-loading="isLoading" :status="serviceInfo?.status" />
+          <v-loading v-if="serviceInfo?.isEnabled && serviceInfo.status !== ServiceStatus.ServiceStatusRunning" />
         </div>
-      </template>
-    </v-card>
+        <div v-for="(item, index) in menuOptions" :key="index" class="menu-group">
+          <div v-if="item.isGroup" class="menu-group-title">
+            <span :class="item.iconClass" style="width: 18px; height: 18px" />
+            <el-text>{{ t(item.i18nLabel) }}</el-text>
+          </div>
+          <div v-else :class="activeMenu === item.value && 'is-active'" class="menu-group-item" @click.stop="menuChange(item.value)">
+            <div class="flex-1">
+              <el-text :type="activeMenu === item.value ? 'info' : ''">{{ t(item.i18nLabel) }}</el-text>
+              <el-text v-if="item.isRequired" type="danger"> *</el-text>
+            </div>
+            <div v-if="showIncomplete(item.value)" class="pr-3">
+              <el-text type="danger">{{ t("label.incomplete") }}</el-text>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <v-card v-loading="isReset" class="body-content">
+        <template v-for="(item, index) in menuOptions" :key="index">
+          <div v-if="!item.isGroup && item.value === activeMenu">
+            <div v-if="isReset" class="reset-loading">
+              <v-loading :size="80" />
+            </div>
+            <component :is="item.component" v-else :ref="(el: any) => (compRef = el)" />
+          </div>
+        </template>
+      </v-card>
+    </div>
+
+    <service-clone ref="cloneRef" @refresh="resetInit()" />
+
+    <service-delete ref="deleteRef" />
   </div>
-
-  <service-clone ref="cloneRef" @refresh="resetInit()" />
-
-  <service-delete ref="deleteRef" />
 </template>
 
 <style lang="scss" scoped>
@@ -268,8 +270,8 @@ onUnmounted(() => {
     max-width: 25%;
     min-width: 240px;
     background-color: #ffffff;
-    border: 1px solid var(--el-border-color);
-    border-radius: 4px;
+    //border: 1px solid var(--el-border-color);
+    border-radius: 8px;
     padding: 20px 20px 28px 20px;
     box-sizing: border-box;
 

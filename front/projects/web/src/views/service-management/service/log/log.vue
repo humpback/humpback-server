@@ -33,7 +33,6 @@ async function search() {
 onMounted(async () => {
   await search()
   SetWebTitle(`${t("webTitle.serviceInfo")} - ${stateStore.getService()?.serviceName}`)
-  logViewRef.value?.setValue("test")
 })
 </script>
 

@@ -6,6 +6,14 @@ const route = useRoute()
 const pageStore = usePageStore()
 
 const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-collapse-width)" : "var(--hp-aside-width)"))
+
+function beforeEnter() {
+  document.body.style.overflow = "hidden" // 动画前隐藏滚动条
+}
+
+function afterEnter() {
+  document.body.style.overflow = "" // 动画后恢复滚动条
+}
 </script>
 
 <template>
@@ -17,7 +25,14 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
       <page-aside />
     </div>
     <div id="page-main">
-      <router-view :key="route.name as string" />
+      <router-view v-slot="{ Component }">
+        <transition mode="out-in" name="fade" @before-enter="beforeEnter()" @after-enter="afterEnter()">
+          <Suspense>
+            <component :is="Component" :key="route.name as string" />
+            <template #fallback> 加载中...</template>
+          </Suspense>
+        </transition>
+      </router-view>
     </div>
   </div>
 </template>
@@ -40,7 +55,7 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
     height: var(--hp-header-height);
     box-sizing: border-box;
     border-bottom: 1px solid var(--el-border-color);
-    //box-shadow: 0 1px 1px var(--el-border-color);
+    //box-shadow: 0 1px 2px var(--el-border-color);
     background-color: var(--hp-header-bg-color);
   }
 
@@ -54,9 +69,46 @@ const leftWidth = computed(() => (pageStore.menuIsCollapse ? "var(--hp-aside-col
   }
 
   #page-main {
+    --hp-main-pading: 16px;
     box-sizing: border-box;
-    padding: calc(var(--hp-header-height) + 12px) 12px 0 12px;
+    padding: calc(var(--hp-header-height) + var(--hp-main-pading)) var(--hp-main-pading) var(--hp-main-pading) var(--hp-main-pading);
     max-width: 100%;
   }
+}
+
+/* 定义进入过渡的开始状态 */
+.fade-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* 定义进入过渡的结束状态 */
+.fade-enter-to {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* 定义离开过渡的开始状态 */
+.fade-leave-from {
+  opacity: 1;
+}
+
+/* 定义离开过渡的结束状态 */
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 定义进入过渡的过程 */
+.fade-enter-active {
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+  will-change: transform;
+}
+
+/* 定义离开过渡的过程 */
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+  will-change: transform;
 }
 </style>

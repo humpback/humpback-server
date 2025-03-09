@@ -32,7 +32,7 @@ async function changeTab(name: TabPaneName) {
     <el-tabs :model-value="activeTab" class="tab-box" type="card" @update:modelValue="changeTab">
       <el-tab-pane v-for="item in options" :key="item.name" :name="item.name">
         <template #label>
-          <el-badge :offset="[10, 2]" class="mr-3" color="#28c3d7">
+          <el-badge :offset="[10, 2]" class="mr-4 mb-2" color="#28c3d7">
             <template #content>{{ groupInfo?.total[item.name] || 0 }}</template>
             <strong>{{ t(item.label) }}</strong>
           </el-badge>
@@ -46,8 +46,9 @@ async function changeTab(name: TabPaneName) {
 <style lang="scss" scoped>
 .tab-box {
   :deep(.el-tabs__header.is-top) {
-    --el-tabs-header-height: 48px;
-    margin-bottom: 0;
+    --el-tabs-header-height: 56px;
+    margin-bottom: -8px;
+    border: none;
 
     & .el-tabs__nav {
       border: 0;
@@ -58,11 +59,11 @@ async function changeTab(name: TabPaneName) {
 
       &.is-active {
         background-color: #ffffff;
-        border-top: 1px solid var(--el-border-color);
-        border-left: 1px solid var(--el-border-color);
-        border-right: 1px solid var(--el-border-color);
-        border-top-right-radius: 4px;
-        border-top-left-radius: 4px;
+        //border-top: 1px solid var(--el-border-color);
+        //border-left: 1px solid var(--el-border-color);
+        //border-right: 1px solid var(--el-border-color);
+        border-top-right-radius: 8px;
+        border-top-left-radius: 8px;
       }
     }
   }
@@ -70,11 +71,9 @@ async function changeTab(name: TabPaneName) {
   :deep(.el-tabs__content) {
     background-color: #ffffff;
     padding: 20px;
-    border: 1px solid var(--el-border-color);
-    border-top: none;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-right-radius: 4px;
+    //border: 1px solid var(--el-border-color);
+    //border-top: none;
+    border-radius: 8px;
   }
 }
 </style>
