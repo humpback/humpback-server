@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { SetWebTitle } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
+import { ServiceInfo } from "@/types"
+import VLoading from "@/components/business/v-loading/VLoading.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -13,6 +15,8 @@ const serviceInfo = computed<ServiceInfo | undefined>(() => stateStore.getServic
 const timer = ref<any>(null)
 const interval = ref(5000)
 
+const isLoading = inject<any>("isLoading")
+
 async function resetLoopSearch() {
   if (timer.value) {
     clearInterval(timer.value)
@@ -23,14 +27,15 @@ async function resetLoopSearch() {
 }
 
 async function search() {
-  await refreshData(groupId.value, serviceId.value, "instances")
+  isLoading.value = true
+  await refreshData(groupId.value, serviceId.value, "instances").finally(() => (isLoading.value = false))
 }
 
 function loopSearch() {
   timer.value = setTimeout(async () => {
-    await search()
+    await search().catch(() => {})
     if (serviceInfo.value?.status === ServiceStatus.ServiceStatusRunning) {
-      interval.value = 1000
+      interval.value = 10000
     }
     if (serviceInfo.value?.isEnabled) {
       loopSearch()
@@ -64,8 +69,8 @@ defineExpose({ resetLoopSearch })
       <el-button plain size="small" type="primary">{{ t("btn.viewMonitor") }}</el-button>
     </div>
   </div>
-  <v-table :data="serviceInfo?.containers || []" border class="mt-5" row-key="containerId">
-    <el-table-column type="expand">
+  <v-table :data="serviceInfo?.containers || []" border class="mt-5" row-key="containerName">
+    <el-table-column class-name="expand-column" type="expand" width="24">
       <template #default="scope">
         <div class="expand-content">
           <div v-if="scope.row.errorMsg" class="mb-5 d-flex gap-1">
@@ -76,12 +81,13 @@ defineExpose({ resetLoopSearch })
               {{ scope.row.errorMsg }}
             </el-text>
           </div>
+
           <el-form label-position="top" label-width="auto">
             <el-row :gutter="12">
               <el-col :span="12">
                 <el-form-item>
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiClockTimeFourOutline />
                       </el-icon>
@@ -94,7 +100,7 @@ defineExpose({ resetLoopSearch })
               <el-col :span="12">
                 <el-form-item>
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiClockTimeFourOutline />
                       </el-icon>
@@ -104,10 +110,12 @@ defineExpose({ resetLoopSearch })
                   <v-date-view :format="-1" :timestamp="scope.row.startAt" />
                 </el-form-item>
               </el-col>
+              <el-divider border-style="dashed" />
+
               <el-col v-if="scope.row.nextAt" :span="24">
                 <el-form-item>
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiClockTimeThreeOutline />
                       </el-icon>
@@ -116,11 +124,13 @@ defineExpose({ resetLoopSearch })
                   </template>
                   <v-date-view :format="-1" :timestamp="scope.row.nextAt" />
                 </el-form-item>
+                <el-divider border-style="dashed" />
               </el-col>
+
               <el-col :span="12">
                 <el-form-item>
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiAppleKeyboardCommand />
                       </el-icon>
@@ -133,7 +143,7 @@ defineExpose({ resetLoopSearch })
               <el-col :span="12">
                 <el-form-item :label="t('label.image')">
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiAlphaCBoxOutline />
                       </el-icon>
@@ -143,10 +153,12 @@ defineExpose({ resetLoopSearch })
                   <span>{{ scope.row.image || "--" }}</span>
                 </el-form-item>
               </el-col>
+              <el-divider border-style="dashed" />
+
               <el-col :span="12">
                 <el-form-item :label="t('label.volumes')">
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiFileOutline />
                       </el-icon>
@@ -161,13 +173,13 @@ defineExpose({ resetLoopSearch })
                       </div>
                     </div>
                   </div>
-                  <span v-else>--</span>
+                  <el-text v-else>{{ t("tips.noVolumeMappingSetting") }}</el-text>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item :label="t('label.ports')">
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiAlphaPCircleOutline />
                       </el-icon>
@@ -183,13 +195,14 @@ defineExpose({ resetLoopSearch })
                       </div>
                     </div>
                   </div>
-                  <span v-else>--</span>
+                  <el-text v-else>{{ t("tips.noPortSetting") }}</el-text>
                 </el-form-item>
               </el-col>
+              <el-divider border-style="dashed" />
               <el-col :span="12">
                 <el-form-item :label="t('label.environments')">
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiMapMarkerPath />
                       </el-icon>
@@ -202,13 +215,13 @@ defineExpose({ resetLoopSearch })
                       <div> {{ item }}</div>
                     </div>
                   </div>
-                  <span v-else>--</span>
+                  <el-text v-else>{{ t("tips.noEnvSetting") }}</el-text>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item :label="t('label.labels')">
                   <template #label>
-                    <el-text size="small" type="success">
+                    <el-text type="success">
                       <el-icon :size="14">
                         <IconMdiTagTextOutline />
                       </el-icon>
@@ -221,7 +234,7 @@ defineExpose({ resetLoopSearch })
                       <div> {{ `${key}:${scope.row.labels[key]}` }}</div>
                     </div>
                   </div>
-                  <span v-else>--</span>
+                  <el-text v-else>{{ t("tips.noLabelSetting") }}</el-text>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -229,7 +242,7 @@ defineExpose({ resetLoopSearch })
         </div>
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.name')" min-width="300" prop="containerName" sortable />
+    <el-table-column :label="t('label.name')" class-name="containerName-column" min-width="300" prop="containerName" sortable />
     <el-table-column :label="t('label.ip')" min-width="160">
       <template #default="scope">
         <el-text type="primary">{{ scope.row.ip }}</el-text>
@@ -238,7 +251,7 @@ defineExpose({ resetLoopSearch })
     <el-table-column :label="t('label.status')" min-width="160">
       <template #default="scope">
         <div class="d-flex gap-3">
-          <v-container-status :status="scope.row.status" size="small" />
+          <v-container-status :status="scope.row.state" size="small" />
           <v-tooltip v-if="scope.row.errorMsg">
             <template #content>
               <el-text type="danger">{{ scope.row.errorMsg }}</el-text>
@@ -247,6 +260,7 @@ defineExpose({ resetLoopSearch })
               <IconMdiWarningCircleOutline />
             </el-icon>
           </v-tooltip>
+          <v-loading v-if="serviceInfo?.isEnabled && isLoading" />
         </div>
       </template>
     </el-table-column>
@@ -278,18 +292,41 @@ defineExpose({ resetLoopSearch })
 </template>
 
 <style lang="scss" scoped>
+:deep(.el-table__header) .containerName-column .cell {
+  margin-left: -20px;
+}
+
+:deep(.el-table__body) .el-table__row {
+  .containerName-column .cell {
+    padding-left: 4px;
+  }
+}
+
+:deep(.expand-column) {
+  border-right: 0;
+
+  .cell {
+    padding: 0 4px 0 8px;
+  }
+}
+
 .expand-content {
   box-sizing: border-box;
-  padding: 20px 60px;
+  padding: 20px 40px;
+
+  .el-divider {
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
 
   :deep(.el-form-item__label) {
     margin-bottom: 12px;
   }
 
   :deep(.el-form-item__content) {
-    padding-left: 12px;
+    padding-left: 20px;
     font-size: 14px;
-    line-height: 20px;
+    line-height: 22px;
     word-break: break-all;
   }
 }

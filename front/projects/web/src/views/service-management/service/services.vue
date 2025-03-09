@@ -14,7 +14,7 @@ const route = useRoute()
 const router = useRouter()
 const stateStore = useStateStore()
 
-const tableHeight = computed(() => TableHeight(352))
+const tableHeight = computed(() => TableHeight(362))
 
 const groupId = ref(route.params?.groupId as string)
 
@@ -30,7 +30,7 @@ const tableList = ref({
 })
 
 const setRowClass = ({ row }) => {
-  return row.containers.length === 0 ? "hide-expand-icon" : ""
+  return row.containers.length === 0 || !row.isEnabled ? "hide-expand-icon" : ""
 }
 
 async function getGroupInfo() {
@@ -122,21 +122,22 @@ onMounted(async () => {
     :max-height="tableHeight"
     :row-class-name="setRowClass"
     :total="tableList.total"
+    row-key="serviceId"
     @page-change="search"
     @sort-change="search">
-    <el-table-column fixed="left" type="expand">
+    <el-table-column align="left" class-name="expand-column" type="expand" width="24">
       <template #default="scope">
-        <div class="pa-5">
-          <v-table :data="scope.row.containers" :max-height="500" border headerCellClassName="">
+        <div style="padding: 20px 40px">
+          <v-table :data="scope.row.containers" :max-height="500" border>
             <el-table-column :label="t('label.instanceName')" min-width="200">
               <template #default="cscope">
-                <el-text>{{ cscope.row.contianerName }}</el-text>
+                <el-text>{{ cscope.row.containerName }}</el-text>
               </template>
             </el-table-column>
             <el-table-column :label="t('label.status')" min-width="160">
               <template #default="cscope">
                 <div class="d-flex gap-3">
-                  <v-container-status :status="cscope.row.status" size="small" />
+                  <v-container-status :status="cscope.row.state" size="small" />
                   <v-tooltip v-if="cscope.row.errorMsg">
                     <template #content>
                       <el-text type="danger">{{ cscope.row.errorMsg }}</el-text>
@@ -191,7 +192,7 @@ onMounted(async () => {
         </div>
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.service')" fixed="left" min-width="200" prop="serviceName" sortable="custom">
+    <el-table-column :label="t('label.service')" class-name="serviceName-column" min-width="200" prop="serviceName" sortable="custom">
       <template #default="scope">
         <v-router-link :href="`/ws/group/${groupId}/service/${scope.row.serviceId}/basic-info`" :text="scope.row.serviceName" />
       </template>
@@ -264,7 +265,29 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-:deep(.hide-expand-icon) .el-table__expand-icon {
-  display: none;
+:deep(.expand-column) {
+  .cell {
+    padding: 0 4px 0 8px;
+  }
+}
+
+:deep(.hide-expand-icon) {
+  .expand-column .cell {
+    display: none;
+  }
+}
+
+:deep(.el-table__header) {
+  .serviceName-column .cell {
+    margin-left: -16px;
+  }
+}
+
+:deep(.el-table__body) {
+  .el-table__row .serviceName-column {
+    .cell {
+      padding-left: 4px;
+    }
+  }
 }
 </style>

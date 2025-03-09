@@ -4,7 +4,7 @@ import { TableHeight } from "@/utils"
 import UserDelete from "./user-delete.vue"
 import UserEdit from "./user-edit.vue"
 import UserViewTeams from "./user-view-teams.vue"
-import { QueryUserInfo, modeOptions } from "./common.ts"
+import { modeOptions, QueryUserInfo } from "./common.ts"
 
 import { Action } from "@/models"
 
@@ -13,7 +13,7 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const tableHeight = computed(() => TableHeight(331))
+const tableHeight = computed(() => TableHeight(341))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryUserInfo>(new QueryUserInfo(route.query))

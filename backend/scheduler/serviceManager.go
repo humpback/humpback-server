@@ -19,14 +19,14 @@ import (
 )
 
 type ServiceManager struct {
-	ServiceInfo                 *types.Service
-	availableNodes              []string
-	unavailableNodes            []string
-	containerThresholdInvterval int64
-	CheckInterval               int64
-	IsNeedCheckAll              atomic.Value
-	isNeedQuit                  atomic.Value
-	isReconcile                 atomic.Value
+	ServiceInfo                *types.Service
+	availableNodes             []string
+	unavailableNodes           []string
+	containerThresholdInterval int64
+	CheckInterval              int64
+	IsNeedCheckAll             atomic.Value
+	isNeedQuit                 atomic.Value
+	isReconcile                atomic.Value
 	sync.RWMutex
 }
 
@@ -41,9 +41,9 @@ type NodesScore struct {
 
 func NewServiceManager(svc *types.Service) *ServiceManager {
 	sm := &ServiceManager{
-		ServiceInfo:                 svc,
-		CheckInterval:               int64(config.BackendArgs().ServiceCheckInterval),
-		containerThresholdInvterval: int64(config.BackendArgs().CheckInterval) * int64(config.BackendArgs().CheckThreshold),
+		ServiceInfo:                svc,
+		CheckInterval:              int64(config.BackendArgs().ServiceCheckInterval),
+		containerThresholdInterval: int64(config.BackendArgs().CheckInterval) * int64(config.BackendArgs().CheckThreshold),
 	}
 
 	sm.isNeedQuit.Store(false)
@@ -212,7 +212,7 @@ func (sm *ServiceManager) CheckNodeStatus() {
 	for _, c := range sm.ServiceInfo.Containers {
 		if slices.Contains(sm.unavailableNodes, c.NodeId) {
 			isNeedSave = true
-			c.Status = types.ContainerStatusWarning
+			c.State = types.ContainerStatusWarning
 			c.ErrorMsg = "Node is offline"
 		}
 	}
@@ -255,21 +255,21 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 	for _, c := range sm.ServiceInfo.Containers {
 		version := parseVersionByContainerId(c.ContainerName)
 		if version == sm.ServiceInfo.Version {
-			if isContainerExited(c.Status) &&
+			if isContainerExited(c.State) &&
 				(sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule ||
 					strings.EqualFold(sm.ServiceInfo.Action, types.ServiceActionStop)) {
 				continue
 			}
 
-			if isContainerStarting(c.Status) && sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule {
+			if isContainerStarting(c.State) && sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule {
 				continue
 			}
 
-			if isContainerRunning(c.Status) {
+			if isContainerRunning(c.State) {
 				// 容器可能已经不存在了
-				if currentTime-c.LastHeartbeat > sm.containerThresholdInvterval*2 {
+				if currentTime-c.LastHeartbeat > sm.containerThresholdInterval*2 {
 					slog.Info("[Service Manager] Container is not responding.", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", c.ContainerName)
-					c.Status = types.ContainerStatusWarning
+					c.State = types.ContainerStatusWarning
 				} else {
 					continue
 				}
@@ -289,7 +289,7 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 
 func (sm *ServiceManager) HasPendingContainer() bool {
 	for _, c := range sm.ServiceInfo.Containers {
-		if isContainerStarting(c.Status) {
+		if isContainerStarting(c.State) {
 			return true
 		}
 	}
@@ -305,12 +305,12 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 		if version != sm.ServiceInfo.Version {
 			return c, true
 		}
-		if isContainerExited(c.Status) {
+		if isContainerExited(c.State) {
 			if sm.ServiceInfo.Deployment.Type == types.DeployTypeBackground {
 				return c, true
 			}
 		}
-		if isContainerFailed(c.Status) || isContainerRemoved(c.Status) {
+		if isContainerFailed(c.State) || isContainerRemoved(c.State) {
 			return c, true
 		}
 
@@ -362,6 +362,7 @@ func (sm *ServiceManager) StartNextContainer() {
 		sm.ServiceInfo.Memo = "Start New Container error: " + cerr.Error()
 		return
 	}
+
 }
 
 func (sm *ServiceManager) ChooseNextNodes(nodes []*types.Node) (nodeId string) {
@@ -431,11 +432,11 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 
 	currentTime := time.Now().Unix()
 
-	if ok && (ct.Status != cs.Status || ct.StartAt != cs.StartAt || currentTime-ct.LastHeartbeat > sm.containerThresholdInvterval) {
-		ct.Status = cs.Status
+	if ok && (ct.State != cs.State || ct.StartAt != cs.StartAt || currentTime-ct.LastHeartbeat > sm.containerThresholdInterval) {
+		ct.State = cs.State
 		ct.StartAt = cs.StartAt
 		ct.CreateAt = cs.CreateAt
-		ct.StatusInfo = cs.StatusInfo
+		ct.Status = cs.Status
 		ct.ContainerId = cs.ContainerId
 		ct.LastHeartbeat = currentTime
 		ct.Image = cs.Image
@@ -445,19 +446,19 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 		ct.Env = cs.Env
 		ct.Mounts = cs.Mounts
 		ct.Ports = cs.Ports
-		if ct.Status == types.ContainerStatusRunning {
+		if ct.State == types.ContainerStatusRunning {
 			ct.ErrorMsg = ""
 		}
 		db.ServiceUpdate(sm.ServiceInfo)
 
-		slog.Info("[Service Manager] Container status changed......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", ct.ContainerName, "Status", ct.Status)
+		slog.Info("[Service Manager] Container status changed......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", ct.ContainerName, "Status", ct.State)
 	}
 
 	if !ok {
-		if cs.Status != types.ContainerStatusRemoved {
+		if cs.State != types.ContainerStatusRemoved {
 			cs.LastHeartbeat = currentTime
 			sm.ServiceInfo.Containers = append(sm.ServiceInfo.Containers, &cs)
-			slog.Info("[Service Manager] New container found......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", cs.ContainerName, "Status", cs.Status)
+			slog.Info("[Service Manager] New container found......", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", cs.ContainerName, "Status", cs.State)
 			db.ServiceUpdate(sm.ServiceInfo)
 		}
 	}

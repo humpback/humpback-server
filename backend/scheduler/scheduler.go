@@ -43,7 +43,6 @@ func doHealth(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid json"})
 		return
 	}
-
 	nodeId, ip := node.MatchNodeWithIpAddress(payload.HostInfo.IpAddress)
 	if nodeId == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "node not found"})

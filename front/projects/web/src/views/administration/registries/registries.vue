@@ -12,7 +12,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const tableHeight = computed(() => TableHeight(272))
+const tableHeight = computed(() => TableHeight(282))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryRegistryInfo>(new QueryRegistryInfo(route.query))
