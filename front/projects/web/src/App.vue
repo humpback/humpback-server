@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ChangeEventType, CloseChannelMessage, GetChannelMessage } from "utils/index.ts"
 import { GetUILocale } from "@/locales/index.ts"
+import VLoadingPage from "@/components/business/v-loading/VLoadingPage.vue"
 
 const { t } = useI18n()
 const pageStore = usePageStore()
@@ -45,7 +46,12 @@ onBeforeUnmount(() => {
 
 <template>
   <el-config-provider :locale="GetUILocale('elementPlus')">
-    <router-view />
+    <Suspense>
+      <router-view />
+      <template #fallback>
+        <v-loading-page />
+      </template>
+    </Suspense>
   </el-config-provider>
 </template>
 

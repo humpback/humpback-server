@@ -14,6 +14,7 @@ export interface ServiceInfo extends BaseInfo {
   meta?: ServiceMetaDockerInfo
   deployment?: ServiceDeploymentInfo
   containers: ServiceContainerStatusInfo[]
+  _expanded?: boolean
 }
 
 export interface ServiceMetaDockerInfo {
@@ -98,8 +99,8 @@ export interface ServiceContainerStatusInfo {
   containerName: string
   nodeId: string
   ip: string
+  state: string
   status: string
-  statusInfo: string
   errorMsg: string
   image: string
   command: string
@@ -112,6 +113,7 @@ export interface ServiceContainerStatusInfo {
   env: string[]
   mounts: Array<{ source: string; destination: string }>
   ports: Array<{ bindIP: string; privatePort: number; publicPort: number; type: string }>
+  _expanded?: boolean
 }
 
 export function NewServiceEmptyInfo(): ServiceInfo {

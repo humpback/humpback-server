@@ -109,11 +109,11 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 	case models.ServiceUpdateBasicInfo:
 		service.Description = info.Description
 	case models.ServiceUpdateApplication:
-		service.Meta = info.MetaInfo
 		isChange = !cmp.Equal(service.Meta, info.MetaInfo)
+		service.Meta = info.MetaInfo
 	case models.ServiceUpdateDeployment:
-		service.Deployment = info.DeploymentInfo
 		isChange = !cmp.Equal(service.Deployment, info.DeploymentInfo)
+		service.Deployment = info.DeploymentInfo
 	}
 	service.UpdatedAt = utils.NewActionTimestamp()
 	if service.IsEnabled {

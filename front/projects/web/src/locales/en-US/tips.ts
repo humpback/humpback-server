@@ -1,5 +1,6 @@
 export default {
   tips: {
+    "loadingHumpback": "Loading Humpback...",
     "allRightsReserved": "©2024 Humpback. All Rights Reserved",
     "usernameChangeTips": "After the username is changed, the next login will be logged in with the modified username.",
     "changePasswordTips": "After the password is successfully changed, you will log in to the system again.",
@@ -27,6 +28,10 @@ export default {
     "invalidCorn": "Invalid Corn",
     "scheduleTips": "Linux Crontab expressions are employed.",
     "cloneServiceTips": "Select a different group to clear the placement constraints.",
+    "noPortSetting": "No port binding settings",
+    "noEnvSetting": "No environment variable settings",
+    "noLabelSetting": "No label setting",
+    "noVolumeMappingSetting": "No volume mapping settings",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",

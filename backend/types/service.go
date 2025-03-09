@@ -73,8 +73,8 @@ type ContainerStatus struct {
 	ContainerName string            `json:"containerName"`
 	NodeId        string            `json:"nodeId"`
 	Ip            string            `json:"ip"`
-	Status        string            `json:"state"`
-	StatusInfo    string            `json:"status"`
+	State         string            `json:"state"`
+	Status        string            `json:"status"`
 	ErrorMsg      string            `json:"errorMsg"`
 	Image         string            `json:"image"`
 	Command       string            `json:"command"`

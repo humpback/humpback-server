@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import PageHeader from "./page-header.vue"
 import PageAside from "./page-aside.vue"
+import VLoadingPage from "@/components/business/v-loading/VLoadingPage.vue"
 
 const route = useRoute()
 const pageStore = usePageStore()
@@ -29,7 +30,9 @@ function afterEnter() {
         <transition mode="out-in" name="fade" @before-enter="beforeEnter()" @after-enter="afterEnter()">
           <Suspense>
             <component :is="Component" :key="route.name as string" />
-            <template #fallback> 加载中...</template>
+            <template #fallback>
+              <v-loading-page />
+            </template>
           </Suspense>
         </transition>
       </router-view>

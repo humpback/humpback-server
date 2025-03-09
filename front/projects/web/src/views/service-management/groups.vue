@@ -12,7 +12,7 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const tableHeight = computed(() => TableHeight(272))
+const tableHeight = computed(() => TableHeight(282))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryGroupsInfo>(new QueryGroupsInfo(route.query))

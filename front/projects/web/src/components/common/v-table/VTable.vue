@@ -82,7 +82,11 @@ function clearSelection() {
   tableRef.value?.clearSelection()
 }
 
-defineExpose({ clearSelection })
+function toggleRowExpansion(row: any, expanded?: boolean) {
+  tableRef.value?.toggleRowExpansion(row, expanded)
+}
+
+defineExpose({ clearSelection, toggleRowExpansion })
 </script>
 
 <template>
@@ -100,8 +104,9 @@ defineExpose({ clearSelection })
       <template v-if="!!slots.append" #append>
         <slot name="append" />
       </template>
-      <template v-if="!!slots.empty" #empty>
-        <slot name="empty" />
+      <template #empty>
+        <slot v-if="!!slots.empty" name="empty" />
+        <el-empty v-else :image-size="200" />
       </template>
     </el-table>
     <div v-if="props.pageInfo" class="mt-5 pagination">
