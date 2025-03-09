@@ -62,6 +62,7 @@ func StartNewContainer(nodeId, containerName string, svc *types.Service) error {
 			ContainerName: task.ContainerName,
 			State:         types.ContainerStatusPending,
 			NodeId:        nodeId,
+			Ip:            node.IpAddress,
 		}
 		svc.Containers = append(svc.Containers, c)
 	}

@@ -19,14 +19,14 @@ import (
 )
 
 type ServiceManager struct {
-	ServiceInfo                 *types.Service
-	availableNodes              []string
-	unavailableNodes            []string
-	containerThresholdInvterval int64
-	CheckInterval               int64
-	IsNeedCheckAll              atomic.Value
-	isNeedQuit                  atomic.Value
-	isReconcile                 atomic.Value
+	ServiceInfo                *types.Service
+	availableNodes             []string
+	unavailableNodes           []string
+	containerThresholdInterval int64
+	CheckInterval              int64
+	IsNeedCheckAll             atomic.Value
+	isNeedQuit                 atomic.Value
+	isReconcile                atomic.Value
 	sync.RWMutex
 }
 
@@ -41,9 +41,9 @@ type NodesScore struct {
 
 func NewServiceManager(svc *types.Service) *ServiceManager {
 	sm := &ServiceManager{
-		ServiceInfo:                 svc,
-		CheckInterval:               int64(config.BackendArgs().ServiceCheckInterval),
-		containerThresholdInvterval: int64(config.BackendArgs().CheckInterval) * int64(config.BackendArgs().CheckThreshold),
+		ServiceInfo:                svc,
+		CheckInterval:              int64(config.BackendArgs().ServiceCheckInterval),
+		containerThresholdInterval: int64(config.BackendArgs().CheckInterval) * int64(config.BackendArgs().CheckThreshold),
 	}
 
 	sm.isNeedQuit.Store(false)
@@ -267,7 +267,7 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 
 			if isContainerRunning(c.State) {
 				// 容器可能已经不存在了
-				if currentTime-c.LastHeartbeat > sm.containerThresholdInvterval*2 {
+				if currentTime-c.LastHeartbeat > sm.containerThresholdInterval*2 {
 					slog.Info("[Service Manager] Container is not responding.", "ServiceId", sm.ServiceInfo.ServiceId, "ContainerName", c.ContainerName)
 					c.State = types.ContainerStatusWarning
 				} else {
@@ -362,6 +362,7 @@ func (sm *ServiceManager) StartNextContainer() {
 		sm.ServiceInfo.Memo = "Start New Container error: " + cerr.Error()
 		return
 	}
+
 }
 
 func (sm *ServiceManager) ChooseNextNodes(nodes []*types.Node) (nodeId string) {
@@ -431,7 +432,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 
 	currentTime := time.Now().Unix()
 
-	if ok && (ct.State != cs.State || ct.StartAt != cs.StartAt || currentTime-ct.LastHeartbeat > sm.containerThresholdInvterval) {
+	if ok && (ct.State != cs.State || ct.StartAt != cs.StartAt || currentTime-ct.LastHeartbeat > sm.containerThresholdInterval) {
 		ct.State = cs.State
 		ct.StartAt = cs.StartAt
 		ct.CreateAt = cs.CreateAt
