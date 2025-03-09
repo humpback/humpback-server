@@ -362,6 +362,7 @@ func (sm *ServiceManager) StartNextContainer() {
 		sm.ServiceInfo.Memo = "Start New Container error: " + cerr.Error()
 		return
 	}
+
 }
 
 func (sm *ServiceManager) ChooseNextNodes(nodes []*types.Node) (nodeId string) {
