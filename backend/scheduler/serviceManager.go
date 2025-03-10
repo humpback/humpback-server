@@ -162,9 +162,9 @@ func (sm *ServiceManager) PrepareMeta() {
 		sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName] = sm.ServiceInfo.ServiceName
 	}
 
-	if sm.ServiceInfo.Meta.Envs != nil {
-		sm.ServiceInfo.Meta.EnvsFinal = make([]string, len(sm.ServiceInfo.Meta.Envs))
-		for i, env := range sm.ServiceInfo.Meta.Envs {
+	if sm.ServiceInfo.Meta.EnvConfig != nil {
+		sm.ServiceInfo.Meta.Envs = make([]string, len(sm.ServiceInfo.Meta.EnvConfig))
+		for i, env := range sm.ServiceInfo.Meta.EnvConfig {
 			if strings.Contains(env, "=") {
 				kv := strings.Split(env, "=")
 				configName := hasConfigValue(kv[1])
@@ -173,7 +173,7 @@ func (sm *ServiceManager) PrepareMeta() {
 					if err == nil && len(configs) > 0 {
 						for _, configValue := range configs {
 							if configValue.ConfigType == types.ConfigTypeStatic {
-								sm.ServiceInfo.Meta.EnvsFinal[i] = fmt.Sprintf("%s=%s", kv[0], configValue.ConfigValue)
+								sm.ServiceInfo.Meta.Envs[i] = fmt.Sprintf("%s=%s", kv[0], configValue.ConfigValue)
 								break
 							}
 						}
@@ -181,8 +181,8 @@ func (sm *ServiceManager) PrepareMeta() {
 				}
 			}
 
-			if sm.ServiceInfo.Meta.EnvsFinal[i] == "" {
-				sm.ServiceInfo.Meta.EnvsFinal[i] = env
+			if sm.ServiceInfo.Meta.Envs[i] == "" {
+				sm.ServiceInfo.Meta.Envs[i] = env
 			}
 		}
 	}

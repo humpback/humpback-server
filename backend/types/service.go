@@ -134,8 +134,8 @@ type ServiceMetaDocker struct {
 	Image         string            `json:"image"`
 	AlwaysPull    bool              `json:"alwaysPull"`
 	Command       string            `json:"command"`
-	Envs          []string          `json:"-"`
-	EnvsFinal     []string          `json:"env"`
+	EnvConfig     []string          `json:"envConfig"`
+	Envs          []string          `json:"env"`
 	Labels        map[string]string `json:"labels"`
 	Privileged    bool              `json:"privileged"`
 	Capabilities  *Capabilities     `json:"capabilities"`
