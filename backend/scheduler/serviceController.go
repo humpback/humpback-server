@@ -99,10 +99,11 @@ func (sc *ServiceController) HandleContainerChanged() {
 			if ok {
 				serviceManager.RLock()
 				currentVersion := serviceManager.ServiceInfo.Version
+				svcStatus := serviceManager.ServiceInfo.Status
 				serviceManager.RUnlock()
 				if currentVersion == version {
 					go serviceManager.UpdateContainerWhenChanged(containerStatus)
-				} else {
+				} else if svcStatus == types.ServiceStatusRunning {
 					sc.ContainerRemoveChan <- containerStatus
 				}
 			} else {
