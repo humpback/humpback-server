@@ -163,6 +163,7 @@ func (sm *ServiceManager) PrepareMeta() {
 	}
 
 	if sm.ServiceInfo.Meta.Envs != nil {
+		sm.ServiceInfo.Meta.EnvsFinal = make([]string, len(sm.ServiceInfo.Meta.Envs))
 		for i, env := range sm.ServiceInfo.Meta.Envs {
 			if strings.Contains(env, "=") {
 				kv := strings.Split(env, "=")
@@ -172,12 +173,16 @@ func (sm *ServiceManager) PrepareMeta() {
 					if err == nil && len(configs) > 0 {
 						for _, configValue := range configs {
 							if configValue.ConfigType == types.ConfigTypeStatic {
-								sm.ServiceInfo.Meta.Envs[i] = fmt.Sprintf("%s=%s", kv[0], configValue.ConfigValue)
+								sm.ServiceInfo.Meta.EnvsFinal[i] = fmt.Sprintf("%s=%s", kv[0], configValue.ConfigValue)
 								break
 							}
 						}
 					}
 				}
+			}
+
+			if sm.ServiceInfo.Meta.EnvsFinal[i] == "" {
+				sm.ServiceInfo.Meta.EnvsFinal[i] = env
 			}
 		}
 	}

@@ -93,14 +93,18 @@ func (sc *ServiceController) HandleNodeStatusChanged(nodeInfo types.NodeSimpleIn
 
 func (sc *ServiceController) HandleContainerChanged() {
 	for containerStatus := range sc.ContainerChangeChan {
-		serviceId := getServiceIdByContainerId(containerStatus.ContainerName)
+		serviceId, version := getServiceIdByContainerId(containerStatus.ContainerName)
 		if serviceId != "" {
 			serviceManager, ok := sc.ServiceCtrls[serviceId]
-			if ok {
+			serviceManager.RLock()
+			currentVersion := serviceManager.ServiceInfo.Version
+			serviceManager.RUnlock()
+			if ok && currentVersion == version {
 				go serviceManager.UpdateContainerWhenChanged(containerStatus)
 			} else {
 				sc.ContainerRemoveChan <- containerStatus
 			}
+
 		}
 	}
 }
@@ -113,11 +117,13 @@ func (sc *ServiceController) HandleContainerRemove() {
 	}
 }
 
-func getServiceIdByContainerId(containerName string) string {
+func getServiceIdByContainerId(containerName string) (string, string) {
 	serviceId := ""
+	version := ""
 	splits := strings.Split(containerName, "-")
 	if len(splits) == 4 && strings.EqualFold(splits[0], "humpback") {
 		serviceId = splits[1]
+		version = splits[2]
 	}
-	return serviceId
+	return serviceId, version
 }
