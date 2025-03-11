@@ -14,12 +14,13 @@ const (
 	ContainerStatusRemoved  = "Removed"
 	ContainerStatusWarning  = "Warning"
 
-	ServiceActionStart   = "Start"
-	ServiceActionStop    = "Stop"
-	ServiceActionRestart = "Restart"
-	ServiceActionEnable  = "Enable"
-	ServiceActionDisable = "Disable"
-	ServiceActionDelete  = "Delete"
+	ServiceActionStart    = "Start"
+	ServiceActionStop     = "Stop"
+	ServiceActionRestart  = "Restart"
+	ServiceActionEnable   = "Enable"
+	ServiceActionDisable  = "Disable"
+	ServiceActionDelete   = "Delete"
+	ServiceActionDispatch = "Dispatch"
 
 	ContainerLabelServiceId   = "Humpback-ServiceId"
 	ContainerLabelServiceName = "Humpback-ServiceName"
@@ -79,8 +80,8 @@ type ContainerStatus struct {
 	Image         string            `json:"image"`
 	Command       string            `json:"command"`
 	Network       string            `json:"network"`
-	CreateAt      int64             `json:"createAt"`
-	StartAt       int64             `json:"startAt"`
+	CreateAt      int64             `json:"created"`
+	StartAt       int64             `json:"started"`
 	NextAt        int64             `json:"nextAt"`
 	LastHeartbeat int64             `json:"lastHeartbeat"`
 	Labels        map[string]string `json:"labels"`

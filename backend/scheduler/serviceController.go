@@ -53,7 +53,7 @@ func (sc *ServiceController) HandleServiceChange() {
 	for serviceInfo := range sc.ServiceChangeChan {
 		if serviceManager, ok := sc.ServiceCtrls[serviceInfo.ServiceId]; ok {
 
-			if serviceInfo.Version != serviceManager.ServiceInfo.Version {
+			if serviceInfo.Version != serviceManager.ServiceInfo.Version || serviceInfo.Action == types.ServiceActionDispatch {
 				serviceManager.IsNeedCheckAll.Store(true)
 				go serviceManager.Reconcile()
 			} else if serviceInfo.Action == types.ServiceActionDisable ||
@@ -70,6 +70,7 @@ func (sc *ServiceController) HandleServiceChange() {
 			if err == nil && svc.IsEnabled && !svc.IsDelete {
 				sm := NewServiceManager(svc)
 				sc.ServiceCtrls[svc.ServiceId] = sm
+				go sm.Reconcile()
 			}
 		}
 	}
