@@ -24,6 +24,7 @@ const (
 	KeyErrCodeMap          = "KeyErrCodeMap"
 	KeyNodeEventChannel    = "KeyNodeEventChannel"
 	KeyServiceEventChannel = "KeyServiceEventChannel"
+	KeyGroupInfo           = "KeyGroupInfo"
 )
 
 func Log() gin.HandlerFunc {
@@ -149,10 +150,12 @@ func CheckInGroup() gin.HandlerFunc {
 			AbortErr(c, response.NewBadRequestErr(locales.CodeRequestParamsInvalid))
 			return
 		}
-		if _, err := controller.Group(userInfo, groupId); err != nil {
+		groupInfo, err := controller.Group(userInfo, groupId)
+		if err != nil {
 			AbortErr(c, err)
 			return
 		}
+		c.Set(KeyGroupInfo, groupInfo)
 	}
 }
 

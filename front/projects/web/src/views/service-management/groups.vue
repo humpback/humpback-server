@@ -64,7 +64,7 @@ onMounted(() => search())
             <div class="flex-1" style="min-width: 300px">
               <v-input v-model="queryInfo.keywords">
                 <template #prepend>
-                  <span>{{ t("label.name") }}</span>
+                  <el-text>{{ t("label.name") }}</el-text>
                 </template>
               </v-input>
             </div>
@@ -124,7 +124,7 @@ onMounted(() => search())
         <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
           <template #default="scope">
             <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
-            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }} </el-button>
+            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
           </template>
         </el-table-column>
       </v-table>

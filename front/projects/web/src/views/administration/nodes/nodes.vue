@@ -7,7 +7,7 @@ import NodeDelete from "./node-delete.vue"
 import NodeEnable from "./node-enable.vue"
 import NodeEditLabel from "./node-edit-label.vue"
 import NodeViewCommand from "./node-view-command.vue"
-import { modeOptions, QueryNodesInfo, statusOptions } from "./common.ts"
+import { QueryNodesInfo, statusOptions } from "./common.ts"
 import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
@@ -84,13 +84,9 @@ onMounted(() => search())
               </v-select>
             </div>
             <div class="flex-1" style="min-width: 300px">
-              <v-input
-                v-model="queryInfo.keywords"
-                :placeholder="queryInfo.mode === 'keywords' ? t('placeholder.enterIpOrHostname') : t('placeholder.enterLabelKey')">
+              <v-input v-model="queryInfo.keywords" :placeholder="t('placeholder.enterIpHostNameOrLabel')">
                 <template #prepend>
-                  <el-select v-model="queryInfo.mode" placeholder="" style="width: 120px">
-                    <el-option v-for="item in modeOptions" :key="item.value" :label="t(item.label)" :value="item.value" />
-                  </el-select>
+                  <el-text>{{ t("label.keywords") }}</el-text>
                 </template>
               </v-input>
             </div>

@@ -24,6 +24,7 @@ var (
 	LimitMemoryReservation = LengthLimit{Min: 0, Max: 20480}
 	LimitMaxCpuUsage       = LengthLimit{Min: 0, Max: 100}
 	LimitInstanceNum       = LengthLimit{Min: 1, Max: 100}
+	LimitLogsLine          = LengthLimit{Min: 0, Max: 10000}
 )
 
 var RuleLength = map[string]LengthLimit{
@@ -45,6 +46,7 @@ var RuleLength = map[string]LengthLimit{
 	"MemoryReservation": LimitMemoryReservation,
 	"MaxCpuUsage":       LimitMaxCpuUsage,
 	"InstanceNum":       LimitInstanceNum,
+	"LogsLine":          LimitLogsLine,
 }
 
 var (

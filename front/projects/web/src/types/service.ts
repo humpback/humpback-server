@@ -11,6 +11,7 @@ export interface ServiceInfo extends BaseInfo {
   isEnabled: boolean
   isDelete: boolean
   status: string
+  memo: string
   meta?: ServiceMetaDockerInfo
   deployment?: ServiceDeploymentInfo
   containers: ServiceContainerStatusInfo[]
@@ -21,7 +22,8 @@ export interface ServiceMetaDockerInfo {
   image: string
   alwaysPull: boolean
   command: string
-  env: string[]
+  envConfig: string[]
+  env?: string[]
   labels: { [key: string]: string }
   privileged: boolean
   capabilities?: ServiceCapabilitiesInfo
@@ -128,6 +130,7 @@ export function NewServiceEmptyInfo(): ServiceInfo {
     isEnabled: false,
     isDelete: false,
     status: "",
+    memo: "",
     meta: NewServiceMetaDockerEmptyInfo(),
     deployment: NewServiceDeploymentInfo(),
     containers: []
@@ -139,6 +142,7 @@ export function NewServiceMetaDockerEmptyInfo(): ServiceMetaDockerInfo {
     image: "",
     alwaysPull: false,
     command: "",
+    envConfig: [],
     env: [],
     labels: {},
     volumes: [],

@@ -4,7 +4,7 @@ import { TableHeight } from "@/utils"
 import UserDelete from "./user-delete.vue"
 import UserEdit from "./user-edit.vue"
 import UserViewTeams from "./user-view-teams.vue"
-import { modeOptions, QueryUserInfo } from "./common.ts"
+import { QueryUserInfo } from "./common.ts"
 
 import { Action } from "@/models"
 
@@ -74,11 +74,9 @@ onMounted(() => search())
           <v-role-query-select v-model="queryInfo.filter.role" :placeholder="t('placeholder.all')" @change="search()" />
         </div>
         <div class="flex-1" style="min-width: 300px">
-          <v-input v-model="queryInfo.keywords">
+          <v-input v-model="queryInfo.keywords" :placeholder="t('placeholder.enterUsernameEmailOrPhone')">
             <template #prepend>
-              <el-select v-model="queryInfo.mode" placeholder="" style="width: 120px">
-                <el-option v-for="item in modeOptions" :key="item.value" :label="t(item.label)" :value="item.value" />
-              </el-select>
+              <el-text>{{ t("label.keywords") }}</el-text>
             </template>
           </v-input>
         </div>
@@ -106,12 +104,16 @@ onMounted(() => search())
     :total="tableList.total"
     @page-change="search"
     @sort-change="search">
-    <el-table-column :label="t('label.user')" fixed="left" min-width="140" prop="username" sortable="custom">
+    <el-table-column :label="t('label.user')" fixed="left" min-width="200" prop="username" sortable="custom">
       <template #default="scope">
-        <el-tag v-if="scope.row.userId === userStore.userInfo.userId" class="mr-1" effect="dark" round size="small" type="warning">
-          {{ t("role.owner") }}
-        </el-tag>
-        <span>{{ scope.row.username }}</span>
+        <div class="d-flex gap-1">
+          <div class="overflow_div flex-1">
+            <span>{{ scope.row.username }}</span>
+          </div>
+          <el-tag v-if="scope.row.userId === userStore.userInfo.userId" class="mr-1" effect="dark" round size="small" type="warning">
+            {{ t("role.owner") }}
+          </el-tag>
+        </div>
       </template>
     </el-table-column>
     <el-table-column :label="t('label.role')" min-width="160" prop="groupList">
@@ -119,12 +121,12 @@ onMounted(() => search())
         <v-role-view :role="scope.row.role" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.description')" min-width="140" prop="description">
+    <el-table-column :label="t('label.description')" min-width="160" prop="description">
       <template #default="scope">
         <v-table-column-none :text="scope.row.description" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.email')" min-width="140" prop="email">
+    <el-table-column :label="t('label.email')" min-width="120" prop="email">
       <template #default="scope">
         <v-table-column-none :text="scope.row.email" />
       </template>
@@ -134,7 +136,7 @@ onMounted(() => search())
         <v-table-column-none :text="scope.row.phone" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.teams')" min-width="120">
+    <el-table-column :label="t('label.teams')" min-width="100">
       <template #default="scope">
         <el-button v-if="Array.isArray(scope.row.teams) && scope.row.teams.length > 0" link type="primary" @click="openAction(Action.View, scope.row)">
           {{ t("label.totalTeams", { total: scope.row.teams.length }) }}

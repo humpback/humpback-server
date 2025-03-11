@@ -55,10 +55,12 @@ func (sc *ServiceController) HandleServiceChange() {
 
 			if serviceInfo.Version != serviceManager.ServiceInfo.Version {
 				serviceManager.IsNeedCheckAll.Store(true)
+				go serviceManager.Reconcile()
 			} else if serviceInfo.Action == types.ServiceActionDisable ||
 				serviceInfo.Action == types.ServiceActionDelete {
 				serviceManager.IsNeedCheckAll.Store(true)
 				delete(sc.ServiceCtrls, serviceInfo.ServiceId)
+				go serviceManager.Reconcile()
 			} else {
 				go serviceManager.DoServiceAction(serviceInfo.Action)
 			}

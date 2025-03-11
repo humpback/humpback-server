@@ -1,5 +1,5 @@
 import { NewPageInfo, NewSortInfo, QueryInfo } from "@/types"
-import { cloneDeep, find, map, omitBy } from "lodash-es"
+import { cloneDeep, find, omitBy } from "lodash-es"
 import { NodeStatus, NodeSwitch } from "@/models"
 
 export const sortOptions = ["ipAddress", "name", "updatedAt", "createdAt"]
@@ -16,21 +16,9 @@ export const statusOptions = [
   { label: "label.deadly", value: NodeStatus.Offline }
 ]
 
-export const modeOptions = [
-  { label: "label.keywords", value: "keywords" },
-  { label: "label.label", value: "label" }
-]
-
 export class QueryNodesInfo extends QueryInfo {
   constructor(queryInfo: any, groupOptions: any[]) {
-    super(
-      queryInfo,
-      map(modeOptions, x => x.value),
-      defaultPage,
-      defaultSort,
-      sortOptions,
-      cloneDeep(defaultFilter)
-    )
+    super(queryInfo, ["keywords"], defaultPage, defaultSort, sortOptions, cloneDeep(defaultFilter))
     const statusInfo = find(statusOptions, x => x.value === (queryInfo["status"] as string))
     this.filter.status = statusInfo?.value || ""
   }

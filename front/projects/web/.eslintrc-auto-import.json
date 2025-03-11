@@ -437,6 +437,7 @@
     "IconMdiViewDashboard": true,
     "IconMdiPlay": true,
     "IconMdiRestart": true,
-    "IconMdiSquare": true
+    "IconMdiSquare": true,
+    "containerService": true
   }
 }

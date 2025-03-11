@@ -11,42 +11,42 @@ const statusInfo = computed<{ type: "primary" | "success" | "info" | "warning" |
     case toLower(ContainerStatus.ContainerStatusStarting):
       return {
         type: "primary",
-        i18nText: "enum.status.starting"
+        i18nText: "containerStatus.starting"
       }
     case toLower(ContainerStatus.ContainerStatusCreated):
       return {
         type: "info",
-        i18nText: "enum.status.created"
+        i18nText: "containerStatus.created"
       }
     case toLower(ContainerStatus.ContainerStatusRunning):
       return {
         type: "success",
-        i18nText: "enum.status.running"
+        i18nText: "containerStatus.running"
       }
     case toLower(ContainerStatus.ContainerStatusFailed):
       return {
         type: "danger",
-        i18nText: "enum.status.failed"
+        i18nText: "containerStatus.failed"
       }
     case toLower(ContainerStatus.ContainerStatusExited):
       return {
         type: "warning",
-        i18nText: "enum.status.exited"
+        i18nText: "containerStatus.exited"
       }
     case toLower(ContainerStatus.ContainerStatusRemoved):
       return {
         type: "danger",
-        i18nText: "enum.status.removed"
+        i18nText: "containerStatus.removed"
       }
     case toLower(ContainerStatus.ContainerStatusWarning):
       return {
         type: "warning",
-        i18nText: "enum.status.warning"
+        i18nText: "containerStatus.warning"
       }
     default:
       return {
         type: "primary",
-        i18nText: "enum.status.pending"
+        i18nText: "containerStatus.pending"
       }
   }
 })

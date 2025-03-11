@@ -20,6 +20,8 @@ export default {
     "changePasswordSuccess": "The password is successfully changed, please log in again."
   },
   err: {
-    "systemError": "System Error, Contact your administrator to check!"
+    "systemError": "System Error, Contact your administrator to check!",
+
+    "NoAvailableNode": "No nodes available"
   }
 }

@@ -22,6 +22,7 @@ interface RuleLength {
   MemoryReservation: RuleLengthLimit
   MaxCpuUsage: RuleLengthLimit
   InstanceNum: RuleLengthLimit
+  LogsLine: RuleLengthLimit
 }
 
 interface RuleFormat {

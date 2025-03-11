@@ -5,18 +5,21 @@ export default {
     "supperAdmin": "Supper Administrator",
     "owner": "Owner"
   },
-  enum: {
-    status: {
-      created: "Created",
-      starting: "Starting",
-      running: "Running",
-      exited: "Exited",
-      waring: "Waring",
-      failed: "Failed",
-      pending: "Pending",
-      removed: "Removed",
-      idle: "Idle"
-    }
+  containerStatus: {
+    created: "Created",
+    starting: "Starting",
+    running: "Running",
+    exited: "Exited",
+    waring: "Waring",
+    failed: "Failed",
+    pending: "Pending",
+    removed: "Removed"
+  },
+  serviceStatus: {
+    disabled: "Disabled",
+    assigning: "Assigning",
+    warning: "Warning",
+    running: "Running"
   },
   breadcrumb: {
     "groupOverview": "Group Overview",

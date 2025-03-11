@@ -1,6 +1,7 @@
 package node
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -8,6 +9,10 @@ import (
 	"humpback/pkg/httpx"
 	"humpback/pkg/utils"
 	"humpback/types"
+)
+
+var (
+	ErrNodeNotExist = errors.New("The node does not exist")
 )
 
 func RemoveNodeContainer(nodeId string, containerId string) error {
@@ -22,7 +27,7 @@ func RemoveNodeContainer(nodeId string, containerId string) error {
 			return err
 		}
 	}
-	return nil
+	return ErrNodeNotExist
 }
 
 func OperateNodeContainer(nodeId string, containerId string, action string) error {
@@ -37,7 +42,7 @@ func OperateNodeContainer(nodeId string, containerId string, action string) erro
 			return err
 		}
 	}
-	return nil
+	return ErrNodeNotExist
 }
 
 func StartNewContainer(nodeId, containerName string, svc *types.Service) error {
@@ -68,4 +73,19 @@ func StartNewContainer(nodeId, containerName string, svc *types.Service) error {
 	}
 
 	return nil
+}
+
+func QueryContainerLogs(nodeId string, containerId string, querys map[string]string) (string, error) {
+	node := GetNodeInfo(nodeId)
+	if node != nil {
+		url := fmt.Sprintf("http://%s:%d/api/v1/container/%s/logs", node.IpAddress, node.Port, containerId)
+		slog.Info("[Agent Helper] Get container logs", "url", url)
+		err := httpx.NewHttpXClient().Get(url, querys, nil, nil)
+		if err != nil {
+			slog.Error("[Agent Helper] Get container error", "error", err.Error())
+			return "", err
+		}
+	}
+
+	return "", ErrNodeNotExist
 }

@@ -7,7 +7,7 @@ import { serviceService } from "services/service-client.ts"
 import ServiceCreate from "./action/service-create.vue"
 import ServiceDelete from "./action/service-delete.vue"
 import VServiceStatusTag from "@/components/business/v-service/VServiceStatusTag.vue"
-import { capitalize } from "lodash-es"
+import { capitalize, toLower } from "lodash-es"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -93,9 +93,9 @@ onMounted(async () => {
           <v-service-schedule-query-select v-model="queryInfo.filter.schedule" :placeholder="t('placeholder.all')" @change="search" />
         </div>
         <div class="flex-1" style="min-width: 300px">
-          <v-input v-model="queryInfo.keywords">
+          <v-input v-model="queryInfo.keywords" :placeholder="t('placeholder.enterNameOrImageName')">
             <template #prepend>
-              <span>{{ t("label.keywords") }}</span>
+              <el-text>{{ t("label.keywords") }}</el-text>
             </template>
           </v-input>
         </div>
@@ -138,7 +138,7 @@ onMounted(async () => {
               <template #default="cscope">
                 <div class="d-flex gap-3">
                   <v-container-status :status="cscope.row.state" size="small" />
-                  <v-tooltip v-if="cscope.row.errorMsg">
+                  <v-tooltip v-if="scope.row.errorMsg">
                     <template #content>
                       <el-text type="danger">{{ cscope.row.errorMsg }}</el-text>
                     </template>
@@ -205,6 +205,7 @@ onMounted(async () => {
     <el-table-column :label="t('label.status')" min-width="130" prop="description">
       <template #default="scope">
         <v-service-status-tag :is-enabled="scope.row.isEnabled" :status="scope.row.status" />
+        <v-memo v-if="toLower(scope.row.status) === toLower(ServiceStatus.ServiceStatusFailed)" :icon-size="18" :memo="scope.row.memo" only-icon />
       </template>
     </el-table-column>
     <el-table-column :label="t('label.image')" min-width="200" prop="image">

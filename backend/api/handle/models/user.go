@@ -3,7 +3,7 @@ package models
 import (
 	"slices"
 	"strings"
-	
+
 	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
@@ -229,7 +229,7 @@ func (u *UserQueryReqInfo) Check() error {
 		return err
 	}
 
-	if u.Keywords != "" && slices.Index([]string{"username", "email", "phone"}, u.Mode) == -1 {
+	if u.Keywords != "" && u.Mode != "keywords" {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
@@ -251,15 +251,7 @@ func (u *UserQueryReqInfo) filter(info *types.User) bool {
 	if u.FilterInfo != nil && u.FilterInfo.Role != 0 && int(info.Role) != u.FilterInfo.Role {
 		return false
 	}
-	switch u.Mode {
-	case "username":
-		return strings.Contains(strings.ToLower(info.Username), strings.ToLower(u.Keywords))
-	case "email":
-		return strings.Contains(strings.ToLower(info.Email), strings.ToLower(u.Keywords))
-	case "phone":
-		return strings.Contains(strings.ToLower(info.Phone), strings.ToLower(u.Keywords))
-	}
-	return false
+	return strings.Contains(strings.ToLower(info.Username), strings.ToLower(u.Keywords)) || strings.Contains(strings.ToLower(info.Email), strings.ToLower(u.Keywords)) || strings.Contains(strings.ToLower(info.Phone), strings.ToLower(u.Keywords))
 }
 
 func (u *UserQueryReqInfo) sort(list []*types.User) []*types.User {

@@ -31,11 +31,10 @@ const options = computed<
     type: "info" | "success" | "warning" | "primary" | "danger"
   }>
 >(() => [
-  { label: "label.enabled", value: NodeSwitch.Enabled, type: "success" },
-  { label: "label.disabled", value: NodeSwitch.Disabled, type: "info" },
-  { label: "label.notReady", value: ServiceStatus.ServiceStatusNotReady, type: "warning" },
-  { label: "label.running", value: ServiceStatus.ServiceStatusRunning, type: "success" },
-  { label: "label.failed", value: ServiceStatus.ServiceStatusFailed, type: "danger" }
+  { label: "serviceStatus.disabled", value: NodeSwitch.Disabled, type: "info" },
+  { label: "serviceStatus.assigning", value: ServiceStatus.ServiceStatusNotReady, type: "primary" },
+  { label: "serviceStatus.warning", value: ServiceStatus.ServiceStatusFailed, type: "warning" },
+  { label: "serviceStatus.running", value: ServiceStatus.ServiceStatusRunning, type: "success" }
 ])
 
 function change() {

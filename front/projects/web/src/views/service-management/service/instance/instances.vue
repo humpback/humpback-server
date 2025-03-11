@@ -3,6 +3,7 @@ import { SetWebTitle } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
 import { ServiceInfo } from "@/types"
 import VLoading from "@/components/business/v-loading/VLoading.vue"
+import { toLower } from "lodash-es"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -12,51 +13,26 @@ const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = computed<ServiceInfo | undefined>(() => stateStore.getService(serviceId.value))
 
-const timer = ref<any>(null)
-const interval = ref(5000)
-
 const isLoading = inject<any>("isLoading")
-
-async function resetLoopSearch() {
-  if (timer.value) {
-    clearInterval(timer.value)
-    timer.value = null
-  }
-  interval.value = 5000
-  loopSearch()
-}
+const resetLoopSearch = inject<() => void>("resetLoopSearch")
 
 async function search() {
   isLoading.value = true
   await refreshData(groupId.value, serviceId.value, "instances").finally(() => (isLoading.value = false))
 }
 
-function loopSearch() {
-  timer.value = setTimeout(async () => {
-    await search().catch(() => {})
-    if (serviceInfo.value?.status === ServiceStatus.ServiceStatusRunning) {
-      interval.value = 10000
-    }
-    if (serviceInfo.value?.isEnabled) {
-      loopSearch()
-    }
-  }, interval.value)
+async function operateContainer(nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
+  await containerService.operate(groupId.value, { containerId: containerId, nodeId: nodeId, action: action })
+  await search()
+  if (resetLoopSearch !== undefined) {
+    resetLoopSearch()
+  }
 }
 
 onMounted(async () => {
   await search()
   SetWebTitle(`${t("webTitle.serviceInfo")} - ${stateStore.getService()?.serviceName}`)
-  loopSearch()
 })
-
-onUnmounted(() => {
-  if (timer.value) {
-    clearTimeout(timer.value)
-    timer.value = null
-  }
-})
-
-defineExpose({ resetLoopSearch })
 </script>
 
 <template>
@@ -69,6 +45,9 @@ defineExpose({ resetLoopSearch })
       <el-button plain size="small" type="primary">{{ t("btn.viewMonitor") }}</el-button>
     </div>
   </div>
+
+  <v-memo v-if="toLower(serviceInfo?.status) === toLower(ServiceStatus.ServiceStatusFailed)" :memo="serviceInfo?.memo" class="mt-5" />
+
   <v-table :data="serviceInfo?.containers || []" border class="mt-5" row-key="containerName">
     <el-table-column class-name="expand-column" type="expand" width="24">
       <template #default="scope">
@@ -265,27 +244,29 @@ defineExpose({ resetLoopSearch })
       </template>
     </el-table-column>
     <el-table-column :label="t('label.action')" width="180">
-      <template #default>
-        <el-button :title="t('label.restart')" link type="success">
-          <el-icon :size="16">
-            <IconMdiRestart />
-          </el-icon>
-        </el-button>
-        <el-button :title="t('label.start')" link type="success">
-          <el-icon :size="16">
-            <IconMdiPlay />
-          </el-icon>
-        </el-button>
-        <el-button :title="t('label.stop')" link type="danger">
-          <el-icon :size="16">
-            <IconMdiSquare />
-          </el-icon>
-        </el-button>
-        <el-button :title="t('label.log')" link type="primary">
-          <el-icon :size="16">
-            <IconMdiNoteText />
-          </el-icon>
-        </el-button>
+      <template #default="scope">
+        <div v-if="scope.row.containerId">
+          <el-button :title="t('label.restart')" link type="success" @click="operateContainer(scope.row.nodeId, scope.row.containerId, 'Restart')">
+            <el-icon :size="16">
+              <IconMdiRestart />
+            </el-icon>
+          </el-button>
+          <el-button :title="t('label.start')" link type="success" @click="operateContainer(scope.row.nodeId, scope.row.containerId, 'Start')">
+            <el-icon :size="16">
+              <IconMdiPlay />
+            </el-icon>
+          </el-button>
+          <el-button :title="t('label.stop')" link type="danger" @click="operateContainer(scope.row.nodeId, scope.row.containerId, 'Stop')">
+            <el-icon :size="16">
+              <IconMdiSquare />
+            </el-icon>
+          </el-button>
+          <el-button :title="t('label.log')" link type="primary">
+            <el-icon :size="16">
+              <IconMdiNoteText />
+            </el-icon>
+          </el-button>
+        </div>
       </template>
     </el-table-column>
   </v-table>

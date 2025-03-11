@@ -30,15 +30,13 @@ defineExpose({ open })
   <v-dialog v-model="dialogInfo.show" width="600px">
     <template #header>
       {{ t("header.viewRegistry") }}
+      <el-tag v-if="dialogInfo.info.isDefault" class="ml-3" effect="dark" round size="small" type="warning">
+        {{ t("label.default") }}
+      </el-tag>
     </template>
     <div v-loading="isLoading" class="my-3">
-      <el-descriptions :column="1" border label-width="160px">
-        <el-descriptions-item :label="t('label.url')">
-          <span>{{ dialogInfo.info.url }}</span>
-          <el-tag v-if="dialogInfo.info.isDefault" class="ml-3" effect="dark" round size="small" type="warning">
-            {{ t("label.default") }}
-          </el-tag>
-        </el-descriptions-item>
+      <el-descriptions :column="1" border class="registry-description" label-width="160px">
+        <el-descriptions-item :label="t('label.url')">{{ dialogInfo.info.url }}</el-descriptions-item>
         <el-descriptions-item :label="t('label.username')">{{ dialogInfo.info.username }}</el-descriptions-item>
         <el-descriptions-item :label="t('label.password')">{{ dialogInfo.info.password }}</el-descriptions-item>
       </el-descriptions>
@@ -46,4 +44,10 @@ defineExpose({ open })
   </v-dialog>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+:deep(.registry-description) .el-descriptions__body {
+  .el-descriptions__content.el-descriptions__cell.is-bordered-content {
+    word-break: break-all;
+  }
+}
+</style>

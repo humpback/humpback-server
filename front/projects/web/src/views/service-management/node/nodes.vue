@@ -76,7 +76,7 @@ onMounted(async () => {
         <div class="flex-1" style="min-width: 300px">
           <v-input v-model="queryInfo.keywords" :placeholder="t('placeholder.enterIpHostNameOrLabel')">
             <template #prepend>
-              <span>{{ t("label.keywords") }}</span>
+              <el-text>{{ t("label.keywords") }}</el-text>
             </template>
           </v-input>
         </div>

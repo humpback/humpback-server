@@ -59,3 +59,11 @@ func GetServiceChangeChannel(c *gin.Context) chan types.ServiceChangeInfo {
 	}
 	return ch.(chan types.ServiceChangeInfo)
 }
+
+func GetGroupInfo(c *gin.Context) *types.NodesGroups {
+	info, exist := c.Get(KeyGroupInfo)
+	if !exist {
+		return nil
+	}
+	return info.(*types.NodesGroups)
+}
