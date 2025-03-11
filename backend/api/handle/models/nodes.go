@@ -101,7 +101,7 @@ func (n *NodeQueryReqInfo) Check() error {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 
-	if n.Keywords != "" && slices.Index([]string{"keywords", "label"}, n.Mode) == -1 {
+	if n.Keywords != "" && n.Mode != "keywords" {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil
@@ -134,20 +134,16 @@ func (n *NodeQueryReqInfo) filter(info *types.Node) bool {
 			}
 		}
 	}
-	if n.Keywords != "" {
-		switch n.Mode {
-		case "keywords":
-			return strings.Contains(info.IpAddress, n.Keywords) || strings.Contains(strings.ToLower(info.Name), strings.ToLower(n.Keywords))
-		case "label":
-			for key := range info.Labels {
-				if strings.Contains(strings.ToLower(key), strings.ToLower(n.Keywords)) {
-					return true
-				}
-			}
-			return false
+
+	if strings.Contains(info.IpAddress, n.Keywords) || strings.Contains(strings.ToLower(info.Name), strings.ToLower(n.Keywords)) {
+		return true
+	}
+	for key := range info.Labels {
+		if strings.Contains(strings.ToLower(key), strings.ToLower(n.Keywords)) {
+			return true
 		}
 	}
-	return true
+	return false
 }
 
 func (n *NodeQueryReqInfo) sort(list []*types.Node) []*types.Node {

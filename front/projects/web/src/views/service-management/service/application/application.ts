@@ -33,7 +33,7 @@ export function NewApplicationInfo(registries: RegistryInfo[], info?: ServiceMet
     imageDomain: imageInfo.domain,
     imageName: imageInfo.imageName,
     validEnv: filter(
-      map(metaInfo.env, x => {
+      map(metaInfo.envConfig, x => {
         const s = x.split("=")
         return {
           id: GenerateUUID(),
@@ -93,7 +93,7 @@ export function ParseMetaInfo(info: ServiceApplicationInfo): ServiceMetaDockerIn
     image: `${info.imageDomain}/${info.imageName}`,
     alwaysPull: info.alwaysPull,
     command: info.command,
-    env: map(info.validEnv, x => `${x.name}=${x.value}`) || [],
+    envConfig: map(info.validEnv, x => `${x.name}=${x.value}`) || [],
     labels: parseArrayToMap(info.validLabel),
     privileged: info.privileged,
     capabilities: info.capabilities,

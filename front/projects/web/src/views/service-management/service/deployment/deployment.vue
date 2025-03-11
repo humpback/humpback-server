@@ -166,7 +166,7 @@ onMounted(async () => {
     </el-form-item>
     <el-form-item>
       <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeGlobal">{{ t("tips.globalTips") }}</v-tips>
-      <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }} </v-tips>
+      <v-tips v-if="deploymentInfo.mode === ServiceDeployMode.DeployModeReplicate">{{ t("tips.replicatedTips") }}</v-tips>
     </el-form-item>
 
     <el-form-item class="mt-3">
@@ -302,15 +302,15 @@ onMounted(async () => {
       </el-button>
     </div>
 
-    <el-form-item v-if="deploymentInfo.enableSchedules" class="mt-3">
-      <el-checkbox v-model="deploymentInfo.enableTimeout">
-        <strong>
-          <el-text size="small">{{ t("label.enableTimeout") }}</el-text>
-        </strong>
-      </el-checkbox>
-    </el-form-item>
-    <el-form-item v-if="deploymentInfo.enableTimeout" :rules="rules.timeout" prop="schedule.timeout">
-      <v-input v-model="deploymentInfo.schedule.timeout" :placeholder="t('placeholder.timeoutExample')" />
+    <el-form-item v-if="deploymentInfo.enableSchedules" :rules="rules.timeout" class="mt-3" prop="schedule.timeout">
+      <template #label>
+        <el-checkbox v-model="deploymentInfo.enableTimeout">
+          <strong>
+            <el-text size="small">{{ t("label.enableTimeout") }}</el-text>
+          </strong>
+        </el-checkbox>
+      </template>
+      <v-input v-if="deploymentInfo.enableTimeout" v-model="deploymentInfo.schedule.timeout" :placeholder="t('placeholder.timeoutExample')" />
     </el-form-item>
   </el-form>
 

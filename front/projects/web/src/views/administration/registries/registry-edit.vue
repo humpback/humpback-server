@@ -96,7 +96,7 @@ defineExpose({ open })
         <el-form-item :label="t('label.url')" prop="url">
           <div class="d-flex gap-3 w-100">
             <v-input v-model="dialogInfo.info.url" :maxlength="RuleLength.RegistryUrl.Max" clearable show-word-limit @blur="clearTail()" />
-            <el-checkbox v-model="dialogInfo.info.isDefault" :label="t('label.isDefault')" border />
+            <el-checkbox v-model="dialogInfo.info.isDefault" :label="t('label.isDefault')" border class="default-class" />
           </div>
         </el-form-item>
         <el-form-item :label="t('label.username')" prop="username">
@@ -118,5 +118,13 @@ defineExpose({ open })
 .edit {
   width: 100%;
   height: 500px;
+}
+
+.default-class {
+  --el-color-primary: var(--el-color-warning);
+  --el-checkbox-input-border-color-hover: var(--el-color-warning);
+  --el-checkbox-checked-text-color: var(--el-color-warning);
+  --el-checkbox-checked-bg-color: var(--el-color-warning);
+  --el-checkbox-checked-input-border-color: var(--el-color-warning);
 }
 </style>

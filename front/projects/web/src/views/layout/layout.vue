@@ -81,7 +81,7 @@ function afterEnter() {
 
 /* 定义进入过渡的开始状态 */
 .fade-enter-from {
-  transform: translateX(100%);
+  transform: translateX(30%);
   opacity: 0;
 }
 
@@ -104,14 +104,14 @@ function afterEnter() {
 /* 定义进入过渡的过程 */
 .fade-enter-active {
   transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
+    transform 0.2s ease,
+    opacity 0.2s ease;
   will-change: transform;
 }
 
 /* 定义离开过渡的过程 */
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
   will-change: transform;
 }
 </style>

@@ -17,24 +17,25 @@ const statusInfo = computed<{ type: "primary" | "success" | "info" | "warning" |
   if (!props.isEnabled) {
     return {
       type: "info",
-      i18nText: "label.disabled"
+      i18nText: "serviceStatus.disabled"
     }
   }
+
   switch (toLower(props.status)) {
     case toLower(ServiceStatus.ServiceStatusNotReady):
       return {
-        type: "warning",
-        i18nText: "label.notReady"
+        type: "primary",
+        i18nText: "serviceStatus.assigning"
       }
     case toLower(ServiceStatus.ServiceStatusFailed):
       return {
-        type: "danger",
-        i18nText: "label.failed"
+        type: "warning",
+        i18nText: "serviceStatus.warning"
       }
     default:
       return {
         type: "success",
-        i18nText: "label.running"
+        i18nText: "serviceStatus.running"
       }
   }
 })

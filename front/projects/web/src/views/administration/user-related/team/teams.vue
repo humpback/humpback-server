@@ -62,7 +62,7 @@ onMounted(() => search())
         <div class="flex-1" style="min-width: 300px">
           <v-input v-model="queryInfo.keywords">
             <template #prepend>
-              <span>{{ t("label.name") }}</span>
+              <el-text>{{ t("label.name") }}</el-text>
             </template>
           </v-input>
         </div>

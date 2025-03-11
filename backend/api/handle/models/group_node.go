@@ -8,21 +8,17 @@ import (
 	"golang.org/x/exp/maps"
 	"humpback/common/locales"
 	"humpback/common/response"
-	"humpback/common/verify"
 	"humpback/pkg/utils"
 	"humpback/types"
 )
 
 type GroupUpdateNodesReqInfo struct {
-	GroupId  string   `json:"groupId"`
+	GroupId  string   `json:"-"`
 	IsDelete bool     `json:"isDelete"`
 	Nodes    []string `json:"nodes"`
 }
 
 func (g *GroupUpdateNodesReqInfo) Check() error {
-	if err := verify.CheckIsEmpty(g.GroupId, locales.CodeGroupIdNotEmpty); err != nil {
-		return err
-	}
 	nodeList := make([]string, 0)
 	for _, node := range g.Nodes {
 		if strings.TrimSpace(node) != "" {

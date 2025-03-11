@@ -69,7 +69,7 @@ onMounted(() => search())
             <div class="flex-1" style="min-width: 300px">
               <v-input v-model="queryInfo.keywords">
                 <template #prepend>
-                  <span>{{ t("label.name") }}</span>
+                  <el-text>{{ t("label.name") }}</el-text>
                 </template>
               </v-input>
             </div>
@@ -111,7 +111,7 @@ onMounted(() => search())
         <el-table-column :label="t('label.value')" min-width="200">
           <template #default="scope">
             <span v-if="scope.row.configType === ConfigType.Static">{{ scope.row.configValue }}</span>
-            <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }} </el-button>
+            <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
           </template>
         </el-table-column>
         <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
@@ -127,7 +127,7 @@ onMounted(() => search())
         <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
           <template #default="scope">
             <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
-            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }} </el-button>
+            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
           </template>
         </el-table-column>
       </v-table>

@@ -123,7 +123,7 @@ export default defineConfig({
     strictPort: true,
     open: true,
     proxy: {
-      "/webapi": "http://localhost:8800"
+      "/webapi": "http://localhost:8100"
     }
   },
   preview: {

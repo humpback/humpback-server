@@ -8,7 +8,7 @@ import Performance from "./performance/performance.vue"
 import ServiceDelete from "./action/service-delete.vue"
 import ServiceClone from "./action/servcie-clone.vue"
 import { shallowRef } from "vue"
-import { find } from "lodash-es"
+import { find, toLower } from "lodash-es"
 import { ActionOptions, refreshData, showAction } from "@/views/service-management/service/common.ts"
 import VLoading from "@/components/business/v-loading/VLoading.vue"
 
@@ -21,6 +21,10 @@ const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = computed(() => stateStore.getService())
 
+const loadingInfo = ref({
+  interval: 10, //单位s
+  cycleNumber: 0
+})
 const isReset = ref(false)
 const _loadingCount = ref(0)
 const isLoading = computed({
@@ -34,57 +38,24 @@ const isLoading = computed({
 })
 
 provide("isLoading", isLoading)
+provide("resetLoopSearch", resetLoopSearch)
 
 const timer = ref<any>(null)
 
-const compRef = ref<any>()
 const cloneRef = useTemplateRef<InstanceType<typeof ServiceClone>>("cloneRef")
 const deleteRef = useTemplateRef<InstanceType<typeof ServiceDelete>>("deleteRef")
 
 const activeMenu = ref(route.params.mode as string)
 
 const menuOptions = ref<any[]>([
-  {
-    i18nLabel: "label.setting",
-    iconClass: "icon_mdi--settings-outline",
-    isGroup: true
-  },
-  {
-    i18nLabel: "label.basicInfo",
-    value: PageServiceDetail.BasicInfo,
-    isRequired: true,
-    component: shallowRef(BasicInfo)
-  },
-  {
-    i18nLabel: "label.application",
-    value: PageServiceDetail.Application,
-    isRequired: true,
-    component: shallowRef(Application)
-  },
-  {
-    i18nLabel: "label.deployment",
-    value: PageServiceDetail.Deployment,
-    isRequired: true,
-    component: shallowRef(Deployment)
-  },
-  {
-    i18nLabel: "label.monitor",
-    iconClass: "icon_mdi--gauge",
-    isGroup: true
-  },
-  {
-    i18nLabel: "label.instances",
-    value: PageServiceDetail.Instances,
-    isRequired: false,
-    component: shallowRef(Instances)
-  },
+  { i18nLabel: "label.setting", iconClass: "icon_mdi--settings-outline", isGroup: true },
+  { i18nLabel: "label.basicInfo", value: PageServiceDetail.BasicInfo, isRequired: true, component: shallowRef(BasicInfo) },
+  { i18nLabel: "label.application", value: PageServiceDetail.Application, isRequired: true, component: shallowRef(Application) },
+  { i18nLabel: "label.deployment", value: PageServiceDetail.Deployment, isRequired: true, component: shallowRef(Deployment) },
+  { i18nLabel: "label.monitor", iconClass: "icon_mdi--gauge", isGroup: true },
+  { i18nLabel: "label.instances", value: PageServiceDetail.Instances, isRequired: false, component: shallowRef(Instances) },
   { i18nLabel: "label.log", value: PageServiceDetail.Log, isRequired: false, component: shallowRef(Log) },
-  {
-    i18nLabel: "label.performance",
-    value: PageServiceDetail.Performance,
-    isRequired: false,
-    component: shallowRef(Performance)
-  }
+  { i18nLabel: "label.performance", value: PageServiceDetail.Performance, isRequired: false, component: shallowRef(Performance) }
 ])
 
 function showIncomplete(v: string) {
@@ -96,7 +67,25 @@ function showIncomplete(v: string) {
 
 function menuChange(v: string) {
   activeMenu.value = v
+  resetLoopSearch()
   router.replace({ params: Object.assign({}, route.params, { mode: v }) })
+}
+
+function resetLoopSearch() {
+  stopLoopSearch()
+  if (activeMenu.value === PageServiceDetail.Instances && serviceInfo.value?.isEnabled) {
+    loadingInfo.value.interval = 5
+  } else {
+    loadingInfo.value.interval = 10
+  }
+  loopSearch()
+}
+
+function stopLoopSearch() {
+  if (timer.value) {
+    clearTimeout(timer.value)
+    timer.value = null
+  }
 }
 
 async function search() {
@@ -105,13 +94,20 @@ async function search() {
 }
 
 function loopSearch() {
-  const tempPage = [PageServiceDetail.Instances, PageServiceDetail.Log, PageServiceDetail.Performance]
   timer.value = setTimeout(async () => {
-    if (!find(tempPage, x => x === activeMenu.value && serviceInfo.value?.isEnabled)) {
-      await search().catch(() => {})
+    await search().catch(() => {})
+    if (
+      loadingInfo.value.cycleNumber < 5 &&
+      serviceInfo.value?.isEnabled &&
+      toLower(serviceInfo.value.status) === toLower(ServiceStatus.ServiceStatusRunning)
+    ) {
+      loadingInfo.value.cycleNumber++
+    }
+    if (loadingInfo.value.cycleNumber >= 5) {
+      loadingInfo.value.interval = 10
     }
     loopSearch()
-  }, 10000)
+  }, loadingInfo.value.interval * 1000)
 }
 
 async function operateService(action: "Start" | "Stop" | "Restart" | "Enable" | "Disable") {
@@ -127,8 +123,8 @@ async function operateService(action: "Start" | "Stop" | "Restart" | "Enable" | 
     })
     .then(async () => {
       await search()
-      if (activeMenu.value == PageServiceDetail.Instances && compRef.value) {
-        compRef.value?.resetLoopSearch()
+      if (activeMenu.value == PageServiceDetail.Instances) {
+        resetLoopSearch()
       }
     })
   ShowSuccessMsg(t("message.succeed"))
@@ -153,14 +149,11 @@ function resetInit() {
 }
 
 onMounted(() => {
-  loopSearch()
+  resetLoopSearch()
 })
 
 onUnmounted(() => {
-  if (timer.value) {
-    clearTimeout(timer.value)
-    timer.value = null
-  }
+  stopLoopSearch()
 })
 </script>
 
@@ -196,9 +189,12 @@ onUnmounted(() => {
 
     <div class="body">
       <div class="body-menu">
-        <div class="mb-2 d-flex gap-1">
-          <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :status="serviceInfo?.status" />
-          <v-loading v-if="serviceInfo?.isEnabled && (serviceInfo.status !== ServiceStatus.ServiceStatusRunning || isLoading)" />
+        <div class="mb-2 d-flex gap-3">
+          <div class="d-flex flex-1">
+            <v-service-status-tag :is-enabled="serviceInfo?.isEnabled" :status="serviceInfo?.status" />
+            <v-loading v-if="serviceInfo?.isEnabled && (serviceInfo.status !== ServiceStatus.ServiceStatusRunning || isLoading)" class="ml-3" />
+          </div>
+          <v-memo v-if="toLower(serviceInfo?.status) === toLower(ServiceStatus.ServiceStatusFailed)" :memo="serviceInfo?.memo" />
         </div>
         <div v-for="(item, index) in menuOptions" :key="index" class="menu-group">
           <div v-if="item.isGroup" class="menu-group-title">
@@ -223,7 +219,7 @@ onUnmounted(() => {
             <div v-if="isReset" class="reset-loading">
               <v-loading :size="80" />
             </div>
-            <component :is="item.component" v-else :ref="(el: any) => (compRef = el)" />
+            <component :is="item.component" v-else />
           </div>
         </template>
       </v-card>
