@@ -485,7 +485,7 @@ func (sm *ServiceManager) CheckService() {
 			return
 		}
 		if !sm.isReconcile.Load().(bool) {
-			sm.Reconcile()
+			go sm.Reconcile()
 		} else {
 			slog.Info("[Service Manager] Service is busy", "ServiceId", sm.ServiceInfo.ServiceId)
 		}
