@@ -118,8 +118,6 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 	case models.ServiceUpdateDeployment:
 		if service.Deployment != nil {
 			isChange = !cmp.Equal(service.Deployment.Schedule, info.DeploymentInfo.Schedule)
-		} else {
-			isChange = true
 		}
 		service.Deployment = info.DeploymentInfo
 		service.Action = types.ServiceActionDispatch
@@ -131,7 +129,7 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 	if err = db.ServiceUpdate(service); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
-	if service.IsEnabled && isChange {
+	if service.IsEnabled {
 		sendServiceEvent(svcChan, service.ServiceId, service.Version, types.ServiceActionDispatch)
 	}
 	return service.ServiceId, nil
