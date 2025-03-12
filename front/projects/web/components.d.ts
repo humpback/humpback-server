@@ -79,6 +79,7 @@ declare module 'vue' {
     IconMdiMapMarkerPath: typeof import('~icons/mdi/map-marker-path')['default']
     IconMdiMoreHoriz: typeof import('~icons/mdi/more-horiz')['default']
     IconMdiNoteText: typeof import('~icons/mdi/note-text')['default']
+    IconMdiPerformance: typeof import('~icons/mdi/performance')['default']
     IconMdiPlay: typeof import('~icons/mdi/play')['default']
     IconMdiRemove: typeof import('~icons/mdi/remove')['default']
     IconMdiRestart: typeof import('~icons/mdi/restart')['default']
