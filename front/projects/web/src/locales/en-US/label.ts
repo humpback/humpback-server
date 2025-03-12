@@ -146,6 +146,10 @@ export default {
     "configs": "Configs",
     "userRelated": "User Related",
     "registries": "Registries",
-    "targetGroup": "Target Group"
+    "targetGroup": "Target Group",
+    "memoryUsage": "Memory Usage",
+    "cpuUsage": "CPU Usage",
+    "ioUsage": "I/O Usage",
+    "networkUsage": "Network Usage"
   }
 }

@@ -114,6 +114,7 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 		}
 		isChange = !cmp.Equal(service.Meta, info.MetaInfo)
 		service.Meta = info.MetaInfo
+		service.Action = types.ServiceActionDispatch
 	case models.ServiceUpdateDeployment:
 		if service.Deployment != nil {
 			isChange = !cmp.Equal(service.Deployment.Schedule, info.DeploymentInfo.Schedule)
@@ -121,17 +122,17 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 			isChange = true
 		}
 		service.Deployment = info.DeploymentInfo
-
+		service.Action = types.ServiceActionDispatch
 	}
 	service.UpdatedAt = utils.NewActionTimestamp()
-	if service.IsEnabled {
+	if service.IsEnabled && isChange {
 		service.Version = utils.NewVersionId()
 	}
 	if err = db.ServiceUpdate(service); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
 	if service.IsEnabled && isChange {
-		sendServiceEvent(svcChan, service.ServiceId, service.Version, service.Action)
+		sendServiceEvent(svcChan, service.ServiceId, service.Version, types.ServiceActionDispatch)
 	}
 	return service.ServiceId, nil
 }
