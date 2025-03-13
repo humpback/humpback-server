@@ -9,6 +9,7 @@ export default {
     "deleteSuccess": "Delete Successfully",
     "removeSuccess": "Remove Successfully",
     "uploadSuccess": "Upload Successful",
+    "operateSuccess": "Successful operation",
     "loginSuccess": "Login Successful",
     "copySucceed": "Copy successful",
     "copyFailed": "Copy failed",

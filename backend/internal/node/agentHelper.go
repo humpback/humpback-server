@@ -33,16 +33,12 @@ func RemoveNodeContainer(nodeId string, containerId string) error {
 func OperateNodeContainer(nodeId string, containerId string, action string) error {
 	// operate container
 	node := GetNodeInfo(nodeId)
-	if node != nil {
-		url := fmt.Sprintf("http://%s:%d/api/v1/container/%s/%s", node.IpAddress, node.Port, containerId, strings.ToLower(action))
-		slog.Info("[Agent Helper] Operate container", "url", url)
-		err := httpx.NewHttpXClient().Post(url, nil, nil, nil, nil)
-		if err != nil {
-			slog.Error("[Agent Helper] Remove container error", "error", err.Error())
-			return err
-		}
+	if node == nil {
+		return ErrNodeNotExist
 	}
-	return ErrNodeNotExist
+	url := fmt.Sprintf("http://%s:%d/api/v1/container/%s/%s", node.IpAddress, node.Port, containerId, strings.ToLower(action))
+	slog.Info("[Agent Helper] Operate container", "url", url)
+	return httpx.NewHttpXClient().Post(url, nil, nil, nil, nil)
 }
 
 func StartNewContainer(nodeId, containerName string, svc *types.Service) error {

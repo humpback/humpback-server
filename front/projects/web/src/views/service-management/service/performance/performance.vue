@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import * as echarts from "echarts/core"
-import { GridComponent, GridComponentOption, TooltipComponent, TooltipComponentOption, LegendComponent, LegendComponentOption } from "echarts/components"
+import { GridComponent, GridComponentOption, LegendComponent, LegendComponentOption, TooltipComponent, TooltipComponentOption } from "echarts/components"
 import { LineChart, LineSeriesOption } from "echarts/charts"
 import { UniversalTransition } from "echarts/features"
 import { CanvasRenderer } from "echarts/renderers"
 import { SetWebTitle, TimestampToTime } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
-import { ServiceInfo, ContainerPerformance } from "@/types"
+import { ContainerPerformance, ServiceInfo } from "@/types"
 import { filter, find, findIndex, map } from "lodash-es"
 
 echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer, UniversalTransition])
@@ -76,7 +76,7 @@ const memoryOptions = ref<EChartsOption | any>({
   series: []
 })
 
-const networkOptions = ref<EChartsOption>({
+const networkOptions = ref<EChartsOption | any>({
   tooltip: {
     trigger: "axis",
     valueFormatter: value => `${value} MB`
@@ -87,7 +87,7 @@ const networkOptions = ref<EChartsOption>({
     bottom: "10%",
     containLabel: true
   },
-  xAxis: [{ type: "category", data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] }],
+  xAxis: [{ type: "category", data: [] }],
   yAxis: [
     {
       type: "value",
@@ -104,32 +104,7 @@ const networkOptions = ref<EChartsOption>({
       nameTextStyle: { align: "left", fontWeight: "bold" }
     }
   ],
-  series: [
-    {
-      name: "Service",
-      type: "line",
-      yAxisIndex: 0,
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "Version",
-      type: "line",
-      yAxisIndex: 1,
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "DeployService",
-      type: "line",
-      yAxisIndex: 0,
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "DeployServiceaa",
-      type: "line",
-      yAxisIndex: 1,
-      data: [150, 230, 224, 218, 135, 147, 300]
-    }
-  ]
+  series: []
 })
 
 const ioOptions = ref<EChartsOption | any>({
@@ -176,7 +151,7 @@ function parseCpuOption(container: ServiceContainerStatusInfo, info: ContainerPe
   const containerIndex = findIndex(cpuOptions.value?.series || [], (x: any) => x.name === container.containerName)
   const data = containerIndex !== -1 ? cpuOptions.value?.series[containerIndex].data : []
   for (let i = data.length; i < titleIndex; i++) {
-    if (i === titleIndex) {
+    if (i + 1 === titleIndex) {
       data[i] = info.stats?.cpuPercent
     } else {
       data[i] = 0
@@ -191,7 +166,6 @@ function parseCpuOption(container: ServiceContainerStatusInfo, info: ContainerPe
       data: data
     })
   }
-  console.log(cpuOptions.value)
 }
 
 function parseMemoryOptions(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
@@ -200,7 +174,7 @@ function parseMemoryOptions(container: ServiceContainerStatusInfo, info: Contain
   const containerIndex = findIndex(memoryOptions.value?.series || [], (x: any) => x.name === container.containerName)
   const data = containerIndex !== -1 ? memoryOptions.value?.series[containerIndex].data : []
   for (let i = data.length; i < titleIndex; i++) {
-    if (i === titleIndex) {
+    if (i + 1 === titleIndex) {
       data[i] = (info.stats!.memoryUsed / 1024 / 1024).toFixed(2)
     } else {
       data[i] = 0
@@ -215,29 +189,29 @@ function parseMemoryOptions(container: ServiceContainerStatusInfo, info: Contain
       data: data
     })
   }
-  console.log(memoryOptions.value)
 }
 
 function parseNetworkOptions(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
   networkOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
-  const titleIndex = ioOptions.value.xAxis?.[0].data.length || 0
+  const titleIndex = networkOptions.value.xAxis?.[0].data.length || 0
   map(info.stats?.networks, network => {
-    const containerReadName = `${container.containerName}/${network.name}/RX}`
-    const containerWriteName = `${container.containerName}/${network.name}/TX}`
-    const readIndex = findIndex(ioOptions.value?.series || [], (x: any) => x.name === containerReadName && x.yAxisIndex === 0)
-    const writeIndex = findIndex(ioOptions.value?.series || [], (x: any) => x.name === containerWriteName && x.yAxisIndex === 1)
-    const readData = readIndex !== -1 ? ioOptions.value?.series[readIndex].data : []
-    const writeData = writeIndex !== -1 ? ioOptions.value?.series[writeIndex].data : []
+    const containerReadName = `${container.containerName} - ${network.name} - RX`
+    const containerWriteName = `${container.containerName} - ${network.name} - TX`
+    const readIndex = findIndex(networkOptions.value?.series || [], (x: any) => x.name === containerReadName && x.yAxisIndex === 0)
+    const writeIndex = findIndex(networkOptions.value?.series || [], (x: any) => x.name === containerWriteName && x.yAxisIndex === 1)
+    const readData = readIndex !== -1 ? networkOptions.value?.series[readIndex].data : []
+    const writeData = writeIndex !== -1 ? networkOptions.value?.series[writeIndex].data : []
 
     for (let i = readData.length; i < titleIndex; i++) {
-      if (i === titleIndex) {
+      if (i + 1 === titleIndex) {
         readData[i] = (network.rxBytes / 1024 / 1024).toFixed(2)
       } else {
         readData[i] = 0
       }
     }
+
     for (let i = writeData.length; i < titleIndex; i++) {
-      if (i === titleIndex) {
+      if (i + 1 === titleIndex) {
         writeData[i] = (network.txBytes / 1024 / 1024).toFixed(2)
       } else {
         writeData[i] = 0
@@ -266,28 +240,27 @@ function parseNetworkOptions(container: ServiceContainerStatusInfo, info: Contai
       })
     }
   })
-  console.log(networkOptions.value)
 }
 
 function parseIoOptions(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
   ioOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
   const titleIndex = ioOptions.value.xAxis?.[0].data.length || 0
-  const readName = `${container.containerName}/Read`
-  const writeName = `${container.containerName}/Write`
+  const readName = `${container.containerName} - Read`
+  const writeName = `${container.containerName} - Write`
   const readIndex = findIndex(ioOptions.value?.series || [], (x: any) => x.name === readName && x.yAxisIndex === 0)
   const writeIndex = findIndex(ioOptions.value?.series || [], (x: any) => x.name === writeName && x.yAxisIndex === 1)
   const readData = readIndex !== -1 ? ioOptions.value?.series[readIndex].data : []
   const writeData = writeIndex !== -1 ? ioOptions.value?.series[writeIndex].data : []
 
   for (let i = readData.length; i < titleIndex; i++) {
-    if (i === titleIndex) {
+    if (i + 1 === titleIndex) {
       readData[i] = info.stats!.ioRead
     } else {
       readData[i] = 0
     }
   }
   for (let i = writeData.length; i < titleIndex; i++) {
-    if (i === titleIndex) {
+    if (i + 1 === titleIndex) {
       writeData[i] = info.stats!.ioRead
     } else {
       writeData[i] = 0
@@ -315,7 +288,6 @@ function parseIoOptions(container: ServiceContainerStatusInfo, info: ContainerPe
       data: writeData
     })
   }
-  console.log(ioOptions.value)
 }
 
 function parseStatsToChart(statsList: ContainerPerformance[]) {
@@ -348,7 +320,7 @@ function loopSearchPerformance() {
       await getPerformance().catch(() => {})
     }
     loopSearchPerformance()
-  }, 10000)
+  }, 5000)
 }
 
 async function search() {

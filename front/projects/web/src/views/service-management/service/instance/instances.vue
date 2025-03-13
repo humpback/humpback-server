@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { SetWebTitle } from "@/utils"
-import { refreshData } from "@/views/service-management/service/common.ts"
+import { InjectKeyChangeTab, InjectKeyIsLoading, InjectKeyResetLoopSearch, refreshData } from "../common.ts"
 import { ServiceInfo } from "@/types"
 import VLoading from "@/components/business/v-loading/VLoading.vue"
-import { toLower } from "lodash-es"
+import { toLower, uniqWith } from "lodash-es"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -13,8 +13,13 @@ const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = computed<ServiceInfo | undefined>(() => stateStore.getService(serviceId.value))
 
-const isLoading = inject<any>("isLoading")
-const resetLoopSearch = inject<() => void>("resetLoopSearch")
+const isLoading = inject<any>(InjectKeyIsLoading)
+const resetLoopSearch = inject<() => void>(InjectKeyResetLoopSearch)
+const menuChange = inject<(v: string, query?: any) => void>(InjectKeyChangeTab)
+
+function portDeduplication(ports: Array<{ bindIP: string; privatePort: number; publicPort: number; type: string }>) {
+  return uniqWith(ports, (a, b) => a.privatePort === b.privatePort && a.publicPort === b.publicPort)
+}
 
 async function search() {
   isLoading.value = true
@@ -23,6 +28,7 @@ async function search() {
 
 async function operateContainer(nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
   await groupContainerService.operate(groupId.value, { containerId: containerId, nodeId: nodeId, action: action })
+  ShowSuccessMsg(t("message.operateSuccess"))
   await search()
   if (resetLoopSearch !== undefined) {
     resetLoopSearch()
@@ -42,7 +48,9 @@ onMounted(async () => {
     </strong>
     <div>
       <el-button plain size="small" type="success" @click="search()">{{ t("btn.refresh") }}</el-button>
-      <el-button plain size="small" type="primary">{{ t("btn.viewMonitor") }}</el-button>
+      <el-button plain size="small" type="primary" @click="menuChange?.(PageServiceDetail.Performance)">
+        {{ t("btn.viewMonitor") }}
+      </el-button>
     </div>
   </div>
 
@@ -73,7 +81,7 @@ onMounted(async () => {
                       {{ t("label.createTime") }}
                     </el-text>
                   </template>
-                  <v-date-view :format="-1" :timestamp="scope.row.createAt" />
+                  <v-date-view :format="-1" :timestamp="scope.row.created" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -86,7 +94,7 @@ onMounted(async () => {
                       {{ t("label.startTime") }}
                     </el-text>
                   </template>
-                  <v-date-view :format="-1" :timestamp="scope.row.startAt" />
+                  <v-date-view :format="-1" :timestamp="scope.row.started" />
                 </el-form-item>
               </el-col>
               <el-divider border-style="dashed" />
@@ -166,7 +174,7 @@ onMounted(async () => {
                     </el-text>
                   </template>
                   <div v-if="scope.row.ports?.length > 0">
-                    <div v-for="(item, index) in scope.row.ports" :key="index" class="form-line">
+                    <div v-for="(item, index) in portDeduplication(scope.row.ports)" :key="index" class="form-line">
                       <div class="line-prefix">-</div>
                       <div>
                         {{ item.type }}

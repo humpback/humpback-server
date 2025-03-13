@@ -107,8 +107,8 @@ export interface ServiceContainerStatusInfo {
   image: string
   command: string
   network: string
-  createAt: number
-  startAt: number
+  created: number
+  started: number
   nextAt: number
   lastHeartbeat: number
   labels: { [key: string]: string }
