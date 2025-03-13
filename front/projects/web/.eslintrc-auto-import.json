@@ -438,6 +438,10 @@
     "IconMdiPlay": true,
     "IconMdiRestart": true,
     "IconMdiSquare": true,
-    "containerService": true
+    "containerService": true,
+    "ContainerNetworkStats": true,
+    "ContainerPerformance": true,
+    "ContainerStats": true,
+    "groupContainerService": true
   }
 }

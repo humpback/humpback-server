@@ -104,35 +104,34 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 		return "", err
 	}
 
-	isChange := false
 	switch info.Type {
 	case models.ServiceUpdateBasicInfo:
 		service.Description = info.Description
 	case models.ServiceUpdateApplication:
-		if service.Meta != nil {
-			info.MetaInfo.Envs = service.Meta.Envs
+		{
+			if service.Meta != nil {
+				info.MetaInfo.Envs = service.Meta.Envs
+			}
+			if service.IsEnabled && !cmp.Equal(service.Meta, info.MetaInfo) {
+				service.Version = utils.NewVersionId()
+			}
+			service.Meta = info.MetaInfo
 		}
-		isChange = !cmp.Equal(service.Meta, info.MetaInfo)
-		service.Meta = info.MetaInfo
-		service.Action = types.ServiceActionDispatch
 	case models.ServiceUpdateDeployment:
-		if service.Deployment != nil {
-			isChange = !cmp.Equal(service.Deployment.Schedule, info.DeploymentInfo.Schedule)
-		} else {
-			isChange = true
+		{
+			if service.IsEnabled && (service.Deployment == nil || !cmp.Equal(service.Deployment.Schedule, info.DeploymentInfo.Schedule)) {
+				service.Version = utils.NewVersionId()
+			}
+			service.Deployment = info.DeploymentInfo
 		}
-		service.Deployment = info.DeploymentInfo
-		service.Action = types.ServiceActionDispatch
 	}
+	service.Action = types.ServiceActionDispatch
 	service.UpdatedAt = utils.NewActionTimestamp()
-	if service.IsEnabled && isChange {
-		service.Version = utils.NewVersionId()
-	}
 	if err = db.ServiceUpdate(service); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
-	if service.IsEnabled && isChange {
-		sendServiceEvent(svcChan, service.ServiceId, service.Version, types.ServiceActionDispatch)
+	if service.IsEnabled {
+		sendServiceEvent(svcChan, service.ServiceId, service.Version, service.Action)
 	}
 	return service.ServiceId, nil
 }

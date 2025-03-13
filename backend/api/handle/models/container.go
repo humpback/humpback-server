@@ -56,3 +56,25 @@ func (g *GroupContainerLogsReqInfo) Check() error {
 	}
 	return nil
 }
+
+type GroupContainerStatsReqInfo struct {
+	ContainerId string `json:"containerId"`
+	NodeId      string `json:"nodeId"`
+}
+
+type GroupContainerPerformanceReqInfo []*GroupContainerStatsReqInfo
+
+func (g GroupContainerPerformanceReqInfo) Check() error {
+	for _, info := range g {
+		if info.ContainerId == "" {
+			return response.NewBadRequestErr(locales.CodeContainerIdNotEmpty)
+		}
+		if info.NodeId == "" {
+			return response.NewBadRequestErr(locales.CodeNodesIdNotEmpty)
+		}
+	}
+	if len(g) == 0 {
+		response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
+	}
+	return nil
+}

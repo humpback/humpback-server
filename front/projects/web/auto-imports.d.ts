@@ -124,6 +124,7 @@ declare global {
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const globalLoading: typeof import('./src/utils/global-loading')['globalLoading']
+  const groupContainerService: typeof import('./src/services/container-service')['groupContainerService']
   const groupService: typeof import('./src/services/group-service')['groupService']
   const h: typeof import('vue')['h']
   const httpClient: typeof import('./src/services/http-client')['httpClient']
@@ -427,6 +428,9 @@ declare global {
   export type { BaseInfo } from './src/types/base'
   import('./src/types/base')
   // @ts-ignore
+  export type { ContainerPerformance, ContainerStats, ContainerNetworkStats } from './src/types/container'
+  import('./src/types/container')
+  // @ts-ignore
   export type { GroupInfo } from './src/types/group'
   import('./src/types/group')
   // @ts-ignore
@@ -541,7 +545,6 @@ declare module 'vue' {
     readonly computedInject: UnwrapRef<typeof import('@vueuse/core')['computedInject']>
     readonly computedWithControl: UnwrapRef<typeof import('@vueuse/core')['computedWithControl']>
     readonly configService: UnwrapRef<typeof import('./src/services/config-service')['configService']>
-    readonly containerService: UnwrapRef<typeof import('./src/services/container-service')['containerService']>
     readonly controlledComputed: UnwrapRef<typeof import('@vueuse/core')['controlledComputed']>
     readonly controlledRef: UnwrapRef<typeof import('@vueuse/core')['controlledRef']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
@@ -569,6 +572,7 @@ declare module 'vue' {
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly globalLoading: UnwrapRef<typeof import('./src/utils/global-loading')['globalLoading']>
+    readonly groupContainerService: UnwrapRef<typeof import('./src/services/container-service')['groupContainerService']>
     readonly groupService: UnwrapRef<typeof import('./src/services/group-service')['groupService']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly httpClient: UnwrapRef<typeof import('./src/services/http-client')['httpClient']>
