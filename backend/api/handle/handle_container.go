@@ -15,7 +15,7 @@ import (
 func RouteGroupContainer(router *gin.RouterGroup) {
 	router.PUT("", groupContainerOperate)
 	router.POST("/logs", groupContainerQueryLogs)
-	//router.POST("/performace", groupContainerPerformance)
+	router.POST("/performace", groupContainerPerformance)
 }
 
 func groupContainerOperate(c *gin.Context) {
@@ -51,4 +51,17 @@ func groupContainerQueryLogs(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, logs)
+}
+
+func groupContainerPerformance(c *gin.Context) {
+	body := make(models.GroupContainerPerformanceReqInfo, 0)
+	if !middleware.BindAndCheckBody(c, &body) {
+		return
+	}
+	result, err := controller.GroupContainerPerformances(body)
+	if err != nil {
+		middleware.AbortErr(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
 }

@@ -150,6 +150,10 @@ export default {
     "memoryUsage": "Memory Usage",
     "cpuUsage": "CPU Usage",
     "ioUsage": "I/O Usage",
-    "networkUsage": "Network Usage"
+    "networkUsage": "Network Usage",
+    "read": "Read",
+    "write": "Write",
+    "rx": "RX",
+    "tx": "TX"
   }
 }

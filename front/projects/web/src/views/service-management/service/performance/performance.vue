@@ -4,9 +4,10 @@ import { GridComponent, GridComponentOption, TooltipComponent, TooltipComponentO
 import { LineChart, LineSeriesOption } from "echarts/charts"
 import { UniversalTransition } from "echarts/features"
 import { CanvasRenderer } from "echarts/renderers"
-import { SetWebTitle } from "@/utils"
+import { SetWebTitle, TimestampToTime } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
-import { ServiceInfo } from "@/types"
+import { ServiceInfo, ContainerPerformance } from "@/types"
+import { filter, find, findIndex, map } from "lodash-es"
 
 echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer, UniversalTransition])
 
@@ -21,6 +22,7 @@ const serviceId = ref(route.params.serviceId as string)
 const serviceInfo = computed<ServiceInfo | undefined>(() => stateStore.getService(serviceId.value))
 
 const isLoading = ref(false)
+const timer = ref<any>(null)
 
 const cpuRef = useTemplateRef<any>("cpuRef")
 const memoryRef = useTemplateRef<any>("memoryRef")
@@ -32,7 +34,7 @@ let memoryChart: echarts.ECharts
 let networkChart: echarts.ECharts
 let ioChart: echarts.ECharts
 
-let cpuOptions = ref<EChartsOption>({
+let cpuOptions = ref<EChartsOption | any>({
   tooltip: {
     trigger: "axis",
     valueFormatter: value => `${value}%`
@@ -46,30 +48,14 @@ let cpuOptions = ref<EChartsOption>({
   xAxis: [
     {
       type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+      data: []
     }
   ],
   yAxis: [{ type: "value", axisLabel: { formatter: "{value} %" } }],
-  series: [
-    {
-      name: "Service",
-      type: "line",
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "Version",
-      type: "line",
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "DeployService",
-      type: "line",
-      data: [150, 230, 224, 218, 135, 147, 260]
-    }
-  ]
+  series: []
 })
 
-const memoryOptions = ref<EChartsOption>({
+const memoryOptions = ref<EChartsOption | any>({
   tooltip: {
     trigger: "axis",
     valueFormatter: value => `${value} MB`
@@ -83,27 +69,11 @@ const memoryOptions = ref<EChartsOption>({
   xAxis: [
     {
       type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+      data: []
     }
   ],
   yAxis: [{ type: "value", axisLabel: { formatter: "{value} MB" } }],
-  series: [
-    {
-      name: "Service",
-      type: "line",
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "Version",
-      type: "line",
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "DeployService",
-      type: "line",
-      data: [150, 230, 224, 218, 135, 147, 260]
-    }
-  ]
+  series: []
 })
 
 const networkOptions = ref<EChartsOption>({
@@ -117,15 +87,22 @@ const networkOptions = ref<EChartsOption>({
     bottom: "10%",
     containLabel: true
   },
-  xAxis: [
-    {
-      type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    }
-  ],
+  xAxis: [{ type: "category", data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] }],
   yAxis: [
-    { type: "value", axisLabel: { formatter: "{value} MB" }, position: "left" },
-    { type: "value", axisLabel: { formatter: "{value} MB" }, position: "right" }
+    {
+      type: "value",
+      axisLabel: { formatter: "{value} MB" },
+      position: "left",
+      name: "RX",
+      nameTextStyle: { align: "right", fontWeight: "bold" }
+    },
+    {
+      type: "value",
+      axisLabel: { formatter: "{value} MB" },
+      position: "right",
+      name: "TX",
+      nameTextStyle: { align: "left", fontWeight: "bold" }
+    }
   ],
   series: [
     {
@@ -155,7 +132,7 @@ const networkOptions = ref<EChartsOption>({
   ]
 })
 
-const ioOptions = ref<EChartsOption>({
+const ioOptions = ref<EChartsOption | any>({
   tooltip: {
     trigger: "axis",
     valueFormatter: value => `${value} B`
@@ -166,42 +143,24 @@ const ioOptions = ref<EChartsOption>({
     bottom: "10%",
     containLabel: true
   },
-  xAxis: [
-    {
-      type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    }
-  ],
+  xAxis: [{ type: "category", data: [] }],
   yAxis: [
-    { type: "value", axisLabel: { formatter: "{value} B" }, position: "left" },
-    { type: "value", axisLabel: { formatter: "{value} B" }, position: "right" }
-  ],
-  series: [
     {
-      name: "Service",
-      type: "line",
-      yAxisIndex: 0,
-      data: [150, 230, 224, 218, 135, 147, 260]
+      type: "value",
+      axisLabel: { formatter: "{value} B" },
+      position: "left",
+      name: "Read",
+      nameTextStyle: { align: "right", fontWeight: "bold" }
     },
     {
-      name: "Version",
-      type: "line",
-      yAxisIndex: 1,
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "DeployService",
-      type: "line",
-      yAxisIndex: 0,
-      data: [150, 230, 224, 218, 135, 147, 260]
-    },
-    {
-      name: "DeployServiceaa",
-      type: "line",
-      yAxisIndex: 1,
-      data: [150, 230, 224, 218, 135, 147, 300]
+      type: "value",
+      axisLabel: { formatter: "{value} B" },
+      position: "right",
+      name: "Write",
+      nameTextStyle: { align: "left", fontWeight: "bold" }
     }
-  ]
+  ],
+  series: []
 })
 
 function resize() {
@@ -209,6 +168,187 @@ function resize() {
   memoryChart?.resize()
   networkChart?.resize()
   ioChart?.resize()
+}
+
+function parseCpuOption(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
+  cpuOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
+  const titleIndex = cpuOptions.value.xAxis?.[0].data.length || 0
+  const containerIndex = findIndex(cpuOptions.value?.series || [], (x: any) => x.name === container.containerName)
+  const data = containerIndex !== -1 ? cpuOptions.value?.series[containerIndex].data : []
+  for (let i = data.length; i < titleIndex; i++) {
+    if (i === titleIndex) {
+      data[i] = info.stats?.cpuPercent
+    } else {
+      data[i] = 0
+    }
+  }
+  if (containerIndex !== -1) {
+    cpuOptions.value!.series[containerIndex].data = data
+  } else {
+    cpuOptions.value?.series.push({
+      name: container.containerName,
+      type: "line",
+      data: data
+    })
+  }
+  console.log(cpuOptions.value)
+}
+
+function parseMemoryOptions(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
+  memoryOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
+  const titleIndex = memoryOptions.value.xAxis?.[0].data.length || 0
+  const containerIndex = findIndex(memoryOptions.value?.series || [], (x: any) => x.name === container.containerName)
+  const data = containerIndex !== -1 ? memoryOptions.value?.series[containerIndex].data : []
+  for (let i = data.length; i < titleIndex; i++) {
+    if (i === titleIndex) {
+      data[i] = (info.stats!.memoryUsed / 1024 / 1024).toFixed(2)
+    } else {
+      data[i] = 0
+    }
+  }
+  if (containerIndex !== -1) {
+    memoryOptions.value!.series[containerIndex].data = data
+  } else {
+    memoryOptions.value?.series.push({
+      name: container.containerName,
+      type: "line",
+      data: data
+    })
+  }
+  console.log(memoryOptions.value)
+}
+
+function parseNetworkOptions(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
+  networkOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
+  const titleIndex = ioOptions.value.xAxis?.[0].data.length || 0
+  map(info.stats?.networks, network => {
+    const containerReadName = `${container.containerName}/${network.name}/RX}`
+    const containerWriteName = `${container.containerName}/${network.name}/TX}`
+    const readIndex = findIndex(ioOptions.value?.series || [], (x: any) => x.name === containerReadName && x.yAxisIndex === 0)
+    const writeIndex = findIndex(ioOptions.value?.series || [], (x: any) => x.name === containerWriteName && x.yAxisIndex === 1)
+    const readData = readIndex !== -1 ? ioOptions.value?.series[readIndex].data : []
+    const writeData = writeIndex !== -1 ? ioOptions.value?.series[writeIndex].data : []
+
+    for (let i = readData.length; i < titleIndex; i++) {
+      if (i === titleIndex) {
+        readData[i] = (network.rxBytes / 1024 / 1024).toFixed(2)
+      } else {
+        readData[i] = 0
+      }
+    }
+    for (let i = writeData.length; i < titleIndex; i++) {
+      if (i === titleIndex) {
+        writeData[i] = (network.txBytes / 1024 / 1024).toFixed(2)
+      } else {
+        writeData[i] = 0
+      }
+    }
+
+    if (readIndex !== -1) {
+      networkOptions.value!.series![readIndex].data = readData
+    } else {
+      ;(networkOptions.value?.series as any[]).push({
+        name: containerReadName,
+        type: "line",
+        yAxisIndex: 0,
+        data: readData
+      })
+    }
+
+    if (writeIndex !== -1) {
+      networkOptions.value!.series![writeIndex].data = writeData
+    } else {
+      ;(networkOptions.value?.series as any[]).push({
+        name: containerWriteName,
+        type: "line",
+        yAxisIndex: 1,
+        data: writeData
+      })
+    }
+  })
+  console.log(networkOptions.value)
+}
+
+function parseIoOptions(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
+  ioOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
+  const titleIndex = ioOptions.value.xAxis?.[0].data.length || 0
+  const readName = `${container.containerName}/Read`
+  const writeName = `${container.containerName}/Write`
+  const readIndex = findIndex(ioOptions.value?.series || [], (x: any) => x.name === readName && x.yAxisIndex === 0)
+  const writeIndex = findIndex(ioOptions.value?.series || [], (x: any) => x.name === writeName && x.yAxisIndex === 1)
+  const readData = readIndex !== -1 ? ioOptions.value?.series[readIndex].data : []
+  const writeData = writeIndex !== -1 ? ioOptions.value?.series[writeIndex].data : []
+
+  for (let i = readData.length; i < titleIndex; i++) {
+    if (i === titleIndex) {
+      readData[i] = info.stats!.ioRead
+    } else {
+      readData[i] = 0
+    }
+  }
+  for (let i = writeData.length; i < titleIndex; i++) {
+    if (i === titleIndex) {
+      writeData[i] = info.stats!.ioRead
+    } else {
+      writeData[i] = 0
+    }
+  }
+
+  if (readIndex !== -1) {
+    ioOptions.value!.series[readIndex].data = readData
+  } else {
+    ioOptions.value?.series.push({
+      name: readName,
+      type: "line",
+      yAxisIndex: 0,
+      data: readData
+    })
+  }
+
+  if (writeIndex !== -1) {
+    ioOptions.value!.series[writeIndex].data = writeData
+  } else {
+    ioOptions.value?.series.push({
+      name: writeName,
+      type: "line",
+      yAxisIndex: 1,
+      data: writeData
+    })
+  }
+  console.log(ioOptions.value)
+}
+
+function parseStatsToChart(statsList: ContainerPerformance[]) {
+  map(statsList, item => {
+    const container = find(serviceInfo.value?.containers || [], x => x.containerId === item.containerId)
+    if (!container || !item.isSuccess) {
+      return
+    }
+    parseCpuOption(container, item)
+    parseMemoryOptions(container, item)
+    parseNetworkOptions(container, item)
+    parseIoOptions(container, item)
+  })
+  resetChartData()
+}
+
+async function getPerformance() {
+  const validContainers = filter(serviceInfo.value?.containers || [], x => !!x.containerId)
+  const containers = map(validContainers, x => ({ nodeId: x.nodeId, containerId: x.containerId }))
+  if (!containers?.length) {
+    return
+  }
+  const statsList = await groupContainerService.performance(groupId.value, containers)
+  parseStatsToChart(statsList)
+}
+
+function loopSearchPerformance() {
+  timer.value = setTimeout(async () => {
+    if (serviceInfo.value?.isEnabled) {
+      await getPerformance().catch(() => {})
+    }
+    loopSearchPerformance()
+  }, 10000)
 }
 
 async function search() {
@@ -231,10 +371,8 @@ onMounted(async () => {
   memoryChart = echarts.init(memoryRef.value)
   networkChart = echarts.init(networkRef.value)
   ioChart = echarts.init(ioRef.value)
-
-  resetChartData()
-
   window.addEventListener("resize", resize)
+  loopSearchPerformance()
 })
 
 onUnmounted(() => {
@@ -243,6 +381,11 @@ onUnmounted(() => {
   memoryChart?.dispose()
   networkChart?.dispose()
   ioChart?.dispose()
+
+  if (timer.value) {
+    clearTimeout(timer.value)
+    timer.value = null
+  }
 })
 </script>
 
@@ -263,9 +406,6 @@ onUnmounted(() => {
       <el-col :md="12" :span="24" class="mt-5">
         <div class="chart-box">
           <div class="chart-header">
-            <el-icon :size="18">
-              <IconMdiPerformance />
-            </el-icon>
             <el-text>{{ t("label.cpuUsage") }}</el-text>
           </div>
           <div ref="cpuRef" class="chart" />
@@ -275,9 +415,6 @@ onUnmounted(() => {
       <el-col :md="12" :span="24" class="mt-5">
         <div class="chart-box">
           <div class="chart-header">
-            <el-icon :size="18">
-              <IconMdiPerformance />
-            </el-icon>
             <el-text>{{ t("label.memoryUsage") }}</el-text>
           </div>
           <div ref="memoryRef" class="chart" />
@@ -287,9 +424,6 @@ onUnmounted(() => {
       <el-col :md="12" :span="24" class="mt-5">
         <div class="chart-box">
           <div class="chart-header">
-            <el-icon :size="18">
-              <IconMdiPerformance />
-            </el-icon>
             <el-text>{{ t("label.networkUsage") }}</el-text>
           </div>
           <div ref="networkRef" class="chart" />
@@ -299,9 +433,6 @@ onUnmounted(() => {
       <el-col :md="12" :span="24" class="mt-5">
         <div class="chart-box">
           <div class="chart-header">
-            <el-icon :size="18">
-              <IconMdiPerformance />
-            </el-icon>
             <el-text>{{ t("label.ioUsage") }}</el-text>
           </div>
           <div ref="ioRef" class="f chart" />
@@ -334,18 +465,6 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     gap: 12px;
-
-    .el-icon {
-      color: var(--el-color-primary);
-      background-color: var(--el-color-primary-light-9);
-      border-radius: 50%;
-      padding: 4px;
-      width: 14px;
-      height: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
   }
 
   .chart {

@@ -77,15 +77,27 @@ func StartNewContainer(nodeId, containerName string, svc *types.Service) error {
 
 func QueryContainerLogs(nodeId string, containerId string, querys map[string]string) (string, error) {
 	node := GetNodeInfo(nodeId)
-	if node != nil {
-		url := fmt.Sprintf("http://%s:%d/api/v1/container/%s/logs", node.IpAddress, node.Port, containerId)
-		slog.Info("[Agent Helper] Get container logs", "url", url)
-		err := httpx.NewHttpXClient().Get(url, querys, nil, nil)
-		if err != nil {
-			slog.Error("[Agent Helper] Get container error", "error", err.Error())
-			return "", err
-		}
+	if node == nil {
+		return "", ErrNodeNotExist
 	}
+	url := fmt.Sprintf("http://%s:%d/api/v1/container/%s/logs", node.IpAddress, node.Port, containerId)
+	err := httpx.NewHttpXClient().Get(url, querys, nil, nil)
+	if err != nil {
+		return "", err
+	}
+	return "", nil
+}
 
-	return "", ErrNodeNotExist
+func GetContainerStats(nodeId string, containerId string) (*ContainerStats, error) {
+	node := GetNodeInfo(nodeId)
+	if node == nil {
+		return nil, ErrNodeNotExist
+	}
+	var stats = new(ContainerStats)
+	url := fmt.Sprintf("http://%s:%d/api/v1/container/%s/stats", node.IpAddress, node.Port, containerId)
+	err := httpx.NewHttpXClient().Get(url, nil, nil, stats)
+	if err != nil {
+		return nil, err
+	}
+	return stats, nil
 }

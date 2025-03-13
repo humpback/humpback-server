@@ -22,7 +22,7 @@ async function search() {
 }
 
 async function operateContainer(nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
-  await containerService.operate(groupId.value, { containerId: containerId, nodeId: nodeId, action: action })
+  await groupContainerService.operate(groupId.value, { containerId: containerId, nodeId: nodeId, action: action })
   await search()
   if (resetLoopSearch !== undefined) {
     resetLoopSearch()
