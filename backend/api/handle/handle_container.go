@@ -13,9 +13,9 @@ import (
 )
 
 func RouteGroupContainer(router *gin.RouterGroup) {
-	router.PUT("", groupContainerOperate)
+	router.PUT("/operate", groupContainerOperate)
 	router.POST("/logs", groupContainerQueryLogs)
-	router.POST("/performace", groupContainerPerformance)
+	router.POST("/performance", groupContainerPerformance)
 }
 
 func groupContainerOperate(c *gin.Context) {

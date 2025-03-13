@@ -9,7 +9,7 @@ import ServiceDelete from "./action/service-delete.vue"
 import ServiceClone from "./action/servcie-clone.vue"
 import { shallowRef } from "vue"
 import { find, toLower } from "lodash-es"
-import { ActionOptions, refreshData, showAction } from "@/views/service-management/service/common.ts"
+import { ActionOptions, InjectKeyChangeTab, InjectKeyIsLoading, InjectKeyResetLoopSearch, refreshData, showAction } from "./common.ts"
 import VLoading from "@/components/business/v-loading/VLoading.vue"
 
 const { t } = useI18n()
@@ -37,8 +37,13 @@ const isLoading = computed({
   }
 })
 
-provide("isLoading", isLoading)
-provide("resetLoopSearch", resetLoopSearch)
+// export const InjectKeyIsLoading = Symbol("IsLoading")
+// export const InjectKeyResetLoopSearch = Symbol("ResetLoopSearch")
+// export const InjectKeyChangeTab = Symbol("ChangeTab")
+
+provide(InjectKeyIsLoading, isLoading)
+provide(InjectKeyResetLoopSearch, resetLoopSearch)
+provide(InjectKeyChangeTab, menuChange)
 
 const timer = ref<any>(null)
 
@@ -49,13 +54,38 @@ const activeMenu = ref(route.params.mode as string)
 
 const menuOptions = ref<any[]>([
   { i18nLabel: "label.setting", iconClass: "icon_mdi--settings-outline", isGroup: true },
-  { i18nLabel: "label.basicInfo", value: PageServiceDetail.BasicInfo, isRequired: true, component: shallowRef(BasicInfo) },
-  { i18nLabel: "label.application", value: PageServiceDetail.Application, isRequired: true, component: shallowRef(Application) },
-  { i18nLabel: "label.deployment", value: PageServiceDetail.Deployment, isRequired: true, component: shallowRef(Deployment) },
+  {
+    i18nLabel: "label.basicInfo",
+    value: PageServiceDetail.BasicInfo,
+    isRequired: true,
+    component: shallowRef(BasicInfo)
+  },
+  {
+    i18nLabel: "label.application",
+    value: PageServiceDetail.Application,
+    isRequired: true,
+    component: shallowRef(Application)
+  },
+  {
+    i18nLabel: "label.deployment",
+    value: PageServiceDetail.Deployment,
+    isRequired: true,
+    component: shallowRef(Deployment)
+  },
   { i18nLabel: "label.monitor", iconClass: "icon_mdi--gauge", isGroup: true },
-  { i18nLabel: "label.instances", value: PageServiceDetail.Instances, isRequired: false, component: shallowRef(Instances) },
+  {
+    i18nLabel: "label.instances",
+    value: PageServiceDetail.Instances,
+    isRequired: false,
+    component: shallowRef(Instances)
+  },
   { i18nLabel: "label.log", value: PageServiceDetail.Log, isRequired: false, component: shallowRef(Log) },
-  { i18nLabel: "label.performance", value: PageServiceDetail.Performance, isRequired: false, component: shallowRef(Performance) }
+  {
+    i18nLabel: "label.performance",
+    value: PageServiceDetail.Performance,
+    isRequired: false,
+    component: shallowRef(Performance)
+  }
 ])
 
 function showIncomplete(v: string) {
@@ -65,14 +95,15 @@ function showIncomplete(v: string) {
   return v === PageServiceDetail.Deployment && !serviceInfo.value?.deployment
 }
 
-function menuChange(v: string) {
+function menuChange(v: string, query?: any) {
   activeMenu.value = v
   resetLoopSearch()
-  router.replace({ params: Object.assign({}, route.params, { mode: v }) })
+  router.replace({ params: Object.assign({}, route.params, { mode: v }), query: query })
 }
 
 function resetLoopSearch() {
   stopLoopSearch()
+  loadingInfo.value.cycleNumber = 0
   if (activeMenu.value === PageServiceDetail.Instances && serviceInfo.value?.isEnabled) {
     loadingInfo.value.interval = 5
   } else {
@@ -95,17 +126,20 @@ async function search() {
 
 function loopSearch() {
   timer.value = setTimeout(async () => {
-    await search().catch(() => {})
-    if (
-      loadingInfo.value.cycleNumber < 5 &&
-      serviceInfo.value?.isEnabled &&
-      toLower(serviceInfo.value.status) === toLower(ServiceStatus.ServiceStatusRunning)
-    ) {
-      loadingInfo.value.cycleNumber++
+    if (serviceInfo.value?.isEnabled || serviceInfo.value?.containers?.length) {
+      await search().catch(() => {})
+      if (
+        loadingInfo.value.cycleNumber < 5 &&
+        serviceInfo.value?.isEnabled &&
+        toLower(serviceInfo.value.status) === toLower(ServiceStatus.ServiceStatusRunning)
+      ) {
+        loadingInfo.value.cycleNumber++
+      }
+      if (loadingInfo.value.cycleNumber >= 5) {
+        loadingInfo.value.interval = 10
+      }
     }
-    if (loadingInfo.value.cycleNumber >= 5) {
-      loadingInfo.value.interval = 10
-    }
+
     loopSearch()
   }, loadingInfo.value.interval * 1000)
 }

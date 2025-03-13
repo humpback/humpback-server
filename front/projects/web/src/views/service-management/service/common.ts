@@ -3,6 +3,10 @@ import { cloneDeep, find, omitBy } from "lodash-es"
 import { NodeSwitch, ServiceStatus } from "@/models"
 import { groupService } from "services/group-service.ts"
 
+export const InjectKeyIsLoading = Symbol("IsLoading")
+export const InjectKeyResetLoopSearch = Symbol("ResetLoopSearch")
+export const InjectKeyChangeTab = Symbol("ChangeTab")
+
 export const sortOptions = ["serviceName", "updatedAt", "createdAt"]
 
 export const defaultSort = NewSortInfo("serviceName", "asc")
