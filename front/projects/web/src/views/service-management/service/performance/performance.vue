@@ -151,11 +151,7 @@ function parseCpuOption(container: ServiceContainerStatusInfo, info: ContainerPe
   const containerIndex = findIndex(cpuOptions.value?.series || [], (x: any) => x.name === container.containerName)
   const data = containerIndex !== -1 ? cpuOptions.value?.series[containerIndex].data : []
   for (let i = data.length; i < titleIndex; i++) {
-    if (i + 1 === titleIndex) {
-      data[i] = info.stats?.cpuPercent
-    } else {
-      data[i] = 0
-    }
+    data[i] = i + 1 === titleIndex ? info.stats?.cpuPercent : 0
   }
   if (containerIndex !== -1) {
     cpuOptions.value!.series[containerIndex].data = data
@@ -174,11 +170,7 @@ function parseMemoryOptions(container: ServiceContainerStatusInfo, info: Contain
   const containerIndex = findIndex(memoryOptions.value?.series || [], (x: any) => x.name === container.containerName)
   const data = containerIndex !== -1 ? memoryOptions.value?.series[containerIndex].data : []
   for (let i = data.length; i < titleIndex; i++) {
-    if (i + 1 === titleIndex) {
-      data[i] = (info.stats!.memoryUsed / 1024 / 1024).toFixed(2)
-    } else {
-      data[i] = 0
-    }
+    data[i] = i + 1 === titleIndex ? (info.stats!.memoryUsed / 1024 / 1024).toFixed(2) : 0
   }
   if (containerIndex !== -1) {
     memoryOptions.value!.series[containerIndex].data = data
@@ -203,19 +195,11 @@ function parseNetworkOptions(container: ServiceContainerStatusInfo, info: Contai
     const writeData = writeIndex !== -1 ? networkOptions.value?.series[writeIndex].data : []
 
     for (let i = readData.length; i < titleIndex; i++) {
-      if (i + 1 === titleIndex) {
-        readData[i] = (network.rxBytes / 1024 / 1024).toFixed(2)
-      } else {
-        readData[i] = 0
-      }
+      readData[i] = i + 1 === titleIndex ? (network.rxBytes / 1024 / 1024).toFixed(2) : 0
     }
 
     for (let i = writeData.length; i < titleIndex; i++) {
-      if (i + 1 === titleIndex) {
-        writeData[i] = (network.txBytes / 1024 / 1024).toFixed(2)
-      } else {
-        writeData[i] = 0
-      }
+      writeData[i] = i + 1 === titleIndex ? (network.txBytes / 1024 / 1024).toFixed(2) : 0
     }
 
     if (readIndex !== -1) {
@@ -253,18 +237,10 @@ function parseIoOptions(container: ServiceContainerStatusInfo, info: ContainerPe
   const writeData = writeIndex !== -1 ? ioOptions.value?.series[writeIndex].data : []
 
   for (let i = readData.length; i < titleIndex; i++) {
-    if (i + 1 === titleIndex) {
-      readData[i] = info.stats!.ioRead
-    } else {
-      readData[i] = 0
-    }
+    readData[i] = i + 1 === titleIndex ? info.stats!.ioRead : 0
   }
   for (let i = writeData.length; i < titleIndex; i++) {
-    if (i + 1 === titleIndex) {
-      writeData[i] = info.stats!.ioRead
-    } else {
-      writeData[i] = 0
-    }
+    writeData[i] = i + 1 === titleIndex ? info.stats!.ioRead : 0
   }
 
   if (readIndex !== -1) {

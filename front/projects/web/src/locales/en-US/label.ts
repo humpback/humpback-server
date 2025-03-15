@@ -154,6 +154,7 @@ export default {
     "read": "Read",
     "write": "Write",
     "rx": "RX",
-    "tx": "TX"
+    "tx": "TX",
+    "wrapLines": "Wrap lines"
   }
 }

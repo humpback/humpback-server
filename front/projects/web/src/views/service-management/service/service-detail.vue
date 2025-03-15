@@ -95,10 +95,10 @@ function showIncomplete(v: string) {
   return v === PageServiceDetail.Deployment && !serviceInfo.value?.deployment
 }
 
-function menuChange(v: string, query?: any) {
+async function menuChange(v: string, query?: any) {
+  await router.replace({ params: Object.assign({}, route.params, { mode: v }), query: query })
   activeMenu.value = v
   resetLoopSearch()
-  router.replace({ params: Object.assign({}, route.params, { mode: v }), query: query })
 }
 
 function resetLoopSearch() {
