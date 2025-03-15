@@ -4,6 +4,7 @@ import (
 	"slices"
 	"strings"
 
+	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
 	"humpback/common/verify"
@@ -51,8 +52,8 @@ func (g *GroupContainerLogsReqInfo) Check() error {
 	if g.StartAt > g.EndAt {
 		return response.NewBadRequestErr(locales.CodeContainerLogTimeInvlaid)
 	}
-	if g.Line > 10000 {
-		g.Line = 10000
+	if g.Line > uint(enum.LimitLogsLine.Max) {
+		g.Line = uint(enum.LimitLogsLine.Max)
 	}
 	return nil
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -16,8 +17,25 @@ func GroupContainerOperate(info *models.GroupContainerOperateReqInfo) error {
 	return nil
 }
 
-func GroupContainerQueryLogs(info *models.GroupContainerLogsReqInfo) (string, error) {
-	return "", nil
+func GroupContainerQueryLogs(info *models.GroupContainerLogsReqInfo) ([]string, error) {
+	query := map[string]string{
+		"containerId": info.ContainerId,
+		"timestamps":  fmt.Sprintf("%v", info.ShowTimestamp),
+	}
+	if info.Line > 0 {
+		query["tail"] = fmt.Sprintf("%d", info.Line)
+	}
+	if info.StartAt > 0 {
+		query["since"] = time.UnixMilli(info.StartAt).Format(time.RFC3339Nano)
+	}
+	if info.EndAt > 0 {
+		query["until"] = time.UnixMilli(info.EndAt).Format(time.RFC3339Nano)
+	}
+	logs, err := node.QueryContainerLogs(info.NodeId, info.ContainerId, query)
+	if err != nil {
+		return nil, err
+	}
+	return logs, nil
 }
 
 func GroupContainerPerformances(containers models.GroupContainerPerformanceReqInfo) ([]*types.GroupContainerPerformance, error) {

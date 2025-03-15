@@ -71,17 +71,18 @@ func StartNewContainer(nodeId, containerName string, svc *types.Service) error {
 	return nil
 }
 
-func QueryContainerLogs(nodeId string, containerId string, querys map[string]string) (string, error) {
+func QueryContainerLogs(nodeId string, containerId string, querys map[string]string) ([]string, error) {
 	node := GetNodeInfo(nodeId)
 	if node == nil {
-		return "", ErrNodeNotExist
+		return nil, ErrNodeNotExist
 	}
 	url := fmt.Sprintf("http://%s:%d/api/v1/container/%s/logs", node.IpAddress, node.Port, containerId)
-	err := httpx.NewHttpXClient().Get(url, querys, nil, nil)
+	data := make([]string, 0)
+	err := httpx.NewHttpXClient().Get(url, querys, nil, &data)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return "", nil
+	return data, nil
 }
 
 func GetContainerStats(nodeId string, containerId string) (*ContainerStats, error) {

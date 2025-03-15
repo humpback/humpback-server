@@ -120,6 +120,7 @@ declare module 'vue' {
     VLoadingPage: typeof import('./src/components/business/v-loading/VLoadingPage.vue')['default']
     VLogo: typeof import('./src/components/business/logo/VLogo.vue')['default']
     VLogSearchTimeRange: typeof import('./src/components/business/v-log/VLogSearchTimeRange.vue')['default']
+    VLogView: typeof import('./src/components/business/v-log/VLogView.vue')['default']
     VMemo: typeof import('./src/components/business/v-memo/VMemo.vue')['default']
     VMonacoEdit: typeof import('./src/components/common/v-monaco/VMonacoEdit.vue')['default']
     VMonacoView: typeof import('./src/components/common/v-monaco/VMonacoView.vue')['default']

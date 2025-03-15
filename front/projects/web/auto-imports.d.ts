@@ -96,7 +96,6 @@ declare global {
   const computedInject: typeof import('@vueuse/core')['computedInject']
   const computedWithControl: typeof import('@vueuse/core')['computedWithControl']
   const configService: typeof import('./src/services/config-service')['configService']
-  const containerService: typeof import('./src/services/container-service')['containerService']
   const controlledComputed: typeof import('@vueuse/core')['controlledComputed']
   const controlledRef: typeof import('@vueuse/core')['controlledRef']
   const createApp: typeof import('vue')['createApp']
@@ -124,7 +123,7 @@ declare global {
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const globalLoading: typeof import('./src/utils/global-loading')['globalLoading']
-  const groupContainerService: typeof import('./src/services/container-service')['groupContainerService']
+  const groupContainerService: typeof import('./src/services/group-container-service')['groupContainerService']
   const groupService: typeof import('./src/services/group-service')['groupService']
   const h: typeof import('vue')['h']
   const httpClient: typeof import('./src/services/http-client')['httpClient']
@@ -572,7 +571,7 @@ declare module 'vue' {
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly globalLoading: UnwrapRef<typeof import('./src/utils/global-loading')['globalLoading']>
-    readonly groupContainerService: UnwrapRef<typeof import('./src/services/container-service')['groupContainerService']>
+    readonly groupContainerService: UnwrapRef<typeof import('./src/services/group-container-service')['groupContainerService']>
     readonly groupService: UnwrapRef<typeof import('./src/services/group-service')['groupService']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly httpClient: UnwrapRef<typeof import('./src/services/http-client')['httpClient']>

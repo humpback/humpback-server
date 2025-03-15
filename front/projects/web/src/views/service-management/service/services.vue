@@ -33,6 +33,10 @@ const setRowClass = ({ row }) => {
   return row.containers.length === 0 || !row.isEnabled ? "hide-expand-icon" : ""
 }
 
+function routerToInstanceLog(serviceId: string, containerId: string) {
+  router.push({ name: "serviceInfo", params: { groupId: groupId.value, serviceId: serviceId, mode: PageServiceDetail.Log }, query: { instance: containerId } })
+}
+
 async function getGroupInfo() {
   return await groupService.info(groupId.value).then(info => {
     stateStore.setGroup(groupId.value, info)
@@ -61,6 +65,12 @@ async function search() {
 async function operateService(serviceId: string, action: "Start" | "Stop" | "Restart" | "Enable" | "Disable") {
   await serviceService.operate(groupId.value, { serviceId: serviceId, action: action })
   ShowSuccessMsg(t("message.succeed"))
+  await search()
+}
+
+async function operateContainer(nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
+  await groupContainerService.operate(groupId.value, { containerId: containerId, nodeId: nodeId, action: action })
+  ShowSuccessMsg(t("message.operateSuccess"))
   await search()
 }
 
@@ -155,33 +165,53 @@ onMounted(async () => {
               </template>
             </el-table-column>
             <el-table-column :label="t('label.createTime')" min-width="140">
-              <template #default="scope">
-                <v-date-view :timestamp="scope.row.createAt" />
+              <template #default="cscope">
+                <v-date-view :timestamp="cscope.row.created" />
               </template>
             </el-table-column>
             <el-table-column :label="t('label.startTime')" min-width="140">
-              <template #default="scope">
-                <v-date-view :timestamp="scope.row.startDate" />
+              <template #default="cscope">
+                <v-date-view :timestamp="cscope.row.started" />
               </template>
             </el-table-column>
             <el-table-column :label="t('label.action')" width="180">
-              <template #default>
-                <el-button :title="t('label.restart')" link type="success">
+              <template #default="cscope">
+                <el-button
+                  :disabled="!cscope.row.containerId"
+                  :title="t('label.restart')"
+                  link
+                  type="success"
+                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Restart')">
                   <el-icon :size="16">
                     <IconMdiRestart />
                   </el-icon>
                 </el-button>
-                <el-button :title="t('label.start')" link type="success">
+                <el-button
+                  :disabled="!cscope.row.containerId"
+                  :title="t('label.start')"
+                  link
+                  type="success"
+                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Start')">
                   <el-icon :size="16">
                     <IconMdiPlay />
                   </el-icon>
                 </el-button>
-                <el-button :title="t('label.stop')" link type="danger">
+                <el-button
+                  :disabled="!cscope.row.containerId"
+                  :title="t('label.stop')"
+                  link
+                  type="danger"
+                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Stop')">
                   <el-icon :size="16">
                     <IconMdiSquare />
                   </el-icon>
                 </el-button>
-                <el-button :title="t('label.log')" link type="primary">
+                <el-button
+                  :disabled="!cscope.row.containerId"
+                  :title="t('label.log')"
+                  link
+                  type="primary"
+                  @click="routerToInstanceLog(scope.row.serviceId, cscope.row.containerId)">
                   <el-icon :size="16">
                     <IconMdiNoteText />
                   </el-icon>

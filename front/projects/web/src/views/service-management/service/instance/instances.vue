@@ -21,6 +21,12 @@ function portDeduplication(ports: Array<{ bindIP: string; privatePort: number; p
   return uniqWith(ports, (a, b) => a.privatePort === b.privatePort && a.publicPort === b.publicPort)
 }
 
+function routerToLogs(containerId: string) {
+  if (menuChange && typeof menuChange === "function") {
+    menuChange(PageServiceDetail.Log, { instance: containerId })
+  }
+}
+
 async function search() {
   isLoading.value = true
   await refreshData(groupId.value, serviceId.value, "instances").finally(() => (isLoading.value = false))
@@ -269,7 +275,7 @@ onMounted(async () => {
               <IconMdiSquare />
             </el-icon>
           </el-button>
-          <el-button :title="t('label.log')" link type="primary">
+          <el-button :title="t('label.log')" link type="primary" @click="routerToLogs(scope.row.containerId)">
             <el-icon :size="16">
               <IconMdiNoteText />
             </el-icon>

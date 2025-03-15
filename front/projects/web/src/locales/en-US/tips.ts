@@ -32,6 +32,7 @@ export default {
     "noEnvSetting": "No environment variable settings",
     "noLabelSetting": "No label setting",
     "noVolumeMappingSetting": "No volume mapping settings",
+    "logsTips": "The current log can be queried up to 10,000 rows.",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",
