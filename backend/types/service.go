@@ -174,7 +174,7 @@ type ServiceVolume struct {
 	Type     ServiceVolumeType `json:"type"`
 	Target   string            `json:"target"`
 	Source   string            `json:"source"`
-	Readonly bool              `json:"readOnly"`
+	Readonly bool              `json:"readonly"`
 }
 
 type NetworkMode string
