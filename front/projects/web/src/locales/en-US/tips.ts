@@ -14,6 +14,8 @@ export default {
       "The host volume can use a global config of type volume. We will create a file named config name on the host and map it to your container volume, format: {'{'}ConfigName{'}'}.",
     "envTips":
       "The value in env can use built-in variables (IP, Hostname, InstanceName) and global config of type static, format: {'{'}VariableName or ConfigName{'}'}",
+    "alwaysPullTips":
+      "In the case of a resident service, the image is re-pulled when the version is changed or migrated, and in the case of a job service, the instance is recreated with each execution.",
     "privilegedTips": "Give extended privileges to this container.",
     "memoryLimitTips": "The maximum memory that can be used, if the limit (OOM) is exceeded, the system will force it to kill, and 0 means no limit.",
     "memoryReservationTips": "The minimum amount of memory reserved by the system, 0 is not restricted.",

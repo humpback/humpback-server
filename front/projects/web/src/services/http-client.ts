@@ -108,3 +108,21 @@ class HttpClientService {
 }
 
 export const httpClient = new HttpClientService()
+
+const NOOP = () => {}
+
+export function CreateCancelRequest<T extends (...args: any[]) => Promise<any>>(asyncRequest: T): (...args: Parameters<T>) => Promise<Awaited<ReturnType<T>>> {
+  let cancel = NOOP
+  return (...args: any[]) => {
+    return new Promise((resolve, reject) => {
+      cancel()
+      cancel = () => {
+        resolve = reject = NOOP
+      }
+      asyncRequest(...args).then(
+        (res: any) => resolve(res),
+        (err: any) => reject(err)
+      )
+    })
+  }
+}

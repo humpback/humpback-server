@@ -243,9 +243,6 @@ onMounted(async () => {
                 </template>
               </el-dropdown>
             </template>
-            <template #append>
-              <el-checkbox v-model="metaInfo.alwaysPull">{{ t("label.alwaysPull") }}</el-checkbox>
-            </template>
           </v-input>
         </el-form-item>
       </el-col>
@@ -400,8 +397,18 @@ onMounted(async () => {
         </div>
       </el-col>
 
+      <el-col class="mt-5">
+        <el-form-item>
+          <el-checkbox v-model="metaInfo.alwaysPull">
+            <strong>
+              <el-text size="small">{{ t("label.alwaysPull") }}</el-text>
+            </strong>
+          </el-checkbox>
+          <v-tips>{{ t("tips.alwaysPullTips") }}</v-tips>
+        </el-form-item>
+      </el-col>
       <el-col>
-        <el-form-item class="mt-5">
+        <el-form-item>
           <el-checkbox v-model="metaInfo.privileged">
             <strong>
               <el-text size="small">{{ t("label.privilegedMode") }}</el-text>

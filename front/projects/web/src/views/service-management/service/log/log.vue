@@ -53,28 +53,33 @@ function parseQuery() {
   searchInfo.value.showTimestamp = toLower(query?.showTimestamp as string) === "true"
 }
 
+const queryLogs = CreateCancelRequest(async (...args: any[]) => {
+  return groupContainerService.logs(args[0], args[1])
+})
+
 async function getLogs() {
   if (isAction.value) {
     return
   }
   const instanceInfo = find(containers.value, x => x.containerId === searchInfo.value.instance)
   if (!instanceInfo) {
-    ShowErrMsg(t("err.instanceNotExist"))
+    if (searchInfo.value.instance) {
+      ShowErrMsg(t("err.instanceNotExist"))
+    }
     return
   }
   await router.replace({ params: route.params, query: Object.assign({}, newQuery()) as any })
   isAction.value = true
-  return await groupContainerService
-    .logs(groupId.value, {
-      nodeId: instanceInfo.nodeId,
-      containerId: searchInfo.value.instance,
-      line: searchInfo.value.line || 0,
-      startAt: searchInfo.value.startAt || 0,
-      endAt: searchInfo.value.endAt || 0,
-      showTimestamp: searchInfo.value.showTimestamp
-    })
+  await queryLogs(groupId.value, {
+    nodeId: instanceInfo.nodeId,
+    containerId: searchInfo.value.instance,
+    line: searchInfo.value.line || 0,
+    startAt: searchInfo.value.startAt || 0,
+    endAt: searchInfo.value.endAt || 0,
+    showTimestamp: searchInfo.value.showTimestamp
+  })
     .then(data => {
-      logs.value = data
+      logs.value = data || []
     })
     .finally(() => {
       isAction.value = false
@@ -141,12 +146,14 @@ onMounted(async () => {
           </el-input>
         </div>
 
-        <el-button v-loading="isAction" :disabled="!searchInfo.instance" plain type="primary" @click="getLogs()">{{ t("btn.refresh") }}</el-button>
+        <el-button :disabled="isAction || !searchInfo.instance" plain type="primary" @click="getLogs()">
+          {{ t("btn.refresh") }}
+        </el-button>
       </div>
     </div>
 
-    <div v-loading="isAction" class="log-box">
-      <v-log-view :logList="logs">
+    <div class="log-box">
+      <v-log-view v-loading="isAction" :logList="logs">
         <template #header-left>
           <el-switch v-model="searchInfo.showTimestamp" :active-text="t('label.showTimestamp')" @change="getLogs()" />
         </template>

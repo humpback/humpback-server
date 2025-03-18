@@ -26,8 +26,11 @@ const breadcrumbs = computed(() => {
 
 <template>
   <el-breadcrumb v-if="breadcrumbs.length > 0" separator="/">
-    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index" :to="item.isLink ? { name: item?.routeName, params: item?.routeParams } : undefined">
-      {{ item?.name ? item.name : item?.i18nLabel ? t(item?.i18nLabel) : "" }}
+    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index">
+      <router-link v-if="item.isLink" v-slot="{ href }" :to="{ name: item?.routeName, params: item?.routeParams }" custom>
+        <a :href="href">{{ item?.name ? item.name : item?.i18nLabel ? t(item?.i18nLabel) : "" }}</a>
+      </router-link>
+      <span v-else>{{ item?.name ? item.name : item?.i18nLabel ? t(item?.i18nLabel) : "" }}</span>
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>

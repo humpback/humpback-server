@@ -10,7 +10,7 @@ type GroupContainerPerformance struct {
 
 type GroupContainerStats struct {
 	CpuPercent  float64                   `json:"cpuPercent"`
-	MermoryUsed uint64                    `json:"memoryUsed"`
+	MemoryUsed  uint64                    `json:"memoryUsed"`
 	MemoryLimit uint64                    `json:"memoryLimit"`
 	IORead      uint64                    `json:"ioRead"`
 	IOWrite     uint64                    `json:"ioWrite"`

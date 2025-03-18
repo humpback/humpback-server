@@ -7,15 +7,13 @@
 export {}
 declare global {
   const BytesToGB: typeof import('./src/utils/common')['BytesToGB']
-  const ChangeEventType: typeof import('./src/utils/event')['ChangeEventType']
-  const CloseChannelMessage: typeof import('./src/utils/event')['CloseChannelMessage']
   const ConfigType: typeof import('./src/models/enum')['ConfigType']
   const ContainerStatus: typeof import('./src/models/enum')['ContainerStatus']
   const CopyToClipboard: typeof import('./src/utils/copy')['CopyToClipboard']
+  const CreateCancelRequest: typeof import('./src/services/http-client')['CreateCancelRequest']
   const Debounce: typeof import('./src/utils/time')['Debounce']
   const EffectScope: typeof import('vue')['EffectScope']
   const GenerateUUID: typeof import('./src/utils/rsa')['GenerateUUID']
-  const GetChannelMessage: typeof import('./src/utils/event')['GetChannelMessage']
   const GetUserRole: typeof import('./src/utils/common')['GetUserRole']
   const IconMdiAccount: typeof import('~icons/mdi/account')['default']
   const IconMdiAlphaCBoxOutline: typeof import('~icons/mdi/alpha-c-box-outline')['default']
@@ -66,7 +64,6 @@ declare global {
   const RuleLimitMax: typeof import('./src/utils/rule')['RuleLimitMax']
   const RuleLimitRange: typeof import('./src/utils/rule')['RuleLimitRange']
   const RulePleaseEnter: typeof import('./src/utils/rule')['RulePleaseEnter']
-  const SendChannelMessage: typeof import('./src/utils/event')['SendChannelMessage']
   const ServiceDeployMode: typeof import('./src/models/enum')['ServiceDeployMode']
   const ServiceDeployType: typeof import('./src/models/enum')['ServiceDeployType']
   const ServiceNetworkMode: typeof import('./src/models/enum')['ServiceNetworkMode']
@@ -461,6 +458,7 @@ declare module 'vue' {
     readonly ConfigType: UnwrapRef<typeof import('./src/models/enum')['ConfigType']>
     readonly ContainerStatus: UnwrapRef<typeof import('./src/models/enum')['ContainerStatus']>
     readonly CopyToClipboard: UnwrapRef<typeof import('./src/utils/copy')['CopyToClipboard']>
+    readonly CreateCancelRequest: UnwrapRef<typeof import('./src/services/http-client')['CreateCancelRequest']>
     readonly Debounce: UnwrapRef<typeof import('./src/utils/time')['Debounce']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly GenerateUUID: UnwrapRef<typeof import('./src/utils/rsa')['GenerateUUID']>
