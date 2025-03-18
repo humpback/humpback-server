@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ChangeEventType, CloseChannelMessage, GetChannelMessage } from "utils/index.ts"
+import { StorageEventType, storageEventBus } from "utils/index.ts"
 import { GetUILocale } from "@/locales/index.ts"
 import VLoadingPage from "@/components/business/v-loading/VLoadingPage.vue"
 
@@ -9,21 +9,21 @@ const userStore = useUserStore()
 
 const handleChannelMessage = (data: any) => {
   switch (data?.type) {
-    case ChangeEventType.Login:
+    case StorageEventType.Login:
       if (!data.value || data.value?.userId != userStore.userInfo.userId) {
         pageStore.refreshPage.needRefresh = true
-        pageStore.refreshPage.type = ChangeEventType.Login
+        pageStore.refreshPage.type = StorageEventType.Login
       }
       return
-    case ChangeEventType.Logout:
+    case StorageEventType.Logout:
       pageStore.refreshPage.needRefresh = true
-      pageStore.refreshPage.type = ChangeEventType.Logout
+      pageStore.refreshPage.type = StorageEventType.Logout
   }
 }
 
 const handleFocus = () => {
   if (pageStore.refreshPage.needRefresh) {
-    if (pageStore.refreshPage.type === ChangeEventType.Login) {
+    if (pageStore.refreshPage.type === StorageEventType.Login) {
       ShowWarningMsg(t("message.loginUserChangeEvent"))
     }
     location.reload()
@@ -32,13 +32,13 @@ const handleFocus = () => {
 
 onMounted(() => {
   pageStore.setScreen()
-  GetChannelMessage(handleChannelMessage)
+  storageEventBus.SetMessageHandler(handleChannelMessage)
   window.addEventListener("resize", pageStore.setScreen)
   window.addEventListener("focus", handleFocus)
 })
 
 onBeforeUnmount(() => {
-  CloseChannelMessage()
+  storageEventBus.Close()
   window.removeEventListener("resize", pageStore.setScreen)
   window.removeEventListener("focus", handleFocus)
 })

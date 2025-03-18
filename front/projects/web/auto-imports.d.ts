@@ -14,7 +14,7 @@ declare global {
   const CopyToClipboard: typeof import('./src/utils/copy')['CopyToClipboard']
   const Debounce: typeof import('./src/utils/time')['Debounce']
   const EffectScope: typeof import('vue')['EffectScope']
-  const GenerateUUID: typeof import('./src/utils/event')['GenerateUUID']
+  const GenerateUUID: typeof import('./src/utils/rsa')['GenerateUUID']
   const GetChannelMessage: typeof import('./src/utils/event')['GetChannelMessage']
   const GetUserRole: typeof import('./src/utils/common')['GetUserRole']
   const IconMdiAccount: typeof import('~icons/mdi/account')['default']
@@ -83,6 +83,7 @@ declare global {
   const ShowSystemErrMsg: typeof import('./src/utils/message')['ShowSystemErrMsg']
   const ShowWarningMsg: typeof import('./src/utils/message')['ShowWarningMsg']
   const SortType: typeof import('./src/models/enum')['SortType']
+  const StorageEventType: typeof import('./src/utils/event')['StorageEventType']
   const TableHeight: typeof import('./src/utils/common')['TableHeight']
   const TimestampToTime: typeof import('./src/utils/time')['TimestampToTime']
   const UserRole: typeof import('./src/models/enum')['UserRole']
@@ -118,6 +119,7 @@ declare global {
   const disposeStore: typeof import('./src/stores/index')['disposeStore']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
+  const eventEmitter: typeof import('./src/utils/event')['eventEmitter']
   const extendRef: typeof import('@vueuse/core')['extendRef']
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -194,6 +196,7 @@ declare global {
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
+  const storageEventBus: typeof import('./src/utils/event')['storageEventBus']
   const storeToRefs: typeof import('pinia')['storeToRefs']
   const stores: typeof import('./src/stores/index')['default']
   const syncRef: typeof import('@vueuse/core')['syncRef']
@@ -412,7 +415,7 @@ declare global {
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { ChangeEventType, ChangeEventType } from './src/utils/event'
+  export type { StorageEventType, StorageEventType } from './src/utils/event'
   import('./src/utils/event')
   // @ts-ignore
   export type { HttpRequestOptions } from './src/services/http-client'
@@ -455,15 +458,12 @@ declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
     readonly BytesToGB: UnwrapRef<typeof import('./src/utils/common')['BytesToGB']>
-    readonly ChangeEventType: UnwrapRef<typeof import('./src/utils/event')['ChangeEventType']>
-    readonly CloseChannelMessage: UnwrapRef<typeof import('./src/utils/event')['CloseChannelMessage']>
     readonly ConfigType: UnwrapRef<typeof import('./src/models/enum')['ConfigType']>
     readonly ContainerStatus: UnwrapRef<typeof import('./src/models/enum')['ContainerStatus']>
     readonly CopyToClipboard: UnwrapRef<typeof import('./src/utils/copy')['CopyToClipboard']>
     readonly Debounce: UnwrapRef<typeof import('./src/utils/time')['Debounce']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly GenerateUUID: UnwrapRef<typeof import('./src/utils/event')['GenerateUUID']>
-    readonly GetChannelMessage: UnwrapRef<typeof import('./src/utils/event')['GetChannelMessage']>
+    readonly GenerateUUID: UnwrapRef<typeof import('./src/utils/rsa')['GenerateUUID']>
     readonly GetUserRole: UnwrapRef<typeof import('./src/utils/common')['GetUserRole']>
     readonly IconMdiAccount: UnwrapRef<typeof import('~icons/mdi/account')['default']>
     readonly IconMdiAlphaCBoxOutline: UnwrapRef<typeof import('~icons/mdi/alpha-c-box-outline')['default']>
@@ -514,7 +514,6 @@ declare module 'vue' {
     readonly RuleLimitMax: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitMax']>
     readonly RuleLimitRange: UnwrapRef<typeof import('./src/utils/rule')['RuleLimitRange']>
     readonly RulePleaseEnter: UnwrapRef<typeof import('./src/utils/rule')['RulePleaseEnter']>
-    readonly SendChannelMessage: UnwrapRef<typeof import('./src/utils/event')['SendChannelMessage']>
     readonly ServiceDeployMode: UnwrapRef<typeof import('./src/models/enum')['ServiceDeployMode']>
     readonly ServiceDeployType: UnwrapRef<typeof import('./src/models/enum')['ServiceDeployType']>
     readonly ServiceNetworkMode: UnwrapRef<typeof import('./src/models/enum')['ServiceNetworkMode']>
@@ -531,6 +530,7 @@ declare module 'vue' {
     readonly ShowSystemErrMsg: UnwrapRef<typeof import('./src/utils/message')['ShowSystemErrMsg']>
     readonly ShowWarningMsg: UnwrapRef<typeof import('./src/utils/message')['ShowWarningMsg']>
     readonly SortType: UnwrapRef<typeof import('./src/models/enum')['SortType']>
+    readonly StorageEventType: UnwrapRef<typeof import('./src/utils/event')['StorageEventType']>
     readonly TableHeight: UnwrapRef<typeof import('./src/utils/common')['TableHeight']>
     readonly TimestampToTime: UnwrapRef<typeof import('./src/utils/time')['TimestampToTime']>
     readonly UserRole: UnwrapRef<typeof import('./src/models/enum')['UserRole']>
@@ -566,6 +566,7 @@ declare module 'vue' {
     readonly disposeStore: UnwrapRef<typeof import('./src/stores/index')['disposeStore']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly eventEmitter: UnwrapRef<typeof import('./src/utils/event')['eventEmitter']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
@@ -642,6 +643,7 @@ declare module 'vue' {
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
+    readonly storageEventBus: UnwrapRef<typeof import('./src/utils/event')['storageEventBus']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
     readonly stores: UnwrapRef<typeof import('./src/stores/index')['default']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>

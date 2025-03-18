@@ -3,7 +3,9 @@ import { createRouter, createWebHistory, NavigationGuardNext, RouteLocationNorma
 import { configure, done, start } from "nprogress"
 import { GetI18nMessage } from "@/locales"
 import "nprogress/nprogress.css"
-import { SetWebTitle } from "@/utils"
+import { eventEmitter, SetWebTitle } from "@/utils"
+import { disposeStore } from "@/stores"
+import { SessionStorageCurrentGroupId } from "@/models"
 
 configure({
   easing: "ease", // 动画方式
@@ -62,7 +64,7 @@ router.beforeEach((to: RouteLocationNormalized, from: RouteLocationNormalized, n
     return
   }
   if (to.meta?.loginLimit === PageLimitRole.Logout) {
-    next({ name: "workspace" })
+    next({ name: "dashboard" })
     return
   }
   if (to.meta?.onlyAdmin && userStore.isUser) {
@@ -84,3 +86,54 @@ router.afterEach((to: RouteLocationNormalized, from: RouteLocationNormalized) =>
 })
 
 export default router
+
+eventEmitter.on("API:NO_AUTH", (...args: any[]) => {
+  const data: any = Array.isArray(args) && args.length > 0 ? args[0] : {}
+  switch (data?.code) {
+    case "R40101": {
+      ShowErrMsg(data.errMsg)
+      disposeStore()
+      if (router) {
+        router.push({ name: "login" })
+      } else {
+        window.location.href = "/login"
+      }
+      return
+    }
+    case "R40102": {
+      disposeStore()
+    }
+  }
+})
+
+eventEmitter.on("API:RESOURCE_NOT_EXIST", (...args: any[]) => {
+  const data: any = Array.isArray(args) && args.length > 0 ? args[0] : {}
+  switch (data?.code) {
+    case "R4Group-NotExist": {
+      ShowErrMsg(data.errMsg)
+      if (router) {
+        router.push({ name: "groups" })
+      } else {
+        window.location.href = "/ws/groups"
+      }
+      return
+    }
+    case "R4Service-NotExist": {
+      ShowErrMsg(data.errMsg)
+      const groupId = sessionStorage.getItem(SessionStorageCurrentGroupId)
+      if (groupId) {
+        if (router) {
+          router.push({ name: "groupDetail", params: { groupId: groupId, mode: PageGroupDetail.Services } })
+        } else {
+          window.location.href = `/ws/group/${groupId}/${PageGroupDetail.Services}`
+        }
+      } else {
+        if (router) {
+          router.push({ name: "groups" })
+        } else {
+          window.location.href = "/ws/groups"
+        }
+      }
+    }
+  }
+})

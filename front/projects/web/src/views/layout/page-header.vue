@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ChangeEventType, SendChannelMessage } from "@/utils"
+import { StorageEventType, storageEventBus } from "@/utils"
 
 enum Menu {
   Logout = "logout",
@@ -35,7 +35,7 @@ function handleUserMenuClick(v: string) {
       userService.logout().finally(() => {
         userStore.clearUserInfo()
         router.push({ name: "login", query: { redirectURL: route.fullPath } })
-        SendChannelMessage(ChangeEventType.Logout)
+        storageEventBus.SendMessage(StorageEventType.Logout)
       })
       return
     case Menu.MyAccount:

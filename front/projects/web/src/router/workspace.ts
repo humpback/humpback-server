@@ -8,6 +8,7 @@ const administrator = <RouteRecordRaw[]>[
     name: "registries",
     component: () => import("@/views/administration/registries/registries.vue"),
     meta: {
+      loginLimit: PageLimitRole.Login,
       onlyAdmin: true
     }
   },
@@ -16,6 +17,7 @@ const administrator = <RouteRecordRaw[]>[
     name: "nodes",
     component: () => import("@/views/administration/nodes/nodes.vue"),
     meta: {
+      loginLimit: PageLimitRole.Login,
       onlyAdmin: true
     }
   },
@@ -27,6 +29,7 @@ const administrator = <RouteRecordRaw[]>[
       return find([PageUserRelated.Users, PageUserRelated.Teams], x => x === to.params.mode) ? next() : next({ name: "404" })
     },
     meta: {
+      loginLimit: PageLimitRole.Login,
       onlyAdmin: true,
       webTitle: {
         params: "mode"
@@ -40,7 +43,9 @@ const serviceManagement = <RouteRecordRaw[]>[
     path: "/ws/groups",
     name: "groups",
     component: () => import("@/views/service-management/groups.vue"),
-    meta: {}
+    meta: {
+      loginLimit: PageLimitRole.Login
+    }
   },
   {
     path: "/ws/group/:groupId/:mode",
@@ -50,6 +55,7 @@ const serviceManagement = <RouteRecordRaw[]>[
       return find([PageGroupDetail.Services, PageGroupDetail.Nodes], x => x === to.params.mode) ? next() : next({ name: "404" })
     },
     meta: {
+      loginLimit: PageLimitRole.Login,
       currentMenu: "groups",
       webTitle: {
         params: "mode"
@@ -80,6 +86,7 @@ const serviceManagement = <RouteRecordRaw[]>[
         : next({ name: "404" })
     },
     meta: {
+      loginLimit: PageLimitRole.Login,
       currentMenu: "groups",
       breadcrumb: [
         { routeName: "groups", routeParams: {}, i18nLabel: "breadcrumb.groupOverview", isLink: true },
@@ -102,7 +109,7 @@ export default <RouteRecordRaw[]>[
         path: "/ws/my-account",
         name: "myAccount",
         component: () => import("@/views/my-account/my-account.vue"),
-        meta: {}
+        meta: { loginLimit: PageLimitRole.Login }
       },
       {
         path: "/ws/dashboard",
@@ -116,7 +123,7 @@ export default <RouteRecordRaw[]>[
         path: "/ws/configs",
         name: "configs",
         component: () => import("@/views/configs/configs.vue"),
-        meta: {}
+        meta: { loginLimit: PageLimitRole.Login }
       },
       ...administrator,
       ...serviceManagement

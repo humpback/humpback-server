@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
-import { ChangeEventType, RulePleaseEnter, SendChannelMessage } from "@/utils"
+import { StorageEventType, RulePleaseEnter, storageEventBus } from "@/utils"
 import { RSAEncrypt } from "utils/rsa.ts"
 
 const { t } = useI18n()
@@ -35,7 +35,7 @@ async function login() {
     .then(data => {
       loginStep.value = 2
       userStore.setUserInfo(data)
-      SendChannelMessage(ChangeEventType.Login, data)
+      storageEventBus.SendMessage(StorageEventType.Login, data)
       ShowSuccessMsg(t("message.loginSuccess"))
       if (route.query?.redirectUrl) {
         router.push(route.query.redirectUrl as string)

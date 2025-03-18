@@ -1,39 +1,55 @@
-const ChannelKey = "HUMPBACK_EVENT_CHANGE"
-const bc = new BroadcastChannel(ChannelKey)
-const code = GenerateUUID()
+import { GenerateUUID } from "@/utils"
 
-export enum ChangeEventType {
+export enum StorageEventType {
   Login = "login",
   Logout = "logout"
 }
 
-export function GetChannelMessage(handleFunc: (data: any) => void) {
-  bc.onmessage = function (e) {
-    if (e.data?.code === code) {
-      return
+// 用于登录用户变更的storage事件处理
+class StorageEventBus {
+  channelKey = "HUMPBACK_EVENT_CHANGE"
+  code = GenerateUUID()
+  bc: BroadcastChannel = new BroadcastChannel(this.channelKey)
+
+  SetMessageHandler(handleFunc: (data: any) => void) {
+    const tempCode = this.code
+    this.bc.onmessage = function (e) {
+      if (e.data?.code !== tempCode) {
+        handleFunc(e.data)
+      }
     }
-    handleFunc(e.data)
+  }
+
+  SendMessage(type: StorageEventType, value?: any) {
+    this.bc.postMessage({ code: this.code, type: type, value: value })
+  }
+
+  Close() {
+    this.bc.close()
   }
 }
 
-export function SendChannelMessage(type: ChangeEventType, value?: any) {
-  bc.postMessage({ code: code, type: type, value: value })
-}
+export const storageEventBus = new StorageEventBus()
 
-export function CloseChannelMessage() {
-  bc.close()
-}
+// 用于http err的事件处理
+type EventFunction = (...args: any[]) => void
+type EventName = "API:NO_AUTH" | "API:FAILED" | "API:RESOURCE_NOT_EXIST" | "API:NO_PERMISSION"
 
-export function GenerateUUID(): string {
-  let uuid = ""
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-  for (let i = 0; i < 32; i++) {
-    const index = Math.floor(Math.random() * chars.length)
-    uuid += chars[index]
-    if (i === 7 || i === 11 || i === 15 || i === 19) {
-      uuid += "-"
-    }
+class EventEmitter {
+  private listeners: Record<EventName, Set<EventFunction>> = {
+    "API:NO_AUTH": new Set(),
+    "API:FAILED": new Set(),
+    "API:RESOURCE_NOT_EXIST": new Set(),
+    "API:NO_PERMISSION": new Set()
   }
-  return uuid
+
+  on(eventName: EventName, listener: EventFunction) {
+    this.listeners[eventName].add(listener)
+  }
+
+  emit(eventName: EventName, ...args: any[]) {
+    this.listeners[eventName].forEach(listener => listener(...args))
+  }
 }
+
+export const eventEmitter = new EventEmitter()

@@ -442,6 +442,9 @@
     "ContainerNetworkStats": true,
     "ContainerPerformance": true,
     "ContainerStats": true,
-    "groupContainerService": true
+    "groupContainerService": true,
+    "StorageEventType": true,
+    "eventEmitter": true,
+    "storageEventBus": true
   }
 }

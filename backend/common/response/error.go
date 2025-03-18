@@ -16,9 +16,9 @@ func NewBadRequestErr(code string, msg ...string) *ErrInfo {
 	}
 }
 
-func NewRespUnauthorizedOperate(code string, msg ...string) *ErrInfo {
+func NewNoPermissionErr(code string, msg ...string) *ErrInfo {
 	return &ErrInfo{
-		StatusCode: http.StatusUnauthorized,
+		StatusCode: http.StatusForbidden,
 		Code:       code,
 		ErrMsg:     strings.Join(msg, ", "),
 	}

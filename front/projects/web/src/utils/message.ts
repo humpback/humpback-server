@@ -1,5 +1,6 @@
 import { GetI18nMessage } from "@/locales"
 import { ElNotification } from "element-plus"
+import { eventEmitter } from "utils/event.ts"
 
 const defaultDuration = 3000
 const successDuration = 1000
@@ -49,3 +50,19 @@ export function ShowSystemErrMsg() {
   // showMessage("error", GetI18nMessage("err.systemError"), true)
   notifyMsg("error", GetI18nMessage("err.systemError"), GetI18nMessage("message.error"), true)
 }
+
+eventEmitter.on("API:FAILED", (...args: any[]) => {
+  const message = Array.isArray(args) && args.length > 0 ? args[0] : null
+  if (message) {
+    ShowErrMsg(message)
+  } else {
+    ShowSystemErrMsg()
+  }
+})
+
+eventEmitter.on("API:NO_PERMISSION", (...args: any[]) => {
+  const data: any = Array.isArray(args) && args.length > 0 ? args[0] : {}
+  if (data?.errMsg) {
+    ShowErrMsg(data.errMsg)
+  }
+})

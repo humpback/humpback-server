@@ -21,6 +21,7 @@ export default {
     "changePasswordSuccess": "The password is successfully changed, please log in again."
   },
   err: {
+    "timeout": "The request timed out",
     "systemError": "System Error, Contact your administrator to check!",
     "instanceNotExist": "The instance does not exist",
 
