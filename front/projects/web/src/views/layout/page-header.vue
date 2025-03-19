@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { StorageEventType, storageEventBus } from "@/utils"
+import { storageEventBus, StorageEventType } from "@/utils"
 import VGlobalSearch from "@/components/business/v-search/VGlobalSearch.vue"
 
 enum Menu {
@@ -47,7 +47,9 @@ function handleUserMenuClick(v: string) {
 
 <template>
   <div class="header-box">
-    <v-global-search />
+    <div class="flex-1" style="height: 24px">
+      <v-global-search />
+    </div>
     <div class="d-flex">
       <div class="d-flex gap-5 mr-5">
         <el-button v-if="!pageStore.isSmallScreen" link> {{ t("btn.help") }}</el-button>
@@ -95,7 +97,6 @@ function handleUserMenuClick(v: string) {
   padding: 0 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   color: inherit;
 
   .el-dropdown:focus-visible {

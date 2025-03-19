@@ -3,7 +3,6 @@ package handle
 import (
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"humpback/api/middleware"
@@ -33,7 +32,6 @@ func searchGroupServiceByName(c *gin.Context) {
 		middleware.AbortErr(c, response.NewBadRequestErr(locales.CodeNameNotEmpty))
 		return
 	}
-	time.Sleep(3 * time.Second)
 	userInfo := middleware.GetUserInfo(c)
 	result, err := controller.SearchGroupAndServcieByName(userInfo, name)
 	if err != nil {
