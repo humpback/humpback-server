@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { StorageEventType, storageEventBus } from "@/utils"
+import VGlobalSearch from "@/components/business/v-search/VGlobalSearch.vue"
 
 enum Menu {
   Logout = "logout",
@@ -46,15 +47,7 @@ function handleUserMenuClick(v: string) {
 
 <template>
   <div class="header-box">
-    <div class="search-input">
-      <v-input :placeholder="t('placeholder.searchGroupService')" size="small">
-        <template #prefix>
-          <el-icon :size="14">
-            <IconMdiSearch />
-          </el-icon>
-        </template>
-      </v-input>
-    </div>
+    <v-global-search />
     <div class="d-flex">
       <div class="d-flex gap-5 mr-5">
         <el-button v-if="!pageStore.isSmallScreen" link> {{ t("btn.help") }}</el-button>
@@ -104,12 +97,6 @@ function handleUserMenuClick(v: string) {
   align-items: center;
   justify-content: space-between;
   color: inherit;
-
-  :deep(.search-input) {
-    .el-input__wrapper {
-      border-radius: 16px;
-    }
-  }
 
   .el-dropdown:focus-visible {
     outline: none;

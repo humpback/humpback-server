@@ -23,6 +23,8 @@ const (
 	CodeNotLogin             = "R40102"
 	CodeNoPermission         = "RNoPermission-001"
 
+	CodeNameNotEmpty = "R4Name-001"
+
 	CodeUserNameNotEmpty     = "R4User-001"
 	CodeUserNameIsInvalid    = "R4User-002"
 	CodeUserNameLimitLength  = "R4User-003"

@@ -155,6 +155,7 @@ export default {
     "write": "Write",
     "rx": "RX",
     "tx": "TX",
-    "wrapLines": "Wrap lines"
+    "wrapLines": "Wrap lines",
+    "groups": "Groups"
   }
 }

@@ -14,6 +14,8 @@ var enUSMsg = map[string]string{
 	CodeNotLogin:             "Not logged in.",
 	CodeNoPermission:         "You don't have permission to operate.",
 
+	CodeNameNotEmpty: "The name cannot be empty.",
+
 	CodeUserNameLimitLength:  fmt.Sprintf("The user name length limit is %d to %d.", enum.LimitUsername.Min, enum.LimitUsername.Max),
 	CodeUserNameIsInvalid:    "The user name is invalid",
 	CodeUserNameNotEmpty:     "The user name cannot be empty.",
