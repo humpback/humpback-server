@@ -5,7 +5,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <v-tooltip v-if="props?.onlyIcon && props?.memo" :content="t(`err.${props?.memo}`)">
+  <v-tooltip v-if="props?.onlyIcon && props?.memo" :content="t(`err.${props?.memo}`)" effect="dark">
     <el-button link type="danger">
       <el-icon :size="props.iconSize">
         <IconMdiWarningCircleOutline />

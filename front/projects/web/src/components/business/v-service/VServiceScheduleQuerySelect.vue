@@ -18,7 +18,7 @@ const { t } = useI18n()
 const schedule = computed({
   get: () => props.modelValue || "",
   set: (v: string) => {
-    emits("update:modelValue", v)
+    emits("update:modelValue", v || "")
   }
 })
 
@@ -38,10 +38,10 @@ function change() {
     :clearable="props.clearable"
     :out-label="t('label.schedule')"
     :placeholder="props.placeholder"
-    out-label-width="80px"
+    out-label-width="100px"
     show-out-label
     @change="change()">
-    <el-option :label="t('label.all')" :value="0" />
+    <el-option :label="t('label.all')" value="" />
     <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value" />
   </v-select>
 </template>

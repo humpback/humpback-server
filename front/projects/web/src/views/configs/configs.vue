@@ -97,7 +97,7 @@ onMounted(() => search())
         :total="tableList.total"
         @page-change="search"
         @sort-change="search">
-        <el-table-column :label="t('label.config')" fixed="left" min-width="160" prop="configName" sortable="custom" />
+        <el-table-column :label="t('label.name')" fixed="left" min-width="160" prop="configName" sortable="custom" />
         <el-table-column :label="t('label.description')" min-width="140" prop="description">
           <template #default="scope">
             <v-table-column-none :text="scope.row.description" />
@@ -111,7 +111,7 @@ onMounted(() => search())
         <el-table-column :label="t('label.value')" min-width="200">
           <template #default="scope">
             <span v-if="scope.row.configType === ConfigType.Static">{{ scope.row.configValue }}</span>
-            <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
+            <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }} </el-button>
           </template>
         </el-table-column>
         <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
@@ -127,7 +127,7 @@ onMounted(() => search())
         <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
           <template #default="scope">
             <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
-            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
+            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }} </el-button>
           </template>
         </el-table-column>
       </v-table>

@@ -25,8 +25,8 @@ export default {
     "static": "Static",
     "volume": "Volume",
     "team": "Team",
+    "teamName": "Team Name",
     "user": "User",
-    "config": "Config",
     "registry": "Registry",
     "url": "Url",
     "isDefault": "Is Default",
@@ -53,7 +53,7 @@ export default {
     "uninstall": "Uninstall",
     "labelKey": "Label Key",
     "labelValue": "Label Value",
-    "group": "Group",
+    "groupName": "Group Name",
     "nodes": "Nodes",
     "services": "Services",
     "selectedNodes": "Selected Nodes",
@@ -61,7 +61,7 @@ export default {
     "ports": "Ports",
     "deployMode": "Deploy Mode",
     "instanceName": "Instance Name",
-    "service": "Service",
+    "serviceName": "Service Name",
     "running": "Running",
     "failed": "Failed",
     "schedule": "Schedule",
@@ -154,6 +154,7 @@ export default {
     "rx": "RX",
     "tx": "TX",
     "wrapLines": "Wrap lines",
-    "groups": "Groups"
+    "groups": "Groups",
+    "currentUser": "Current User"
   }
 }

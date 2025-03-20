@@ -20,7 +20,7 @@ const { t } = useI18n()
 const status = computed({
   get: () => props.modelValue || "",
   set: (v: string) => {
-    emits("update:modelValue", v)
+    emits("update:modelValue", v || "")
   }
 })
 
@@ -51,7 +51,7 @@ function change() {
     out-label-width="80px"
     show-out-label
     @change="change()">
-    <el-option :label="t('label.all')" :value="0" />
+    <el-option :label="t('label.all')" value="" />
     <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value">
       <el-text :type="item.type">{{ t(item.label) }}</el-text>
     </el-option>

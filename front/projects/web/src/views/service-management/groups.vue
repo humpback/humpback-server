@@ -92,7 +92,7 @@ onMounted(() => search())
         :total="tableList.total"
         @page-change="search"
         @sort-change="search">
-        <el-table-column :label="t('label.group')" fixed="left" min-width="200" prop="groupName" sortable="custom">
+        <el-table-column :label="t('label.groupName')" fixed="left" min-width="200" prop="groupName" sortable="custom">
           <template #default="scope">
             <v-router-link :href="`/ws/group/${scope.row.groupId}/services`" :text="scope.row.groupName" />
           </template>
@@ -124,7 +124,7 @@ onMounted(() => search())
         <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
           <template #default="scope">
             <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
-            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
+            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }} </el-button>
           </template>
         </el-table-column>
       </v-table>
