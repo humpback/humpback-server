@@ -50,7 +50,7 @@ onMounted(async () => {
 <template>
   <div class="d-flex gap-3">
     <strong>
-      <el-text>{{ t("label.instanceOverview") }}</el-text>
+      <el-text size="large">{{ t("label.instanceOverview") }}</el-text>
     </strong>
     <div>
       <el-button plain size="small" type="success" @click="search()">{{ t("btn.refresh") }}</el-button>

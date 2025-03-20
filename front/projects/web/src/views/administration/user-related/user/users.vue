@@ -104,14 +104,14 @@ onMounted(() => search())
     :total="tableList.total"
     @page-change="search"
     @sort-change="search">
-    <el-table-column :label="t('label.user')" fixed="left" min-width="200" prop="username" sortable="custom">
+    <el-table-column :label="t('label.username')" fixed="left" min-width="200" prop="username" sortable="custom">
       <template #default="scope">
         <div class="d-flex gap-1">
           <div class="overflow_div flex-1">
             <span>{{ scope.row.username }}</span>
           </div>
           <el-tag v-if="scope.row.userId === userStore.userInfo.userId" class="mr-1" effect="dark" round size="small" type="warning">
-            {{ t("role.owner") }}
+            {{ t("label.currentUser") }}
           </el-tag>
         </div>
       </template>
