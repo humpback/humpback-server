@@ -75,19 +75,15 @@ defineExpose({ validate })
       <div v-for="(volume, index) in volumes" :key="volume.id" class="d-flex gap-3">
         <el-form-item>
           <el-radio-group v-model="volumes![index].readonly" class="volume-type" fill="var(--el-color-info-light-3)" text-color="#ffffff">
-            <el-radio :label="t('label.writable')" :value="false" />
+            <el-radio :label="t('label.writable')" :value="false" style="margin-right: 12px" />
             <el-radio :label="t('label.readonly')" :value="true" />
           </el-radio-group>
         </el-form-item>
         <el-form-item :prop="`${index}.target`" :rules="rules.containerVolume" class="flex-1">
-          <v-input v-model="volumes![index].target" :placeholder="t('placeholder.containerVolume')" @blur="emits('check')">
-            <template #prepend>{{ t("label.containerVolume") }}</template>
-          </v-input>
+          <v-input v-model="volumes![index].target" :placeholder="t('placeholder.containerVolume')" @blur="emits('check')"> </v-input>
         </el-form-item>
         <el-form-item :prop="`${index}.source`" :rules="rules.hostVolume" class="flex-1">
-          <v-input v-model="volumes![index].source" :placeholder="t('placeholder.hostVolume')" @blur="emits('check')">
-            <template #prepend>{{ t("label.hostVolume") }}</template>
-          </v-input>
+          <v-input v-model="volumes![index].source" :placeholder="t('placeholder.hostVolume')" @blur="emits('check')"> </v-input>
         </el-form-item>
         <el-form-item>
           <el-button plain style="padding: 4px 12px" text type="danger" @click="removeVolume(index)">

@@ -15,11 +15,6 @@ export default {
     "duplicateLabelKey": "Duplicate label key",
     "duplicate": "Duplicate",
     "formatErrCron": "Invalid cron",
-    "formatErrTimeout": "Invalid timeout text",
-
-    "alreadyExists": "Already exists, cannot be repeated",
-    "completeAddress": "Please complete address information.",
-    "optionsNotBeEmpty": "Please complete the options.",
-    "selectTime": "Please select a time"
+    "formatErrTimeout": "Invalid timeout text"
   }
 }

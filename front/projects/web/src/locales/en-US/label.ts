@@ -62,7 +62,6 @@ export default {
     "deployMode": "Deploy Mode",
     "instanceName": "Instance Name",
     "service": "Service",
-    "notReady": "Not Ready",
     "running": "Running",
     "failed": "Failed",
     "schedule": "Schedule",
@@ -132,7 +131,6 @@ export default {
     "startTime": "Start Time",
     "nextTime": "Next Time",
     "instance": "Instance",
-    "autoRefresh": "Auto Refresh",
     "lines": "Lines",
     "showTimestamp": "Show timestamp",
     "timeRange": "Time Range",
@@ -155,6 +153,7 @@ export default {
     "write": "Write",
     "rx": "RX",
     "tx": "TX",
-    "wrapLines": "Wrap lines"
+    "wrapLines": "Wrap lines",
+    "groups": "Groups"
   }
 }

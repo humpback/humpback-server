@@ -1,7 +1,7 @@
 export default {
   tips: {
     "loadingHumpback": "Loading Humpback...",
-    "allRightsReserved": "©2024 Humpback. All Rights Reserved",
+    "allRightsReserved": "©Humpback. All Rights Reserved",
     "usernameChangeTips": "After the username is changed, the next login will be logged in with the modified username.",
     "changePasswordTips": "After the password is successfully changed, you will log in to the system again.",
     "registryAuthTips": "If the registry requires authentication information, please fill in the user name and password, otherwise, leave it blank.",
@@ -14,6 +14,8 @@ export default {
       "The host volume can use a global config of type volume. We will create a file named config name on the host and map it to your container volume, format: {'{'}ConfigName{'}'}.",
     "envTips":
       "The value in env can use built-in variables (IP, Hostname, InstanceName) and global config of type static, format: {'{'}VariableName or ConfigName{'}'}",
+    "alwaysPullTips":
+      "In the case of a resident service, the image is re-pulled when the version is changed or migrated, and in the case of a job service, the instance is recreated with each execution.",
     "privilegedTips": "Give extended privileges to this container.",
     "memoryLimitTips": "The maximum memory that can be used, if the limit (OOM) is exceeded, the system will force it to kill, and 0 means no limit.",
     "memoryReservationTips": "The minimum amount of memory reserved by the system, 0 is not restricted.",
@@ -22,7 +24,7 @@ export default {
       "If the memory limit is set and the value of the memory reservation is greater than the memory limit, the memory reservation will be invalid.",
     "logDriverTips":
       "The log driver settings will override the docker daemon log driver. If it is not set, the default driver will be used, please go to the {document} for driver instructions.",
-    "globalTips": "In the global mode, the number of instances represents the number of instances deployed on each machine in the current group.",
+    "globalTips": "In global mode, one instance will be allocated to each node on eligible machines.",
     "replicatedTips":
       "In replicated mode, the service is migrated to other available nodes after the machine goes offline, and the number of instances represents the total number of instances deployed in the current service, and the number of instances is scheduled on the eligible machines according to the resources (cpu/memory).",
     "invalidCorn": "Invalid Corn",
@@ -33,6 +35,10 @@ export default {
     "noLabelSetting": "No label setting",
     "noVolumeMappingSetting": "No volume mapping settings",
     "logsTips": "The current log can be queried up to 10,000 rows.",
+    "noGroupFound": "No Group Found",
+    "noServiceFound": "No Service Found",
+    "serviceInfoInComplete": "The service information is incomplete",
+    "timeoutTips": "If the program is executed beyond the set time, the program will be forcibly killed.",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",

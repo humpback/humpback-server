@@ -77,12 +77,12 @@ defineExpose({ openDialog })
   <v-dialog v-model="dialogInfo.show" :close-on-press-escape="false" width="1000px">
     <template #header>{{ dialogInfo.index != -1 ? t("header.editSchedule") : t("header.addSchedule") }}</template>
 
-    <el-form ref="formRef" :model="dialogInfo" :rules="rules" class="form-box mt-5" label-position="left" label-suffix=":" label-width="auto">
+    <el-form ref="formRef" :model="dialogInfo" :rules="rules" class="form-box mt-5" label-position="left" label-suffix=":" label-width="100px">
       <el-form-item :label="t('label.form')" required>
         <cron-element-plus
           v-model="dialogInfo.cron"
           :buttonProps="{ type: 'info', plain: true }"
-          :locale="toLower(locale) === 'zh-cn' ? 'zh_cn' : 'en'"
+          :locale="toLower(locale) === 'zh-cn' ? 'zh' : 'en'"
           format="crontab"
           show-seconds />
       </el-form-item>

@@ -136,7 +136,7 @@ func CheckAdminPermissions() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userInfo := GetUserInfo(c)
 		if userInfo.Role != types.UserRoleAdmin && userInfo.Role != types.UserRoleSupperAdmin {
-			AbortErr(c, response.NewBadRequestErr(locales.CodeNoPermission))
+			AbortErr(c, response.NewNoPermissionErr(locales.CodeNoPermission))
 			return
 		}
 	}

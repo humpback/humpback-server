@@ -6,5 +6,5 @@ export default {
   components: {
     elementPlus: zhCn
   },
-  disabled: true
+  disabled: false
 }

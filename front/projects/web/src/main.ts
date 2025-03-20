@@ -12,6 +12,7 @@ import { init } from "@/app/app.ts"
 
 const app = createApp(App).use(stores).use(i18n).use(CronElementPlusPlugin)
 
+// cron组件需要指定
 app.use(ElDropdown).use(ElDropdownMenu).use(ElDropdownItem).use(ElIcon).use(ElButton)
 
 app.config.errorHandler = (err: any, vm: any, info: any) => {

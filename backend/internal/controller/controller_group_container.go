@@ -75,7 +75,7 @@ func GroupContainerPerformances(containers models.GroupContainerPerformanceReqIn
 		if p.Err == nil {
 			t.Stats = &types.GroupContainerStats{
 				CpuPercent:  p.Stats.CpuPercent,
-				MermoryUsed: p.Stats.MermoryUsed,
+				MemoryUsed:  p.Stats.MermoryUsed,
 				MemoryLimit: p.Stats.MemoryLimit,
 				IORead:      p.Stats.DiskReadBytes,
 				IOWrite:     p.Stats.DiskWriteBytes,

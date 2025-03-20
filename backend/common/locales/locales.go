@@ -23,6 +23,8 @@ const (
 	CodeNotLogin             = "R40102"
 	CodeNoPermission         = "RNoPermission-001"
 
+	CodeNameNotEmpty = "R4Name-001"
+
 	CodeUserNameNotEmpty     = "R4User-001"
 	CodeUserNameIsInvalid    = "R4User-002"
 	CodeUserNameLimitLength  = "R4User-003"
@@ -87,13 +89,13 @@ const (
 	CodeNodesIpAddressAlreadyExist = "R4Nodes-008"
 
 	CodeGroupIdNotEmpty       = "R4Group-001"
-	CodeGroupNotExist         = "R4Group-002"
+	CodeGroupNotExist         = "R4Group-NotExist"
 	CodeGroupNameAlreadyExist = "R4Group-003"
 	CodeGroupNameLimitLength  = "R4Group-004"
 	CodeGroupNameNotEmpty     = "R4Group-005"
 	CodeGroupNoPermission     = "R4Group-006"
 
-	CodeServiceNotExist                          = "R4Service-001"
+	CodeServiceNotExist                          = "R4Service-NotExist"
 	CodeServiceNameNotEmpty                      = "R4Service-002"
 	CodeServiceNameLimitLength                   = "R4Service-003"
 	CodeServiceNameAlreadyExist                  = "R4Service-004"

@@ -23,6 +23,8 @@ export default {
     }
   },
   webTitle: {
+    "404": "Page Not Found",
+    "401": "Page No Permission",
     "login": "Login",
     "dashboard": "Dashboard",
     "myAccount": "My Account",

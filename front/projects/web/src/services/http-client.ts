@@ -1,15 +1,12 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse, type Method } from "axios"
-import { isEmpty } from "lodash-es"
+import { find, toLower } from "lodash-es"
 import { GetCurrentLocale, GetI18nMessage } from "@/locales"
-import { disposeStore } from "@/stores"
-import { globalLoading } from "utils/index.ts"
+import { eventEmitter, globalLoading } from "utils/index.ts"
 
 export interface HttpRequestOptions extends AxiosRequestConfig {
   showLoading?: boolean | false
   disableErrMsg?: boolean | false
   loadingMessage?: string
-  isFile?: boolean
-  timeout?: number
 }
 
 const _loadingCount = ref(0)
@@ -42,72 +39,45 @@ class HttpClientService {
 
   private handleInnerErr: any = (options?: HttpRequestOptions) => (err: any) => {
     console.error(err)
-    if (err.response) {
-      let body = err.response.data
-      if (!isEmpty(body)) {
-        if (body.statusCode === 401) {
-          switch (body.code) {
-            case "R40101":
-              ShowErrMsg(body.errMsg)
-              disposeStore()
-              window.location.href = "/login"
-              break
-            case "R40102":
-              disposeStore()
-              console.error(body.errMsg)
-              break
-            default:
-              ShowErrMsg(body.errMsg)
-          }
-          throw err
-        }
-
-        if (!options || !options.disableErrMsg) {
-          if (body.statusCode >= 500) {
-            console.error(body.errMsg)
-            ShowSystemErrMsg()
-          } else {
-            ShowErrMsg(body.errMsg)
-          }
-        }
-      } else {
-        ShowSystemErrMsg()
-      }
-    } else if (err.message && err.name === "AxiosError") {
-      const message = err.message as string
-      if (message.toLowerCase().includes("timeout")) {
-        ShowErrMsg(GetI18nMessage("err.timeout"))
-      } else {
-        ShowErrMsg(message)
-      }
-    } else {
-      ShowSystemErrMsg()
+    if (err.status === 401) {
+      eventEmitter.emit("API:NO_AUTH", err.response.data)
+      throw err
     }
+    if (err.status === 403) {
+      eventEmitter.emit("API:NO_PERMISSION", err.response.data)
+      throw err
+    }
+
+    const data = err?.response?.data || ""
+    if (typeof data === "object") {
+      const resource = ["R4Group-NotExist", "R4Service-NotExist"]
+      if (find(resource, x => x === data?.code)) {
+        eventEmitter.emit("API:RESOURCE_NOT_EXIST", data)
+      } else if (!options?.disableErrMsg) {
+        eventEmitter.emit("API:FAILED", data.statusCode === 500 ? undefined : data.errMsg)
+      }
+      throw err
+    }
+    if (err.message && toLower(err.name) === "axioserror") {
+      eventEmitter.emit("API:FAILED", toLower(err.message).includes("timeout") ? GetI18nMessage("err.timeout") : err.message)
+      throw err
+    }
+    eventEmitter.emit("API:FAILED")
     throw err
   }
 
   private async request<T>(method: Method, url: string, data: any, options?: HttpRequestOptions): Promise<AxiosResponse<T>> {
-    if (!options) {
-      options = {} as HttpRequestOptions
-    }
+    options = options || ({} as HttpRequestOptions)
 
-    const headers: any = {
-      "Accept": "application/json, text/javascript, */*",
-      "Accept-Language": GetCurrentLocale(),
-      "Content-Language": GetCurrentLocale()
-    }
-
-    if (options.isFile) {
-      headers["Content-Type"] = "multipart/form-data"
-    } else if (method !== "GET" && method !== "DELETE") {
-      headers["Content-Type"] = "application/json"
-    }
-
-    if (options && options.headers && typeof options.headers === "object") {
-      for (const key in options.headers) {
-        headers[key] = options.headers[key]
-      }
-    }
+    options.headers = Object.assign(
+      {
+        "Accept": "application/json, text/javascript, */*",
+        "Accept-Language": GetCurrentLocale(),
+        "Content-Language": GetCurrentLocale()
+      },
+      method === "POST" || method === "PUT" ? { "Content-Type": "application/json" } : {},
+      options.headers
+    )
 
     if (options?.showLoading) {
       loading.value = true
@@ -115,16 +85,15 @@ class HttpClientService {
         globalLoading.show(options.loadingMessage)
       }
     }
-
     return await axios
       .request<T>({
         url: url,
         method: method,
         data: data,
-        headers: headers,
-        responseType: options.responseType,
-        params: Object.assign({}, options.params, { _t: new Date().valueOf() }),
-        timeout: options.timeout || 60000
+        headers: options.headers,
+        responseType: options?.responseType,
+        params: Object.assign({}, options?.params, { _t: new Date().valueOf() }),
+        timeout: options?.timeout || 60000
       })
       .catch<AxiosResponse<T>>(this.handleInnerErr(options))
       .finally(() => {
@@ -139,3 +108,21 @@ class HttpClientService {
 }
 
 export const httpClient = new HttpClientService()
+
+const NOOP = () => {}
+
+export function CreateCancelRequest<T extends (...args: any[]) => Promise<any>>(asyncRequest: T): (...args: Parameters<T>) => Promise<Awaited<ReturnType<T>>> {
+  let cancel = NOOP
+  return (...args: any[]) => {
+    return new Promise((resolve, reject) => {
+      cancel()
+      cancel = () => {
+        resolve = reject = NOOP
+      }
+      asyncRequest(...args).then(
+        (res: any) => resolve(res),
+        (err: any) => reject(err)
+      )
+    })
+  }
+}

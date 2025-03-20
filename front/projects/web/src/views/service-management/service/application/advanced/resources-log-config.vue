@@ -108,7 +108,7 @@ defineExpose({ validate })
           </v-tooltip>
         </div>
       </template>
-      <div class="d-flex gap-5 w-100 px-5">
+      <div class="d-flex gap-5 w-100 px-5 flex-wrap">
         <div class="flex-1 slider-line">
           <el-slider v-model="resources!.memory" :format-tooltip="formatMemoryLimit" :max="20480" :min="0" :step="20" />
         </div>
@@ -137,7 +137,7 @@ defineExpose({ validate })
           </v-tooltip>
         </div>
       </template>
-      <div class="d-flex gap-5 w-100 px-5">
+      <div class="d-flex gap-5 flex-wrap w-100 px-5">
         <div class="flex-1 slider-line">
           <el-slider v-model="resources!.memoryReservation" :format-tooltip="formatMemoryReservation" :max="20480" :min="0" :step="20" />
         </div>
@@ -166,7 +166,7 @@ defineExpose({ validate })
           </v-tooltip>
         </div>
       </template>
-      <div class="d-flex gap-5 w-100 px-5">
+      <div class="d-flex gap-5 flex-wrap w-100 px-5">
         <div class="flex-1 slider-line">
           <el-slider v-model="resources!.maxCpuUsage" :format-tooltip="formatMaxCpuUsage" :max="100" :min="0" />
         </div>
@@ -196,7 +196,7 @@ defineExpose({ validate })
       </v-tips>
     </div>
   </div>
-  <el-form ref="formRef" :model="logConfig" :rules="rules" label-position="left" label-width="160px">
+  <el-form ref="formRef" :model="logConfig" :rules="rules" label-position="left" label-width="100px">
     <el-form-item :label="t('label.driver')">
       <el-select
         v-model="logConfig!.type"
@@ -247,6 +247,6 @@ defineExpose({ validate })
 <style lang="scss" scoped>
 .slider-line {
   max-width: 600px;
-  min-width: 300px;
+  min-width: 160px;
 }
 </style>

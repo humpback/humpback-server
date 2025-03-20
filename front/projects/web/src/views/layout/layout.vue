@@ -2,6 +2,7 @@
 import PageHeader from "./page-header.vue"
 import PageAside from "./page-aside.vue"
 import VLoadingPage from "@/components/business/v-loading/VLoadingPage.vue"
+import { map } from "lodash-es"
 
 const route = useRoute()
 const pageStore = usePageStore()
@@ -29,7 +30,7 @@ function afterEnter() {
       <router-view v-slot="{ Component }">
         <transition mode="out-in" name="fade" @before-enter="beforeEnter()" @after-enter="afterEnter()">
           <Suspense>
-            <component :is="Component" :key="route.name as string" />
+            <component :is="Component" :key="`${route.name as string}_${map(route.meta.routerKeys, p => route.params[p]).join('_')}`" />
             <template #fallback>
               <v-loading-page />
             </template>

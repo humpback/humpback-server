@@ -136,6 +136,20 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 	return service.ServiceId, nil
 }
 
+func Services() ([]*types.Service, error) {
+	list, err := db.ServicesGetAll()
+	if err != nil {
+		return nil, response.NewRespServerErr(err.Error())
+	}
+	var services = make([]*types.Service, 0)
+	for _, service := range list {
+		if !service.IsDelete {
+			services = append(services, service)
+		}
+	}
+	return services, nil
+}
+
 func Service(groupId, serviceId string) (*types.Service, error) {
 	service, err := db.ServiceGetById(serviceId)
 	if err != nil {

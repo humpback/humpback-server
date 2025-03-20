@@ -37,6 +37,10 @@ function routerToInstanceLog(serviceId: string, containerId: string) {
   router.push({ name: "serviceInfo", params: { groupId: groupId.value, serviceId: serviceId, mode: PageServiceDetail.Log }, query: { instance: containerId } })
 }
 
+function serviceInfoIsInComplete(info: ServiceInfo) {
+  return !info?.meta || !info?.deployment
+}
+
 async function getGroupInfo() {
   return await groupService.info(groupId.value).then(info => {
     stateStore.setGroup(groupId.value, info)
@@ -234,8 +238,17 @@ onMounted(async () => {
     </el-table-column>
     <el-table-column :label="t('label.status')" min-width="130" prop="description">
       <template #default="scope">
-        <v-service-status-tag :is-enabled="scope.row.isEnabled" :status="scope.row.status" />
-        <v-memo v-if="toLower(scope.row.status) === toLower(ServiceStatus.ServiceStatusFailed)" :icon-size="18" :memo="scope.row.memo" only-icon />
+        <div class="d-flex gap-1">
+          <v-service-status-tag :is-enabled="scope.row.isEnabled" :status="scope.row.status" />
+          <v-tooltip v-if="serviceInfoIsInComplete(scope.row)" :content="t('tips.serviceInfoInComplete')" placement="top-start">
+            <el-button link type="warning">
+              <el-icon :size="18">
+                <IconMdiWarningCircleOutline />
+              </el-icon>
+            </el-button>
+          </v-tooltip>
+          <v-memo v-else-if="toLower(scope.row.status) === toLower(ServiceStatus.ServiceStatusFailed)" :icon-size="18" :memo="scope.row.memo" only-icon />
+        </div>
       </template>
     </el-table-column>
     <el-table-column :label="t('label.image')" min-width="200" prop="image">
@@ -262,8 +275,12 @@ onMounted(async () => {
     <el-table-column :label="t('label.action')" :show-overflow-tooltip="false" align="right" fixed="right" header-align="center" width="140">
       <template #default="scope">
         <div class="d-flex gap-3">
-          <el-dropdown placement="bottom-end" trigger="click" @command="operateService(scope.row.serviceId, $event)">
-            <el-link :underline="false" class="d-flex gap-1" link type="primary">
+          <el-dropdown
+            :disabled="serviceInfoIsInComplete(scope.row)"
+            placement="bottom-end"
+            trigger="click"
+            @command="operateService(scope.row.serviceId, $event)">
+            <el-link :disabled="serviceInfoIsInComplete(scope.row)" :underline="false" class="d-flex gap-1" link type="primary">
               {{ t("btn.action") }}
               <el-icon>
                 <IconMdiChevronDown />

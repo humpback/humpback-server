@@ -18,9 +18,9 @@ export default {
     "protocol": "Protocol",
     "egImage": "e.g. image-name:image-tag",
     "containerVolume": "e.g. /path/in/container",
-    "hostVolume": "e.g. /path/on/container",
+    "hostVolume": "e.g. /path/on/host",
     "defaultLoggingDriver": "Default Logging Driver",
     "timeoutExample": "e.g.  30s、10m or 5h",
-    "searchGroupService": "name of group of service"
+    "searchGroupService": "name of group of service, press enter to search"
   }
 }

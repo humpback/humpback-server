@@ -5,11 +5,16 @@ const props = withDefaults(
     href: string
     underline?: boolean
     disabled?: boolean
+    showTitle?: boolean
   }>(),
   {
     underline: false
   }
 )
+
+const emits = defineEmits<{
+  (e: "click-route", isHref?: boolean): void
+}>()
 
 const router = useRouter()
 
@@ -19,8 +24,10 @@ function navigateToRoute(event: MouseEvent) {
   }
   if (event.ctrlKey || event.metaKey) {
     window.open(props.href, "_blank")
+    emits("click-route", true)
   } else {
     router.push(props.href)
+    emits("click-route", false)
   }
 }
 
@@ -30,7 +37,10 @@ const classList = computed(() => {
 </script>
 
 <template>
-  <a :class="classList" :href="props.href" @click.prevent="navigateToRoute">{{ props.text }}</a>
+  <a :class="classList" :href="props.href" :title="props.showTitle ? props.text : ''" @click.prevent.stop="navigateToRoute">
+    <slot name="prefix-text" />
+    {{ props.text }}
+  </a>
 </template>
 
 <style lang="scss" scoped>

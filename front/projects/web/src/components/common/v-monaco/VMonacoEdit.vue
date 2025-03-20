@@ -8,7 +8,7 @@ import HtmlWorker from "monaco-editor/esm/vs/language/html/html.worker?worker"
 import TSWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker"
 import YamlWorker from "./yaml.worker.js?worker"
 import { configureMonacoYaml } from "monaco-yaml"
-import xmlFormatter from "xml-formatter"
+import xmlFormat from "xml-formatter"
 import * as ini from "ini"
 
 configureMonacoYaml(monaco, {
@@ -60,16 +60,18 @@ self.MonacoEnvironment = {
 monaco.languages.registerDocumentFormattingEditProvider("xml", {
   provideDocumentFormattingEdits(model) {
     const content = model.getValue()
-    const formatted = xmlFormatter(content, {
-      indentation: "  ",
-      lineSeparator: "\n"
-    })
-    return [
-      {
-        range: model.getFullModelRange(),
-        text: formatted
-      }
-    ]
+    try {
+      const formatted = xmlFormat(content, {
+        indentation: "  ",
+        lineSeparator: "\n"
+      })
+      return [
+        {
+          range: model.getFullModelRange(),
+          text: formatted
+        }
+      ]
+    } catch {}
   }
 })
 
@@ -135,10 +137,11 @@ onMounted(() => {
       enabled: true,
       side: "right"
     },
+    fontFamily: "var(--hp-font-family)",
     scrollBeyondLastLine: false,
     overviewRulerBorder: false,
     formatOnPaste: true,
-    tabSize: 2,
+    tabSize: 4,
     folding: true,
     foldingHighlight: true,
     foldingStrategy: "indentation",
@@ -177,8 +180,12 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  listeningContent?.dispose()
-  monacoCtl?.dispose()
+  if (listeningContent) {
+    listeningContent?.dispose()
+  }
+  if (monacoCtl) {
+    monacoCtl?.dispose()
+  }
 })
 
 defineExpose({ getValue })

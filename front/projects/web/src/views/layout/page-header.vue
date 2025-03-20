@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { ChangeEventType, SendChannelMessage } from "@/utils"
+import { storageEventBus, StorageEventType } from "@/utils"
+import VGlobalSearch from "@/components/business/v-search/VGlobalSearch.vue"
 
 enum Menu {
   Logout = "logout",
@@ -35,7 +36,7 @@ function handleUserMenuClick(v: string) {
       userService.logout().finally(() => {
         userStore.clearUserInfo()
         router.push({ name: "login", query: { redirectURL: route.fullPath } })
-        SendChannelMessage(ChangeEventType.Logout)
+        storageEventBus.SendMessage(StorageEventType.Logout)
       })
       return
     case Menu.MyAccount:
@@ -46,14 +47,8 @@ function handleUserMenuClick(v: string) {
 
 <template>
   <div class="header-box">
-    <div class="search-input">
-      <v-input :placeholder="t('placeholder.searchGroupService')" size="small">
-        <template #prefix>
-          <el-icon :size="14">
-            <IconMdiSearch />
-          </el-icon>
-        </template>
-      </v-input>
+    <div class="flex-1" style="height: 24px">
+      <v-global-search />
     </div>
     <div class="d-flex">
       <div class="d-flex gap-5 mr-5">
@@ -102,14 +97,7 @@ function handleUserMenuClick(v: string) {
   padding: 0 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   color: inherit;
-
-  :deep(.search-input) {
-    .el-input__wrapper {
-      border-radius: 16px;
-    }
-  }
 
   .el-dropdown:focus-visible {
     outline: none;
