@@ -294,7 +294,8 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 
 func (sm *ServiceManager) HasPendingContainer() bool {
 	for _, c := range sm.ServiceInfo.Containers {
-		if isContainerStarting(c.State) {
+		version := parseVersionByContainerId(c.ContainerName)
+		if isContainerStarting(c.State) && version == sm.ServiceInfo.Version {
 			return true
 		}
 	}

@@ -12,7 +12,7 @@ type Node struct {
 	CPUUsage    float32           `json:"cpuUsage"`
 	CPU         int               `json:"cpu"`
 	MemoryUsage float32           `json:"memoryUsage"`
-	MemoryTotal int64             `json:"memoryTotal"`
+	MemoryTotal int               `json:"memoryTotal"`
 	MemoryUsed  int64             `json:"memoryUsed"`
 	Labels      map[string]string `json:"labels"`
 }
@@ -38,4 +38,6 @@ type NodeSimpleInfo struct {
 	OnlineThreshold int
 	CPUUsage        float32
 	MemoryUsage     float32
+	TotalCPU        int
+	TotalMemoryGB   int
 }
