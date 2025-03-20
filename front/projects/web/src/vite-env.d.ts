@@ -18,9 +18,9 @@ declare module "vue-router" {
     isNew?: boolean
     onlyAdmin?: boolean
     loginLimit?: number // 0|undefined： 必须登录； -1: 忽略是否登录；1: 必须登出
+    routerKeys?: string[]
     breadcrumb?: Array<{
-      routeName?: string
-      routeParams?: any
+      href?: string
       i18nLabel: string
       name?: string
       isLink?: boolean

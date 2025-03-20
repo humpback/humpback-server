@@ -5,6 +5,7 @@ import { ElInput } from "element-plus"
 import { trim } from "lodash-es"
 
 const { t } = useI18n()
+
 const name = ref("")
 const isLoading = ref(false)
 const isSearch = ref(false)
@@ -78,55 +79,60 @@ onClickOutside(contentRef, hidePopover)
     </div>
 
     <div v-if="visible" v-loading="isLoading" class="global-search-body">
-      <div>
-        <strong>
-          <el-text> {{ t("label.groups") }}</el-text>
-        </strong>
-        <el-divider style="margin: 8px 0 16px 0; border-color: var(--el-color-info-light-9)" />
-      </div>
-
-      <div v-if="result.groups && result.groups.length > 0" class="pl-5">
-        <div v-for="(item, index) in result.groups" :key="index" class="content">
-          <v-router-link :href="`/ws/group/${item.groupId}/services`" :text="item.groupName" show-title @click-route="clickLink">
-            <template #prefix-text>-</template>
-          </v-router-link>
-        </div>
-      </div>
-
-      <div v-else class="pl-5 d-flex gap-1">
-        <el-text type="warning">
-          <el-icon :size="15">
-            <IconMdiWarningCircleOutline />
-          </el-icon>
-        </el-text>
-        <el-text size="small" type="warning"> {{ t("tips.noGroupFound") }}</el-text>
-      </div>
-
-      <div class="mt-5">
-        <strong>
-          <el-text> {{ t("label.services") }}</el-text>
-        </strong>
-        <el-divider style="margin: 8px 0 16px 0; border-color: var(--el-color-info-light-9)" />
-        <div v-if="result.services && result.services.length > 0" class="pl-5">
-          <div v-for="(item, index) in result.services" :key="index" class="content">
-            <el-text :title="item.groupName" size="small" type="info">{{ item.groupName }}</el-text>
-            <br />
-            <v-router-link
-              :href="`/ws/group/${item.groupId}/service/${item.serviceId}/${PageServiceDetail.BasicInfo}`"
-              :text="item.serviceName!"
-              show-title
-              @click-route="clickLink">
-              <template #prefix-text>-</template>
-            </v-router-link>
+      <div class="global-search-content">
+        <div class="global-search-arrow" />
+        <div class="global-search-inner">
+          <div>
+            <strong>
+              <el-text> {{ t("label.groups") }}</el-text>
+            </strong>
+            <el-divider style="margin: 8px 0 16px 0; border-color: var(--el-color-info-light-9)" />
           </div>
-        </div>
-        <div v-else class="pl-5 d-flex gap-1">
-          <el-text type="warning">
-            <el-icon :size="15">
-              <IconMdiWarningCircleOutline />
-            </el-icon>
-          </el-text>
-          <el-text size="small" type="warning">{{ t("tips.noServiceFound") }}</el-text>
+
+          <div v-if="result.groups && result.groups.length > 0" class="pl-5">
+            <div v-for="(item, index) in result.groups" :key="index" class="content">
+              <v-router-link :href="`/ws/group/${item.groupId}/services`" :text="item.groupName" show-title @click-route="clickLink">
+                <template #prefix-text>-</template>
+              </v-router-link>
+            </div>
+          </div>
+
+          <div v-else class="pl-5 d-flex gap-1">
+            <el-text type="warning">
+              <el-icon :size="15">
+                <IconMdiWarningCircleOutline />
+              </el-icon>
+            </el-text>
+            <el-text size="small" type="warning"> {{ t("tips.noGroupFound") }}</el-text>
+          </div>
+
+          <div class="mt-5">
+            <strong>
+              <el-text> {{ t("label.services") }}</el-text>
+            </strong>
+            <el-divider style="margin: 8px 0 16px 0; border-color: var(--el-color-info-light-9)" />
+            <div v-if="result.services && result.services.length > 0" class="pl-5">
+              <div v-for="(item, index) in result.services" :key="index" class="content">
+                <el-text :title="item.groupName" size="small" type="info">{{ item.groupName }}</el-text>
+                <br />
+                <v-router-link
+                  :href="`/ws/group/${item.groupId}/service/${item.serviceId}/${PageServiceDetail.BasicInfo}`"
+                  :text="item.serviceName!"
+                  show-title
+                  @click-route="clickLink">
+                  <template #prefix-text>-</template>
+                </v-router-link>
+              </div>
+            </div>
+            <div v-else class="pl-5 d-flex gap-1">
+              <el-text type="warning">
+                <el-icon :size="15">
+                  <IconMdiWarningCircleOutline />
+                </el-icon>
+              </el-text>
+              <el-text size="small" type="warning">{{ t("tips.noServiceFound") }}</el-text>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -154,24 +160,47 @@ onClickOutside(contentRef, hidePopover)
     }
   }
 
-  & .global-search-body {
-    box-sizing: border-box;
-    background-color: #ffffff;
+  .global-search-body {
     position: absolute;
-    border-radius: 8px;
-    border: 1px solid var(--el-border-color);
-    box-shadow: var(--el-box-shadow-lighter);
     top: 28px;
     left: 0;
-    padding: 16px;
-    width: 400px;
-    max-height: 600px;
-    overflow-y: auto;
-    z-index: 1000;
 
-    .content {
-      font-size: 14px;
-      margin-bottom: 2px;
+    .global-search-content {
+      position: relative;
+
+      .global-search-arrow {
+        position: absolute;
+        top: 0;
+        left: 20px;
+        width: 10px;
+        height: 10px;
+        background-color: #ffffff;
+        border-top: 1px solid var(--el-border-color);
+        border-left: 1px solid var(--el-border-color);
+        transform: rotate(45deg);
+        z-index: 1001;
+      }
+
+      .global-search-inner {
+        box-sizing: border-box;
+        position: absolute;
+        top: 5px;
+        left: 0;
+        background-color: #ffffff;
+        border-radius: 8px;
+        border: 1px solid var(--el-border-color);
+        box-shadow: var(--el-box-shadow-lighter);
+        padding: 16px;
+        width: 400px;
+        max-height: 600px;
+        overflow-y: auto;
+        z-index: 1000;
+
+        .content {
+          font-size: 14px;
+          margin-bottom: 2px;
+        }
+      }
     }
   }
 }

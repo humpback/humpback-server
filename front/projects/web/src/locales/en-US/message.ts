@@ -26,5 +26,14 @@ export default {
     "instanceNotExist": "The instance does not exist",
 
     "NoAvailableNode": "No nodes available"
+  },
+  notify: {
+    "noPermission": "No permission",
+    "notFound": "Not Found",
+    "delete": "Are you sure you want to delete ?",
+    "removeNodeFromGroup": "Are you sure you want to remove node from the group?",
+    "enterKeywordsContinue": "Please enter <span class='keywords-danger'>{name}</span> to continue.",
+    "enableNode": "Are you sure you want to enable node <span class='keywords-warning'>{ip}</span> ?",
+    "disableNode": "Are you sure you want to disable node <span class='keywords-danger'>{ip}</span> ?"
   }
 }

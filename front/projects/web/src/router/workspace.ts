@@ -60,9 +60,10 @@ const serviceManagement = <RouteRecordRaw[]>[
       webTitle: {
         params: "mode"
       },
+      routerKeys: ["groupId"],
       breadcrumb: [
-        { routeName: "groups", routeParams: {}, i18nLabel: "breadcrumb.groupOverview", isLink: true },
-        { routeName: "", routeParams: {}, i18nLabel: "", isLink: false, customName: "group" }
+        { href: "/ws/groups", i18nLabel: "breadcrumb.groupOverview", isLink: true },
+        { isLink: false, customName: "group" }
       ]
     }
   },
@@ -88,17 +89,12 @@ const serviceManagement = <RouteRecordRaw[]>[
     meta: {
       loginLimit: PageLimitRole.Login,
       currentMenu: "groups",
+      routerKeys: ["groupId", "serviceId"],
       breadcrumb: [
-        { routeName: "groups", routeParams: {}, i18nLabel: "breadcrumb.groupOverview", isLink: true },
-        {
-          routeName: "groupDetail",
-          routeParams: { mode: PageGroupDetail.Services },
-          i18nLabel: "",
-          isLink: true,
-          customName: "group"
-        },
-        { routeName: "", routeParams: {}, i18nLabel: "breadcrumb.serviceOverview", isLink: false },
-        { routeName: "", routeParams: {}, i18nLabel: "", isLink: false, customName: "service" }
+        { href: "/ws/groups", i18nLabel: "breadcrumb.groupOverview", isLink: true },
+        { href: `/ws/group/:groupId/${PageGroupDetail.Services}`, isLink: true, customName: "group" },
+        { i18nLabel: "breadcrumb.serviceOverview", isLink: false },
+        { isLink: false, customName: "service" }
       ]
     }
   }
