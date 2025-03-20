@@ -1,6 +1,22 @@
 //@import "element-plus/dist/index.css"
 //@import "element-plus/theme-chalk/src/message.scss";
 //@import "element-plus/theme-chalk/src/notification.scss";
+.el-button {
+  font-family: var(--hp-font-family);
+
+  &.focus-outline-none:focus-visible {
+    outline: none;
+  }
+}
+
+.el-input .el-input__inner {
+  font-family: var(--hp-font-family);
+}
+
+input {
+  font-family: var(--hp-font-family);
+}
+
 //弹出框菜单菜单样式
 .el-popper.website-menu-popover {
   --el-menu-bg-color: var(--hp-aside-bg-color);
@@ -36,10 +52,6 @@
 // message消息样式
 .messageBox {
   z-index: 9999 !important;
-}
-
-.el-button.focus-outline-none:focus-visible {
-  outline: none;
 }
 
 //el-dialog样式

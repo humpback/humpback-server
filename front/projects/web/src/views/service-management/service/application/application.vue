@@ -229,7 +229,7 @@ onMounted(async () => {
         <el-form-item :label="t('label.image')" prop="imageName">
           <v-input v-model="metaInfo.imageName" :maxlength="RuleLength.ImageName?.Max" :placeholder="t('placeholder.egImage')" clearable show-word-limit>
             <template #prepend>
-              <el-dropdown trigger="click" @command="metaInfo.imageDomain = $event">
+              <el-dropdown placement="bottom-start" trigger="click" @command="metaInfo.imageDomain = $event">
                 <div class="registry-domain">
                   <div style="width: auto">{{ metaInfo.imageDomain }}</div>
                   <el-icon :size="18">
@@ -238,7 +238,7 @@ onMounted(async () => {
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="item in registryStore.registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
+                    <el-dropdown-item v-for="item in registryStore.registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -292,7 +292,7 @@ onMounted(async () => {
         <el-form-item :label="t('label.hostname')" prop="network.hostname">
           <v-input v-model="metaInfo.network!.hostname" :disabled="metaInfo.network!.useMachineHostname">
             <template #prepend>
-              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
+              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
             </template>
           </v-input>
         </el-form-item>

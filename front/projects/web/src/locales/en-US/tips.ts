@@ -1,7 +1,7 @@
 export default {
   tips: {
     "loadingHumpback": "Loading Humpback...",
-    "allRightsReserved": "©2024 Humpback. All Rights Reserved",
+    "allRightsReserved": "©Humpback. All Rights Reserved",
     "usernameChangeTips": "After the username is changed, the next login will be logged in with the modified username.",
     "changePasswordTips": "After the password is successfully changed, you will log in to the system again.",
     "registryAuthTips": "If the registry requires authentication information, please fill in the user name and password, otherwise, leave it blank.",
@@ -37,6 +37,8 @@ export default {
     "logsTips": "The current log can be queried up to 10,000 rows.",
     "noGroupFound": "No Group Found",
     "noServiceFound": "No Service Found",
+    "serviceInfoInComplete": "The service information is incomplete",
+    "timeoutTips": "If the program is executed beyond the set time, the program will be forcibly killed.",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",

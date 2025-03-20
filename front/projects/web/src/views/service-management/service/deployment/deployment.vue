@@ -304,11 +304,18 @@ onMounted(async () => {
 
     <el-form-item v-if="deploymentInfo.enableSchedules" :rules="rules.timeout" class="mt-3" prop="schedule.timeout">
       <template #label>
-        <el-checkbox v-model="deploymentInfo.enableTimeout">
-          <strong>
-            <el-text size="small">{{ t("label.enableTimeout") }}</el-text>
-          </strong>
-        </el-checkbox>
+        <div class="d-flex gap-1">
+          <el-checkbox v-model="deploymentInfo.enableTimeout">
+            <strong>
+              <el-text size="small">{{ t("label.enableTimeout") }}</el-text>
+            </strong>
+          </el-checkbox>
+          <v-tooltip :content="t('tips.timeoutTips')" effect="dark" max-width="300px" placement="top-start">
+            <el-icon :size="16">
+              <IconMdiHelpCircleOutline />
+            </el-icon>
+          </v-tooltip>
+        </div>
       </template>
       <v-input v-if="deploymentInfo.enableTimeout" v-model="deploymentInfo.schedule.timeout" :placeholder="t('placeholder.timeoutExample')" />
     </el-form-item>

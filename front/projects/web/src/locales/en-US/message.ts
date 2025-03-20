@@ -1,14 +1,12 @@
 export default {
   message: {
     "loading": "Loading...",
-    "uploading": "Uploading...",
     "deleting": "Deleting...",
     "saveSuccess": "Save Successful",
     "addSuccess": "Added successfully",
     "cloneSuccess": "Clone Successfully",
     "deleteSuccess": "Delete Successfully",
     "removeSuccess": "Remove Successfully",
-    "uploadSuccess": "Upload Successful",
     "operateSuccess": "Successful operation",
     "loginSuccess": "Login Successful",
     "copySucceed": "Copy successful",

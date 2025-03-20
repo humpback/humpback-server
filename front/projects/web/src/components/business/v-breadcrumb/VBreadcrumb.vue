@@ -37,9 +37,9 @@ function navigateToRoute(href: string, event: MouseEvent) {
   <el-breadcrumb v-if="breadcrumbs.length > 0" separator="/">
     <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index">
       <a v-if="item.isLink" :href="item.href" @click.prevent.stop="navigateToRoute(item.href!, $event)">
-        {{ item.name || t(item?.i18nLabel) }}
+        {{ item?.name ? item.name : item?.i18nLabel ? t(item?.i18nLabel) : "" }}
       </a>
-      <span v-else>{{ item.name || t(item?.i18nLabel) }}</span>
+      <span v-else>{{ item?.name ? item.name : item?.i18nLabel ? t(item?.i18nLabel) : "" }}</span>
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>

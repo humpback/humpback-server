@@ -64,7 +64,7 @@ async function login() {
         </el-form-item>
         <el-form-item>
           <el-button v-if="loginStep === 0" class="w-100 mt-3" native-type="submit" size="large" type="primary">
-            <el-icon>
+            <el-icon class="mr-1">
               <icon-mdi-login-variant />
             </el-icon>
             {{ t("btn.login") }}
