@@ -34,7 +34,11 @@ const setRowClass = ({ row }) => {
 }
 
 function routerToInstanceLog(serviceId: string, containerId: string) {
-  router.push({ name: "serviceInfo", params: { groupId: groupId.value, serviceId: serviceId, mode: PageServiceDetail.Log }, query: { instance: containerId } })
+  router.push({
+    name: "serviceInfo",
+    params: { groupId: groupId.value, serviceId: serviceId, mode: PageServiceDetail.Log },
+    query: { instance: containerId }
+  })
 }
 
 function serviceInfoIsInComplete(info: ServiceInfo) {
@@ -152,7 +156,7 @@ onMounted(async () => {
               <template #default="cscope">
                 <div class="d-flex gap-3">
                   <v-container-status :status="cscope.row.state" size="small" />
-                  <v-tooltip v-if="scope.row.errorMsg">
+                  <v-tooltip v-if="scope.row.errorMsg" effect="dark">
                     <template #content>
                       <el-text type="danger">{{ cscope.row.errorMsg }}</el-text>
                     </template>
@@ -226,7 +230,7 @@ onMounted(async () => {
         </div>
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.service')" class-name="serviceName-column" min-width="200" prop="serviceName" sortable="custom">
+    <el-table-column :label="t('label.serviceName')" class-name="serviceName-column" min-width="200" prop="serviceName" sortable="custom">
       <template #default="scope">
         <v-router-link :href="`/ws/group/${groupId}/service/${scope.row.serviceId}/basic-info`" :text="scope.row.serviceName" />
       </template>
@@ -240,7 +244,7 @@ onMounted(async () => {
       <template #default="scope">
         <div class="d-flex gap-1">
           <v-service-status-tag :is-enabled="scope.row.isEnabled" :status="scope.row.status" />
-          <v-tooltip v-if="serviceInfoIsInComplete(scope.row)" :content="t('tips.serviceInfoInComplete')" placement="top-start">
+          <v-tooltip v-if="serviceInfoIsInComplete(scope.row)" :content="t('tips.serviceInfoInComplete')" effect="dark" placement="top-start">
             <el-button link type="warning">
               <el-icon :size="18">
                 <IconMdiWarningCircleOutline />

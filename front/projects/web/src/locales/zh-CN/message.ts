@@ -31,7 +31,7 @@ export default {
     "delete": "您确定要删除吗？",
     "removeNodeFromGroup": "您确定要从分组中移除机器吗？",
     "enterKeywordsContinue": "请输入<span class='keywords-danger'>{ name }</span>以继续。",
-    "enableNode": "您确定要启用机器吗<span class='keywords-warning'>{ ip }</span>？",
-    "disableNode": "您确定要停用机器吗<span class='keywords-warning'>{ ip }</span>？"
+    "enableNode": "您确定要启用机器<span class='keywords-warning'>{ ip }</span>吗？",
+    "disableNode": "您确定要停用机器<span class='keywords-warning'>{ ip }</span>吗？"
   }
 }

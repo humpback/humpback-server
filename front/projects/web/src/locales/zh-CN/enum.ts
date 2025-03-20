@@ -1,9 +1,8 @@
 export default {
   role: {
     "admin": "管理员",
-    "user": "User",
-    "supperAdmin": "超级管理员",
-    "owner": "Owner"
+    "user": "普通用户",
+    "supperAdmin": "超级管理员"
   },
   containerStatus: {
     created: "已创建",

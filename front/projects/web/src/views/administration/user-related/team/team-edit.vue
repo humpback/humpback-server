@@ -88,7 +88,7 @@ defineExpose({ open })
     <template #header>{{ dialogInfo.info.teamId ? t("header.editTeam") : t("header.addTeam") }}</template>
     <div class="my-3">
       <el-form ref="formRef" v-loading="isLoading" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
-        <el-form-item :label="t('label.name')" prop="name">
+        <el-form-item :label="t('label.teamName')" prop="name">
           <v-input v-model="dialogInfo.info.name" :maxlength="RuleLength.TeamName.Max" clearable show-word-limit />
         </el-form-item>
         <el-form-item :label="t('label.description')" prop="description">
