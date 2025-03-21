@@ -150,9 +150,7 @@ onMounted(async () => {
     </el-table-column>
     <el-table-column :label="t('label.labels')" min-width="240">
       <template #default="scope">
-        <div class="custom-column">
-          <v-label-table-view :labels="scope.row.labels" :line="4" />
-        </div>
+        <v-label-table-view :labels="scope.row.labels" :line="4" />
       </template>
     </el-table-column>
     <el-table-column :label="t('label.action')" align="center" fixed="right" header-align="center" width="130">
@@ -170,10 +168,6 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.custom-column {
-  min-height: 60px;
-}
-
 .status {
   display: flex;
   align-items: start;
