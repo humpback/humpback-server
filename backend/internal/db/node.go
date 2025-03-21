@@ -24,8 +24,9 @@ func NodeUpdateStatus(nodeInfo *types.NodeSimpleInfo) error {
 	node.Status = nodeInfo.Status
 	node.UpdatedAt = nodeInfo.LastHeartbeat
 	node.CPU = nodeInfo.TotalCPU
-	node.MemoryTotal = nodeInfo.TotalMemoryGB
 	node.CPUUsage = nodeInfo.CPUUsage
+	node.MemoryTotal = nodeInfo.TotalMemory
+	node.MemoryUsed = nodeInfo.UsedMemory
 	node.MemoryUsage = nodeInfo.MemoryUsage
 	return SaveData(BucketNodes, nodeInfo.NodeId, node)
 }

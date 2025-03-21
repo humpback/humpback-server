@@ -10,10 +10,10 @@ type Node struct {
 	CreatedAt   int64             `json:"createdAt"`
 	UpdatedAt   int64             `json:"updatedAt"`
 	CPUUsage    float32           `json:"cpuUsage"`
-	CPU         int               `json:"cpu"`
+	CPU         uint              `json:"cpu"`
 	MemoryUsage float32           `json:"memoryUsage"`
-	MemoryTotal int               `json:"memoryTotal"`
-	MemoryUsed  int64             `json:"memoryUsed"`
+	MemoryTotal uint64            `json:"memoryTotal"`
+	MemoryUsed  uint64            `json:"memoryUsed"`
 	Labels      map[string]string `json:"labels"`
 }
 
@@ -38,6 +38,7 @@ type NodeSimpleInfo struct {
 	OnlineThreshold int
 	CPUUsage        float32
 	MemoryUsage     float32
-	TotalCPU        int
-	TotalMemoryGB   int
+	TotalCPU        uint
+	TotalMemory     uint64
+	UsedMemory      uint64
 }

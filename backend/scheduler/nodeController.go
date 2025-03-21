@@ -114,6 +114,9 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 		n.Port = healthInfo.HostInfo.Port
 		n.CPUUsage = healthInfo.HostInfo.CPUUsage
 		n.MemoryUsage = healthInfo.HostInfo.MemoryUsage
+		n.TotalCPU = healthInfo.HostInfo.TotalCPU
+		n.UsedMemory = healthInfo.HostInfo.UsedMemory
+		n.TotalMemory = healthInfo.HostInfo.TotalMemory
 		if n.Status == types.NodeStatusOffline && ts-n.LastHeartbeat < nc.ThresholdInvterval {
 			n.OnlineThreshold++
 		} else {
@@ -135,7 +138,8 @@ func (nc *NodeController) HeartBeat(healthInfo types.HealthInfo) {
 				CPUUsage:        healthInfo.HostInfo.CPUUsage,
 				TotalCPU:        healthInfo.HostInfo.TotalCPU,
 				MemoryUsage:     healthInfo.HostInfo.MemoryUsage,
-				TotalMemoryGB:   healthInfo.HostInfo.TotalMemoryGB,
+				TotalMemory:     healthInfo.HostInfo.TotalMemory,
+				UsedMemory:      healthInfo.HostInfo.UsedMemory,
 			}
 		}
 	}

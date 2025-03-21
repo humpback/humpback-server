@@ -80,7 +80,9 @@ onMounted(() => search())
                 out-label-width="80px"
                 show-out-label
                 @change="search">
-                <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value" />
+                <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value">
+                  <el-text :type="item.type">{{ t(item.label) }}</el-text>
+                </el-option>
               </v-select>
             </div>
             <div class="flex-1" style="min-width: 300px">
@@ -145,7 +147,7 @@ onMounted(() => search())
                   <div class="status-memory">
                     <el-text size="small" type="info">
                       <strong>{{ t("label.memoryUsed") }}</strong>
-                      <el-progress v-if="scope.row.memoryTotal" :percentage="Math.trunc(scope.row.memoryUsage * 100)" />
+                      <el-progress v-if="scope.row.memoryTotal" :percentage="scope.row.memoryUsage" />
                       <div v-if="scope.row.memoryTotal">
                         {{ `${BytesToGB(scope.row.memoryUsed)} ${t("label.gb")} / ${BytesToGB(scope.row.memoryTotal)} ${t("label.gb")}` }}
                       </div>

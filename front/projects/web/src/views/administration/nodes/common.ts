@@ -8,12 +8,12 @@ export const defaultSort = NewSortInfo("ipAddress", "asc")
 export const defaultPage = NewPageInfo(1, 20)
 export const defaultFilter = { status: "" }
 
-export const statusOptions = [
+export const statusOptions: Array<{ type?: "primary" | "success" | "warning" | "danger" | "info"; label: string; value: string }> = [
   { label: "label.all", value: "" },
-  { label: "label.enabled", value: NodeSwitch.Enabled },
-  { label: "label.disabled", value: NodeSwitch.Disabled },
-  { label: "label.healthy", value: NodeStatus.Online },
-  { label: "label.deadly", value: NodeStatus.Offline }
+  { type: "success", label: "label.enabled", value: NodeSwitch.Enabled },
+  { type: "info", label: "label.disabled", value: NodeSwitch.Disabled },
+  { type: "success", label: "label.healthy", value: NodeStatus.Online },
+  { type: "danger", label: "label.deadly", value: NodeStatus.Offline }
 ]
 
 export class QueryNodesInfo extends QueryInfo {
