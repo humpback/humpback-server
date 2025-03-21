@@ -5,7 +5,7 @@ docker run -d \
 --net=host \
 --restart=always \
 -v /etc/localtime:/etc/localtime \
--v /var/lib/humpback/humpback.db:/workspace/data/humpback.db \
+-v /var/lib/humpback:/workspace/data \
 -e LOCATION=dev \
 -e SITE_PORT=8300 \
 -e BACKEND_PORT=8301 \
