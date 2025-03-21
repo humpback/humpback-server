@@ -125,7 +125,7 @@ defineExpose({ open })
       <el-table-column :label="t('label.cpu')" fixed="left" width="100">
         <template #default="scope">
           <div v-if="scope.row.cpu">{{ `${scope.row.cpu} ${t("label.core")}` }}</div>
-          <span>--</span>
+          <span v-else>--</span>
         </template>
       </el-table-column>
       <el-table-column :label="t('label.memory')" width="160">

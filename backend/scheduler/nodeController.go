@@ -77,13 +77,14 @@ func (nc *NodeController) CheckNodesCore() {
 	defer nc.Unlock()
 
 	currentTime := time.Now().Unix()
+	statusChanged := false
 	for nodeId, nodeInfo := range nc.NodesInfo {
-
+		statusChanged = false
 		if nodeInfo.Status == types.NodeStatusOnline {
 			if currentTime-nodeInfo.LastHeartbeat > nc.ThresholdInvterval {
 				slog.Info("[Node Controller] Node is not responding.", "nodeId", nodeId, "Last heartbeat", nodeInfo.LastHeartbeat)
 				nodeInfo.Status = types.NodeStatusOffline
-				nc.NodeHeartbeatChan <- *nodeInfo
+				statusChanged = true
 			}
 		}
 
@@ -92,13 +93,17 @@ func (nc *NodeController) CheckNodesCore() {
 				nodeInfo.OnlineThreshold >= nc.CheckThreshold {
 				slog.Info("[Node Controller] need report online node", "nodeId", nodeId)
 				nodeInfo.Status = types.NodeStatusOnline
-				nc.NodeHeartbeatChan <- *nodeInfo
+				statusChanged = true
 			}
 		}
 
 		err := db.NodeUpdateStatus(nodeInfo)
 		if err != nil {
 			slog.Info("[Node Controller] update node status to DB failed", "error", err)
+		}
+
+		if statusChanged {
+			nc.NodeHeartbeatChan <- *nodeInfo
 		}
 	}
 }

@@ -14,24 +14,38 @@ const labelMapping = computed(() => {
 </script>
 
 <template>
-  <div v-for="(item, index) in labelMapping.slice(0, props.line)" :key="index" class="line">
-    <el-text size="small">-- {{ item }}</el-text>
-  </div>
-  <div v-if="labelMapping.length > props.line">
-    <el-popover :width="300" placement="bottom-start" trigger="hover">
-      <template #reference>
-        <el-button link size="small" type="primary"> {{ t("btn.more") }}</el-button>
-      </template>
-      <div v-for="(item, index) in labelMapping.slice(props.line)" :key="index" class="line">
+  <div class="custom-column">
+    <div style="width: 100%">
+      <div v-for="(item, index) in labelMapping.slice(0, props.line)" :key="index" class="line">
         <el-text size="small">-- {{ item }}</el-text>
       </div>
-    </el-popover>
+      <div v-if="labelMapping.length > props.line">
+        <el-popover :width="300" placement="bottom-start" trigger="hover">
+          <template #reference>
+            <el-button link size="small" type="primary"> {{ t("btn.more") }}</el-button>
+          </template>
+          <div v-for="(item, index) in labelMapping.slice(props.line)" :key="index" class="line">
+            <el-text size="small">-- {{ item }}</el-text>
+          </div>
+        </el-popover>
+      </div>
+    </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+.custom-column {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+
 .line {
   font-size: 12px;
   line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
