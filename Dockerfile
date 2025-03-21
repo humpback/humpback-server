@@ -6,7 +6,7 @@ RUN mkdir -p /workspace/config
 
 COPY ./backend/config/*.yaml /workspace/config
 
-COPY ./front/projects/web/dist /workspace/html/web
+COPY ./front/projects/web/dist /workspace/web
 
 COPY ./backend/humpback /workspace/
 

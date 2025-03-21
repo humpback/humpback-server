@@ -1,4 +1,9 @@
 location: prd # local / dev / prd
 html:
-  dir: './html/web'
+  dir: './web'
   load: true
+db:
+  root: '/workspace/data/humpback.db'
+  timeout: 5s
+  sessionTimeout: 12h
+  sessionGCInterval: 24h
