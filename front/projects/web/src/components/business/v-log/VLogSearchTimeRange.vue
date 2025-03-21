@@ -5,6 +5,10 @@ const props = defineProps<{
   outLabel?: string
 }>()
 
+const emits = defineEmits<{
+  (e: "change"): void
+}>()
+
 const { t } = useI18n()
 
 const startTime = defineModel<number>("startTime")
@@ -25,6 +29,7 @@ const dateTimeRange = computed<any>({
       startTime.value = 0
       endTime.value = 0
     }
+    emits("change")
   }
 })
 

@@ -441,6 +441,9 @@
     "IconMdiViewDashboard": true,
     "IconMdiPlay": true,
     "IconMdiRestart": true,
-    "IconMdiSquare": true
+    "IconMdiSquare": true,
+    "IconMdiCheckboxMultipleBlankOutline": true,
+    "IconMdiStopCircleOutline": true,
+    "IconMdiPauseBoxOutline": true
   }
 }

@@ -155,6 +155,7 @@ export default {
     "tx": "TX",
     "wrapLines": "Wrap lines",
     "groups": "Groups",
-    "currentUser": "Current User"
+    "currentUser": "Current User",
+    "port": "Port"
   }
 }

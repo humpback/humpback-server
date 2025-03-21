@@ -49,6 +49,6 @@ export default {
     "addOption": "添加选项",
     "addPlacementConstraint": "添加约束",
     "addSchedule": "添加执行计划",
-    "viewMonitor": "查看指标"
+    "viewMonitor": "查看性能指标"
   }
 }

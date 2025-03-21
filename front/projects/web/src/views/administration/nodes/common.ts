@@ -8,12 +8,12 @@ export const defaultSort = NewSortInfo("ipAddress", "asc")
 export const defaultPage = NewPageInfo(1, 20)
 export const defaultFilter = { status: "" }
 
-export const statusOptions = [
+export const statusOptions: Array<{ type?: "primary" | "success" | "warning" | "danger" | "info"; label: string; value: string }> = [
   { label: "label.all", value: "" },
-  { label: "label.enabled", value: NodeSwitch.Enabled },
-  { label: "label.disabled", value: NodeSwitch.Disabled },
-  { label: "label.healthy", value: NodeStatus.Online },
-  { label: "label.deadly", value: NodeStatus.Offline }
+  { type: "success", label: "label.enabled", value: NodeSwitch.Enabled },
+  { type: "info", label: "label.disabled", value: NodeSwitch.Disabled },
+  { type: "success", label: "label.healthy", value: NodeStatus.Online },
+  { type: "danger", label: "label.deadly", value: NodeStatus.Offline }
 ]
 
 export class QueryNodesInfo extends QueryInfo {
@@ -48,7 +48,12 @@ export function NewCommand(ip: string, isUninstall?: boolean) {
   return `docker run -d --name=humpback-agent \\
 --net=host \\
 --restart=always \\
--e ip=${ip} \\
+--privileged \\
 -v /etc/localtime:/etc/localtime \\
-humpback:latest`
+-v /var/run/docker.sock:/var/run/docker.sock \\
+-v /var/lib/docker:/var/lib/docker \\
+-e HUMPBACK_AGENT_API_BIND=${ip}:8018 \\
+-e HUMPBACK_SERVER_HOST={server-address}:{server-backend-port} \\
+-e HUMPBACK_VOLUMES_ROOT_DIRECTORY=/var/lib/docker \\
+docker.io/humpbacks/humpback-agent:develop`
 }

@@ -7,11 +7,11 @@ type HostInfo struct {
 	Port          int      `json:"hostPort"`
 	OsInformation string   `json:"osInformation"`
 	KernelVersion string   `json:"kernelVersion"`
-	TotalCPU      int      `json:"totalCPU"`
+	TotalCPU      uint     `json:"totalCPU"`
 	UsedCPU       float32  `json:"usedCPU"`
 	CPUUsage      float32  `json:"cpuUsage"`
-	TotalMemoryGB int      `json:"totalMemoryGB"`
-	UsedMemoryGB  float32  `json:"usedMemoryGB"`
+	TotalMemory   uint64   `json:"totalMemory"`
+	UsedMemory    uint64   `json:"usedMemory"`
 	MemoryUsage   float32  `json:"memoryUsage"`
 }
 

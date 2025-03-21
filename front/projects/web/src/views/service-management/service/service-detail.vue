@@ -200,7 +200,7 @@ onUnmounted(() => {
         <template v-for="item in ActionOptions" :key="item.action">
           <el-button v-if="showAction(serviceInfo, item.action)" :type="item.type" @click="operateService(item.action)">
             <el-icon :size="16">
-              <IconMdiSquare />
+              <component :is="item.icon" />
             </el-icon>
             {{ t(item.i18nLabel) }}
           </el-button>
@@ -208,7 +208,7 @@ onUnmounted(() => {
 
         <el-button plain type="primary" @click="cloneService()">
           <el-icon :size="16">
-            <IconMdiCheckboxMultipleBlank />
+            <IconMdiCheckboxMultipleBlankOutline />
           </el-icon>
           {{ t("btn.clone") }}
         </el-button>

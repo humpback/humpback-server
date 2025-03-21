@@ -40,10 +40,10 @@ export default {
     "status": "状态",
     "keywords": "关键字",
     "label": "标签",
-    "enabled": "已启用",
+    "enabled": "启用中",
     "disabled": "已停用",
-    "healthy": "健康",
-    "deadly": "死亡",
+    "healthy": "在线",
+    "deadly": "离线",
     "cpu": "中央处理器",
     "memory": "内存",
     "memoryUsed": "内存（已使用）",
@@ -155,6 +155,7 @@ export default {
     "tx": "发送",
     "wrapLines": "超长换行",
     "groups": "分组",
-    "currentUser": "当前用户"
+    "currentUser": "当前用户",
+    "port": "端口"
   }
 }

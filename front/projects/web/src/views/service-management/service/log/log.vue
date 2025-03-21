@@ -95,7 +95,7 @@ onMounted(async () => {
   parseQuery()
   await search()
   SetWebTitle(`${t("webTitle.serviceInfo")} - ${stateStore.getService()?.serviceName}`)
-  if (containers.value.length > 0) {
+  if (searchInfo.value.instance === "" && containers.value.length > 0) {
     searchInfo.value.instance = containers.value[0].containerId
   }
   await getLogs()
@@ -121,7 +121,7 @@ onMounted(async () => {
       </div>
       <div class="d-flex gap-3 flex-wrap mt-5">
         <div class="flex-1" style="min-width: 460px">
-          <v-select v-model="searchInfo.instance" :out-label="t('label.instance')" out-label-width="100px" placeholder="" show-out-label>
+          <v-select v-model="searchInfo.instance" :out-label="t('label.instance')" out-label-width="100px" placeholder="" show-out-label @change="getLogs()">
             <el-option v-for="item in containers" :key="item.containerId" :label="item.containerName" :value="item.containerId" />
           </v-select>
         </div>
@@ -131,7 +131,8 @@ onMounted(async () => {
             v-model:start-time="searchInfo.startAt"
             :out-label="t('label.timeRange')"
             out-label-width="120px"
-            show-out-label />
+            show-out-label
+            @change="getLogs()" />
         </div>
         <div style="width: 200px">
           <el-input
@@ -139,6 +140,7 @@ onMounted(async () => {
             :min="RuleLength?.LogsLine?.Min"
             :model-value="searchInfo.line"
             type="number"
+            @change="getLogs()"
             @update:modelValue="handleLineChange">
             <template #prepend>
               <el-text>{{ t("label.lines") }}</el-text>
