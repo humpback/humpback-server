@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { NodeInfo } from "@/types"
 import { BytesToGB, TableHeight } from "@/utils"
-import { Action } from "@/models"
+import { Action, NodeStatus } from "@/models"
 import NodeAdd from "./node-add.vue"
 import NodeDelete from "./node-delete.vue"
 import NodeEnable from "./node-enable.vue"
@@ -128,7 +128,13 @@ onMounted(() => search())
             </div>
           </template>
         </el-table-column>
-        <el-table-column :label="t('label.hostname')" min-width="200" prop="name" sortable="custom">
+        <el-table-column :label="t('label.port')" min-width="80" prop="port">
+          <template #default="scope">
+            <span v-if="scope.row.isEnable && scope.row.status === NodeStatus.Online">{{ scope.row.port }}</span>
+            <span v-else>--</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.hostname')" min-width="180" prop="name" sortable="custom">
           <template #default="scope">
             <v-table-column-none :text="scope.row.name" />
           </template>
@@ -240,11 +246,12 @@ onMounted(() => search())
     .status-memory {
       flex: 7;
       min-width: 180px;
+      max-width: 600px;
     }
   }
 
   .status-tag {
-    width: 100px;
+    width: 120px;
     text-align: right;
     padding-right: 20px;
   }

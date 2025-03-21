@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import cronstrue from "cronstrue"
+import "cronstrue/locales/en"
+import "cronstrue/locales/zh_CN"
 import { toLower } from "lodash-es"
 import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"

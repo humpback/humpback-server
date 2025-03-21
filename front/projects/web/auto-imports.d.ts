@@ -17,12 +17,15 @@ declare global {
   const GetUserRole: typeof import('./src/utils/common')['GetUserRole']
   const IconMdiAccount: typeof import('~icons/mdi/account')['default']
   const IconMdiAlphaCBoxOutline: typeof import('~icons/mdi/alpha-c-box-outline')['default']
+  const IconMdiCheckboxMultipleBlankOutline: typeof import('~icons/mdi/checkbox-multiple-blank-outline')['default']
   const IconMdiCogOutline: typeof import('~icons/mdi/cog-outline')['default']
   const IconMdiCompany: typeof import('~icons/mdi/company')['default']
   const IconMdiLogoutVariant: typeof import('~icons/mdi/logout-variant')['default']
+  const IconMdiPauseBoxOutline: typeof import('~icons/mdi/pause-box-outline')['default']
   const IconMdiPlay: typeof import('~icons/mdi/play')['default']
   const IconMdiRestart: typeof import('~icons/mdi/restart')['default']
   const IconMdiSquare: typeof import('~icons/mdi/square')['default']
+  const IconMdiStopCircleOutline: typeof import('~icons/mdi/stop-circle-outline')['default']
   const IconMdiTextBoxOutline: typeof import('~icons/mdi/text-box-outline')['default']
   const IconMdiUserOutline: typeof import('~icons/mdi/user-outline')['default']
   const IconMdiViewDashboard: typeof import('~icons/mdi/view-dashboard')['default']
@@ -471,6 +474,7 @@ declare module 'vue' {
     readonly IconMdiPlay: UnwrapRef<typeof import('~icons/mdi/play')['default']>
     readonly IconMdiRestart: UnwrapRef<typeof import('~icons/mdi/restart')['default']>
     readonly IconMdiSquare: UnwrapRef<typeof import('~icons/mdi/square')['default']>
+    readonly IconMdiStopCircleOutline: UnwrapRef<typeof import('~icons/mdi/stop-circle-outline')['default']>
     readonly IconMdiTextBoxOutline: UnwrapRef<typeof import('~icons/mdi/text-box-outline')['default']>
     readonly IconMdiUserOutline: UnwrapRef<typeof import('~icons/mdi/user-outline')['default']>
     readonly IconMdiViewDashboard: UnwrapRef<typeof import('~icons/mdi/view-dashboard')['default']>

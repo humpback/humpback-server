@@ -53,7 +53,8 @@ export const ActionOptions: Array<{
   { action: "Disable", type: "info", i18nLabel: "btn.disable", icon: IconMdiSquare },
   { action: "Start", type: "success", i18nLabel: "btn.start", icon: IconMdiPlay },
   { action: "Restart", type: "success", i18nLabel: "btn.restart", icon: IconMdiRestart },
-  { action: "Stop", type: "primary", i18nLabel: "btn.stop", icon: IconMdiSquare }
+  // { action: "Stop", type: "primary", i18nLabel: "btn.stop", icon: IconMdiSquare }
+  { action: "Stop", type: "primary", i18nLabel: "btn.stop", icon: IconMdiStopCircleOutline }
 ]
 
 async function getGroupInfo(groupId: string) {

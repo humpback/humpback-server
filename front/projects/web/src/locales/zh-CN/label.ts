@@ -155,6 +155,7 @@ export default {
     "tx": "发送",
     "wrapLines": "超长换行",
     "groups": "分组",
-    "currentUser": "当前用户"
+    "currentUser": "当前用户",
+    "port": "端口"
   }
 }

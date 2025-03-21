@@ -64,6 +64,7 @@ declare module 'vue' {
     IconMdiAppleKeyboardCommand: typeof import('~icons/mdi/apple-keyboard-command')['default']
     IconMdiArrowExpandAll: typeof import('~icons/mdi/arrow-expand-all')['default']
     IconMdiCheckboxMultipleBlank: typeof import('~icons/mdi/checkbox-multiple-blank')['default']
+    IconMdiCheckboxMultipleBlankOutline: typeof import('~icons/mdi/checkbox-multiple-blank-outline')['default']
     IconMdiChevronDown: typeof import('~icons/mdi/chevron-down')['default']
     IconMdiClockTimeFourOutline: typeof import('~icons/mdi/clock-time-four-outline')['default']
     IconMdiClockTimeThreeOutline: typeof import('~icons/mdi/clock-time-three-outline')['default']
