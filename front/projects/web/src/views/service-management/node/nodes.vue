@@ -131,7 +131,7 @@ onMounted(async () => {
               <div class="status-memory">
                 <el-text size="small" type="info">
                   <strong>{{ t("label.memoryUsed") }}</strong>
-                  <el-progress v-if="scope.row.memoryTotal" :percentage="Math.trunc(scope.row.memoryUsage * 100)" />
+                  <el-progress v-if="scope.row.memoryTotal" :percentage="scope.row.memoryUsage" />
                   <div v-if="scope.row.memoryTotal">
                     {{ `${BytesToGB(scope.row.memoryUsed)} ${t("label.gb")} / ${BytesToGB(scope.row.memoryTotal)} ${t("label.gb")}` }}
                   </div>
