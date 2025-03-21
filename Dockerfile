@@ -12,4 +12,6 @@ COPY ./backend/humpback /workspace/
 
 WORKDIR /workspace
 
+RUN mkdir data
+
 CMD ["./humpback"]
