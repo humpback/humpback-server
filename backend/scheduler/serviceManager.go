@@ -146,21 +146,6 @@ func (sm *ServiceManager) Reconcile() {
 }
 
 func (sm *ServiceManager) PrepareMeta() {
-	if sm.ServiceInfo.Meta.Labels == nil {
-		sm.ServiceInfo.Meta.Labels = make(map[string]string)
-	}
-
-	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelGroupId]; !ok || label != sm.ServiceInfo.GroupId {
-		sm.ServiceInfo.Meta.Labels[types.ContainerLabelGroupId] = sm.ServiceInfo.GroupId
-	}
-
-	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceId]; !ok || label != sm.ServiceInfo.ServiceId {
-		sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceId] = sm.ServiceInfo.ServiceId
-	}
-
-	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName]; !ok || label != sm.ServiceInfo.ServiceName {
-		sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName] = sm.ServiceInfo.ServiceName
-	}
 
 	if sm.ServiceInfo.Meta.EnvConfig != nil {
 		sm.ServiceInfo.Meta.Envs = make([]string, len(sm.ServiceInfo.Meta.EnvConfig))
