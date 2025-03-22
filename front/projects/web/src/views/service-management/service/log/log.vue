@@ -2,7 +2,7 @@
 import { SetWebTitle } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
 import { RuleLength } from "@/models"
-import { find, toLower } from "lodash-es"
+import { filter, find, toLower } from "lodash-es"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -14,7 +14,7 @@ const isAction = ref(false)
 
 const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
-const containers = computed<ServiceContainerStatusInfo[]>(() => stateStore.getService(serviceId.value)?.containers || [])
+const containers = computed<ServiceContainerStatusInfo[]>(() => filter(stateStore.getService(serviceId.value)?.containers || [], x => !!x.containerId))
 
 const searchInfo = ref({
   instance: "",
