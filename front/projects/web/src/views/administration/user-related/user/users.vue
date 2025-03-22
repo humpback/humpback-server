@@ -13,7 +13,7 @@ const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const tableHeight = computed(() => TableHeight(341))
+const tableHeight = computed(() => TableHeight(344))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryUserInfo>(new QueryUserInfo(route.query))
@@ -67,33 +67,18 @@ onMounted(() => search())
 </script>
 
 <template>
-  <el-form @submit.prevent="search">
-    <el-form-item>
-      <div class="d-flex gap-3 w-100 flex-wrap">
-        <div style="width: 280px">
-          <v-role-query-select v-model="queryInfo.filter.role" :placeholder="t('placeholder.all')" @change="search()" />
-        </div>
-        <div class="flex-1" style="min-width: 300px">
-          <v-input v-model="queryInfo.keywords" :placeholder="t('placeholder.enterUsernameEmailOrPhone')">
-            <template #prepend>
-              <el-text>{{ t("label.keywords") }}</el-text>
-            </template>
-          </v-input>
-        </div>
-        <div>
-          <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-          <el-button plain type="primary" @click="openAction(Action.Add)">
-            <template #icon>
-              <el-icon :size="20">
-                <IconMdiAdd />
-              </el-icon>
-            </template>
-            {{ t("btn.addUser") }}
-          </el-button>
-        </div>
+  <v-search
+    v-model="queryInfo.keywords"
+    :add-label="t('btn.addUser')"
+    :placeholder="t('placeholder.enterUsernameEmailOrPhone')"
+    @add="openAction(Action.Add)"
+    @search="search">
+    <template #prefix>
+      <div style="width: 280px">
+        <v-role-query-select v-model="queryInfo.filter.role" :placeholder="t('placeholder.all')" @change="search()" />
       </div>
-    </el-form-item>
-  </el-form>
+    </template>
+  </v-search>
 
   <v-table
     v-loading="isLoading"

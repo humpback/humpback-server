@@ -6,13 +6,12 @@ import RegistryEdit from "./registry-edit.vue"
 import RegistryDelete from "./registry-delete.vue"
 import RegistryView from "./registry-view.vue"
 import { isDefaultRegistry, QueryRegistryInfo } from "./common.ts"
-import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const tableHeight = computed(() => TableHeight(282))
+const tableHeight = computed(() => TableHeight(286))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryRegistryInfo>(new QueryRegistryInfo(route.query))
@@ -60,30 +59,8 @@ onMounted(() => search())
   <div>
     <v-card>
       <v-page-title :title="t('label.registries')" />
-      <el-form @submit.prevent="search">
-        <el-form-item>
-          <div class="d-flex gap-3 w-100 flex-wrap">
-            <div class="flex-1" style="min-width: 300px">
-              <v-input v-model="queryInfo.keywords">
-                <template #prepend>
-                  <el-text>{{ t("label.url") }}</el-text>
-                </template>
-              </v-input>
-            </div>
-            <div>
-              <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-              <el-button plain type="primary" @click="openAction(Action.Add)">
-                <template #icon>
-                  <el-icon :size="20">
-                    <IconMdiAdd />
-                  </el-icon>
-                </template>
-                {{ t("btn.addRegistry") }}
-              </el-button>
-            </div>
-          </div>
-        </el-form-item>
-      </el-form>
+
+      <v-search v-model="queryInfo.keywords" :add-label="t('btn.addRegistry')" :input-label="t('label.url')" @add="openAction(Action.Add)" @search="search" />
 
       <v-table
         v-loading="isLoading"

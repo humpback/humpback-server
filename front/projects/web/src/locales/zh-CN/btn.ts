@@ -48,7 +48,7 @@ export default {
     "addEnvironment": "添加环境变量",
     "addOption": "添加选项",
     "addPlacementConstraint": "添加约束",
-    "addSchedule": "添加执行计划",
+    "addSchedule": "添加定时任务",
     "viewMonitor": "查看性能指标"
   }
 }

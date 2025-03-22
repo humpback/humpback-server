@@ -32,7 +32,7 @@ export default {
     "addService": "添加服务",
     "deleteService": "删除服务",
     "cloneService": "克隆服务",
-    "addSchedule": "添加执行计划",
-    "editSchedule": "编辑执行计划"
+    "addSchedule": "添加定时任务",
+    "editSchedule": "编辑定时任务"
   }
 }

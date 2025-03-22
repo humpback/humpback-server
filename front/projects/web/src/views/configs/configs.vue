@@ -6,13 +6,12 @@ import { QueryConfigsInfo } from "./common.ts"
 import ConfigEdit from "./config-edit.vue"
 import ConfigDelete from "./config-delete.vue"
 import ConfigView from "./config-view.vue"
-import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const tableHeight = computed(() => TableHeight(282))
+const tableHeight = computed(() => TableHeight(286))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryConfigsInfo>(new QueryConfigsInfo(route.query))
@@ -60,33 +59,14 @@ onMounted(() => search())
   <div>
     <v-card>
       <v-page-title :title="t('label.configs')" />
-      <el-form @submit.prevent="search">
-        <el-form-item>
-          <div class="d-flex gap-3 w-100 flex-wrap">
-            <div>
-              <v-config-type-query-select v-model="queryInfo.filter.configType" :placeholder="t('placeholder.all')" @change="search()" />
-            </div>
-            <div class="flex-1" style="min-width: 300px">
-              <v-input v-model="queryInfo.keywords">
-                <template #prepend>
-                  <el-text>{{ t("label.name") }}</el-text>
-                </template>
-              </v-input>
-            </div>
-            <div>
-              <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-              <el-button plain type="primary" @click="openAction(Action.Add)">
-                <template #icon>
-                  <el-icon :size="20">
-                    <IconMdiAdd />
-                  </el-icon>
-                </template>
-                {{ t("btn.addConfig") }}
-              </el-button>
-            </div>
+
+      <v-search v-model="queryInfo.keywords" :add-label="t('btn.addConfig')" :input-label="t('label.name')" @add="openAction(Action.Add)" @search="search">
+        <template #prefix>
+          <div>
+            <v-config-type-query-select v-model="queryInfo.filter.configType" :placeholder="t('placeholder.all')" @change="search()" />
           </div>
-        </el-form-item>
-      </el-form>
+        </template>
+      </v-search>
 
       <v-table
         v-loading="isLoading"
@@ -111,7 +91,7 @@ onMounted(() => search())
         <el-table-column :label="t('label.value')" min-width="200">
           <template #default="scope">
             <span v-if="scope.row.configType === ConfigType.Static">{{ scope.row.configValue }}</span>
-            <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }} </el-button>
+            <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
           </template>
         </el-table-column>
         <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
@@ -127,7 +107,7 @@ onMounted(() => search())
         <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
           <template #default="scope">
             <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
-            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }} </el-button>
+            <el-button link type="danger" @click="openAction(Action.Delete, scope.row)">{{ t("btn.delete") }}</el-button>
           </template>
         </el-table-column>
       </v-table>
