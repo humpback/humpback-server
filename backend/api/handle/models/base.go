@@ -23,7 +23,7 @@ func ParseMapToStructConvert(m map[string]any, obj interface{}) error {
 }
 
 func removeEmptyStrings(arr []string) []string {
-	var result []string
+	result := make([]string, 0)
 	for _, str := range arr {
 		if str != "" {
 			result = append(result, str)

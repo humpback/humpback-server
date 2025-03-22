@@ -1,4 +1,4 @@
-import { ServiceVolumeType } from "@/models"
+import { ServiceRestartPolicyMode, ServiceVolumeType } from "@/models"
 import { NewServiceMetaDockerEmptyInfo, RegistryInfo, ServiceMetaDockerInfo } from "@/types"
 import { filter, find, map, omit, omitBy, startsWith } from "lodash-es"
 import { GenerateUUID } from "@/utils"
@@ -115,7 +115,10 @@ export function ParseMetaInfo(info: ServiceApplicationInfo): ServiceMetaDockerIn
           protocol: x.protocol
         })) || []
     },
-    restartPolicy: info.restartPolicy
+    restartPolicy: {
+      mode: info.restartPolicy!.mode,
+      maxRetryCount: info.restartPolicy!.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure ? info.restartPolicy!.maxRetryCount : 0
+    }
   }
 }
 
