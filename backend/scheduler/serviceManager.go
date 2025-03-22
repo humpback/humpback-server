@@ -350,7 +350,7 @@ func (sm *ServiceManager) StartNextContainer() {
 
 	if len(nodes) == 0 {
 		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
-		sm.ServiceInfo.Memo = "Start Service error: No available nodes"
+		sm.ServiceInfo.Memo = types.MemoNoAvailableNode
 		return
 	}
 
@@ -358,14 +358,14 @@ func (sm *ServiceManager) StartNextContainer() {
 
 	if nodeId == "" {
 		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
-		sm.ServiceInfo.Memo = "Start Service error: No available nodes"
+		sm.ServiceInfo.Memo = types.MemoNoAvailableNode
 		return
 	}
 
 	cerr := node.StartNewContainer(nodeId, GenerateContainerName(sm.ServiceInfo.ServiceId, sm.ServiceInfo.Version), sm.ServiceInfo)
 	if cerr != nil {
 		slog.Error("[Service Manager] Start New Container error", "ServiceId", sm.ServiceInfo.ServiceId, "error", cerr.Error())
-		sm.ServiceInfo.Memo = "Start New Container error: " + cerr.Error()
+		sm.ServiceInfo.Memo = types.MemoCreateContainerFailed
 		return
 	}
 
