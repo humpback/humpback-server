@@ -3,7 +3,6 @@ import { TabPaneName } from "element-plus"
 import TeamPage from "./team/teams.vue"
 import UserPage from "./user/users.vue"
 import { PageUserRelated } from "@/models"
-import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()

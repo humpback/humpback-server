@@ -70,30 +70,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <el-form @submit.prevent="search">
-    <el-form-item>
-      <div class="d-flex gap-3 w-100 flex-wrap">
-        <div class="flex-1" style="min-width: 300px">
-          <v-input v-model="queryInfo.keywords" :placeholder="t('placeholder.enterIpHostNameOrLabel')">
-            <template #prepend>
-              <el-text>{{ t("label.keywords") }}</el-text>
-            </template>
-          </v-input>
-        </div>
-        <div>
-          <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-          <el-button plain type="primary" @click="openAction(Action.Add)">
-            <template #icon>
-              <el-icon :size="20">
-                <IconMdiAdd />
-              </el-icon>
-            </template>
-            {{ t("btn.addNodes") }}
-          </el-button>
-        </div>
-      </div>
-    </el-form-item>
-  </el-form>
+  <v-search
+    v-model="queryInfo.keywords"
+    :add-label="t('btn.addNodes')"
+    :placeholder="t('placeholder.enterIpHostNameOrLabel')"
+    @add="openAction(Action.Add)"
+    @search="search" />
 
   <v-table
     v-loading="isLoading"

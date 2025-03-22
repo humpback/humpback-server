@@ -11,7 +11,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const tableHeight = computed(() => TableHeight(341))
+const tableHeight = computed(() => TableHeight(344))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryTeamInfo>(new QueryTeamInfo(route.query))
@@ -56,30 +56,7 @@ onMounted(() => search())
 </script>
 
 <template>
-  <el-form @submit.prevent="search">
-    <el-form-item>
-      <div class="d-flex gap-3 w-100 flex-wrap">
-        <div class="flex-1" style="min-width: 300px">
-          <v-input v-model="queryInfo.keywords">
-            <template #prepend>
-              <el-text>{{ t("label.name") }}</el-text>
-            </template>
-          </v-input>
-        </div>
-        <div>
-          <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-          <el-button plain type="primary" @click="openAction(Action.Add)">
-            <template #icon>
-              <el-icon :size="20">
-                <IconMdiAdd />
-              </el-icon>
-            </template>
-            {{ t("btn.addTeam") }}
-          </el-button>
-        </div>
-      </div>
-    </el-form-item>
-  </el-form>
+  <v-search v-model="queryInfo.keywords" :add-label="t('btn.addTeam')" :input-label="t('label.name')" @add="openAction(Action.Add)" @search="search" />
 
   <v-table
     v-loading="isLoading"

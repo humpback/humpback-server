@@ -94,6 +94,7 @@ defineExpose({ clearSelection, toggleRowExpansion })
     <el-table
       ref="tableRef"
       class-name="v-table"
+      style="min-height: 396px"
       v-bind="tableAttrs"
       @select="selectionChangeEvent"
       @sort-change="sortChangeEvent"
@@ -106,7 +107,7 @@ defineExpose({ clearSelection, toggleRowExpansion })
       </template>
       <template #empty>
         <slot v-if="!!slots.empty" name="empty" />
-        <el-empty v-else :image-size="200" />
+        <el-empty v-else :image-size="180" />
       </template>
     </el-table>
     <div v-if="props.pageInfo" class="mt-5 pagination">

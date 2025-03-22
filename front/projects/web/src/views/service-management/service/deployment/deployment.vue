@@ -268,7 +268,7 @@ onMounted(async () => {
         <v-tips>{{ t("tips.scheduleTips") }}</v-tips>
       </div>
       <div v-for="(corn, index) in deploymentInfo.schedule.rules" :key="index" class="mb-3 cron-line">
-        <div class="d-flex gap-3">
+        <div class="d-flex gap-3" style="background-color: #9cb4c5">
           <strong>
             <el-text> {{ t("label.cron") }}</el-text>
           </strong>

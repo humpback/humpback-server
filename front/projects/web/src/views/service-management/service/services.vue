@@ -101,36 +101,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <el-form @submit.prevent="search">
-    <el-form-item>
-      <div class="d-flex gap-3 w-100 flex-wrap">
-        <div style="width: 220px">
-          <v-service-status-query-select v-model="queryInfo.filter.status" :placeholder="t('placeholder.all')" @change="search" />
-        </div>
-        <div style="width: 200px">
-          <v-service-schedule-query-select v-model="queryInfo.filter.schedule" :placeholder="t('placeholder.all')" @change="search" />
-        </div>
-        <div class="flex-1" style="min-width: 300px">
-          <v-input v-model="queryInfo.keywords" :placeholder="t('placeholder.enterNameOrImageName')">
-            <template #prepend>
-              <el-text>{{ t("label.keywords") }}</el-text>
-            </template>
-          </v-input>
-        </div>
-        <div>
-          <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-          <el-button plain type="primary" @click="openAction(Action.Add)">
-            <template #icon>
-              <el-icon :size="20">
-                <IconMdiAdd />
-              </el-icon>
-            </template>
-            {{ t("btn.addService") }}
-          </el-button>
-        </div>
+  <v-search
+    v-model="queryInfo.keywords"
+    :add-label="t('btn.addService')"
+    :placeholder="t('placeholder.enterNameOrImageName')"
+    @add="openAction(Action.Add)"
+    @search="search">
+    <template #prefix>
+      <div style="width: 220px">
+        <v-service-status-query-select v-model="queryInfo.filter.status" :placeholder="t('placeholder.all')" @change="search" />
       </div>
-    </el-form-item>
-  </el-form>
+      <div style="width: 200px">
+        <v-service-schedule-query-select v-model="queryInfo.filter.schedule" :placeholder="t('placeholder.all')" @change="search" />
+      </div>
+    </template>
+  </v-search>
 
   <v-table
     v-loading="isLoading"

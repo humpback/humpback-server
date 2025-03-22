@@ -8,13 +8,12 @@ import NodeEnable from "./node-enable.vue"
 import NodeEditLabel from "./node-edit-label.vue"
 import NodeViewCommand from "./node-view-command.vue"
 import { QueryNodesInfo, statusOptions } from "./common.ts"
-import VPageTitle from "@/components/business/v-page/VPageTitle.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 
-const tableHeight = computed(() => TableHeight(282))
+const tableHeight = computed(() => TableHeight(286))
 
 const isLoading = ref(false)
 const queryInfo = ref<QueryNodesInfo>(new QueryNodesInfo(route.query, []))
@@ -68,44 +67,30 @@ onMounted(() => search())
   <div>
     <v-card>
       <v-page-title :title="t('label.nodes')" />
-      <el-form @submit.prevent="search">
-        <el-form-item>
-          <div class="d-flex gap-3 w-100 flex-wrap">
-            <div style="width: 220px">
-              <v-select
-                v-model="queryInfo.filter.status"
-                :out-label="t('label.status')"
-                :placeholder="t('placeholder.all')"
-                clearable
-                out-label-width="80px"
-                show-out-label
-                @change="search">
-                <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value">
-                  <el-text :type="item.type">{{ t(item.label) }}</el-text>
-                </el-option>
-              </v-select>
-            </div>
-            <div class="flex-1" style="min-width: 300px">
-              <v-input v-model="queryInfo.keywords" :placeholder="t('placeholder.enterIpHostNameOrLabel')">
-                <template #prepend>
-                  <el-text>{{ t("label.keywords") }}</el-text>
-                </template>
-              </v-input>
-            </div>
-            <div>
-              <el-button native-type="submit" type="primary">{{ t("btn.search") }}</el-button>
-              <el-button plain type="primary" @click="openAction(Action.Add)">
-                <template #icon>
-                  <el-icon :size="20">
-                    <IconMdiAdd />
-                  </el-icon>
-                </template>
-                {{ t("btn.addNodes") }}
-              </el-button>
-            </div>
+
+      <v-search
+        v-model="queryInfo.keywords"
+        :add-label="t('btn.addNodes')"
+        :placeholder="t('placeholder.enterIpHostNameOrLabel')"
+        @add="openAction(Action.Add)"
+        @search="search">
+        <template #prefix>
+          <div style="width: 220px">
+            <v-select
+              v-model="queryInfo.filter.status"
+              :out-label="t('label.status')"
+              :placeholder="t('placeholder.all')"
+              clearable
+              out-label-width="80px"
+              show-out-label
+              @change="search">
+              <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value">
+                <el-text :type="item.type">{{ t(item.label) }}</el-text>
+              </el-option>
+            </v-select>
           </div>
-        </el-form-item>
-      </el-form>
+        </template>
+      </v-search>
 
       <v-table
         v-loading="isLoading"
