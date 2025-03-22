@@ -227,9 +227,7 @@ func (s *ServiceUpdateReqInfo) checkMetaInfo() error {
 	if err := verify.CheckRequiredAndLengthLimit(info.Image, enum.LimitImageName.Min, enum.LimitImageName.Max, locales.CodeServiceImageNotEmpty, locales.CodeServiceImageLimitLength); err != nil {
 		return err
 	}
-	if len(info.EnvConfig) == 0 {
-		info.EnvConfig = make([]string, 0)
-	}
+	info.EnvConfig = removeEmptyStrings(info.EnvConfig)
 	if len(info.Labels) == 0 {
 		info.Labels = make(map[string]string)
 	}
@@ -246,12 +244,6 @@ func (s *ServiceUpdateReqInfo) checkMetaInfo() error {
 			CapAdd:  make([]string, 0),
 			CapDrop: make([]string, 0),
 		}
-	}
-	if info.Capabilities.CapAdd == nil {
-		info.Capabilities.CapAdd = make([]string, 0)
-	}
-	if info.Capabilities.CapDrop == nil {
-		info.Capabilities.CapDrop = make([]string, 0)
 	}
 	info.Capabilities.CapAdd = removeEmptyStrings(info.Capabilities.CapAdd)
 	info.Capabilities.CapDrop = removeEmptyStrings(info.Capabilities.CapDrop)
@@ -354,6 +346,10 @@ func (s *ServiceUpdateReqInfo) checkMetaInfo() error {
 		info.RestartPolicy.Mode != types.RestartPolicyModeUnlessStopped {
 		return response.NewBadRequestErr(locales.CodeServiceRestartPolicyInvalid)
 	}
+	if info.RestartPolicy.Mode != types.RestartPolicyModeOnFail {
+		info.RestartPolicy.MaxRetryCount = 0
+	}
+	s.MetaInfo = info
 	return nil
 }
 
@@ -407,6 +403,7 @@ func (s *ServiceUpdateReqInfo) checkDeployment() error {
 	} else {
 		info.Schedule.Timeout = ""
 	}
+	s.DeploymentInfo = info
 	return nil
 }
 

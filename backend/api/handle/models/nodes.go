@@ -61,6 +61,9 @@ func (n *NodeUpdateLabelReqInfo) Check() error {
 	if err := verify.CheckIsEmpty(n.NodeId, locales.CodeNodesIdNotEmpty); err != nil {
 		return err
 	}
+	if n.Labels == nil {
+		n.Labels = make(map[string]string)
+	}
 	return nil
 }
 
