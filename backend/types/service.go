@@ -53,6 +53,9 @@ type Service struct {
 
 type AgentTask struct {
 	ContainerName string `json:"containerName"`
+	ServiceName   string `json:"serviceName"`
+	ServiceId     string `json:"serviceId"`
+	GroupId       string `json:"groupId"`
 	*ServiceMetaDocker
 	*ScheduleInfo
 }
