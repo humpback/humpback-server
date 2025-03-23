@@ -174,6 +174,10 @@ func (sm *ServiceManager) PrepareMeta() {
 }
 
 func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string, containerId string) error {
+
+	if containerId == "" { // 没创建出来的时候没有Id
+		containerId = containerName
+	}
 	node.RemoveNodeContainer(nodeId, containerId)
 
 	sm.ServiceInfo.Containers = lo.Filter(sm.ServiceInfo.Containers, func(cs *types.ContainerStatus, index int) bool {
