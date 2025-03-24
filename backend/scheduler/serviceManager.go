@@ -178,7 +178,7 @@ func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string, c
 	if containerId == "" { // 没创建出来的时候没有Id
 		containerId = containerName
 	}
-	node.RemoveNodeContainer(nodeId, containerId)
+	node.RemoveNodeContainer(nodeId, containerId, containerName)
 
 	sm.ServiceInfo.Containers = lo.Filter(sm.ServiceInfo.Containers, func(cs *types.ContainerStatus, index int) bool {
 		return cs.ContainerName != containerName
