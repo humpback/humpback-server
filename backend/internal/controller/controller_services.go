@@ -69,7 +69,7 @@ func ServiceClone(info *models.ServiceCloneReqInfo) (string, error) {
 		Action:      "",
 		IsEnabled:   false,
 		IsDelete:    false,
-		Status:      "",
+		Status:      types.ServiceStatusNotReady,
 		Meta:        serviceInfo.Meta,
 		Deployment:  serviceInfo.Deployment,
 		Containers:  make([]*types.ContainerStatus, 0),
