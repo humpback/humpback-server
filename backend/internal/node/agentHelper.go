@@ -15,11 +15,11 @@ var (
 	ErrNodeNotExist = errors.New("The node does not exist")
 )
 
-func RemoveNodeContainer(nodeId string, containerId string) error {
+func RemoveNodeContainer(nodeId string, containerId string, containerName string) error {
 	// remove container
 	node := GetNodeInfo(nodeId)
 	if node != nil {
-		url := fmt.Sprintf("http://%s:%d/api/v1/container/%s?force=true", node.IpAddress, node.Port, containerId)
+		url := fmt.Sprintf("http://%s:%d/api/v1/container/%s?force=true&containerName=%s", node.IpAddress, node.Port, containerId, containerName)
 		slog.Info("[Agent Helper] Remove container", "url", url)
 		err := httpx.NewHttpXClient().Delete(url, nil, nil, nil)
 		if err != nil {
