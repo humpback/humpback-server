@@ -1,7 +1,8 @@
 package types
 
 var (
-	MemoNoAvailableNode = "NoAvailableNode"
+	MemoNoAvailableNode       = "NoAvailableNode"
+	MemoCreateContainerFailed = "CreateContainerFailed"
 )
 
 type SearchGroupServiceSimpleInfo struct {

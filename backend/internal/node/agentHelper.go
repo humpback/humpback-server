@@ -47,6 +47,9 @@ func StartNewContainer(nodeId, containerName string, svc *types.Service) error {
 
 		task := &types.AgentTask{
 			ContainerName:     containerName,
+			ServiceName:       svc.ServiceName,
+			ServiceId:         svc.ServiceId,
+			GroupId:           svc.GroupId,
 			ServiceMetaDocker: svc.Meta,
 			ScheduleInfo:      svc.Deployment.Schedule,
 		}

@@ -146,21 +146,6 @@ func (sm *ServiceManager) Reconcile() {
 }
 
 func (sm *ServiceManager) PrepareMeta() {
-	if sm.ServiceInfo.Meta.Labels == nil {
-		sm.ServiceInfo.Meta.Labels = make(map[string]string)
-	}
-
-	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelGroupId]; !ok || label != sm.ServiceInfo.GroupId {
-		sm.ServiceInfo.Meta.Labels[types.ContainerLabelGroupId] = sm.ServiceInfo.GroupId
-	}
-
-	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceId]; !ok || label != sm.ServiceInfo.ServiceId {
-		sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceId] = sm.ServiceInfo.ServiceId
-	}
-
-	if label, ok := sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName]; !ok || label != sm.ServiceInfo.ServiceName {
-		sm.ServiceInfo.Meta.Labels[types.ContainerLabelServiceName] = sm.ServiceInfo.ServiceName
-	}
 
 	if sm.ServiceInfo.Meta.EnvConfig != nil {
 		sm.ServiceInfo.Meta.Envs = make([]string, len(sm.ServiceInfo.Meta.EnvConfig))
@@ -189,6 +174,10 @@ func (sm *ServiceManager) PrepareMeta() {
 }
 
 func (sm *ServiceManager) DeleteContainer(nodeId string, containerName string, containerId string) error {
+
+	if containerId == "" { // 没创建出来的时候没有Id
+		containerId = containerName
+	}
 	node.RemoveNodeContainer(nodeId, containerId)
 
 	sm.ServiceInfo.Containers = lo.Filter(sm.ServiceInfo.Containers, func(cs *types.ContainerStatus, index int) bool {
@@ -350,7 +339,7 @@ func (sm *ServiceManager) StartNextContainer() {
 
 	if len(nodes) == 0 {
 		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
-		sm.ServiceInfo.Memo = "Start Service error: No available nodes"
+		sm.ServiceInfo.Memo = types.MemoNoAvailableNode
 		return
 	}
 
@@ -358,14 +347,14 @@ func (sm *ServiceManager) StartNextContainer() {
 
 	if nodeId == "" {
 		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
-		sm.ServiceInfo.Memo = "Start Service error: No available nodes"
+		sm.ServiceInfo.Memo = types.MemoNoAvailableNode
 		return
 	}
 
 	cerr := node.StartNewContainer(nodeId, GenerateContainerName(sm.ServiceInfo.ServiceId, sm.ServiceInfo.Version), sm.ServiceInfo)
 	if cerr != nil {
 		slog.Error("[Service Manager] Start New Container error", "ServiceId", sm.ServiceInfo.ServiceId, "error", cerr.Error())
-		sm.ServiceInfo.Memo = "Start New Container error: " + cerr.Error()
+		sm.ServiceInfo.Memo = types.MemoCreateContainerFailed
 		return
 	}
 
