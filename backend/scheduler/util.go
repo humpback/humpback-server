@@ -46,9 +46,12 @@ func isContainerStarting(status string) bool {
 		status == types.ContainerStatusStarting
 }
 
+func isContainerWarning(status string) bool {
+	return status == types.ContainerStatusWarning
+}
+
 func isContainerFailed(status string) bool {
-	return status == types.ContainerStatusFailed ||
-		status == types.ContainerStatusWarning
+	return status == types.ContainerStatusFailed
 }
 
 func isPlacementMatched(node *types.Node, p *types.PlacementInfo) bool {
