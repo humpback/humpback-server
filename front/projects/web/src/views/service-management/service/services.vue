@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ServiceInfo } from "@/types"
 import { SetWebTitle, TableHeight } from "@/utils"
-import { Action } from "@/models"
+import { Action, PageServiceDetail } from "@/models"
 import { ActionOptions, QueryServicesInfo, showAction } from "./common.ts"
 import { serviceService } from "services/service-client.ts"
 import ServiceCreate from "./action/service-create.vue"
@@ -134,7 +134,7 @@ onMounted(async () => {
           <v-table :data="scope.row.containers" :max-height="500" border>
             <el-table-column :label="t('label.instanceName')" min-width="200">
               <template #default="cscope">
-                <el-text>{{ cscope.row.containerName }}</el-text>
+                <v-router-link :href="`/ws/group/${groupId}/service/${scope.row.serviceId}/${PageServiceDetail.Instances}`" :text="cscope.row.containerName" />
               </template>
             </el-table-column>
             <el-table-column :label="t('label.status')" min-width="160">
@@ -217,7 +217,7 @@ onMounted(async () => {
     </el-table-column>
     <el-table-column :label="t('label.serviceName')" class-name="serviceName-column" min-width="200" prop="serviceName" sortable="custom">
       <template #default="scope">
-        <v-router-link :href="`/ws/group/${groupId}/service/${scope.row.serviceId}/basic-info`" :text="scope.row.serviceName" />
+        <v-router-link :href="`/ws/group/${groupId}/service/${scope.row.serviceId}/${PageServiceDetail.BasicInfo}`" :text="scope.row.serviceName" />
       </template>
     </el-table-column>
     <el-table-column :label="t('label.description')" min-width="200" prop="description">

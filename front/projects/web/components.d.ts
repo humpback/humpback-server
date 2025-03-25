@@ -73,6 +73,7 @@ declare module 'vue' {
     IconMdiFileOutline: typeof import('~icons/mdi/file-outline')['default']
     IconMdiFormatIndentDecrease: typeof import('~icons/mdi/format-indent-decrease')['default']
     IconMdiFormatIndentIncrease: typeof import('~icons/mdi/format-indent-increase')['default']
+    IconMdiGithub: typeof import('~icons/mdi/github')['default']
     IconMdiHelpCircleOutline: typeof import('~icons/mdi/help-circle-outline')['default']
     IconMdiLanguage: typeof import('~icons/mdi/language')['default']
     IconMdiLoginVariant: typeof import('~icons/mdi/login-variant')['default']

@@ -1,6 +1,6 @@
 export default {
   header: {
-    "changePassword": "更改密码",
+    "changePassword": "修改密码",
     "users": "用户",
     "teams": "团队",
     "deleteUser": "删除用户",

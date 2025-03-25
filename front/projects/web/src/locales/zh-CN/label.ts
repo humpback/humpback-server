@@ -105,7 +105,7 @@ export default {
     "memoryReservation": "内存预留（MB）",
     "maximumCpuUsage": "最大CPU使用率",
     "mb": "MB",
-    "unlimited": "无限制",
+    "unLimited": "无限制",
     "resources": "资源",
     "logConfig": "日志",
     "driver": "驱动",

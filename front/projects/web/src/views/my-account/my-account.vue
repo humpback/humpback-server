@@ -70,7 +70,9 @@ onMounted(async () => {
           <v-date-view :timestamp="userInfo.createdAt" />
         </el-text>
         <el-divider direction="vertical" />
-        <change-password />
+        <div>
+          <change-password />
+        </div>
       </div>
     </div>
 

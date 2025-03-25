@@ -53,7 +53,12 @@ function handleUserMenuClick(v: string) {
     <div class="d-flex">
       <div class="d-flex gap-5 mr-5">
         <el-button v-if="!pageStore.isSmallScreen" link> {{ t("btn.help") }}</el-button>
-        <Language />
+        <Language :iconSize="20" />
+        <el-link :underline="false" class="github-icon" href="https://github.com/humpback/humpback-server" target="_blank" title="GitHub">
+          <el-icon :size="22">
+            <IconMdiGithub />
+          </el-icon>
+        </el-link>
         <v-role-admin v-if="!pageStore.isSmallScreen" :role="userStore.userInfo.role" />
       </div>
       <el-dropdown :show-timeout="0" placement="bottom-end" trigger="hover" @command="handleUserMenuClick">
@@ -98,6 +103,11 @@ function handleUserMenuClick(v: string) {
   display: flex;
   align-items: center;
   color: inherit;
+
+  .github-icon:hover {
+    color: var(--el-link-text-color);
+    opacity: 0.7;
+  }
 
   .el-dropdown:focus-visible {
     outline: none;
