@@ -134,6 +134,7 @@ func (sm *ServiceManager) Reconcile() {
 		if sm.ServiceInfo.Deployment.Type != types.DeployTypeSchedule && sm.HasFailedContainer() {
 			slog.Info("[Service Manager] container failed, stop dispatch......", "ServiceId", sm.ServiceInfo.ServiceId)
 			sm.ServiceInfo.Status = types.ServiceStatusFailed
+			sm.ServiceInfo.Memo = types.MemoCreateContainerFailed
 			db.ServiceUpdate(sm.ServiceInfo)
 			return
 		}
