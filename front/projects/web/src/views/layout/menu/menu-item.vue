@@ -23,7 +23,7 @@ function navigateToRoute(event: MouseEvent, href: string) {
         <template #title>
           {{ t(`${menuI18nPrefix}.${props.menuInfo.name}`) }}
         </template>
-        <el-icon v-if="props.menuInfo.icon" :size="20">
+        <el-icon v-if="props.menuInfo.icon" :size="20" style="padding-bottom: 2px">
           <component :is="props.menuInfo.icon" />
         </el-icon>
       </el-menu-item>
