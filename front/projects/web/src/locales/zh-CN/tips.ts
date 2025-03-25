@@ -16,7 +16,7 @@ export default {
     "memoryLimitTips": "可以使用的最大内存，若超过限制（OOM），系统会强制将其kill ，0表示没有限制。",
     "memoryReservationTips": "系统预留的最小内存量，0表示没有限制。",
     "maxCpuUsageTips": "机器上所有CPU资源可使用的最大百分比。",
-    "resourcesTips": "若设置了内存限制，并且内存预留的值大于内存限制的值，则内存预留将无效。",
+    "resourcesTips": "若内存预留的值大于内存限制，且都大于0，部署后内存限制将设置为内存预留的值。",
     "logDriverTips": "日志驱动程序设置将覆盖docker守护程序日志驱动程序。若未设置，将使用默认驱动程序，请前往{document}获取驱动程序说明。",
     "globalTips": "在全局模式下，将向符合条件的机器上的每个节点分配一个实例。",
     "replicatedTips":

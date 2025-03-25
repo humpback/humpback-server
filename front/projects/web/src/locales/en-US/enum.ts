@@ -9,7 +9,7 @@ export default {
     starting: "Starting",
     running: "Running",
     exited: "Exited",
-    waring: "Waring",
+    warning: "Warning",
     failed: "Failed",
     pending: "Pending",
     removed: "Removed"

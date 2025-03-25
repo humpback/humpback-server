@@ -21,7 +21,7 @@ export default {
     "memoryReservationTips": "The minimum amount of memory reserved by the system, 0 is not restricted.",
     "maxCpuUsageTips": "The maximum percentage of all CPU resources on the machine that can be used.",
     "resourcesTips":
-      "If the memory limit is set and the value of the memory reservation is greater than the memory limit, the memory reservation will be invalid.",
+      "If the value of the memory reservation is greater than the memory limit and both are greater than 0, the memory limit will be set to the value of the memory reservation after deployment.",
     "logDriverTips":
       "The log driver settings will override the docker daemon log driver. If it is not set, the default driver will be used, please go to the {document} for driver instructions.",
     "globalTips": "In global mode, one instance will be allocated to each node on eligible machines.",

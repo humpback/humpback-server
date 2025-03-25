@@ -61,7 +61,7 @@ async function getLogs() {
   if (isAction.value) {
     return
   }
-  const instanceInfo = find(containers.value, x => x.containerId === searchInfo.value.instance)
+  const instanceInfo = find(containers.value, x => !!x.containerId && x.containerId === searchInfo.value.instance)
   if (!instanceInfo) {
     if (searchInfo.value.instance) {
       ShowErrMsg(t("err.instanceNotExist"))

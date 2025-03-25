@@ -186,7 +186,7 @@ defineExpose({ validate })
     </strong>
     <div class="mt-3">
       <v-tips>
-        <i18n-t keypath="tips.logDriverTips">
+        <i18n-t keypath="tips.logDriverTips" scope="global">
           <template #document>
             <el-link href="https://docs.docker.com/engine/logging/configure/#supported-logging-drivers" target="_blank" type="primary">
               {{ t("label.dockerDocumentation") }}
