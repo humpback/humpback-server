@@ -79,6 +79,11 @@ func (sm *ServiceManager) Reconcile() {
 		sm.ServiceInfo = svc
 		sm.PrepareMeta()
 		sm.CheckNodeStatus()
+
+		// Failed的情况下，如果service或者node有变动，尝试重新调度
+		if sm.ServiceInfo.Status == types.ServiceStatusFailed {
+			sm.ServiceInfo.Status = types.ServiceStatusNotReady
+		}
 	}
 
 	if sm.ServiceInfo.Status == types.ServiceStatusRunning &&
@@ -104,6 +109,12 @@ func (sm *ServiceManager) Reconcile() {
 		return
 	}
 
+	// 服务处于failed状态，就不需要再做任何操作
+	if sm.ServiceInfo.Status == types.MemoCreateContainerFailed {
+		slog.Info("[Service Manager] Service is failed......", "ServiceId", sm.ServiceInfo.ServiceId)
+		return
+	}
+
 	// 所有容器都是正常的，就不需要再做任何操作
 	if sm.ServiceInfo.Status == types.ServiceStatusRunning && sm.IsContainerAllReady() {
 		slog.Info("[Service Manager] Service is running ok......", "ServiceId", sm.ServiceInfo.ServiceId)
@@ -116,6 +127,14 @@ func (sm *ServiceManager) Reconcile() {
 		// 如果有容器正在启动，就不再继续
 		if sm.ServiceInfo.Deployment.Type != types.DeployTypeSchedule && sm.HasPendingContainer() {
 			slog.Info("[Service Manager] Wait pending container......", "ServiceId", sm.ServiceInfo.ServiceId)
+			return
+		}
+
+		// 如果有容器失败，就不再继续
+		if sm.ServiceInfo.Deployment.Type != types.DeployTypeSchedule && sm.HasFailedContainer() {
+			slog.Info("[Service Manager] container failed, stop dispatch......", "ServiceId", sm.ServiceInfo.ServiceId)
+			sm.ServiceInfo.Status = types.ServiceStatusFailed
+			db.ServiceUpdate(sm.ServiceInfo)
 			return
 		}
 
@@ -291,6 +310,16 @@ func (sm *ServiceManager) HasPendingContainer() bool {
 	return false
 }
 
+func (sm *ServiceManager) HasFailedContainer() bool {
+	for _, c := range sm.ServiceInfo.Containers {
+		version := parseVersionByContainerId(c.ContainerName)
+		if isContainerFailed(c.State) && version == sm.ServiceInfo.Version {
+			return true
+		}
+	}
+	return false
+}
+
 func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
 	nodeDeployed := make(map[string]bool)
@@ -305,7 +334,7 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 				return c, true
 			}
 		}
-		if isContainerFailed(c.State) || isContainerRemoved(c.State) {
+		if isContainerWarning(c.State) || isContainerRemoved(c.State) {
 			return c, true
 		}
 
@@ -340,6 +369,7 @@ func (sm *ServiceManager) StartNextContainer() {
 	if len(nodes) == 0 {
 		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
 		sm.ServiceInfo.Memo = types.MemoNoAvailableNode
+		sm.ServiceInfo.Status = types.ServiceStatusFailed
 		return
 	}
 
@@ -348,6 +378,7 @@ func (sm *ServiceManager) StartNextContainer() {
 	if nodeId == "" {
 		slog.Error("[Service Manager] Start Service error: No available nodes", "ServiceId", sm.ServiceInfo.ServiceId)
 		sm.ServiceInfo.Memo = types.MemoNoAvailableNode
+		sm.ServiceInfo.Status = types.ServiceStatusFailed
 		return
 	}
 
@@ -441,6 +472,7 @@ func (sm *ServiceManager) UpdateContainerWhenChanged(cs types.ContainerStatus) {
 		ct.Env = cs.Env
 		ct.Mounts = cs.Mounts
 		ct.Ports = cs.Ports
+		ct.ErrorMsg = cs.ErrorMsg
 		if ct.State == types.ContainerStatusRunning {
 			ct.ErrorMsg = ""
 		}
