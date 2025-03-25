@@ -15,7 +15,7 @@ export default {
     "warning": "警告",
     "error": "错误",
     "info": "信息",
-    "loginUserChangeEvent": "登录帐户已更改，页面将重新加载。",
+    "loginUserChangeEvent": "登录帐户已变更，页面将重新加载。",
     "changePasswordSuccess": "密码修改成功，请重新登录。"
   },
   err: {

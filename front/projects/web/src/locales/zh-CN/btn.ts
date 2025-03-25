@@ -7,7 +7,7 @@ export default {
     "help": "帮助",
     "save": "保存",
     "cancel": "取消",
-    "changePassword": "更改密码",
+    "changePassword": "修改密码",
     "search": "搜索",
     "addUser": "添加用户",
     "addTeam": "添加团队",
