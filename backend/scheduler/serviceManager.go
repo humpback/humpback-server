@@ -110,7 +110,7 @@ func (sm *ServiceManager) Reconcile() {
 	}
 
 	// 服务处于failed状态，就不需要再做任何操作
-	if sm.ServiceInfo.Status == types.MemoCreateContainerFailed {
+	if sm.ServiceInfo.Status == types.ServiceStatusFailed {
 		slog.Info("[Service Manager] Service is failed......", "ServiceId", sm.ServiceInfo.ServiceId)
 		return
 	}
