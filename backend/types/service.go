@@ -99,6 +99,7 @@ type Deployment struct {
 	Replicas   int              `json:"replicas"`
 	Placements []*PlacementInfo `json:"placements"`
 	Schedule   *ScheduleInfo    `json:"schedule"`
+	ManualExec bool             `json:"manualExec"`
 }
 
 type DeployMode string

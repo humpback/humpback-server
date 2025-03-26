@@ -152,11 +152,7 @@ onMounted(async () => {
                 </div>
               </template>
             </el-table-column>
-            <el-table-column :label="t('label.ip')" min-width="160">
-              <template #default="cscope">
-                <el-text type="primary">{{ cscope.row.ip }}</el-text>
-              </template>
-            </el-table-column>
+            <el-table-column :label="t('label.ip')" min-width="160" prop="ip" />
             <el-table-column :label="t('label.createTime')" min-width="140">
               <template #default="cscope">
                 <v-date-view :timestamp="cscope.row.created" />

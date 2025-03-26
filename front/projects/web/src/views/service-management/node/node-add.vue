@@ -155,9 +155,7 @@ defineExpose({ open })
     </v-table>
 
     <div class="mt-5 mb-3">
-      <div class="mb-3">
-        <strong>{{ t("label.selectedNodes") }}</strong>
-      </div>
+      <div class="mb-3 f-bold">{{ t("label.selectedNodes") }}</div>
       <el-input-tag
         :model-value="dialogInfo.selectedNodes"
         clearable

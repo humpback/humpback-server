@@ -32,6 +32,8 @@ export default {
     "noGroupFound": "未找到分组",
     "noServiceFound": "未找到服务",
     "serviceInfoInComplete": "服务信息不完整",
+    "setScheduleTips": "此选项为job模式，当设置cron后，程序将根据指定的时间规则运行。",
+    "setManualExecTips": "此选项为手动执行模式，程序退出后将不会恢复运行；反之，在程序退出后，调度器将一直尝试重启服务。",
     "timeoutTips": "若程序执行时间超过设定的时间，将强制杀死程序。",
 
     "AUDIT_CONTROL": "启用和禁用内核审计;更改审计过滤规则;检索审核状态和筛选规则。",

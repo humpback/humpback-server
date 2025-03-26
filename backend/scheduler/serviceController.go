@@ -129,7 +129,7 @@ func getServiceIdByContainerId(containerName string) (string, string) {
 	serviceId := ""
 	version := ""
 	splits := strings.Split(containerName, "-")
-	if len(splits) == 4 && strings.EqualFold(splits[0], "humpback") {
+	if len(splits) == 4 && strings.EqualFold(splits[0], InstanceNamePrefix) {
 		serviceId = splits[1]
 		version = splits[2]
 	}

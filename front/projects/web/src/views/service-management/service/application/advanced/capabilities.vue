@@ -71,14 +71,8 @@ function getValue(label: string) {
     <el-col v-for="item in options" :key="item.label" :span="8" class="mb-1">
       <div class="d-flex">
         <div class="d-flex gap-1" style="flex: 7">
-          <strong>
-            <el-text>{{ item.label }}</el-text>
-          </strong>
-          <v-tooltip :content="t(item.i18nTips)" effect="dark" max-width="300px" placement="top-start">
-            <el-icon :size="16">
-              <IconMdiHelpCircleOutline />
-            </el-icon>
-          </v-tooltip>
+          <el-text class="f-bold">{{ item.label }}</el-text>
+          <v-help-tooltip :content="t(item.i18nTips)" />
         </div>
         <div style="flex: 3">
           <el-switch :model-value="getValue(item.label)" @click="changeValue(item.label)" />

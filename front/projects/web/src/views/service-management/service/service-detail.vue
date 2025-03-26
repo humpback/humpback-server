@@ -37,10 +37,6 @@ const isLoading = computed({
   }
 })
 
-// export const InjectKeyIsLoading = Symbol("IsLoading")
-// export const InjectKeyResetLoopSearch = Symbol("ResetLoopSearch")
-// export const InjectKeyChangeTab = Symbol("ChangeTab")
-
 provide(InjectKeyIsLoading, isLoading)
 provide(InjectKeyResetLoopSearch, resetLoopSearch)
 provide(InjectKeyChangeTab, menuChange)

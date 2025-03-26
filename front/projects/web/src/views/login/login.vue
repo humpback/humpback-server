@@ -53,7 +53,9 @@ async function login() {
   <div class="pub-page">
     <el-card class="v-content">
       <template #header>
-        <v-logo />
+        <div class="my-3">
+          <v-logo />
+        </div>
       </template>
       <el-form ref="formRef" :model="formData" :rules="formRules" @submit.prevent="login()">
         <el-form-item prop="username">
@@ -94,8 +96,13 @@ async function login() {
   box-sizing: border-box;
   min-height: calc(100vh);
   width: 100%;
-  padding-top: 16vh;
-  background-image: linear-gradient(-20deg, #fffeff 50%, #d7fffe 100%);
+  padding-top: 20vh;
+  //background-image: linear-gradient(-20deg, #fffeff 50%, #d7fffe 100%);
+  //background-color: #dcd9d4;
+  background-image:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(0, 0, 0, 0.5) 100%),
+    radial-gradient(at 50% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.5) 50%);
+  background-blend-mode: soft-light, screen;
 
   :deep(.el-card__footer) {
     border: none;
@@ -104,14 +111,14 @@ async function login() {
 
 :deep(.v-content) {
   box-sizing: border-box;
-  box-shadow: var(--el-box-shadow-lighter);
+  box-shadow: unset;
   border: none;
   margin: 0 auto 48px auto;
   padding: 24px;
   width: 400px;
-  border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0);
-  background-color: #ffffff;
+  border-radius: 16px;
+  //background-color: #ffffff;
+  background-image: linear-gradient(to top, #c4c5c7 0%, #dcdddf 52%, #ebebeb 100%);
 
   .el-card__header {
     border: none;

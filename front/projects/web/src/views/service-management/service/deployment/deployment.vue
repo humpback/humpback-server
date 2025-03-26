@@ -7,6 +7,7 @@ import VCronInput from "@/components/business/v-corn/VCornInput.vue"
 import { NewValidDeploymentInfo, ParseDeploymentInfo, ServiceValidDeploymentInfo } from "./deployment.ts"
 import { refreshData } from "../common.ts"
 import cronstrue from "cronstrue"
+import VHelpTooltip from "@/components/business/v-help/VHelpTooltip.vue"
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -76,6 +77,16 @@ function addPlacementConstraint() {
 
 function removePlacementConstraint(index: number) {
   deploymentInfo.value.validPlacements.splice(index, 1)
+}
+
+function handleScheduleInfoChange(mode: "schedule" | "manual", v?: any) {
+  if (mode === "schedule") {
+    deploymentInfo.value.enableSchedules = !!v
+    deploymentInfo.value.manualExec = v ? false : !!v
+  } else {
+    deploymentInfo.value.manualExec = !!v
+    deploymentInfo.value.enableSchedules = v ? false : !!v
+  }
 }
 
 function editSchedule(index: number) {
@@ -171,9 +182,7 @@ onMounted(async () => {
 
     <el-form-item class="mt-3">
       <el-checkbox v-model="deploymentInfo.hasPlacements">
-        <strong>
-          <el-text size="small">{{ t("label.placementConstraints") }}</el-text>
-        </strong>
+        <el-text class="f-bold" size="small">{{ t("label.placementConstraints") }}</el-text>
       </el-checkbox>
     </el-form-item>
 
@@ -256,11 +265,20 @@ onMounted(async () => {
     </div>
 
     <el-form-item :label="t('label.schedulesInfo')" class="mt-5">
-      <el-checkbox v-model="deploymentInfo.enableSchedules" class="mt-3">
-        <strong>
-          <el-text size="small">{{ t("label.setSchedules") }}</el-text>
-        </strong>
-      </el-checkbox>
+      <div class="d-flex gap-5">
+        <div>
+          <el-checkbox :model-value="deploymentInfo.enableSchedules" class="mt-3" @update:modelValue="handleScheduleInfoChange('schedule', $event)">
+            <el-text class="f-bold" size="small">{{ t("label.setSchedules") }}</el-text>
+          </el-checkbox>
+          <v-help-tooltip :content="t('tips.setScheduleTips')" class="ml-1" max-width="400px" />
+        </div>
+        <div>
+          <el-checkbox :model-value="deploymentInfo.manualExec" class="mt-3" @update:modelValue="handleScheduleInfoChange('manual', $event)">
+            <el-text class="f-bold" size="small">{{ t("label.setManualExec") }}</el-text>
+          </el-checkbox>
+          <v-help-tooltip :content="t('tips.setManualExecTips')" class="ml-1" max-width="400px" />
+        </div>
+      </div>
     </el-form-item>
 
     <div v-if="deploymentInfo.enableSchedules" class="content-box">
@@ -269,9 +287,7 @@ onMounted(async () => {
       </div>
       <div v-for="(corn, index) in deploymentInfo.schedule.rules" :key="index" class="mb-3 cron-line">
         <div class="d-flex gap-3">
-          <strong>
-            <el-text> {{ t("label.cron") }}</el-text>
-          </strong>
+          <el-text class="f-bold"> {{ t("label.cron") }}</el-text>
           <el-text>{{ corn }}</el-text>
         </div>
         <el-divider direction="vertical" />
@@ -306,15 +322,9 @@ onMounted(async () => {
       <template #label>
         <div class="d-flex gap-1">
           <el-checkbox v-model="deploymentInfo.enableTimeout">
-            <strong>
-              <el-text size="small">{{ t("label.enableTimeout") }}</el-text>
-            </strong>
+            <el-text class="f-bold" size="small">{{ t("label.enableTimeout") }}</el-text>
           </el-checkbox>
-          <v-tooltip :content="t('tips.timeoutTips')" effect="dark" max-width="300px" placement="top-start">
-            <el-icon :size="16">
-              <IconMdiHelpCircleOutline />
-            </el-icon>
-          </v-tooltip>
+          <v-help-tooltip :content="t('tips.timeoutTips')" effect="dark" />
         </div>
       </template>
       <v-input v-if="deploymentInfo.enableTimeout" v-model="deploymentInfo.schedule.timeout" :placeholder="t('placeholder.timeoutExample')" />

@@ -27,9 +27,7 @@ defineExpose({ open })
     <template #header>{{ t("header.command") }}</template>
     <div class="mt-2">
       <div class="px-1 d-flex gap-3">
-        <div class="flex-1">
-          <strong>{{ dialogInfo.info.ipAddress }}</strong>
-        </div>
+        <div class="flex-1 f-bold" style="color: var(--el-text-color-primary)">{{ dialogInfo.info.ipAddress }}</div>
         <el-radio-group v-model="dialogInfo.isUninstall">
           <el-radio :value="false">{{ t("label.install") }}</el-radio>
           <el-radio :value="true">{{ t("label.uninstall") }}</el-radio>

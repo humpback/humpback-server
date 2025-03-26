@@ -83,9 +83,7 @@ onClickOutside(contentRef, hidePopover)
         <div class="global-search-arrow" />
         <div class="global-search-inner">
           <div>
-            <strong>
-              <el-text> {{ t("label.groups") }}</el-text>
-            </strong>
+            <el-text class="f-bold"> {{ t("label.groups") }}</el-text>
             <el-divider style="margin: 8px 0 16px 0; border-color: var(--el-color-info-light-9)" />
           </div>
 
@@ -107,9 +105,7 @@ onClickOutside(contentRef, hidePopover)
           </div>
 
           <div class="mt-5">
-            <strong>
-              <el-text> {{ t("label.services") }}</el-text>
-            </strong>
+            <el-text class="f-bold"> {{ t("label.services") }}</el-text>
             <el-divider style="margin: 8px 0 16px 0; border-color: var(--el-color-info-light-9)" />
             <div v-if="result.services && result.services.length > 0" class="pl-5">
               <div v-for="(item, index) in result.services" :key="index" class="content">

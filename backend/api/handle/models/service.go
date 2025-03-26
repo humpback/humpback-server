@@ -403,6 +403,9 @@ func (s *ServiceUpdateReqInfo) checkDeployment() error {
 	} else {
 		info.Schedule.Timeout = ""
 	}
+	if len(info.Schedule.Rules) > 0 {
+		info.ManualExec = false
+	}
 	s.DeploymentInfo = info
 	return nil
 }

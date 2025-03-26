@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
   placement: "top",
   teleported: true,
   showArrow: true,
+  enterable: true,
   persistent: false
 })
 const slots = useSlots()
