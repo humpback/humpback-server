@@ -56,6 +56,7 @@ type AgentTask struct {
 	ServiceName   string `json:"serviceName"`
 	ServiceId     string `json:"serviceId"`
 	GroupId       string `json:"groupId"`
+	ManualExec    bool   `json:"manualExec"`
 	*ServiceMetaDocker
 	*ScheduleInfo
 }
@@ -99,6 +100,7 @@ type Deployment struct {
 	Replicas   int              `json:"replicas"`
 	Placements []*PlacementInfo `json:"placements"`
 	Schedule   *ScheduleInfo    `json:"schedule"`
+	ManualExec bool             `json:"manualExec"`
 }
 
 type DeployMode string

@@ -49,9 +49,7 @@ defineExpose({ open })
   <v-dialog v-model="dialogInfo.show" width="600px">
     <template #header>{{ t("header.deleteService") }}</template>
     <v-alert v-if="dialogInfo.info.containers.length > 0" type="warning">{{ t("tips.deleteServiceTips") }}</v-alert>
-    <div class="my-3">
-      <strong>{{ t("notify.delete") }}</strong>
-    </div>
+    <div class="my-3 f-bold">{{ t("notify.delete") }}</div>
     <v-delete-input-continue v-model="isChecked" :keywords="dialogInfo.info.serviceName" class="mt-5" />
     <template #footer>
       <el-button @click="dialogInfo.show = false">{{ t("btn.cancel") }}</el-button>

@@ -82,6 +82,7 @@ export interface ServiceDeploymentInfo {
   replicas: number
   placements: ServicePlacementInfo[]
   schedule: ServiceScheduleInfo
+  manualExec: boolean
 }
 
 export interface ServicePlacementInfo {
@@ -225,7 +226,8 @@ export function NewServiceDeploymentInfo(): ServiceDeploymentInfo {
     schedule: {
       timeout: "",
       rules: []
-    }
+    },
+    manualExec: false
   }
 }
 

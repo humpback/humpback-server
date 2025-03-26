@@ -125,15 +125,16 @@ func (sm *ServiceManager) Reconcile() {
 	if sm.ServiceInfo.Status == types.ServiceStatusNotReady {
 
 		// 如果有容器正在启动，就不再继续
-		if sm.ServiceInfo.Deployment.Type != types.DeployTypeSchedule && sm.HasPendingContainer() {
+		if !sm.IsRunningWithSchedule() && sm.HasPendingContainer() {
 			slog.Info("[Service Manager] Wait pending container......", "ServiceId", sm.ServiceInfo.ServiceId)
 			return
 		}
 
 		// 如果有容器失败，就不再继续
-		if sm.ServiceInfo.Deployment.Type != types.DeployTypeSchedule && sm.HasFailedContainer() {
+		if !sm.IsRunningWithSchedule() && sm.HasFailedContainer() {
 			slog.Info("[Service Manager] container failed, stop dispatch......", "ServiceId", sm.ServiceInfo.ServiceId)
 			sm.ServiceInfo.Status = types.ServiceStatusFailed
+			sm.ServiceInfo.Memo = types.MemoCreateContainerFailed
 			db.ServiceUpdate(sm.ServiceInfo)
 			return
 		}
@@ -269,12 +270,11 @@ func (sm *ServiceManager) IsContainerAllReady() bool {
 		version := parseVersionByContainerId(c.ContainerName)
 		if version == sm.ServiceInfo.Version {
 			if isContainerExited(c.State) &&
-				(sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule ||
-					strings.EqualFold(sm.ServiceInfo.Action, types.ServiceActionStop)) {
+				(sm.IsRunningWithSchedule() || strings.EqualFold(sm.ServiceInfo.Action, types.ServiceActionStop)) {
 				continue
 			}
 
-			if isContainerStarting(c.State) && sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule {
+			if isContainerStarting(c.State) && sm.IsRunningWithSchedule() {
 				continue
 			}
 
@@ -320,6 +320,10 @@ func (sm *ServiceManager) HasFailedContainer() bool {
 	return false
 }
 
+func (sm *ServiceManager) IsRunningWithSchedule() bool {
+	return sm.ServiceInfo.Deployment.Type == types.DeployTypeSchedule || sm.ServiceInfo.Deployment.ManualExec
+}
+
 func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 
 	nodeDeployed := make(map[string]bool)
@@ -329,10 +333,8 @@ func (sm *ServiceManager) TryToDeleteOne() (*types.ContainerStatus, bool) {
 		if version != sm.ServiceInfo.Version {
 			return c, true
 		}
-		if isContainerExited(c.State) {
-			if sm.ServiceInfo.Deployment.Type == types.DeployTypeBackground {
-				return c, true
-			}
+		if isContainerExited(c.State) && !sm.IsRunningWithSchedule() {
+			return c, true
 		}
 		if isContainerWarning(c.State) || isContainerRemoved(c.State) {
 			return c, true

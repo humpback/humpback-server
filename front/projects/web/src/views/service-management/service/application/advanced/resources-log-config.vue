@@ -89,9 +89,7 @@ defineExpose({ validate })
 
 <template>
   <div class="mb-5">
-    <strong>
-      <el-text>{{ t("label.resources") }}</el-text>
-    </strong>
+    <el-text class="f-bold">{{ t("label.resources") }}</el-text>
     <div class="mt-3">
       <v-tips>{{ t("tips.resourcesTips") }}</v-tips>
     </div>
@@ -101,11 +99,7 @@ defineExpose({ validate })
       <template #label>
         <div class="d-flex gap-1">
           <span>{{ t("label.memoryLimit") }}</span>
-          <v-tooltip :content="t('tips.memoryLimitTips')" effect="dark" max-width="400px" placement="top-start">
-            <el-icon :size="16">
-              <IconMdiHelpCircleOutline />
-            </el-icon>
-          </v-tooltip>
+          <v-help-tooltip :content="t('tips.memoryLimitTips')" max-width="400px" />
         </div>
       </template>
       <div class="d-flex gap-5 w-100 px-5 flex-wrap">
@@ -130,11 +124,7 @@ defineExpose({ validate })
       <template #label>
         <div class="d-flex gap-1">
           <span>{{ t("label.memoryReservation") }}</span>
-          <v-tooltip :content="t('tips.memoryReservationTips')" effect="dark" max-width="400px" placement="top-start">
-            <el-icon :size="16">
-              <IconMdiHelpCircleOutline />
-            </el-icon>
-          </v-tooltip>
+          <v-help-tooltip :content="t('tips.memoryReservationTips')" max-width="400px" />
         </div>
       </template>
       <div class="d-flex gap-5 flex-wrap w-100 px-5">
@@ -159,11 +149,7 @@ defineExpose({ validate })
       <template #label>
         <div class="d-flex gap-1">
           <span>{{ t("label.maximumCpuUsage") }}</span>
-          <v-tooltip :content="t('tips.maxCpuUsageTips')" effect="dark" max-width="400px" placement="top-start">
-            <el-icon :size="16">
-              <IconMdiHelpCircleOutline />
-            </el-icon>
-          </v-tooltip>
+          <v-help-tooltip :content="t('tips.maxCpuUsageTips')" max-width="400px" />
         </div>
       </template>
       <div class="d-flex gap-5 flex-wrap w-100 px-5">
@@ -181,9 +167,7 @@ defineExpose({ validate })
 
   <el-divider />
   <div class="my-5">
-    <strong>
-      <el-text>{{ t("label.logConfig") }}</el-text>
-    </strong>
+    <el-text class="f-bold">{{ t("label.logConfig") }}</el-text>
     <div class="mt-3">
       <v-tips>
         <i18n-t keypath="tips.logDriverTips" scope="global">

@@ -15,7 +15,7 @@ export function NewValidDeploymentInfo(info?: ServiceDeploymentInfo): ServiceVal
   return {
     ...deploymentInfo,
     hasPlacements: deploymentInfo.placements.length > 0,
-    enableSchedules: deploymentInfo.schedule.rules.length > 0,
+    enableSchedules: !deploymentInfo.manualExec && deploymentInfo.schedule.rules.length > 0,
     enableTimeout: !!deploymentInfo.schedule.timeout,
     validPlacements: map(deploymentInfo.placements, x => ({
       id: GenerateUUID(),
@@ -34,8 +34,9 @@ export function ParseDeploymentInfo(info: ServiceValidDeploymentInfo): ServiceDe
     replicas: info.mode === ServiceDeployMode.DeployModeGlobal ? 1 : info.replicas,
     placements: info.hasPlacements && info.validPlacements.length > 0 ? map(info.validPlacements, x => omit(x, ["id"])) : [],
     schedule: {
-      timeout: info.enableSchedules && info.enableTimeout && info.schedule.rules.length > 0 ? info.schedule.timeout : "",
-      rules: info.enableSchedules ? info.schedule.rules : []
-    }
+      timeout: !info.manualExec && info.enableSchedules && info.enableTimeout && info.schedule.rules.length > 0 ? info.schedule.timeout : "",
+      rules: !info.manualExec && info.enableSchedules ? info.schedule.rules : []
+    },
+    manualExec: info.manualExec
   }
 }

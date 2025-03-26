@@ -49,9 +49,7 @@ onMounted(async () => {
 
 <template>
   <div class="d-flex gap-3">
-    <strong>
-      <el-text size="large">{{ t("label.instanceOverview") }}</el-text>
-    </strong>
+    <el-text class="f-bold" size="large">{{ t("label.instanceOverview") }}</el-text>
     <div>
       <el-button plain size="small" type="success" @click="search()">{{ t("btn.refresh") }}</el-button>
       <el-button plain size="small" type="primary" @click="menuChange?.(PageServiceDetail.Performance)">
@@ -66,7 +64,7 @@ onMounted(async () => {
     <el-table-column class-name="expand-column" type="expand" width="24">
       <template #default="scope">
         <div class="expand-content">
-          <div v-if="scope.row.errorMsg" class="mb-5 d-flex gap-1">
+          <div v-if="scope.row.errorMsg" class="mb-5 d-flex gap-1" style="align-items: start">
             <el-icon :size="16" color="var(--el-color-danger)">
               <IconMdiWarningCircleOutline />
             </el-icon>
@@ -236,16 +234,12 @@ onMounted(async () => {
       </template>
     </el-table-column>
     <el-table-column :label="t('label.name')" class-name="containerName-column" min-width="300" prop="containerName" sortable />
-    <el-table-column :label="t('label.ip')" min-width="160">
-      <template #default="scope">
-        <el-text type="primary">{{ scope.row.ip }}</el-text>
-      </template>
-    </el-table-column>
+    <el-table-column :label="t('label.ip')" min-width="160" prop="ip" />
     <el-table-column :label="t('label.status')" min-width="160">
       <template #default="scope">
         <div class="d-flex gap-3">
           <v-container-status :status="scope.row.state" size="small" />
-          <v-tooltip v-if="scope.row.errorMsg">
+          <v-tooltip v-if="scope.row.errorMsg" effect="dark" max-width="400px" placement="top-start">
             <template #content>
               <el-text type="danger">{{ scope.row.errorMsg }}</el-text>
             </template>

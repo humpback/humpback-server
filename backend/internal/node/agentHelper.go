@@ -50,6 +50,7 @@ func StartNewContainer(nodeId, containerName string, svc *types.Service) error {
 			ServiceName:       svc.ServiceName,
 			ServiceId:         svc.ServiceId,
 			GroupId:           svc.GroupId,
+			ManualExec:        svc.Deployment.ManualExec,
 			ServiceMetaDocker: svc.Meta,
 			ScheduleInfo:      svc.Deployment.Schedule,
 		}

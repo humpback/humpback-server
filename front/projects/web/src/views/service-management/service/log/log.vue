@@ -111,9 +111,7 @@ onMounted(async () => {
             <IconMdiFileDocumentOutline />
           </el-icon>
         </div>
-        <strong>
-          <el-text size="large">{{ t("label.instanceLogs") }}</el-text>
-        </strong>
+        <el-text class="f-bold" size="large">{{ t("label.instanceLogs") }}</el-text>
       </div>
 
       <div class="mt-3">

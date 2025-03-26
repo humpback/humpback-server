@@ -400,9 +400,7 @@ onMounted(async () => {
       <el-col class="mt-5">
         <el-form-item>
           <el-checkbox v-model="metaInfo.alwaysPull">
-            <strong>
-              <el-text size="small">{{ t("label.alwaysPull") }}</el-text>
-            </strong>
+            <el-text class="f-bold" size="small">{{ t("label.alwaysPull") }}</el-text>
           </el-checkbox>
           <v-tips>{{ t("tips.alwaysPullTips") }}</v-tips>
         </el-form-item>
@@ -410,9 +408,7 @@ onMounted(async () => {
       <el-col>
         <el-form-item>
           <el-checkbox v-model="metaInfo.privileged">
-            <strong>
-              <el-text size="small">{{ t("label.privilegedMode") }}</el-text>
-            </strong>
+            <el-text class="f-bold" size="small">{{ t("label.privilegedMode") }}</el-text>
           </el-checkbox>
           <v-tips>{{ t("tips.privilegedTips") }}</v-tips>
         </el-form-item>

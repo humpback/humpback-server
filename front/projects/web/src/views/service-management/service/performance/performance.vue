@@ -320,6 +320,7 @@ onMounted(async () => {
   networkChart = echarts.init(networkRef.value)
   ioChart = echarts.init(ioRef.value)
   window.addEventListener("resize", resize)
+  await getPerformance()
   loopSearchPerformance()
 })
 
@@ -344,9 +345,7 @@ onUnmounted(() => {
         <IconMdiPerformance />
       </el-icon>
     </div>
-    <strong>
-      <el-text size="large">{{ t("label.performance") }}</el-text>
-    </strong>
+    <el-text class="f-bold" size="large">{{ t("label.performance") }}</el-text>
   </div>
 
   <div v-loading="isLoading">

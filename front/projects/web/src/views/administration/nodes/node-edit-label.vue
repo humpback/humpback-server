@@ -79,9 +79,7 @@ defineExpose({ open })
 <template>
   <v-dialog v-model="dialogInfo.show" :close-on-press-escape="false" width="600px">
     <template #header>{{ t("header.editLabel") }}</template>
-    <el-text>
-      <strong>{{ dialogInfo.info.ipAddress }}</strong>
-    </el-text>
+    <el-text class="f-bold" style="color: var(--el-text-color-primary)">{{ dialogInfo.info.ipAddress }}</el-text>
     <div class="my-3">
       <el-scrollbar always max-height="600px" style="box-sizing: border-box">
         <el-form ref="formRef" :model="dialogInfo.labels" :rules="rules" label-position="top" label-width="auto">

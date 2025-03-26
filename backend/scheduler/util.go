@@ -8,6 +8,10 @@ import (
 	"humpback/types"
 )
 
+const (
+	InstanceNamePrefix = "Humpback"
+)
+
 func parseVersionByContainerId(containerId string) string {
 	parts := strings.Split(containerId, "-")
 	if len(parts) < 4 {
@@ -25,7 +29,7 @@ func ParseServiceIdByContainerId(containerId string) string {
 }
 
 func GenerateContainerName(serviceId, version string) string {
-	return "humpback-" + serviceId + "-" + version + "-" + utils.NewVersionId()
+	return InstanceNamePrefix + "-" + serviceId + "-" + version + "-" + utils.NewVersionId()
 }
 
 func isContainerRunning(status string) bool {

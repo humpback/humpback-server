@@ -115,6 +115,7 @@ declare module 'vue' {
     VExpandButton: typeof import('./src/components/common/v-expand/VExpandButton.vue')['default']
     VExpandIcon: typeof import('./src/components/common/v-expand/VExpandIcon.vue')['default']
     VGlobalSearch: typeof import('./src/components/business/v-search/VGlobalSearch.vue')['default']
+    VHelpTooltip: typeof import('./src/components/business/v-help/VHelpTooltip.vue')['default']
     VInput: typeof import('./src/components/common/v-input/VInput.vue')['default']
     VInputNumber: typeof import('./src/components/common/v-input/VInputNumber.vue')['default']
     VLabelTableView: typeof import('./src/components/business/v-label/VLabelTableView.vue')['default']

@@ -115,6 +115,17 @@ $wh: (
   }
 }
 
+$fontWeight: (
+  'semiBold': 600,
+  'bold': 700,
+);
+@each $name, $value in $fontWeight {
+  // 创建 class 名称并应用样式
+  .f-#{$name} {
+    font-weight: #{$value};
+  }
+}
+
 .d-flex {
   display: flex;
   align-items: center;
@@ -134,9 +145,4 @@ $wh: (
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.fw-500 {
-  font-weight: 500;
-}
-
 

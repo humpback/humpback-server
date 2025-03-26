@@ -119,6 +119,7 @@ export default {
     "schedulesInfo": "执行计划信息",
     "enableTimeout": "启用超时控制",
     "setSchedules": "设置定时任务",
+    "setManualExec": "设置手动执行",
     "cron": "Cron",
     "text": "文本",
     "form": "表单",

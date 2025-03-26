@@ -57,3 +57,14 @@ func GetNodeInfo(nodeId string) *types.Node {
 
 	return n
 }
+
+func ClearNodeCache(nodeInfo types.NodeSimpleInfo) {
+
+	n, err := db.GetDataById[types.Node](db.BucketNodes, nodeInfo.NodeId)
+	if err == nil && n != nil {
+		nodeCache.Remove(n.NodeId)
+		ip := n.IpAddress
+		cache.Remove(ip)
+	}
+
+}
