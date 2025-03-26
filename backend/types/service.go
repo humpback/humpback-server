@@ -56,6 +56,7 @@ type AgentTask struct {
 	ServiceName   string `json:"serviceName"`
 	ServiceId     string `json:"serviceId"`
 	GroupId       string `json:"groupId"`
+	ManualExec    bool   `json:"manualExec"`
 	*ServiceMetaDocker
 	*ScheduleInfo
 }

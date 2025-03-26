@@ -84,6 +84,9 @@ func (sc *ServiceController) HandleNodeChanged() {
 
 // 机器上下线时需要通知该机器所属的Group，去检查Group中所有service的状态
 func (sc *ServiceController) HandleNodeStatusChanged(nodeInfo types.NodeSimpleInfo) {
+
+	node.ClearNodeCache(nodeInfo)
+
 	groups, _ := db.GroupsGetByNodeId(nodeInfo.NodeId)
 	for _, g := range groups {
 		for _, serviceManager := range sc.ServiceCtrls {
