@@ -58,6 +58,7 @@ declare module 'vue' {
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    IconMdiAccountFileText: typeof import('~icons/mdi/account-file-text')['default']
     IconMdiAdd: typeof import('~icons/mdi/add')['default']
     IconMdiAlphaCBoxOutline: typeof import('~icons/mdi/alpha-c-box-outline')['default']
     IconMdiAlphaPCircleOutline: typeof import('~icons/mdi/alpha-p-circle-outline')['default']

@@ -77,6 +77,7 @@ export default {
     "instances": "Instances",
     "log": "Log",
     "performance": "Performance",
+    "activity": "Activity",
     "network": "Network",
     "restartPolicy": "Restart Policy",
     "volumes": "Volumes",

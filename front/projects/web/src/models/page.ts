@@ -16,5 +16,6 @@ export enum PageServiceDetail {
   Deployment = "deployment",
   Instances = "instances",
   Log = "log",
-  Performance = "performance"
+  Performance = "performance",
+  Activity = "activity"
 }

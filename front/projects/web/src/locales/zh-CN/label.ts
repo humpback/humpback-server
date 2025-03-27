@@ -77,6 +77,7 @@ export default {
     "instances": "实例",
     "log": "日志",
     "performance": "性能",
+    "activity": "操作记录",
     "network": "网络",
     "restartPolicy": "重启策略",
     "volumes": "卷",
