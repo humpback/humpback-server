@@ -40,7 +40,7 @@ export default {
     "serviceInfoInComplete": "The service information is incomplete",
     "setScheduleTips": "This is selected as job mode, and when cron is set, the program will run according to the specified time rule.",
     "setManualExecTips":
-      "This option is in manual execution mode, and the program will not resume running after exiting; Conversely, after the program exits, the scheduler will keep trying to restart the service.",
+      "This option is in manual execution mode, after enabling the service, you need to start the service manually, and the program will not resume running after exiting; Conversely, the service will start immediately after it is enabled, and the scheduler will keep trying to restart the service if the program exits.",
     "timeoutTips": "If the program is executed beyond the set time, the program will be forcibly killed.",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",

@@ -140,6 +140,7 @@ declare module 'vue' {
     VRouterLink: typeof import('./src/components/common/v-router-link/VRouterLink.vue')['default']
     VSearch: typeof import('./src/components/business/v-search/VSearch.vue')['default']
     VSelect: typeof import('./src/components/common/v-select/VSelect.vue')['default']
+    VServiceInstanceStatusStatistics: typeof import('./src/components/business/v-service/VServiceInstanceStatusStatistics.vue')['default']
     VServiceScheduleQuerySelect: typeof import('./src/components/business/v-service/VServiceScheduleQuerySelect.vue')['default']
     VServiceStatusQuerySelect: typeof import('./src/components/business/v-service/VServiceStatusQuerySelect.vue')['default']
     VServiceStatusTag: typeof import('./src/components/business/v-service/VServiceStatusTag.vue')['default']

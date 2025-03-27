@@ -7,7 +7,7 @@ import { CanvasRenderer } from "echarts/renderers"
 import { SetWebTitle, TimestampToTime } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
 import { ContainerPerformance, ServiceInfo } from "@/types"
-import { filter, find, findIndex, map } from "lodash-es"
+import { filter, find, findIndex, map, toLower } from "lodash-es"
 
 echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer, UniversalTransition])
 
@@ -281,7 +281,10 @@ function parseStatsToChart(statsList: ContainerPerformance[]) {
 }
 
 async function getPerformance() {
-  const validContainers = filter(serviceInfo.value?.containers || [], x => !!x.containerId)
+  const validContainers = filter(
+    serviceInfo.value?.containers || [],
+    x => !!x.containerId && toLower(x.state) === toLower(ContainerStatus.ContainerStatusRunning)
+  )
   const containers = map(validContainers, x => ({ nodeId: x.nodeId, containerId: x.containerId }))
   if (!containers?.length) {
     return
@@ -305,10 +308,10 @@ async function search() {
 }
 
 function resetChartData() {
-  cpuChart.setOption(cpuOptions.value)
-  memoryChart.setOption(memoryOptions.value)
-  networkChart.setOption(networkOptions.value)
-  ioChart.setOption(ioOptions.value)
+  cpuChart?.setOption(cpuOptions.value)
+  memoryChart?.setOption(memoryOptions.value)
+  networkChart?.setOption(networkOptions.value)
+  ioChart?.setOption(ioOptions.value)
 }
 
 onMounted(async () => {
@@ -325,11 +328,11 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener("resize", resize)
   cpuChart?.dispose()
   memoryChart?.dispose()
   networkChart?.dispose()
   ioChart?.dispose()
+  window.removeEventListener("resize", resize)
 
   if (timer.value) {
     clearTimeout(timer.value)

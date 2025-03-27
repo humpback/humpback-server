@@ -63,6 +63,8 @@ export default {
     "instanceName": "实例名称",
     "serviceName": "服务名称",
     "running": "正在运行",
+    "exited": "已退出",
+    "idle": "空闲",
     "failed": "失败",
     "schedule": "定时任务",
     "yes": "是",

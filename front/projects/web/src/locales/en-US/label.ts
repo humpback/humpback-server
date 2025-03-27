@@ -63,6 +63,8 @@ export default {
     "instanceName": "Instance Name",
     "serviceName": "Service Name",
     "running": "Running",
+    "exited": "Exited",
+    "idle": "Idle",
     "failed": "Failed",
     "schedule": "Schedule",
     "yes": "Yes",
