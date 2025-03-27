@@ -160,6 +160,8 @@ export default {
     "wrapLines": "超长换行",
     "groups": "分组",
     "currentUser": "当前用户",
-    "port": "端口"
+    "port": "端口",
+    "old": "旧数据",
+    "new": "新数据"
   }
 }

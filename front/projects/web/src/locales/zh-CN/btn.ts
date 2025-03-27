@@ -1,5 +1,6 @@
 export default {
   btn: {
+    "back": "后退",
     "login": "登录",
     "loggingIn": "正在登录...",
     "redirecting": "正在重定向...",

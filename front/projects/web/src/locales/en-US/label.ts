@@ -160,6 +160,8 @@ export default {
     "wrapLines": "Wrap lines",
     "groups": "Groups",
     "currentUser": "Current User",
-    "port": "Port"
+    "port": "Port",
+    "old": "Old",
+    "new": "New"
   }
 }
