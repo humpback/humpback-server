@@ -50,6 +50,7 @@ export default {
     "addOption": "添加选项",
     "addPlacementConstraint": "添加约束",
     "addSchedule": "添加定时任务",
-    "viewMonitor": "查看性能指标"
+    "viewMonitor": "查看性能指标",
+    "filter": "过滤"
   }
 }

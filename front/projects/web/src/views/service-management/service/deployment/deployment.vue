@@ -202,7 +202,7 @@ onMounted(async () => {
               v-model="deploymentInfo.validPlacements[index].key"
               disabled />
 
-            <v-select v-else v-model="deploymentInfo.validPlacements[index].key" :out-label="t('label.label')" placeholder="" show-out-label>
+            <v-select v-else v-model="deploymentInfo.validPlacements[index].key" :out-label="t('label.label')" placeholder="">
               <template v-if="deploymentInfo.validPlacements[index].mode === ServicePlacementMode.PlacementModeLabel">
                 <el-option
                   v-for="item in uniq(
@@ -226,7 +226,7 @@ onMounted(async () => {
           </el-form-item>
 
           <el-form-item :prop="`validPlacements.${index}.value`" :rules="rules.placementValue" class="flex-1">
-            <v-select v-model="deploymentInfo.validPlacements[index].value" :out-label="t('label.value')" placeholder="" show-out-label>
+            <v-select v-model="deploymentInfo.validPlacements[index].value" :out-label="t('label.value')" placeholder="">
               <template v-if="deploymentInfo.validPlacements[index].mode === ServicePlacementMode.PlacementModeLabel">
                 <el-option
                   v-for="item in uniq(

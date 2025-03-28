@@ -77,7 +77,7 @@ export default {
     "instances": "实例",
     "log": "日志",
     "performance": "性能",
-    "activity": "操作记录",
+    "activities": "操作记录",
     "network": "网络",
     "restartPolicy": "重启策略",
     "volumes": "卷",
@@ -159,9 +159,11 @@ export default {
     "tx": "发送",
     "wrapLines": "超长换行",
     "groups": "分组",
+    "group": "分组",
     "currentUser": "当前用户",
     "port": "端口",
     "old": "旧数据",
-    "new": "新数据"
+    "new": "新数据",
+    "date": "日期"
   }
 }

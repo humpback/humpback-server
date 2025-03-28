@@ -1,5 +1,10 @@
 <script lang="ts" setup>
+import { QueryInfo } from "@/types"
+import { TableHeight } from "@/utils"
+
 const { t } = useI18n()
+
+const tableHeight = computed(() => TableHeight(362))
 
 const oldData = ref({
   "dbId": 40,
@@ -301,6 +306,40 @@ const newData = ref({
   "dispatchCompletedUserName": "skyler-yang",
   "dispatchCompletedAt": 1742796973131
 })
+
+const isLoading = ref(false)
+
+const queryInfo = ref<QueryInfo>(new QueryInfo({}, ["keywords"], { index: 1, size: 20 }, { field: "createdAt", order: "desc" }, ["createdAt"]))
+
+const tableList = ref({
+  total: 0,
+  data: [] as Array<any>
+})
+
+const setRowClass = ({ row }) => {
+  return !row.oldContent && !row.newContent ? "hide-expand-icon" : ""
+}
+
+function search() {
+  const list: Array<any> = []
+  for (let i = 0; i < 20; i++) {
+    list.push({
+      activeId: i,
+      hasContent: i % 2 === 0,
+      oldContent: oldData.value,
+      newContent: newData.value,
+      description: "Update application",
+      user: "skyler",
+      createdAt: new Date().getTime()
+    })
+  }
+  tableList.value.data = list
+  tableList.value.total = tableList.value.data.length * 3
+}
+
+onMounted(() => {
+  search()
+})
 </script>
 
 <template>
@@ -310,10 +349,38 @@ const newData = ref({
         <IconMdiAccountFileText />
       </el-icon>
     </div>
-    <el-text class="f-bold" size="large">{{ t("label.activity") }}</el-text>
+    <el-text class="f-bold" size="large">{{ t("label.activities") }}</el-text>
   </div>
 
-  <v-monaco-diff-editor :new-data="JSON.stringify(newData, null, 4)" :old-data="JSON.stringify(oldData, null, 4)" language="json" />
+  <v-table
+    v-loading="isLoading"
+    v-model:page-info="queryInfo.pageInfo"
+    :data="tableList.data"
+    :max-height="tableHeight"
+    :row-class-name="setRowClass"
+    :total="tableList.total"
+    class="mt-5"
+    row-key="activeId"
+    @page-change="search">
+    <el-table-column align="left" class-name="expand-column" type="expand" width="24">
+      <template #default="scope">
+        <div class="px-5">
+          <v-monaco-diff-editor
+            v-if="scope.row.hasContent"
+            :new-data="JSON.stringify(scope.row.oldContent, null, 4)"
+            :old-data="JSON.stringify(scope.row.newContent, null, 4)"
+            language="json" />
+        </div>
+      </template>
+    </el-table-column>
+    <el-table-column :label="t('label.description')" min-width="200" prop="description" />
+    <el-table-column :label="t('label.user')" min-width="140" prop="user" />
+    <el-table-column :label="t('label.date')" width="140">
+      <template #default="scope">
+        <v-date-view :timestamp="scope.row.createdAt" />
+      </template>
+    </el-table-column>
+  </v-table>
 </template>
 
 <style lang="scss" scoped>
@@ -327,5 +394,17 @@ const newData = ref({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+:deep(.expand-column) {
+  .cell {
+    padding: 0 4px 0 8px;
+  }
+}
+
+:deep(.hide-expand-icon) {
+  .expand-column .cell {
+    display: none;
+  }
 }
 </style>

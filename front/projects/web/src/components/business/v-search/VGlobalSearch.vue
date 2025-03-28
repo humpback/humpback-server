@@ -78,10 +78,10 @@ onClickOutside(contentRef, hidePopover)
       </el-input>
     </div>
 
-    <div v-if="visible" v-loading="isLoading" class="global-search-body">
+    <div v-if="visible" class="global-search-body">
       <div class="global-search-content">
         <div class="global-search-arrow" />
-        <div class="global-search-inner">
+        <div v-loading="isLoading" class="global-search-inner">
           <div>
             <el-text class="f-bold"> {{ t("label.groups") }}</el-text>
             <el-divider style="margin: 8px 0 16px 0; border-color: var(--el-color-info-light-9)" />

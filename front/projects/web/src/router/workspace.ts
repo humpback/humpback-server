@@ -1,5 +1,5 @@
 import type { RouteRecordRaw } from "vue-router"
-import { PageGroupDetail, PageLimitRole, PageServiceDetail, PageUserRelated } from "@/models"
+import { PageActivity, PageGroupDetail, PageLimitRole, PageServiceDetail, PageUserRelated } from "@/models"
 import { find } from "lodash-es"
 
 const administrator = <RouteRecordRaw[]>[
@@ -79,7 +79,8 @@ const serviceManagement = <RouteRecordRaw[]>[
           PageServiceDetail.Deployment,
           PageServiceDetail.Instances,
           PageServiceDetail.Log,
-          PageServiceDetail.Performance
+          PageServiceDetail.Performance,
+          PageServiceDetail.Activity
         ],
         x => x === to.params.mode
       )
@@ -126,6 +127,30 @@ export default <RouteRecordRaw[]>[
         name: "configs",
         component: () => import("@/views/configs/configs.vue"),
         meta: { loginLimit: PageLimitRole.Login }
+      },
+      {
+        path: "/ws/activities/:mode",
+        name: "activities",
+        component: () => import("@/views/activity/activities.vue"),
+        beforeEnter: (to, from, next) => {
+          return find(
+            [
+              PageActivity.Groups,
+              PageActivity.Services,
+              PageActivity.Configs,
+              PageActivity.Nodes,
+              PageActivity.registries,
+              PageActivity.Users,
+              PageActivity.Teams
+            ],
+            x => x === to.params.mode
+          )
+            ? next()
+            : next({ name: "404" })
+        },
+        meta: {
+          loginLimit: PageLimitRole.Login
+        }
       },
       ...administrator,
       ...serviceManagement

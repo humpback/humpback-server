@@ -82,7 +82,6 @@ onMounted(() => search())
               :placeholder="t('placeholder.all')"
               clearable
               out-label-width="80px"
-              show-out-label
               @change="search">
               <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value">
                 <el-text :type="item.type">{{ t(item.label) }}</el-text>

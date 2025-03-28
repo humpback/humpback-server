@@ -10,6 +10,7 @@ export default {
     "help": "Help",
     "myAccount": "My Account",
     "logout": "Logout",
+    "activities": "Activities",
     header: {
       "dashboard": "Dashboard",
       "serviceManagement": "Service Management",
@@ -19,7 +20,8 @@ export default {
       "configs": "Configs",
       "help": "Help",
       "myAccount": "My Account",
-      "groups": "Groups"
+      "groups": "Groups",
+      "activities": "Activities"
     }
   },
   webTitle: {
@@ -37,6 +39,7 @@ export default {
     "groups": "Groups",
     "services": "Services",
     "serviceInfo": "Service Info",
-    "serviceCreate": "Service Create"
+    "serviceCreate": "Service Create",
+    "activities": "Activities"
   }
 }

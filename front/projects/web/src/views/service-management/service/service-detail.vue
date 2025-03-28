@@ -83,7 +83,7 @@ const menuOptions = ref<any[]>([
     component: shallowRef(Performance)
   },
   {
-    i18nLabel: "label.activity",
+    i18nLabel: "label.activities",
     value: PageServiceDetail.Activity,
     isRequired: false,
     component: shallowRef(Activity)

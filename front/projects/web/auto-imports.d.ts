@@ -16,6 +16,7 @@ declare global {
   const GenerateUUID: typeof import('./src/utils/rsa')['GenerateUUID']
   const GetUserRole: typeof import('./src/utils/common')['GetUserRole']
   const IconMdiAccount: typeof import('~icons/mdi/account')['default']
+  const IconMdiAccountFileText: typeof import('~icons/mdi/account-file-text')['default']
   const IconMdiAlphaCBoxOutline: typeof import('~icons/mdi/alpha-c-box-outline')['default']
   const IconMdiCogOutline: typeof import('~icons/mdi/cog-outline')['default']
   const IconMdiCompany: typeof import('~icons/mdi/company')['default']
@@ -47,6 +48,7 @@ declare global {
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
   const NodeStatus: typeof import('./src/models/enum')['NodeStatus']
   const NodeSwitch: typeof import('./src/models/enum')['NodeSwitch']
+  const PageActivity: typeof import('./src/models/page')['PageActivity']
   const PageGroupDetail: typeof import('./src/models/page')['PageGroupDetail']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageServiceDetail: typeof import('./src/models/page')['PageServiceDetail']
@@ -422,7 +424,7 @@ declare global {
   export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode, ContainerStatus, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode, ContainerStatus } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
-  export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageUserRelated, PageGroupDetail, PageServiceDetail } from './src/models/page'
+  export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageActivity, PageUserRelated, PageGroupDetail, PageServiceDetail, PageActivity } from './src/models/page'
   import('./src/models/page')
   // @ts-ignore
   export type { BaseInfo } from './src/types/base'
@@ -465,6 +467,7 @@ declare module 'vue' {
     readonly GenerateUUID: UnwrapRef<typeof import('./src/utils/rsa')['GenerateUUID']>
     readonly GetUserRole: UnwrapRef<typeof import('./src/utils/common')['GetUserRole']>
     readonly IconMdiAccount: UnwrapRef<typeof import('~icons/mdi/account')['default']>
+    readonly IconMdiAccountFileText: UnwrapRef<typeof import('~icons/mdi/account-file-text')['default']>
     readonly IconMdiAlphaCBoxOutline: UnwrapRef<typeof import('~icons/mdi/alpha-c-box-outline')['default']>
     readonly IconMdiCogOutline: UnwrapRef<typeof import('~icons/mdi/cog-outline')['default']>
     readonly IconMdiCompany: UnwrapRef<typeof import('~icons/mdi/company')['default']>
@@ -496,6 +499,7 @@ declare module 'vue' {
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
     readonly NodeStatus: UnwrapRef<typeof import('./src/models/enum')['NodeStatus']>
     readonly NodeSwitch: UnwrapRef<typeof import('./src/models/enum')['NodeSwitch']>
+    readonly PageActivity: UnwrapRef<typeof import('./src/models/page')['PageActivity']>
     readonly PageGroupDetail: UnwrapRef<typeof import('./src/models/page')['PageGroupDetail']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageServiceDetail: UnwrapRef<typeof import('./src/models/page')['PageServiceDetail']>

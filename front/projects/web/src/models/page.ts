@@ -19,3 +19,13 @@ export enum PageServiceDetail {
   Performance = "performance",
   Activity = "activity"
 }
+
+export enum PageActivity {
+  Nodes = "nodes",
+  Groups = "groups",
+  Services = "services",
+  Configs = "configs",
+  registries = "registries",
+  Users = "users",
+  Teams = "teams"
+}

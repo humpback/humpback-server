@@ -3,7 +3,7 @@ import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
 import { PageServiceDetail, RuleLength } from "@/models"
 import { ServiceInfo } from "@/types"
-import { groupService } from "services/group-service.ts"
+import { find } from "lodash-es"
 
 const emits = defineEmits<{
   (e: "refresh"): void
@@ -53,6 +53,9 @@ async function open(info: ServiceInfo) {
   await getGroups()
     .catch(() => (dialogInfo.value.show = false))
     .finally(() => (isLoading.value = false))
+  if (!find(groups.value, x => x.groupId === dialogInfo.value.info.newGroupId)) {
+    dialogInfo.value.info.newGroupId = ""
+  }
 }
 
 async function save() {
@@ -92,9 +95,7 @@ defineExpose({ open })
     <div class="my-3">
       <el-form ref="formRef" v-loading="isLoading" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
         <el-form-item :label="t('label.targetGroup')" prop="newGroupId">
-          <el-select v-model="dialogInfo.info.newGroupId" placeholder="">
-            <el-option v-for="item in groups" :key="item.groupId" :label="item.groupName" :value="item.groupId" />
-          </el-select>
+          <v-group-select v-model="dialogInfo.info.newGroupId" :options="groups" />
         </el-form-item>
         <v-alert v-if="dialogInfo.info.newGroupId !== groupId">{{ t("tips.cloneServiceTips") }}</v-alert>
         <el-form-item :label="t('label.name')" prop="serviceName">

@@ -50,6 +50,7 @@ export default {
     "addOption": "Add Option",
     "addPlacementConstraint": "Add Placement Constraint",
     "addSchedule": "Add Schedule",
-    "viewMonitor": "View Monitor"
+    "viewMonitor": "View Monitor",
+    "filter": "Filter"
   }
 }

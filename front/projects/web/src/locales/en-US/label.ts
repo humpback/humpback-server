@@ -77,7 +77,7 @@ export default {
     "instances": "Instances",
     "log": "Log",
     "performance": "Performance",
-    "activity": "Activity",
+    "activities": "Activities",
     "network": "Network",
     "restartPolicy": "Restart Policy",
     "volumes": "Volumes",
@@ -159,9 +159,11 @@ export default {
     "tx": "TX",
     "wrapLines": "Wrap lines",
     "groups": "Groups",
+    "group": "Group",
     "currentUser": "Current User",
     "port": "Port",
     "old": "Old",
-    "new": "New"
+    "new": "New",
+    "date": "Date"
   }
 }

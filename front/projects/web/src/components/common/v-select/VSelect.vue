@@ -4,7 +4,6 @@ import { cloneDeep, omit } from "lodash-es"
 
 type Props = Partial<
   ISelectProps & {
-    showOutLabel?: boolean
     outLabelWidth?: string
     outLabel?: string
   }
@@ -30,7 +29,7 @@ const emits = defineEmits<{
 const slots = useSlots()
 
 const attrs = computed(() => {
-  const attrs: any = cloneDeep(omit(props, ["showOutPrefix", "outLabelWidth", "outLabel"]))
+  const attrs: any = cloneDeep(omit(props, ["outLabelWidth", "outLabel"]))
   return Object.keys(attrs).reduce((acc, key) => {
     if (typeof attrs[key] !== "undefined") {
       acc[key] = props[key]
@@ -52,7 +51,7 @@ const labelClass = computed(() => {
 
 <template>
   <div class="select-box">
-    <div v-if="props.showOutLabel" :class="labelClass" :style="{ width: props.outLabelWidth }">{{ props.outLabel }} </div>
+    <div v-if="props.outLabel" :class="labelClass" :style="{ width: props.outLabelWidth }">{{ props.outLabel }}</div>
     <el-select
       class="select-content"
       v-bind="{ ...attrs }"
@@ -125,7 +124,7 @@ const labelClass = computed(() => {
     font-size: 14px;
   }
 
-  .select-content {
+  .select-label + .select-content {
     flex: 1;
     --el-border-radius-base: 0 4px 4px 0;
   }

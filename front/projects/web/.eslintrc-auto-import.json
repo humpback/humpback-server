@@ -47,6 +47,7 @@
     "NodeInfo": true,
     "NodeStatus": true,
     "NodeSwitch": true,
+    "PageActivity": true,
     "PageGroupDetail": true,
     "PageInfo": true,
     "PageLimitRole": true,
@@ -431,19 +432,18 @@
     "watchTriggerable": true,
     "watchWithFilter": true,
     "whenever": true,
+    "IconMdiLogoutVariant": true,
+    "IconMdiUserOutline": true,
     "IconMdiAccount": true,
+    "IconMdiAccountFileText": true,
     "IconMdiAlphaCBoxOutline": true,
     "IconMdiCogOutline": true,
     "IconMdiCompany": true,
-    "IconMdiLogoutVariant": true,
     "IconMdiTextBoxOutline": true,
-    "IconMdiUserOutline": true,
     "IconMdiViewDashboard": true,
     "IconMdiPlay": true,
     "IconMdiRestart": true,
     "IconMdiSquare": true,
-    "IconMdiCheckboxMultipleBlankOutline": true,
-    "IconMdiStopCircleOutline": true,
-    "IconMdiPauseBoxOutline": true
+    "IconMdiStopCircleOutline": true
   }
 }

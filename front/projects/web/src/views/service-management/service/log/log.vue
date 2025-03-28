@@ -3,6 +3,7 @@ import { SetWebTitle } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
 import { RuleLength } from "@/models"
 import { filter, find, toLower } from "lodash-es"
+import VLogSearchTimeRange from "@/components/business/v-log/VLogSearchTimeRange.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -119,7 +120,7 @@ onMounted(async () => {
       </div>
       <div class="d-flex gap-3 flex-wrap mt-5">
         <div class="flex-1" style="min-width: 460px">
-          <v-select v-model="searchInfo.instance" :out-label="t('label.instance')" out-label-width="100px" placeholder="" show-out-label @change="getLogs()">
+          <v-select v-model="searchInfo.instance" :out-label="t('label.instance')" out-label-width="100px" placeholder="" @change="getLogs()">
             <el-option v-for="item in containers" :key="item.containerId" :label="item.containerName" :value="item.containerId" />
           </v-select>
         </div>

@@ -41,7 +41,6 @@ onMounted(() => {
   <el-select-v2
     v-model="users"
     :filterable="props.filterable"
-    :loading="isLoading"
     :loading-text="t('message.loading')"
     :multiple="props.multiple"
     :options="selectOptions"

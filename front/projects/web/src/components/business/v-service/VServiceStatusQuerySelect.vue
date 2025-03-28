@@ -49,7 +49,6 @@ function change() {
     :out-label="t('label.status')"
     :placeholder="props.placeholder"
     out-label-width="80px"
-    show-out-label
     @change="change()">
     <el-option :label="t('label.all')" value="" />
     <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value">
