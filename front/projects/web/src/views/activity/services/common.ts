@@ -7,7 +7,7 @@ export const defaultSort = NewSortInfo("createdAt", "desc")
 export const defaultPage = NewPageInfo(1, 20)
 export const defaultFilter = { group: "", user: "", action: "", startAt: 0, endAT: 0 }
 
-export class QueryActivityGroupInfo extends QueryInfo {
+export class QueryActivityServiceInfo extends QueryInfo {
   constructor(queryInfo: any) {
     super(queryInfo, ["keywords"], defaultPage, defaultSort, sortOptions, cloneDeep(defaultFilter))
     this.filter.group = queryInfo["group"] ? queryInfo["group"] : defaultFilter.group

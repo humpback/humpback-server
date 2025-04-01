@@ -35,6 +35,7 @@ export default {
     "addSchedule": "Add Schedule",
     "editSchedule": "Edit Schedule",
     "groups": "Groups",
-    "configs": "Configs"
+    "configs": "Configs",
+    "registries": "Registries"
   }
 }

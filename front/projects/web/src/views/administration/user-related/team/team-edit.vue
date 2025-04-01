@@ -95,7 +95,7 @@ defineExpose({ open })
           <v-description-input v-model="dialogInfo.info.description" />
         </el-form-item>
         <el-form-item :label="t('label.users')" prop="teams">
-          <v-users-option-select v-model="dialogInfo.info.users" :options="userOptions" />
+          <v-users-select v-model="dialogInfo.info.users" :options="userOptions" show-footer />
         </el-form-item>
       </el-form>
     </div>

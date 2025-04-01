@@ -159,7 +159,7 @@ defineExpose({ open })
 
           <el-col>
             <el-form-item :label="t('label.teams')" prop="teams">
-              <v-teams-option-select v-model="dialogInfo.info.teams" :options="teamsOption" />
+              <v-teams-select v-model="dialogInfo.info.teams" :options="teamsOption" />
             </el-form-item>
           </el-col>
         </el-row>

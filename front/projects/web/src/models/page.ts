@@ -25,7 +25,7 @@ export enum PageActivity {
   Groups = "groups",
   Services = "services",
   Configs = "configs",
-  registries = "registries",
+  Registries = "registries",
   Users = "users",
   Teams = "teams"
 }

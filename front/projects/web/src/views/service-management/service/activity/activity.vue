@@ -324,10 +324,10 @@ function search() {
   const list: Array<any> = []
   for (let i = 0; i < 20; i++) {
     list.push({
-      activeId: i,
+      activityId: i,
       hasContent: i % 2 === 0,
-      oldContent: oldData.value,
-      newContent: newData.value,
+      oldContent: i % 2 === 0 ? oldData.value : null,
+      newContent: i % 2 === 0 ? newData.value : null,
       description: "Update application",
       user: "skyler",
       createdAt: new Date().getTime()
@@ -360,7 +360,7 @@ onMounted(() => {
     :row-class-name="setRowClass"
     :total="tableList.total"
     class="mt-5"
-    row-key="activeId"
+    row-key="activityId"
     @page-change="search">
     <el-table-column align="left" class-name="expand-column" type="expand" width="24">
       <template #default="scope">
@@ -374,7 +374,7 @@ onMounted(() => {
       </template>
     </el-table-column>
     <el-table-column :label="t('label.description')" min-width="200" prop="description" />
-    <el-table-column :label="t('label.user')" min-width="140" prop="user" />
+    <el-table-column :label="t('label.operator')" min-width="140" prop="user" />
     <el-table-column :label="t('label.date')" width="140">
       <template #default="scope">
         <v-date-view :timestamp="scope.row.createdAt" />
@@ -404,6 +404,7 @@ onMounted(() => {
 
 :deep(.hide-expand-icon) {
   .expand-column .cell {
+    padding-top: 4px;
     display: none;
   }
 }

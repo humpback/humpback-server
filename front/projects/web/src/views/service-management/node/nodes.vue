@@ -150,6 +150,12 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+.custom-column {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+}
+
 .status {
   display: flex;
   align-items: start;
@@ -177,6 +183,7 @@ onMounted(async () => {
     width: 100px;
     text-align: right;
     padding-right: 20px;
+    padding-top: 8px;
   }
 }
 </style>

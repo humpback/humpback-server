@@ -139,7 +139,7 @@ export default <RouteRecordRaw[]>[
               PageActivity.Services,
               PageActivity.Configs,
               PageActivity.Nodes,
-              PageActivity.registries,
+              PageActivity.Registries,
               PageActivity.Users,
               PageActivity.Teams
             ],

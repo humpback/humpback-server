@@ -5,12 +5,11 @@ export const sortOptions = ["createdAt"]
 
 export const defaultSort = NewSortInfo("createdAt", "desc")
 export const defaultPage = NewPageInfo(1, 20)
-export const defaultFilter = { group: "", user: "", action: "", startAt: 0, endAT: 0 }
+export const defaultFilter = { user: "", action: "", startAt: 0, endAT: 0 }
 
-export class QueryActivityGroupInfo extends QueryInfo {
+export class QueryActivityConfigInfo extends QueryInfo {
   constructor(queryInfo: any) {
     super(queryInfo, ["keywords"], defaultPage, defaultSort, sortOptions, cloneDeep(defaultFilter))
-    this.filter.group = queryInfo["group"] ? queryInfo["group"] : defaultFilter.group
     this.filter.action = queryInfo["action"] ? queryInfo["action"] : defaultFilter.action
     this.filter.startAt = queryInfo["startAt"] ? Number(queryInfo["startAt"]).valueOf() : defaultFilter.startAt
     this.filter.endAT = queryInfo["endAT"] ? Number(queryInfo["endAT"]).valueOf() : defaultFilter.endAT
@@ -22,7 +21,6 @@ export class QueryActivityGroupInfo extends QueryInfo {
       query: Object.assign(
         {},
         {
-          group: this.filter.group || undefined,
           user: this.filter.user || undefined,
           startAt: this.filter.startAt || undefined,
           endAt: this.filter.endAt || undefined,

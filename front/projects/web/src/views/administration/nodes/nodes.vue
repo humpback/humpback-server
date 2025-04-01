@@ -207,7 +207,9 @@ onMounted(() => search())
 
 <style lang="scss" scoped>
 .custom-column {
-  min-height: 60px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
 }
 
 .status {
@@ -238,6 +240,7 @@ onMounted(() => search())
     width: 120px;
     text-align: right;
     padding-right: 20px;
+    padding-top: 8px;
   }
 }
 </style>

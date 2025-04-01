@@ -24,15 +24,19 @@ const teams = defineModel<string[]>()
 const teamList = ref<TeamInfo[]>([])
 const selectOptions = computed(() => map(props.options || teamList.value, x => ({ label: x.name, value: x.teamId })))
 
-onMounted(() => {
+async function getTeams() {
+  isLoading.value = true
+  return await teamService
+    .list()
+    .then(res => {
+      teamList.value = res
+    })
+    .finally(() => (isLoading.value = false))
+}
+
+onMounted(async () => {
   if (!props.options) {
-    isLoading.value = true
-    teamService
-      .list()
-      .then(res => {
-        teamList.value = res
-      })
-      .finally(() => (isLoading.value = false))
+    await getTeams()
   }
 })
 </script>
@@ -48,7 +52,7 @@ onMounted(() => {
     <template v-if="isLoading" #prefix>
       <el-button :loading="isLoading" link />
     </template>
-    <template v-if="userStore.isAdmin || userStore.isSupperAdmin" #footer>
+    <template v-if="userStore.isAdmin" #footer>
       <div class="text-align-right">
         <el-link href="/ws/user-related/teams" target="_blank" type="primary">
           <strong>{{ t("btn.goToAddTeam") }}</strong>

@@ -151,7 +151,8 @@ function parseCpuOption(container: ServiceContainerStatusInfo, info: ContainerPe
   const containerIndex = findIndex(cpuOptions.value?.series || [], (x: any) => x.name === container.containerName)
   const data = containerIndex !== -1 ? cpuOptions.value?.series[containerIndex].data : []
   for (let i = data.length; i < titleIndex; i++) {
-    data[i] = i + 1 === titleIndex ? info.stats?.cpuPercent : 0
+    const cpuPercent = info.stats?.cpuPercent || 0
+    data[i] = i + 1 === titleIndex ? cpuPercent : 0
   }
   if (containerIndex !== -1) {
     cpuOptions.value!.series[containerIndex].data = data
@@ -170,7 +171,8 @@ function parseMemoryOptions(container: ServiceContainerStatusInfo, info: Contain
   const containerIndex = findIndex(memoryOptions.value?.series || [], (x: any) => x.name === container.containerName)
   const data = containerIndex !== -1 ? memoryOptions.value?.series[containerIndex].data : []
   for (let i = data.length; i < titleIndex; i++) {
-    data[i] = i + 1 === titleIndex ? (info.stats!.memoryUsed / 1024 / 1024).toFixed(2) : 0
+    const memoryUsed = (info.stats!.memoryUsed / 1024 / 1024).toFixed(2) || 0
+    data[i] = i + 1 === titleIndex ? memoryUsed : 0
   }
   if (containerIndex !== -1) {
     memoryOptions.value!.series[containerIndex].data = data
@@ -184,7 +186,9 @@ function parseMemoryOptions(container: ServiceContainerStatusInfo, info: Contain
 }
 
 function parseNetworkOptions(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
-  networkOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
+  if (info.stats?.networks && info.stats?.networks.length > 0) {
+    networkOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
+  }
   const titleIndex = networkOptions.value.xAxis?.[0].data.length || 0
   map(info.stats?.networks, network => {
     const containerReadName = `${container.containerName} - ${network.name} - RX`

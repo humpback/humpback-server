@@ -1,44 +1,35 @@
 <script lang="ts" setup>
-import { GroupInfo } from "@/types"
+import { UserInfo } from "@/types"
 import { map } from "lodash-es"
 
 const props = withDefaults(
   defineProps<{
-    options?: GroupInfo[]
+    options?: UserInfo[]
     filterable?: boolean
+    multiple?: boolean
     placeholder?: string
     showOutLabel?: boolean
-    size?: "small" | "default" | "large"
-    clearable?: boolean
-    modelValue?: string
     outLabelWidth?: string
+    outLabel?: string
+    size?: "small" | "default" | "large"
+    showFooter?: boolean
+    clearable?: boolean
   }>(),
   {
     filterable: true,
+    multiple: true,
     placeholder: "",
-    clearable: true,
     outLabelWidth: "80px"
   }
 )
 
-const emits = defineEmits<{
-  (e: "update:modelValue", v: string): void
-  (e: "change"): void
-}>()
-
 const { t } = useI18n()
+const userStore = useUserStore()
 
 const isLoading = ref(false)
-const group = computed({
-  get() {
-    return props.modelValue || ""
-  },
-  set(v: any) {
-    emits("update:modelValue", v || "")
-  }
-})
-const groupList = ref<GroupInfo[]>([])
-const selectOptions = computed(() => map(props.options || groupList.value, x => ({ label: x.groupName, value: x.groupId })))
+const users = defineModel<string[] | string>()
+const userList = ref<UserInfo[]>([])
+const selectOptions = computed(() => map(props.options || userList.value, x => ({ label: x.username, value: x.userId })))
 
 const labelClass = computed(() => {
   switch (props.size) {
@@ -51,35 +42,44 @@ const labelClass = computed(() => {
   }
 })
 
-async function getGroups() {
+async function getUsers() {
   isLoading.value = true
-  return await groupService
+  return await userService
     .list()
-    .then(list => (groupList.value = list))
+    .then(res => {
+      userList.value = res
+    })
     .finally(() => (isLoading.value = false))
 }
 
 onMounted(async () => {
   if (!props.options) {
-    await getGroups()
+    await getUsers()
   }
 })
 </script>
 
 <template>
   <div class="select-box">
-    <div v-if="props.showOutLabel" :class="labelClass" :style="{ width: props.outLabelWidth }">{{ t("label.group") }}</div>
+    <div v-if="props.showOutLabel" :class="labelClass" :style="{ width: props.outLabelWidth }">{{ props.outLabel || t("label.user") }}</div>
     <el-select-v2
-      v-model="group"
+      v-model="users"
       :clearable="props.clearable"
       :filterable="props.filterable"
       :loading-text="t('message.loading')"
+      :multiple="props.multiple"
       :options="selectOptions"
       :placeholder="props.placeholder"
-      :size="props.size"
-      @change="emits('change')">
+      :size="props.size">
       <template v-if="isLoading" #prefix>
         <el-button :loading="isLoading" link />
+      </template>
+      <template v-if="userStore.isAdmin && props.showFooter" #footer>
+        <div class="text-align-right">
+          <el-link href="/ws/user-related/users" target="_blank" type="primary">
+            <strong>{{ t("btn.goToAddUser") }}</strong>
+          </el-link>
+        </div>
       </template>
     </el-select-v2>
   </div>

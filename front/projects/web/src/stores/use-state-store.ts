@@ -1,4 +1,4 @@
-import { cloneDeep } from "lodash-es"
+import { cloneDeep, sortBy } from "lodash-es"
 import { GroupInfo, NodeInfo } from "@/types"
 import { PageGroupDetail, SessionStorageCurrentGroupId } from "@/models"
 
@@ -31,9 +31,9 @@ export default defineStore("state", () => {
       Object.assign({}, NewGroupEmptyInfo(), {
         groupId: id,
         total: { services: 0, nodes: 0 },
-        nodeList: nodeList
+        nodeList: sortBy(nodeList, ["ipAddress"])
       })
-    groupInfo.nodeList = nodeList
+    groupInfo.nodeList = sortBy(nodeList, ["ipAddress"])
     groups.value[id] = groupInfo
   }
 

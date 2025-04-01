@@ -309,6 +309,7 @@ onMounted(async () => {
 
 :deep(.hide-expand-icon) {
   .expand-column .cell {
+    padding-top: 4px;
     display: none;
   }
 }

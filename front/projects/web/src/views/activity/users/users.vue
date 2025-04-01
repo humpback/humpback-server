@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { QueryActivityServiceInfo } from "./common.ts"
+import { QueryActivityUserInfo } from "./common.ts"
 import { TableHeight } from "@/utils"
 
 const { t } = useI18n()
@@ -9,7 +9,7 @@ const userStore = useUserStore()
 const tableHeight = computed(() => TableHeight(346))
 
 const isLoading = ref(false)
-const filterInfo = ref<QueryActivityServiceInfo>(new QueryActivityServiceInfo(route.params))
+const filterInfo = ref<QueryActivityUserInfo>(new QueryActivityUserInfo(route.params))
 
 const tableList = ref({
   total: 0,
@@ -37,10 +37,7 @@ function search() {}
       time-format="HH:mm"
       @change="search()" />
     <div style="width: 280px">
-      <v-group-select v-model="filterInfo.filter.group" :placeholder="t('placeholder.all')" show-out-label />
-    </div>
-    <div style="width: 280px">
-      <v-activity-action-select v-model="filterInfo.filter.action" mode="service" show-out-label />
+      <v-activity-action-select v-model="filterInfo.filter.action" mode="user" show-out-label />
     </div>
     <div v-if="userStore.isAdmin" style="width: 280px">
       <v-users-select v-model="filterInfo.filter.user" :multiple="false" :out-label="t('label.operator')" clearable show-out-label />
@@ -76,14 +73,9 @@ function search() {}
         </div>
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.group')" min-width="140" prop="group">
+    <el-table-column :label="t('label.user')" min-width="140" prop="config">
       <template #default="scope">
-        <v-table-column-none :text="scope.row.group" />
-      </template>
-    </el-table-column>
-    <el-table-column :label="t('label.service')" min-width="140" prop="service">
-      <template #default="scope">
-        <v-table-column-none :text="scope.row.service" />
+        <v-table-column-none :text="scope.row.config" />
       </template>
     </el-table-column>
     <el-table-column :label="t('label.action')" min-width="140" prop="action">
