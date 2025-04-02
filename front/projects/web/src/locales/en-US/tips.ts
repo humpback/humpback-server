@@ -42,6 +42,14 @@ export default {
     "setManualExecTips":
       "This option is in manual execution mode, after enabling the service, you need to start the service manually, and the program will not resume running after exiting; Conversely, the service will start immediately after it is enabled, and the scheduler will keep trying to restart the service if the program exits.",
     "timeoutTips": "If the program is executed beyond the set time, the program will be forcibly killed.",
+    "morningBeforeTips": "{name}, it's late, let's get some rest early!",
+    "breakfastTips": "Good morning, {name}, and start your day!",
+    "morningTips": "Hello, {name}, a new day has begun, come on!",
+    "middayTips": "{name}, it's been a busy morning, take a break!",
+    "afternoonTips": "Good afternoon, {name}, hold on a little longer, it's almost time for the end of the day!",
+    "eveningTips": "Good evening, {name}, the day's work is almost over, hard work!",
+    "eveningAfterTips": "Good evening, {name}, take care of your rest, don't go to bed too late!",
+    "thankUseTips": "Thank you for using!",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",

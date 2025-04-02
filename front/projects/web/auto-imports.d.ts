@@ -28,6 +28,13 @@ declare global {
   const IconMdiTextBoxOutline: typeof import('~icons/mdi/text-box-outline')['default']
   const IconMdiUserOutline: typeof import('~icons/mdi/user-outline')['default']
   const IconMdiViewDashboard: typeof import('~icons/mdi/view-dashboard')['default']
+  const IconNotoGrinningFace: typeof import('~icons/noto/grinning-face')['default']
+  const IconNotoMeltingFace: typeof import('~icons/noto/melting-face')['default']
+  const IconNotoSalutingFace: typeof import('~icons/noto/saluting-face')['default']
+  const IconNotoSleepingFace: typeof import('~icons/noto/sleeping-face')['default']
+  const IconNotoSmilingFaceWithSunglasses: typeof import('~icons/noto/smiling-face-with-sunglasses')['default']
+  const IconNotoWinkingFace: typeof import('~icons/noto/winking-face')['default']
+  const IconNotoYawningFace: typeof import('~icons/noto/yawning-face')['default']
   const IncludesIgnoreCase: typeof import('./src/utils/common')['IncludesIgnoreCase']
   const IsAdmin: typeof import('./src/utils/common')['IsAdmin']
   const IsEmpty: typeof import('./src/utils/rule')['IsEmpty']
@@ -479,6 +486,13 @@ declare module 'vue' {
     readonly IconMdiTextBoxOutline: UnwrapRef<typeof import('~icons/mdi/text-box-outline')['default']>
     readonly IconMdiUserOutline: UnwrapRef<typeof import('~icons/mdi/user-outline')['default']>
     readonly IconMdiViewDashboard: UnwrapRef<typeof import('~icons/mdi/view-dashboard')['default']>
+    readonly IconNotoGrinningFace: UnwrapRef<typeof import('~icons/noto/grinning-face')['default']>
+    readonly IconNotoMeltingFace: UnwrapRef<typeof import('~icons/noto/melting-face')['default']>
+    readonly IconNotoSalutingFace: UnwrapRef<typeof import('~icons/noto/saluting-face')['default']>
+    readonly IconNotoSleepingFace: UnwrapRef<typeof import('~icons/noto/sleeping-face')['default']>
+    readonly IconNotoSmilingFaceWithSunglasses: UnwrapRef<typeof import('~icons/noto/smiling-face-with-sunglasses')['default']>
+    readonly IconNotoWinkingFace: UnwrapRef<typeof import('~icons/noto/winking-face')['default']>
+    readonly IconNotoYawningFace: UnwrapRef<typeof import('~icons/noto/yawning-face')['default']>
     readonly IncludesIgnoreCase: UnwrapRef<typeof import('./src/utils/common')['IncludesIgnoreCase']>
     readonly IsAdmin: UnwrapRef<typeof import('./src/utils/common')['IsAdmin']>
     readonly IsEmpty: UnwrapRef<typeof import('./src/utils/rule')['IsEmpty']>

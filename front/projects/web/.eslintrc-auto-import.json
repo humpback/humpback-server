@@ -444,6 +444,16 @@
     "IconMdiPlay": true,
     "IconMdiRestart": true,
     "IconMdiSquare": true,
-    "IconMdiStopCircleOutline": true
+    "IconMdiStopCircleOutline": true,
+    "IconNotoAstonishedFace": true,
+    "IconNotoBeamingFaceWithSmilingEyes": true,
+    "IconNotoYawningFace": true,
+    "IconNotoWinkingFace": true,
+    "IconNotoTiredFace": true,
+    "IconNotoSleepingFace": true,
+    "IconNotoSmilingFaceWithSunglasses": true,
+    "IconNotoSalutingFace": true,
+    "IconNotoGrinningFace": true,
+    "IconNotoMeltingFace": true
   }
 }

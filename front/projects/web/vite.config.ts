@@ -77,7 +77,7 @@ export default defineConfig({
         }),
         IconsResolver({
           prefix: "icon",
-          enabledCollections: ["mdi"]
+          enabledCollections: ["mdi", "noto"]
         })
       ],
       //为eslint检查生成.eslintrc-auto-import.json文件
@@ -109,7 +109,7 @@ export default defineConfig({
         }),
         IconsResolver({
           prefix: "icon",
-          enabledCollections: ["mdi"]
+          enabledCollections: ["mdi", "noto"]
         })
       ]
     }),

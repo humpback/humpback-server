@@ -40,6 +40,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.23.0",
     "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/noto": "^1.2.3",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.13.14",
     "@types/nprogress": "^0.2.3",
