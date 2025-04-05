@@ -55,6 +55,13 @@ const rules = ref<FormRules>({
   hostPort: [{ required: true, validator: checkHostPort, trigger: "blur" }]
 })
 
+const imageDomainExist = computed(() => {
+  if (registryStore.registries?.length > 0) {
+    return !!find(registryStore.registries, x => x.url === metaInfo.value.imageDomain)
+  }
+  return true
+})
+
 function checkImage(rule: any, value: any, callback: any) {
   const image = value as string
   const list = image.split(":")
@@ -201,7 +208,7 @@ async function search(init?: boolean) {
 }
 
 async function save() {
-  if (!(await validate())) {
+  if (!(await validate()) || !imageDomainExist.value) {
     return
   }
   isAction.value = true
@@ -209,7 +216,7 @@ async function save() {
     .update(groupId.value, {
       type: "application",
       serviceId: serviceId.value,
-      data: ParseMetaInfo(metaInfo.value)
+      data: ParseMetaInfo(metaInfo.value, registryStore.registries)
     })
     .finally(() => (isAction.value = false))
   ShowSuccessMsg(t("message.saveSuccess"))
@@ -238,12 +245,15 @@ onMounted(async () => {
                 </div>
                 <template #dropdown>
                   <el-dropdown-menu>
-                    <el-dropdown-item v-for="item in registryStore.registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
+                    <el-dropdown-item v-for="item in registryStore.registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
           </v-input>
+          <div v-if="!imageDomainExist" class="mt-3 w-100">
+            <v-alert type="error">{{ t("rules.notExistRegistry") }}</v-alert>
+          </div>
         </el-form-item>
       </el-col>
       <el-col :span="24">
@@ -292,7 +302,7 @@ onMounted(async () => {
         <el-form-item :label="t('label.hostname')" prop="network.hostname">
           <v-input v-model="metaInfo.network!.hostname" :disabled="metaInfo.network!.useMachineHostname">
             <template #prepend>
-              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
+              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
             </template>
           </v-input>
         </el-form-item>

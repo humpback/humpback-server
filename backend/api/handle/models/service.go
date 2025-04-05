@@ -224,6 +224,9 @@ func (s *ServiceUpdateReqInfo) checkMetaInfo() error {
 	if err := verify.CheckIsEmpty(info.Image, locales.CodeServiceImageNotEmpty); err != nil {
 		return err
 	}
+	if err := verify.CheckIsEmpty(info.RegistryId, locales.CodeRegistryIdNotEmpty); err != nil {
+		return err
+	}
 	if err := verify.CheckRequiredAndLengthLimit(info.Image, enum.LimitImageName.Min, enum.LimitImageName.Max, locales.CodeServiceImageNotEmpty, locales.CodeServiceImageLimitLength); err != nil {
 		return err
 	}

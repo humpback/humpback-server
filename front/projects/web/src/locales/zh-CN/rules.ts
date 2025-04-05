@@ -15,6 +15,7 @@ export default {
     "duplicateLabelKey": "重复的标签名称",
     "duplicate": "重复的",
     "formatErrCron": "无效的cron",
-    "formatErrTimeout": "超时时间无效"
+    "formatErrTimeout": "超时时间无效",
+    "notExistRegistry": "仓库已经不存在，请重新选择！"
   }
 }

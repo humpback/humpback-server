@@ -15,6 +15,7 @@ export default {
     "duplicateLabelKey": "Duplicate label key",
     "duplicate": "Duplicate",
     "formatErrCron": "Invalid cron",
-    "formatErrTimeout": "Invalid timeout text"
+    "formatErrTimeout": "Invalid timeout text",
+    "notExistRegistry": "The registry no longer exists, please select a new one!"
   }
 }

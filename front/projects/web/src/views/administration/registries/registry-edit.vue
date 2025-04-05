@@ -5,6 +5,7 @@ import { FormInstance, FormRules } from "element-plus"
 import { RulePleaseEnter } from "@/utils"
 import { RuleLength } from "@/models"
 import { RSAEncrypt } from "utils/rsa.ts"
+import { isDefaultRegistry } from "@/views/administration/registries/common.ts"
 
 const emits = defineEmits<{
   (e: "refresh"): void
@@ -95,15 +96,30 @@ defineExpose({ open })
       <el-form ref="formRef" :model="dialogInfo.info" :rules="rules" label-position="top" label-width="auto">
         <el-form-item :label="t('label.url')" prop="url">
           <div class="d-flex gap-3 w-100">
-            <v-input v-model="dialogInfo.info.url" :maxlength="RuleLength.RegistryUrl.Max" clearable show-word-limit @blur="clearTail()" />
+            <v-input
+              v-model="dialogInfo.info.url"
+              :disabled="isDefaultRegistry(dialogInfo.info.url)"
+              :maxlength="RuleLength.RegistryUrl.Max"
+              clearable
+              show-word-limit
+              @blur="clearTail()" />
             <el-checkbox v-model="dialogInfo.info.isDefault" :label="t('label.isDefault')" border class="default-class" />
           </div>
         </el-form-item>
         <el-form-item :label="t('label.username')" prop="username">
-          <v-input v-model="dialogInfo.info.username" :maxlength="RuleLength.RegistryUsername.Max" clearable show-word-limit />
+          <v-input
+            v-model="dialogInfo.info.username"
+            :disabled="isDefaultRegistry(dialogInfo.info.url)"
+            :maxlength="RuleLength.RegistryUsername.Max"
+            clearable
+            show-word-limit />
         </el-form-item>
         <el-form-item :label="t('label.password')" prop="password">
-          <v-password-input v-model="dialogInfo.info.password" :maxlength="RuleLength.RegistryPassword.Max" :minlength="0" />
+          <v-password-input
+            v-model="dialogInfo.info.password"
+            :disabled="isDefaultRegistry(dialogInfo.info.url)"
+            :maxlength="RuleLength.RegistryPassword.Max"
+            :minlength="0" />
         </el-form-item>
       </el-form>
     </div>
