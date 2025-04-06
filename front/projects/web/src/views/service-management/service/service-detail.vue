@@ -5,12 +5,12 @@ import Deployment from "./deployment/deployment.vue"
 import Instances from "./instance/instances.vue"
 import Log from "./log/log.vue"
 import Performance from "./performance/performance.vue"
+import Activity from "./activity/activity.vue"
 import ServiceDelete from "./action/service-delete.vue"
 import ServiceClone from "./action/servcie-clone.vue"
 import { shallowRef } from "vue"
 import { find, toLower } from "lodash-es"
 import { ActionOptions, InjectKeyChangeTab, InjectKeyIsLoading, InjectKeyResetLoopSearch, refreshData, showAction } from "./common.ts"
-import VLoading from "@/components/business/v-loading/VLoading.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -81,6 +81,12 @@ const menuOptions = ref<any[]>([
     value: PageServiceDetail.Performance,
     isRequired: false,
     component: shallowRef(Performance)
+  },
+  {
+    i18nLabel: "label.activities",
+    value: PageServiceDetail.Activity,
+    isRequired: false,
+    component: shallowRef(Activity)
   }
 ])
 

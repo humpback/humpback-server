@@ -33,6 +33,9 @@ export default {
     "deleteService": "删除服务",
     "cloneService": "克隆服务",
     "addSchedule": "添加定时任务",
-    "editSchedule": "编辑定时任务"
+    "editSchedule": "编辑定时任务",
+    "groups": "分组",
+    "configs": "配置",
+    "registries": "仓库"
   }
 }

@@ -6,7 +6,7 @@ export default defineStore("user", () => {
 
   const isLogged = computed(() => !!userInfo.value.userId)
   const userRole = computed(() => GetUserRole(userInfo.value.role))
-  const isAdmin = computed(() => IsAdmin(userInfo.value.role))
+  const isAdmin = computed(() => IsAdmin(userInfo.value.role) || IsSupperAdmin(userInfo.value.role))
   const isSupperAdmin = computed(() => IsSupperAdmin(userInfo.value.role))
   const isUser = computed(() => IsUser(userInfo.value.role))
 

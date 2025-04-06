@@ -24,8 +24,6 @@ const tableList = ref({
 const editRef = useTemplateRef<InstanceType<typeof GroupEdit>>("editRef")
 const deleteRef = useTemplateRef<InstanceType<typeof GroupDelete>>("deleteRef")
 
-const isAdmin = computed(() => userStore.isAdmin || userStore.isSupperAdmin)
-
 async function search() {
   await router.replace(queryInfo.value.urlQuery())
   isLoading.value = true
@@ -60,7 +58,7 @@ onMounted(() => search())
 
       <v-search
         v-model="queryInfo.keywords"
-        :add-label="isAdmin ? t('btn.addGroup') : undefined"
+        :add-label="userStore.isAdmin ? t('btn.addGroup') : undefined"
         :input-label="t('label.name')"
         @add="openAction(Action.Add)"
         @search="search" />

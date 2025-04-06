@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"humpback/internal/db"
 	"humpback/pkg/httpx"
 	"humpback/pkg/utils"
 	"humpback/types"
@@ -54,6 +55,18 @@ func StartNewContainer(nodeId, containerName string, svc *types.Service) error {
 			ServiceMetaDocker: svc.Meta,
 			ScheduleInfo:      svc.Deployment.Schedule,
 		}
+
+		if svc.Meta.RegistryId != "" {
+			registry, _ := db.RegistryGetById(svc.Meta.RegistryId)
+			if registry != nil {
+				task.RegistryAuth = types.RegistryAuth{
+					ServerAddress:    registry.URL,
+					RegistryUsername: registry.Username,
+					RegistryPassword: registry.Password,
+				}
+			}
+		}
+
 		utils.PrintJson(task)
 		url := fmt.Sprintf("http://%s:%d/api/v1/container", node.IpAddress, node.Port)
 		slog.Info("[Agent Helper] Create container", "url", url)

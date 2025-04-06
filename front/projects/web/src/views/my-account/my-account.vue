@@ -4,12 +4,21 @@ import { RuleFormatErrEmailOption, RuleFormatErrPhone, RulePleaseEnter } from "@
 import { RuleLength } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
 import { cloneDeep } from "lodash-es"
+import { QueryInfo } from "@/types"
 
 const { t } = useI18n()
 const userStore = useUserStore()
 
 const loading = ref(false)
+const isLoadingActivities = ref(false)
 const userInfo = ref<UserInfo>(NewUserEmptyInfo())
+
+const queryUserActivityInfo = ref<QueryInfo>(new QueryInfo({}, ["keywords"], { size: 10, index: 1 }, { field: "", order: "desc" }))
+const activities = ref({
+  total: 0,
+  data: [] as Array<any>
+})
+
 const tableRef = useTemplateRef<FormInstance>("tableRef")
 
 const rules = ref<FormRules>({
@@ -40,6 +49,8 @@ async function getUserInfo() {
       loading.value = false
     })
 }
+
+async function getUserActivities() {}
 
 async function save() {
   if (!(await tableRef.value?.validate())) {
@@ -110,6 +121,29 @@ onMounted(async () => {
         </el-col>
       </el-row>
     </el-form>
+  </v-card>
+
+  <v-card v-loading="isLoadingActivities" class="mt-5">
+    <div class="d-flex gap-1">
+      <div class="f-bold">
+        {{ t("label.activities") }}
+      </div>
+      <el-button :title="t('label.refresh')" link type="primary">
+        <el-icon :size="20">
+          <IconMdiRefresh />
+        </el-icon>
+      </el-button>
+    </div>
+    <v-table
+      :data="activities.data"
+      :page-info="queryUserActivityInfo.pageInfo"
+      :show-header="false"
+      :total="activities.total"
+      @page-change="getUserActivities()">
+      <el-table-column>
+        <template #default></template>
+      </el-table-column>
+    </v-table>
   </v-card>
 </template>
 

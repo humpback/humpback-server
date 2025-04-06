@@ -34,14 +34,7 @@ function change() {
 </script>
 
 <template>
-  <v-select
-    v-model="role"
-    :clearable="props.clearable"
-    :out-label="t('label.role')"
-    :placeholder="props.placeholder"
-    out-label-width="80px"
-    show-out-label
-    @change="change()">
+  <v-select v-model="role" :clearable="props.clearable" :out-label="t('label.role')" :placeholder="props.placeholder" out-label-width="80px" @change="change()">
     <el-option :label="t('label.all')" :value="0" />
     <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value" />
   </v-select>

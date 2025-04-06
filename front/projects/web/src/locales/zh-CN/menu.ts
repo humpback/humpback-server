@@ -10,6 +10,7 @@ export default {
     "help": "帮助",
     "myAccount": "我的账户",
     "logout": "退出登录",
+    "activities": "操作记录",
     header: {
       "dashboard": "仪表板",
       "serviceManagement": "服务管理",
@@ -19,7 +20,8 @@ export default {
       "configs": "配置",
       "help": "帮助",
       "myAccount": "我的账户",
-      "groups": "分组"
+      "groups": "分组",
+      "activities": "操作记录"
     }
   },
   webTitle: {
@@ -37,6 +39,7 @@ export default {
     "groups": "分组",
     "services": "服务",
     "serviceInfo": "服务信息",
-    "serviceCreate": "创建服务"
+    "serviceCreate": "创建服务",
+    "activities": "操作记录"
   }
 }

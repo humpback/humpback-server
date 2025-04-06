@@ -7,7 +7,7 @@ import { CanvasRenderer } from "echarts/renderers"
 import { SetWebTitle, TimestampToTime } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
 import { ContainerPerformance, ServiceInfo } from "@/types"
-import { filter, find, findIndex, map } from "lodash-es"
+import { filter, find, findIndex, map, toLower } from "lodash-es"
 
 echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer, UniversalTransition])
 
@@ -151,7 +151,8 @@ function parseCpuOption(container: ServiceContainerStatusInfo, info: ContainerPe
   const containerIndex = findIndex(cpuOptions.value?.series || [], (x: any) => x.name === container.containerName)
   const data = containerIndex !== -1 ? cpuOptions.value?.series[containerIndex].data : []
   for (let i = data.length; i < titleIndex; i++) {
-    data[i] = i + 1 === titleIndex ? info.stats?.cpuPercent : 0
+    const cpuPercent = info.stats?.cpuPercent || 0
+    data[i] = i + 1 === titleIndex ? cpuPercent : 0
   }
   if (containerIndex !== -1) {
     cpuOptions.value!.series[containerIndex].data = data
@@ -170,7 +171,8 @@ function parseMemoryOptions(container: ServiceContainerStatusInfo, info: Contain
   const containerIndex = findIndex(memoryOptions.value?.series || [], (x: any) => x.name === container.containerName)
   const data = containerIndex !== -1 ? memoryOptions.value?.series[containerIndex].data : []
   for (let i = data.length; i < titleIndex; i++) {
-    data[i] = i + 1 === titleIndex ? (info.stats!.memoryUsed / 1024 / 1024).toFixed(2) : 0
+    const memoryUsed = (info.stats!.memoryUsed / 1024 / 1024).toFixed(2) || 0
+    data[i] = i + 1 === titleIndex ? memoryUsed : 0
   }
   if (containerIndex !== -1) {
     memoryOptions.value!.series[containerIndex].data = data
@@ -184,7 +186,9 @@ function parseMemoryOptions(container: ServiceContainerStatusInfo, info: Contain
 }
 
 function parseNetworkOptions(container: ServiceContainerStatusInfo, info: ContainerPerformance) {
-  networkOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
+  if (info.stats?.networks && info.stats?.networks.length > 0) {
+    networkOptions.value.xAxis?.[0].data.push(TimestampToTime(info.stats?.statsAt, 2))
+  }
   const titleIndex = networkOptions.value.xAxis?.[0].data.length || 0
   map(info.stats?.networks, network => {
     const containerReadName = `${container.containerName} - ${network.name} - RX`
@@ -281,7 +285,10 @@ function parseStatsToChart(statsList: ContainerPerformance[]) {
 }
 
 async function getPerformance() {
-  const validContainers = filter(serviceInfo.value?.containers || [], x => !!x.containerId)
+  const validContainers = filter(
+    serviceInfo.value?.containers || [],
+    x => !!x.containerId && toLower(x.state) === toLower(ContainerStatus.ContainerStatusRunning)
+  )
   const containers = map(validContainers, x => ({ nodeId: x.nodeId, containerId: x.containerId }))
   if (!containers?.length) {
     return
@@ -305,10 +312,10 @@ async function search() {
 }
 
 function resetChartData() {
-  cpuChart.setOption(cpuOptions.value)
-  memoryChart.setOption(memoryOptions.value)
-  networkChart.setOption(networkOptions.value)
-  ioChart.setOption(ioOptions.value)
+  cpuChart?.setOption(cpuOptions.value)
+  memoryChart?.setOption(memoryOptions.value)
+  networkChart?.setOption(networkOptions.value)
+  ioChart?.setOption(ioOptions.value)
 }
 
 onMounted(async () => {
@@ -325,11 +332,11 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener("resize", resize)
   cpuChart?.dispose()
   memoryChart?.dispose()
   networkChart?.dispose()
   ioChart?.dispose()
+  window.removeEventListener("resize", resize)
 
   if (timer.value) {
     clearTimeout(timer.value)

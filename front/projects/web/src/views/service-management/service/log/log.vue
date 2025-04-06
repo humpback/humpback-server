@@ -3,6 +3,7 @@ import { SetWebTitle } from "@/utils"
 import { refreshData } from "@/views/service-management/service/common.ts"
 import { RuleLength } from "@/models"
 import { filter, find, toLower } from "lodash-es"
+import VLogSearchTimeRange from "@/components/business/v-log/VLogSearchTimeRange.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -103,53 +104,51 @@ onMounted(async () => {
 </script>
 
 <template>
+  <div class="d-flex gap-3">
+    <div class="header-icon">
+      <el-icon :size="18">
+        <IconMdiFileDocumentOutline />
+      </el-icon>
+    </div>
+    <el-text class="f-bold" size="large">{{ t("label.instanceLogs") }}</el-text>
+  </div>
+
   <div v-loading="isLoading">
-    <div>
-      <div class="d-flex gap-3">
-        <div class="header-icon">
-          <el-icon :size="18">
-            <IconMdiFileDocumentOutline />
-          </el-icon>
-        </div>
-        <el-text class="f-bold" size="large">{{ t("label.instanceLogs") }}</el-text>
+    <div class="mt-3">
+      <v-tips>{{ t("tips.logsTips") }}</v-tips>
+    </div>
+    <div class="d-flex gap-3 flex-wrap mt-5">
+      <div class="flex-1" style="min-width: 460px">
+        <v-select v-model="searchInfo.instance" :out-label="t('label.instance')" out-label-width="100px" placeholder="" @change="getLogs()">
+          <el-option v-for="item in containers" :key="item.containerId" :label="item.containerName" :value="item.containerId" />
+        </v-select>
+      </div>
+      <div class="flex-1" style="min-width: 600px">
+        <v-log-search-time-range
+          v-model:end-time="searchInfo.endAt"
+          v-model:start-time="searchInfo.startAt"
+          :out-label="t('label.timeRange')"
+          out-label-width="120px"
+          show-out-label
+          @change="getLogs()" />
+      </div>
+      <div style="width: 200px">
+        <el-input
+          :max="RuleLength?.LogsLine?.Max"
+          :min="RuleLength?.LogsLine?.Min"
+          :model-value="searchInfo.line"
+          type="number"
+          @change="getLogs()"
+          @update:modelValue="handleLineChange">
+          <template #prepend>
+            <el-text>{{ t("label.lines") }}</el-text>
+          </template>
+        </el-input>
       </div>
 
-      <div class="mt-3">
-        <v-tips>{{ t("tips.logsTips") }}</v-tips>
-      </div>
-      <div class="d-flex gap-3 flex-wrap mt-5">
-        <div class="flex-1" style="min-width: 460px">
-          <v-select v-model="searchInfo.instance" :out-label="t('label.instance')" out-label-width="100px" placeholder="" show-out-label @change="getLogs()">
-            <el-option v-for="item in containers" :key="item.containerId" :label="item.containerName" :value="item.containerId" />
-          </v-select>
-        </div>
-        <div class="flex-1" style="min-width: 600px">
-          <v-log-search-time-range
-            v-model:end-time="searchInfo.endAt"
-            v-model:start-time="searchInfo.startAt"
-            :out-label="t('label.timeRange')"
-            out-label-width="120px"
-            show-out-label
-            @change="getLogs()" />
-        </div>
-        <div style="width: 200px">
-          <el-input
-            :max="RuleLength?.LogsLine?.Max"
-            :min="RuleLength?.LogsLine?.Min"
-            :model-value="searchInfo.line"
-            type="number"
-            @change="getLogs()"
-            @update:modelValue="handleLineChange">
-            <template #prepend>
-              <el-text>{{ t("label.lines") }}</el-text>
-            </template>
-          </el-input>
-        </div>
-
-        <el-button :disabled="isAction || !searchInfo.instance" plain type="primary" @click="getLogs()">
-          {{ t("btn.refresh") }}
-        </el-button>
-      </div>
+      <el-button :disabled="isAction || !searchInfo.instance" plain type="primary" @click="getLogs()">
+        {{ t("btn.refresh") }}
+      </el-button>
     </div>
 
     <div class="log-box">

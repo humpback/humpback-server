@@ -1,5 +1,6 @@
 export default {
   btn: {
+    "back": "后退",
     "login": "登录",
     "loggingIn": "正在登录...",
     "redirecting": "正在重定向...",
@@ -49,6 +50,7 @@ export default {
     "addOption": "添加选项",
     "addPlacementConstraint": "添加约束",
     "addSchedule": "添加定时任务",
-    "viewMonitor": "查看性能指标"
+    "viewMonitor": "查看性能指标",
+    "filter": "过滤"
   }
 }

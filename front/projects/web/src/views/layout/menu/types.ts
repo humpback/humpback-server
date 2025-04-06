@@ -1,5 +1,5 @@
 import { shallowRef } from "vue"
-import { PageUserRelated } from "@/models"
+import { PageActivity, PageUserRelated } from "@/models"
 
 export interface MenuInfo {
   icon: any
@@ -27,6 +27,11 @@ export const menuList: MenuInfo[] = [
   {
     icon: shallowRef(IconMdiTextBoxOutline),
     name: "configs"
+  },
+  {
+    icon: shallowRef(IconMdiAccountFileText),
+    name: "activities",
+    params: { mode: PageActivity.Groups }
   },
   {
     icon: shallowRef(IconMdiCogOutline),

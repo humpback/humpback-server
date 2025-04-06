@@ -16,6 +16,7 @@ declare global {
   const GenerateUUID: typeof import('./src/utils/rsa')['GenerateUUID']
   const GetUserRole: typeof import('./src/utils/common')['GetUserRole']
   const IconMdiAccount: typeof import('~icons/mdi/account')['default']
+  const IconMdiAccountFileText: typeof import('~icons/mdi/account-file-text')['default']
   const IconMdiAlphaCBoxOutline: typeof import('~icons/mdi/alpha-c-box-outline')['default']
   const IconMdiCogOutline: typeof import('~icons/mdi/cog-outline')['default']
   const IconMdiCompany: typeof import('~icons/mdi/company')['default']
@@ -27,6 +28,13 @@ declare global {
   const IconMdiTextBoxOutline: typeof import('~icons/mdi/text-box-outline')['default']
   const IconMdiUserOutline: typeof import('~icons/mdi/user-outline')['default']
   const IconMdiViewDashboard: typeof import('~icons/mdi/view-dashboard')['default']
+  const IconNotoGrinningFace: typeof import('~icons/noto/grinning-face')['default']
+  const IconNotoMeltingFace: typeof import('~icons/noto/melting-face')['default']
+  const IconNotoSalutingFace: typeof import('~icons/noto/saluting-face')['default']
+  const IconNotoSleepingFace: typeof import('~icons/noto/sleeping-face')['default']
+  const IconNotoSmilingFaceWithSunglasses: typeof import('~icons/noto/smiling-face-with-sunglasses')['default']
+  const IconNotoWinkingFace: typeof import('~icons/noto/winking-face')['default']
+  const IconNotoYawningFace: typeof import('~icons/noto/yawning-face')['default']
   const IncludesIgnoreCase: typeof import('./src/utils/common')['IncludesIgnoreCase']
   const IsAdmin: typeof import('./src/utils/common')['IsAdmin']
   const IsEmpty: typeof import('./src/utils/rule')['IsEmpty']
@@ -47,6 +55,7 @@ declare global {
   const NewUserEmptyInfo: typeof import('./src/types/user')['NewUserEmptyInfo']
   const NodeStatus: typeof import('./src/models/enum')['NodeStatus']
   const NodeSwitch: typeof import('./src/models/enum')['NodeSwitch']
+  const PageActivity: typeof import('./src/models/page')['PageActivity']
   const PageGroupDetail: typeof import('./src/models/page')['PageGroupDetail']
   const PageLimitRole: typeof import('./src/models/enum')['PageLimitRole']
   const PageServiceDetail: typeof import('./src/models/page')['PageServiceDetail']
@@ -422,7 +431,7 @@ declare global {
   export type { PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode, ContainerStatus, PageLimitRole, UserRole, ConfigType, SortType, NodeStatus, NodeSwitch, ServiceStatus, ServiceDeployMode, ServiceDeployType, ServicePlacementMode, ServiceNetworkMode, ServiceNetworkProtocol, ServiceVolumeType, ServiceRestartPolicyMode, ContainerStatus } from './src/models/enum'
   import('./src/models/enum')
   // @ts-ignore
-  export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageUserRelated, PageGroupDetail, PageServiceDetail } from './src/models/page'
+  export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageActivity, PageUserRelated, PageGroupDetail, PageServiceDetail, PageActivity } from './src/models/page'
   import('./src/models/page')
   // @ts-ignore
   export type { BaseInfo } from './src/types/base'
@@ -465,6 +474,7 @@ declare module 'vue' {
     readonly GenerateUUID: UnwrapRef<typeof import('./src/utils/rsa')['GenerateUUID']>
     readonly GetUserRole: UnwrapRef<typeof import('./src/utils/common')['GetUserRole']>
     readonly IconMdiAccount: UnwrapRef<typeof import('~icons/mdi/account')['default']>
+    readonly IconMdiAccountFileText: UnwrapRef<typeof import('~icons/mdi/account-file-text')['default']>
     readonly IconMdiAlphaCBoxOutline: UnwrapRef<typeof import('~icons/mdi/alpha-c-box-outline')['default']>
     readonly IconMdiCogOutline: UnwrapRef<typeof import('~icons/mdi/cog-outline')['default']>
     readonly IconMdiCompany: UnwrapRef<typeof import('~icons/mdi/company')['default']>
@@ -476,6 +486,13 @@ declare module 'vue' {
     readonly IconMdiTextBoxOutline: UnwrapRef<typeof import('~icons/mdi/text-box-outline')['default']>
     readonly IconMdiUserOutline: UnwrapRef<typeof import('~icons/mdi/user-outline')['default']>
     readonly IconMdiViewDashboard: UnwrapRef<typeof import('~icons/mdi/view-dashboard')['default']>
+    readonly IconNotoGrinningFace: UnwrapRef<typeof import('~icons/noto/grinning-face')['default']>
+    readonly IconNotoMeltingFace: UnwrapRef<typeof import('~icons/noto/melting-face')['default']>
+    readonly IconNotoSalutingFace: UnwrapRef<typeof import('~icons/noto/saluting-face')['default']>
+    readonly IconNotoSleepingFace: UnwrapRef<typeof import('~icons/noto/sleeping-face')['default']>
+    readonly IconNotoSmilingFaceWithSunglasses: UnwrapRef<typeof import('~icons/noto/smiling-face-with-sunglasses')['default']>
+    readonly IconNotoWinkingFace: UnwrapRef<typeof import('~icons/noto/winking-face')['default']>
+    readonly IconNotoYawningFace: UnwrapRef<typeof import('~icons/noto/yawning-face')['default']>
     readonly IncludesIgnoreCase: UnwrapRef<typeof import('./src/utils/common')['IncludesIgnoreCase']>
     readonly IsAdmin: UnwrapRef<typeof import('./src/utils/common')['IsAdmin']>
     readonly IsEmpty: UnwrapRef<typeof import('./src/utils/rule')['IsEmpty']>
@@ -496,6 +513,7 @@ declare module 'vue' {
     readonly NewUserEmptyInfo: UnwrapRef<typeof import('./src/types/user')['NewUserEmptyInfo']>
     readonly NodeStatus: UnwrapRef<typeof import('./src/models/enum')['NodeStatus']>
     readonly NodeSwitch: UnwrapRef<typeof import('./src/models/enum')['NodeSwitch']>
+    readonly PageActivity: UnwrapRef<typeof import('./src/models/page')['PageActivity']>
     readonly PageGroupDetail: UnwrapRef<typeof import('./src/models/page')['PageGroupDetail']>
     readonly PageLimitRole: UnwrapRef<typeof import('./src/models/enum')['PageLimitRole']>
     readonly PageServiceDetail: UnwrapRef<typeof import('./src/models/page')['PageServiceDetail']>

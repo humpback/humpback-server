@@ -1,5 +1,6 @@
 export default {
   btn: {
+    "back": "Back",
     "login": "Login",
     "loggingIn": "Logging in...",
     "redirecting": "Redirecting...",
@@ -49,6 +50,7 @@ export default {
     "addOption": "Add Option",
     "addPlacementConstraint": "Add Placement Constraint",
     "addSchedule": "Add Schedule",
-    "viewMonitor": "View Monitor"
+    "viewMonitor": "View Monitor",
+    "filter": "Filter"
   }
 }

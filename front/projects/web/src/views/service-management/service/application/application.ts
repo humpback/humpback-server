@@ -87,10 +87,12 @@ function parseImageInfo(registries: RegistryInfo[], image: string) {
   }
 }
 
-export function ParseMetaInfo(info: ServiceApplicationInfo): ServiceMetaDockerInfo {
+export function ParseMetaInfo(info: ServiceApplicationInfo, registryList: RegistryInfo[]): ServiceMetaDockerInfo {
+  const imageInfo = find(registryList, x => x.url === info.imageDomain)
   info.imageName = info.imageName.replace(/\/+/g, "/").replace(/^\/|\/$/g, "")
   return {
     image: `${info.imageDomain}/${info.imageName}`,
+    registryId: imageInfo?.registryId || "",
     alwaysPull: info.alwaysPull,
     command: info.command,
     envConfig: map(info.validEnv, x => `${x.name}=${x.value}`) || [],

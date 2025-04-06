@@ -33,8 +33,17 @@ export default {
     "noServiceFound": "未找到服务",
     "serviceInfoInComplete": "服务信息不完整",
     "setScheduleTips": "此选项为job模式，当设置cron后，程序将根据指定的时间规则运行。",
-    "setManualExecTips": "此选项为手动执行模式，程序退出后将不会恢复运行；反之，在程序退出后，调度器将一直尝试重启服务。",
+    "setManualExecTips":
+      "此选项为手动执行模式，启用服务后，需要手动启动服务，程序退出后将不会恢复运行；反之，启用服务后将立即启动服务，若程序退出后，调度器将一直尝试重启服务。",
     "timeoutTips": "若程序执行时间超过设定的时间，将强制杀死程序。",
+    "morningBeforeTips": "{name}，已经很晚了，早点休息吧！",
+    "breakfastTips": "早安，{name}，开始你一天的工作吧！",
+    "morningTips": "你好，{name}，新的一天已经开始，加油！",
+    "middayTips": "{name}，忙了一上午，适当休息一下吧！",
+    "afternoonTips": "下午好，{name}，再坚持一下，快到下班时间啦！",
+    "eveningTips": "晚上好，{name}，一天的工作快结束了，辛苦啦！",
+    "eveningAfterTips": "晚上好，{name}，注意休息，不要太晚睡！",
+    "thankUseTips": "感谢您的使用！",
 
     "AUDIT_CONTROL": "启用和禁用内核审计;更改审计过滤规则;检索审核状态和筛选规则。",
     "AUDIT_WRITE": "将记录写入内核审计日志。",

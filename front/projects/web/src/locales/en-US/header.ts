@@ -33,6 +33,9 @@ export default {
     "deleteService": "Delete Service",
     "cloneService": "Clone Service",
     "addSchedule": "Add Schedule",
-    "editSchedule": "Edit Schedule"
+    "editSchedule": "Edit Schedule",
+    "groups": "Groups",
+    "configs": "Configs",
+    "registries": "Registries"
   }
 }

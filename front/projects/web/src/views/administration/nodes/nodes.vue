@@ -82,7 +82,6 @@ onMounted(() => search())
               :placeholder="t('placeholder.all')"
               clearable
               out-label-width="80px"
-              show-out-label
               @change="search">
               <el-option v-for="(item, index) in statusOptions" :key="index" :label="t(item.label)" :value="item.value">
                 <el-text :type="item.type">{{ t(item.label) }}</el-text>
@@ -208,7 +207,9 @@ onMounted(() => search())
 
 <style lang="scss" scoped>
 .custom-column {
-  min-height: 60px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
 }
 
 .status {
@@ -239,6 +240,7 @@ onMounted(() => search())
     width: 120px;
     text-align: right;
     padding-right: 20px;
+    padding-top: 8px;
   }
 }
 </style>

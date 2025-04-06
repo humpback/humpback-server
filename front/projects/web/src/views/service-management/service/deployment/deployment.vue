@@ -2,7 +2,7 @@
 import { FormInstance, FormRules } from "element-plus"
 import { SetWebTitle } from "@/utils"
 import { PageGroupDetail, RuleLength } from "@/models"
-import { filter, map, toLower, uniq, uniqWith } from "lodash-es"
+import { filter, map, sortBy, toLower, uniq, uniqWith } from "lodash-es"
 import VCronInput from "@/components/business/v-corn/VCornInput.vue"
 import { NewValidDeploymentInfo, ParseDeploymentInfo, ServiceValidDeploymentInfo } from "./deployment.ts"
 import { refreshData } from "../common.ts"
@@ -202,11 +202,12 @@ onMounted(async () => {
               v-model="deploymentInfo.validPlacements[index].key"
               disabled />
 
-            <v-select v-else v-model="deploymentInfo.validPlacements[index].key" :out-label="t('label.label')" placeholder="" show-out-label>
+            <v-select v-else v-model="deploymentInfo.validPlacements[index].key" :out-label="t('label.label')" filterable placeholder="">
               <template v-if="deploymentInfo.validPlacements[index].mode === ServicePlacementMode.PlacementModeLabel">
                 <el-option
-                  v-for="item in uniq(
-                    filter(labelList, x => !deploymentInfo.validPlacements[index].value || x.value === deploymentInfo.validPlacements[index].value)
+                  v-for="item in sortBy(
+                    uniq(filter(labelList, x => !deploymentInfo.validPlacements[index].value || x.value === deploymentInfo.validPlacements[index].value)),
+                    ['key']
                   )"
                   :key="item.key"
                   :label="item.key"
@@ -226,11 +227,12 @@ onMounted(async () => {
           </el-form-item>
 
           <el-form-item :prop="`validPlacements.${index}.value`" :rules="rules.placementValue" class="flex-1">
-            <v-select v-model="deploymentInfo.validPlacements[index].value" :out-label="t('label.value')" placeholder="" show-out-label>
+            <v-select v-model="deploymentInfo.validPlacements[index].value" :out-label="t('label.value')" filterable placeholder="">
               <template v-if="deploymentInfo.validPlacements[index].mode === ServicePlacementMode.PlacementModeLabel">
                 <el-option
-                  v-for="item in uniq(
-                    filter(labelList, x => !deploymentInfo.validPlacements[index].key || x.key === deploymentInfo.validPlacements[index].key)
+                  v-for="item in sortBy(
+                    uniq(filter(labelList, x => !deploymentInfo.validPlacements[index].key || x.key === deploymentInfo.validPlacements[index].key)),
+                    ['value']
                   )"
                   :key="item.value"
                   :label="item.value"

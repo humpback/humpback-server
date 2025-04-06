@@ -7,6 +7,7 @@ type Props = Partial<
     pageInfo: PageInfo
     total: number
     sortInfo: SortInfo
+    pageLayout: string
   }
 >
 
@@ -49,7 +50,7 @@ const defaultSort = ref<Sort | undefined>(
 )
 
 const tableAttrs = computed(() => {
-  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total"]))
+  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total", "pageLayout"]))
   attrs.defaultSort = defaultSort.value
 
   return Object.keys(attrs).reduce((acc, key) => {
@@ -58,6 +59,13 @@ const tableAttrs = computed(() => {
     }
     return acc
   }, {})
+})
+
+const pageLayout = computed(() => {
+  if (props.pageLayout) {
+    return props.pageLayout
+  }
+  return pageStore.isSmallScreen ? "total, prev, pager, next" : "total, sizes, prev, pager, next"
 })
 
 function pageChangeEvent(index: number, size: number) {
@@ -114,7 +122,7 @@ defineExpose({ clearSelection, toggleRowExpansion })
       <el-pagination
         :background="true"
         :current-page="props.pageInfo.index"
-        :layout="pageStore.isSmallScreen ? 'total, prev, pager, next' : 'total, sizes, prev, pager, next'"
+        :layout="pageLayout"
         :page-size="props.pageInfo.size"
         :page-sizes="pageSizeOptions"
         :pager-count="pageStore.isSmallScreen ? 3 : 5"

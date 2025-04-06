@@ -109,11 +109,11 @@ defineExpose({ open })
           <v-description-input v-model="dialogInfo.info.description" />
         </el-form-item>
         <el-form-item :label="t('label.users')" prop="groups">
-          <v-users-option-select v-model="dialogInfo.info.users" :options="userOptions" />
+          <v-users-select v-model="dialogInfo.info.users" :options="userOptions" show-footer />
         </el-form-item>
         <el-col>
           <el-form-item :label="t('label.teams')" prop="teams">
-            <v-teams-option-select v-model="dialogInfo.info.teams" :options="teamOptions" />
+            <v-teams-select v-model="dialogInfo.info.teams" :options="teamOptions" />
           </el-form-item>
         </el-col>
       </el-form>

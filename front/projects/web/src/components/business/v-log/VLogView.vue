@@ -60,6 +60,7 @@ function copy() {
   background-color: #f5f5f5;
   padding: 8px 4px 4px 4px;
   border-radius: 8px;
+  box-sizing: border-box;
   height: 100%;
   display: flex;
   flex-direction: column;

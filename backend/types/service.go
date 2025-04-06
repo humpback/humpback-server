@@ -52,13 +52,20 @@ type Service struct {
 }
 
 type AgentTask struct {
-	ContainerName string `json:"containerName"`
-	ServiceName   string `json:"serviceName"`
-	ServiceId     string `json:"serviceId"`
-	GroupId       string `json:"groupId"`
-	ManualExec    bool   `json:"manualExec"`
+	ContainerName string       `json:"containerName"`
+	ServiceName   string       `json:"serviceName"`
+	ServiceId     string       `json:"serviceId"`
+	GroupId       string       `json:"groupId"`
+	ManualExec    bool         `json:"manualExec"`
+	RegistryAuth  RegistryAuth `json:"registryAuth"`
 	*ServiceMetaDocker
 	*ScheduleInfo
+}
+
+type RegistryAuth struct {
+	ServerAddress    string `json:"serverAddress"`
+	RegistryUsername string `json:"registryUsername"`
+	RegistryPassword string `json:"registryPassword"`
 }
 
 type MountInfo struct {
@@ -138,6 +145,7 @@ type ScheduleInfo struct {
 
 type ServiceMetaDocker struct {
 	Image         string            `json:"image"`
+	RegistryId    string            `json:"registryId"`
 	AlwaysPull    bool              `json:"alwaysPull"`
 	Command       string            `json:"command"`
 	EnvConfig     []string          `json:"envConfig"`

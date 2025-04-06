@@ -241,13 +241,16 @@ onMounted(async () => {
         <v-table-column-none :text="scope.row.meta?.image" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.deployMode')" min-width="200">
+    <el-table-column :label="t('label.deployMode')" min-width="220">
       <template #default="scope">
-        <div v-if="scope.row.deployment">
-          <el-text>{{ capitalize(scope.row.deployment.mode) }}</el-text>
-          <el-text v-if="scope.row.deployment.mode === ServiceDeployMode.DeployModeReplicate" type="primary">
-            {{ ` (${scope.row.deployment.replicas})` }}
-          </el-text>
+        <div v-if="scope.row.deployment" class="d-flex gap-2">
+          <div>
+            <el-text>{{ capitalize(scope.row.deployment.mode) }}</el-text>
+            <el-text v-if="scope.row.deployment.mode === ServiceDeployMode.DeployModeReplicate" type="primary">
+              {{ ` (${scope.row.deployment.replicas})` }}
+            </el-text>
+          </div>
+          <v-service-instance-status-statistics v-if="scope.row.isEnabled" :info="scope.row" />
         </div>
         <span v-else>--</span>
       </template>
@@ -306,6 +309,7 @@ onMounted(async () => {
 
 :deep(.hide-expand-icon) {
   .expand-column .cell {
+    padding-top: 4px;
     display: none;
   }
 }

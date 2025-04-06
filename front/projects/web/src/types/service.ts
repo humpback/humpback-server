@@ -20,6 +20,7 @@ export interface ServiceInfo extends BaseInfo {
 
 export interface ServiceMetaDockerInfo {
   image: string
+  registryId: string
   alwaysPull: boolean
   command: string
   envConfig: string[]
@@ -141,6 +142,7 @@ export function NewServiceEmptyInfo(): ServiceInfo {
 export function NewServiceMetaDockerEmptyInfo(): ServiceMetaDockerInfo {
   return {
     image: "",
+    registryId: "",
     alwaysPull: false,
     command: "",
     envConfig: [],
