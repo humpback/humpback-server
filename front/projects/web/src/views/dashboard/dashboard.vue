@@ -1,19 +1,8 @@
 <script lang="ts" setup>
-import * as echarts from "echarts/core"
-import { GridComponent, GridComponentOption, LegendComponent, LegendComponentOption, TooltipComponent, TooltipComponentOption } from "echarts/components"
-import { LineChart, LineSeriesOption } from "echarts/charts"
-import { CanvasRenderer } from "echarts/renderers"
-import { UniversalTransition } from "echarts/features"
-
-echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer, UniversalTransition])
-
-type EChartsOption = echarts.ComposeOption<GridComponentOption | LineSeriesOption | TooltipComponentOption | LegendComponentOption>
+import TimeLinePage from "./timeline.vue"
 
 const { t } = useI18n()
 const userStore = useUserStore()
-
-let incrementChart: echarts.ECharts
-const incrementRef = useTemplateRef<HTMLDivElement>("incrementRef")
 
 const greetings = computed(() => {
   const currentHour = new Date().getHours()
@@ -70,55 +59,6 @@ const statistics = ref({
   user: {
     total: 500
   }
-})
-
-let incrementOptions = ref<EChartsOption | any>({
-  tooltip: {
-    trigger: "axis"
-  },
-  grid: {
-    left: "2%",
-    right: "2%",
-    bottom: "4%",
-    top: "8%",
-    containLabel: true
-  },
-  xAxis: {
-    type: "category",
-    boundaryGap: false,
-    data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-  },
-  yAxis: {
-    type: "value"
-  },
-  series: [
-    {
-      data: [820, 932, 901, 934, 1290, 1330, 1320],
-      type: "line",
-      lineStyle: {
-        color: "var(--el-color-primary)",
-        width: 4
-      },
-      areaStyle: {
-        color: "#e2ebf0"
-      }
-    }
-  ]
-})
-
-function resize() {
-  incrementChart?.resize()
-}
-
-onMounted(() => {
-  incrementChart = echarts.init(incrementRef.value)
-  incrementChart?.setOption(incrementOptions.value)
-  window.addEventListener("resize", resize)
-})
-
-onBeforeUnmount(() => {
-  incrementChart?.dispose()
-  window.removeEventListener("resize", resize)
 })
 </script>
 
@@ -181,20 +121,18 @@ onBeforeUnmount(() => {
     </v-card>
 
     <div class="mt-5">
-      <el-row :gutter="20">
-        <el-col :span="18">
-          <v-card>
-            <div ref="incrementRef" class="chart" />
-          </v-card>
-        </el-col>
-        <el-col :span="6">
-          <v-card></v-card>
-        </el-col>
-      </el-row>
+      <time-line-page />
     </div>
 
     <div class="mt-5">
-      <v-card></v-card>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <v-card></v-card>
+        </el-col>
+        <el-col :span="12">
+          <v-card></v-card>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -240,10 +178,5 @@ onBeforeUnmount(() => {
 .total-content {
   margin-top: 20px;
   font-size: 20px;
-}
-
-.chart {
-  height: 360px;
-  width: 100%;
 }
 </style>

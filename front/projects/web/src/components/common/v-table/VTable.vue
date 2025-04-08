@@ -8,6 +8,7 @@ type Props = Partial<
     total: number
     sortInfo: SortInfo
     pageLayout: string
+    minHeight?: string
   }
 >
 
@@ -22,6 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
   tooltipOptions: () => {
     return { placement: "top-start" }
   },
+  minHeight: "396px",
   headerCellClassName: "table-header"
 })
 
@@ -50,7 +52,7 @@ const defaultSort = ref<Sort | undefined>(
 )
 
 const tableAttrs = computed(() => {
-  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total", "pageLayout"]))
+  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total", "pageLayout", "minHeight"]))
   attrs.defaultSort = defaultSort.value
 
   return Object.keys(attrs).reduce((acc, key) => {
@@ -101,8 +103,8 @@ defineExpose({ clearSelection, toggleRowExpansion })
   <div>
     <el-table
       ref="tableRef"
+      :style="{ minHeight: props.minHeight || undefined }"
       class-name="v-table"
-      style="min-height: 396px"
       v-bind="tableAttrs"
       @select="selectionChangeEvent"
       @sort-change="sortChangeEvent"

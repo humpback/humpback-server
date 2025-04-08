@@ -131,7 +131,7 @@ onMounted(async () => {
     <el-table-column align="left" class-name="expand-column" type="expand" width="24">
       <template #default="scope">
         <div style="padding: 20px 40px">
-          <v-table :data="scope.row.containers" :max-height="500" border>
+          <v-table :data="scope.row.containers" :max-height="500" border minHeight="0">
             <el-table-column :label="t('label.instanceName')" min-width="200">
               <template #default="cscope">
                 <v-router-link :href="`/ws/group/${groupId}/service/${scope.row.serviceId}/${PageServiceDetail.Instances}`" :text="cscope.row.containerName" />

@@ -72,79 +72,81 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-card v-loading="loading">
-    <div>
-      <v-role-admin :role="userInfo.role" size="default" />
-      <div class="d-flex gap-1 mt-2 pl-1 mb-3">
-        <el-text type="info">
-          {{ t("label.createDate") }}:
-          <v-date-view :timestamp="userInfo.createdAt" />
-        </el-text>
-        <el-divider direction="vertical" />
-        <div>
-          <change-password />
+  <div>
+    <v-card v-loading="loading">
+      <div>
+        <v-role-admin :role="userInfo.role" size="default" />
+        <div class="d-flex gap-1 mt-2 pl-1 mb-3">
+          <el-text type="info">
+            {{ t("label.createDate") }}:
+            <v-date-view :timestamp="userInfo.createdAt" />
+          </el-text>
+          <el-divider direction="vertical" />
+          <div>
+            <change-password />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="mb-5 mt-2">
-      <v-alert> {{ t("tips.usernameChangeTips") }}</v-alert>
-    </div>
-    <el-form ref="tableRef" :model="userInfo" :rules="rules" label-position="top" label-width="auto">
-      <el-row :gutter="12">
-        <el-col>
-          <el-form-item :label="t('label.username')" prop="username">
-            <v-username-input v-model="userInfo.username" />
-          </el-form-item>
-        </el-col>
-        <el-col>
-          <el-form-item :label="t('label.description')" prop="description">
-            <v-description-input v-model="userInfo.description" />
-          </el-form-item>
-        </el-col>
-        <el-col :md="12" :span="24">
-          <el-form-item :label="t('label.email')" prop="email">
-            <v-email-input v-model="userInfo.email" />
-          </el-form-item>
-        </el-col>
-        <el-col :md="12" :span="24">
-          <el-form-item :label="t('label.phone')" prop="phone">
-            <v-phone-input v-model="userInfo.phone" />
-          </el-form-item>
-        </el-col>
-        <el-col>
-          <el-form-item>
-            <div class="text-align-right w-100">
-              <el-button type="primary" @click="save()">{{ t("btn.save") }}</el-button>
-            </div>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-  </v-card>
-
-  <v-card v-loading="isLoadingActivities" class="mt-5">
-    <div class="d-flex gap-1">
-      <div class="f-bold">
-        {{ t("label.activities") }}
+      <div class="mb-5 mt-2">
+        <v-alert> {{ t("tips.usernameChangeTips") }}</v-alert>
       </div>
-      <el-button :title="t('label.refresh')" link type="primary">
-        <el-icon :size="20">
-          <IconMdiRefresh />
-        </el-icon>
-      </el-button>
-    </div>
-    <v-table
-      :data="activities.data"
-      :page-info="queryUserActivityInfo.pageInfo"
-      :show-header="false"
-      :total="activities.total"
-      @page-change="getUserActivities()">
-      <el-table-column>
-        <template #default></template>
-      </el-table-column>
-    </v-table>
-  </v-card>
+      <el-form ref="tableRef" :model="userInfo" :rules="rules" label-position="top" label-width="auto">
+        <el-row :gutter="12">
+          <el-col>
+            <el-form-item :label="t('label.username')" prop="username">
+              <v-username-input v-model="userInfo.username" />
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item :label="t('label.description')" prop="description">
+              <v-description-input v-model="userInfo.description" />
+            </el-form-item>
+          </el-col>
+          <el-col :md="12" :span="24">
+            <el-form-item :label="t('label.email')" prop="email">
+              <v-email-input v-model="userInfo.email" />
+            </el-form-item>
+          </el-col>
+          <el-col :md="12" :span="24">
+            <el-form-item :label="t('label.phone')" prop="phone">
+              <v-phone-input v-model="userInfo.phone" />
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item>
+              <div class="text-align-right w-100">
+                <el-button type="primary" @click="save()">{{ t("btn.save") }}</el-button>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </v-card>
+
+    <v-card v-loading="isLoadingActivities" class="mt-5">
+      <div class="d-flex gap-1">
+        <div class="f-bold">
+          {{ t("label.activities") }}
+        </div>
+        <el-button :title="t('label.refresh')" link type="primary">
+          <el-icon :size="20">
+            <IconMdiRefresh />
+          </el-icon>
+        </el-button>
+      </div>
+      <v-table
+        :data="activities.data"
+        :page-info="queryUserActivityInfo.pageInfo"
+        :show-header="false"
+        :total="activities.total"
+        @page-change="getUserActivities()">
+        <el-table-column>
+          <template #default></template>
+        </el-table-column>
+      </v-table>
+    </v-card>
+  </div>
 </template>
 
 <style lang="scss" scoped></style>
