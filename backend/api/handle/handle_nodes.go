@@ -28,7 +28,8 @@ func nodesCreate(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, &nodes) {
 		return
 	}
-	if err := controller.NodeCreate(nodes); err != nil {
+	userInfo := middleware.GetUserInfo(c)
+	if err := controller.NodeCreate(userInfo, nodes); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}
@@ -40,7 +41,8 @@ func nodeUpdateLabels(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.NodeUpdateLabel(middleware.GetNodeChannel(c),body)
+	userInfo := middleware.GetUserInfo(c)
+	id, err := controller.NodeUpdateLabel(userInfo, middleware.GetNodeChannel(c), body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -53,7 +55,8 @@ func nodeUpdateSwitch(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.NodeUpdateSwitch(middleware.GetNodeChannel(c), body.NodeId, body.Enable)
+	userInfo := middleware.GetUserInfo(c)
+	id, err := controller.NodeUpdateSwitch(userInfo, middleware.GetNodeChannel(c), body.NodeId, body.Enable)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -98,7 +101,8 @@ func nodesQuery(c *gin.Context) {
 
 func nodeDelete(c *gin.Context) {
 	id := c.Param("id")
-	if err := controller.NodeDelete(middleware.GetNodeChannel(c), id); err != nil {
+	userInfo := middleware.GetUserInfo(c)
+	if err := controller.NodeDelete(userInfo, middleware.GetNodeChannel(c), id); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}
