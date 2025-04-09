@@ -21,8 +21,8 @@ export function IncludesIgnoreCase(str?: string, subStr?: string): boolean {
   return includes(toLower(str), toLower(subStr || ""))
 }
 
-export function IsSupperAdmin(role: number) {
-  return role === UserRole.SupperAdmin
+export function IsSuperAdmin(role: number) {
+  return role === UserRole.SuperAdmin
 }
 
 export function IsAdmin(role: number) {
@@ -35,8 +35,8 @@ export function IsUser(role: number) {
 
 export function GetUserRole(role: number) {
   switch (role) {
-    case UserRole.SupperAdmin:
-      return UserRole.SupperAdmin
+    case UserRole.SuperAdmin:
+      return UserRole.SuperAdmin
     case UserRole.Admin:
       return UserRole.Admin
     default:

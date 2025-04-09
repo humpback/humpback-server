@@ -1,56 +1,114 @@
 <script lang="ts" setup>
 import * as echarts from "echarts/core"
-import { GridComponent, GridComponentOption, LegendComponent, LegendComponentOption, TooltipComponent, TooltipComponentOption } from "echarts/components"
-import { LineChart, LineSeriesOption } from "echarts/charts"
+import {
+  GridComponent,
+  GridComponentOption,
+  ToolboxComponent,
+  ToolboxComponentOption,
+  LegendComponent,
+  LegendComponentOption,
+  TooltipComponent,
+  TooltipComponentOption
+} from "echarts/components"
+import { LineChart, BarChart, LineSeriesOption, BarSeriesOption } from "echarts/charts"
 import { CanvasRenderer } from "echarts/renderers"
 import { UniversalTransition } from "echarts/features"
+import { map } from "lodash-es"
 
-echarts.use([GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer, UniversalTransition])
+echarts.use([GridComponent, ToolboxComponent, LegendComponent, BarChart, TooltipComponent, LineChart, CanvasRenderer, UniversalTransition])
 
-type EChartsOption = echarts.ComposeOption<GridComponentOption | LineSeriesOption | TooltipComponentOption | LegendComponentOption>
+type EChartsOption = echarts.ComposeOption<
+  GridComponentOption | ToolboxComponentOption | BarSeriesOption | LineSeriesOption | TooltipComponentOption | LegendComponentOption
+>
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 let incrementChart: echarts.ECharts
 const incrementRef = useTemplateRef<HTMLDivElement>("incrementRef")
 
-let incrementOptions = ref<EChartsOption | any>({
+let incrementOptions = computed<EChartsOption>(() => ({
   tooltip: {
-    trigger: "axis"
+    trigger: "axis",
+    formatter: params => {
+      let content = ""
+      params = Array.isArray(params) ? params : [params]
+      content += `${params[0].axisValue}<br/>`
+      map(params, item => {
+        switch (item.seriesIndex) {
+          case 0:
+            content += `${item.marker}${item.seriesName}：${item.data}<br/>`
+            break
+          case 1:
+            content += `${item.marker}${item.seriesName}：${item.data}<br/>`
+            break
+          case 2:
+            content += `${item.marker}${item.seriesName}：${item.data}<br/>`
+            break
+        }
+      })
+      return content
+    }
+  },
+  legend: {
+    right: "50%",
+    selected: {
+      "Group": true,
+      "Service": true,
+      "Deploy": true
+    }
   },
   grid: {
-    left: "2%",
-    right: "2%",
-    bottom: "4%",
-    top: "8%",
+    left: "1%",
+    right: "1%",
+    bottom: "3%",
     containLabel: true
   },
-  xAxis: {
-    type: "category",
-    boundaryGap: false,
-    data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  toolbox: {
+    show: true,
+    feature: {
+      dataView: { show: true, readOnly: false },
+      magicType: { show: true, type: ["line", "bar", "stack"] },
+      restore: { show: true }
+    },
+    right: "1%"
   },
-  yAxis: {
-    type: "value"
-  },
+  calculable: true,
+  xAxis: [
+    {
+      type: "category",
+      data: ["3-1", "3-2", "3-3", "3-4", "4-5", "5-5", "6-5", "7-5", "8-5"]
+    }
+  ],
+  yAxis: [{ type: "value" }],
   series: [
     {
-      data: [820, 932, 901, 934, 1290, 1330, 1320],
+      name: t("label.group"),
+      type: "bar",
+      seriesLayoutBy: "column",
+      data: [1, 2, 3, 4, 2, 3, 1, 9, 0]
+    },
+    {
+      name: t("label.service"),
+      type: "bar",
+      seriesLayoutBy: "column",
+      data: [1, 5, 8, 4, 10, 3, 1, 0, 0]
+    },
+    {
+      name: t("label.deploy"),
       type: "line",
-      lineStyle: {
-        color: "var(--el-color-primary)",
-        width: 4
-      },
-      areaStyle: {
-        color: "#e2ebf0"
-      }
+      seriesLayoutBy: "column",
+      data: [5, 6, 7, 4, 20, 25, 11, 19, 16]
     }
   ]
-})
+}))
 
 function resize() {
   incrementChart?.resize()
 }
+
+watch(locale, () => {
+  incrementChart?.setOption(incrementOptions.value)
+})
 
 onMounted(() => {
   incrementChart = echarts.init(incrementRef.value)
@@ -65,21 +123,20 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div>
-    <el-row :gutter="20">
-      <el-col :span="18">
-        <v-card>
-          <div ref="incrementRef" class="chart" />
-        </v-card>
-      </el-col>
-      <el-col :span="6">
-        <v-card></v-card>
-      </el-col>
-    </el-row>
-  </div>
+  <v-card>
+    <div class="title">{{ t("header.newDataOf30Days") }}</div>
+    <div ref="incrementRef" class="chart" />
+  </v-card>
 </template>
 
 <style lang="scss" scoped>
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-left: 4px;
+}
+
 .chart {
   height: 360px;
   width: 100%;

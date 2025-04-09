@@ -10,13 +10,13 @@ import (
     bolt "go.etcd.io/bbolt"
 )
 
-func UserGetSupperAdmin() (*types.User, error) {
+func UserGetSuperAdmin() (*types.User, error) {
     users, err := UsersGetAll()
     if err != nil {
         return nil, err
     }
     for _, user := range users {
-        if types.IsSupperAdmin(user.Role) {
+        if types.IsSuperAdmin(user.Role) {
             return user, nil
         }
     }

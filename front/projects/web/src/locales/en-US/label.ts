@@ -180,6 +180,7 @@ export default {
     "updateBasic": "Update Basic Info",
     "updateApplication": "Update Application",
     "updateDeployment": "Update Deployment",
-    "updateLabel": "Update Label"
+    "updateLabel": "Update Label",
+    "deploy": "Deploy"
   }
 }

@@ -11,7 +11,7 @@ export class QueryUserInfo extends QueryInfo {
   constructor(queryInfo: any) {
     super(queryInfo, ["keywords"], defaultPage, defaultSort, sortOptions, cloneDeep(defaultFilter))
     const role = queryInfo["role"] ? Number(queryInfo["role"]).valueOf() : defaultFilter.role
-    this.filter.role = !isNaN(role) && find([0, UserRole.User, UserRole.Admin, UserRole.SupperAdmin], x => x === role) ? role : defaultFilter.role
+    this.filter.role = !isNaN(role) && find([0, UserRole.User, UserRole.Admin, UserRole.SuperAdmin], x => x === role) ? role : defaultFilter.role
   }
 
   urlQuery() {

@@ -28,11 +28,11 @@ var staticCache = map[string]*staticResourceInfo{}
 func InitStaticsResource() (err error) {
     if config.HtmlArgs().Load {
         staticConfig := config.HtmlArgs()
-        slog.Info("[Api] init static resource to cache start...")
+        slog.Info("[Api] Init static resource to cache...")
         if staticCache, err = readFileToCache(staticConfig.Dir); err != nil {
             return fmt.Errorf("init static resource failed: %s", err)
         }
-        slog.Info("[Api] init static resource to cache complted.")
+        slog.Info("[Api] Init static resource to cache complted.")
     }
     return nil
 }

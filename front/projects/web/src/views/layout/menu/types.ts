@@ -36,14 +36,14 @@ export const menuList: MenuInfo[] = [
   {
     icon: shallowRef(IconMdiCogOutline),
     name: "administration",
-    rolesLimit: [UserRole.SupperAdmin, UserRole.Admin],
+    rolesLimit: [UserRole.SuperAdmin, UserRole.Admin],
     children: [
       {
         icon: shallowRef(IconMdiAlphaCBoxOutline),
         name: "registries"
       },
       {
-        icon: shallowRef(IconMdiTextBoxOutline),
+        icon: shallowRef(IconMdiServer),
         name: "nodes"
       },
       {

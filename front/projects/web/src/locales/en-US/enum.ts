@@ -2,7 +2,7 @@ export default {
   role: {
     "admin": "Administrator",
     "user": "User",
-    "supperAdmin": "Supper Administrator"
+    "superAdmin": "Super Administrator"
   },
   containerStatus: {
     created: "Created",

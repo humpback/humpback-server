@@ -9,6 +9,7 @@ type Props = Partial<
     sortInfo: SortInfo
     pageLayout: string
     minHeight?: string
+    hideHeaderBgColor?: boolean
   }
 >
 
@@ -103,8 +104,8 @@ defineExpose({ clearSelection, toggleRowExpansion })
   <div>
     <el-table
       ref="tableRef"
+      :class-name="!props.hideHeaderBgColor ? 'header-bg-color' : undefined"
       :style="{ minHeight: props.minHeight || undefined }"
-      class-name="v-table"
       v-bind="tableAttrs"
       @select="selectionChangeEvent"
       @sort-change="sortChangeEvent"
@@ -136,7 +137,7 @@ defineExpose({ clearSelection, toggleRowExpansion })
 </template>
 
 <style lang="scss" scoped>
-.v-table {
+.header-bg-color {
   :deep(.table-header) {
     background-color: var(--hp-table-header-bg-color);
   }

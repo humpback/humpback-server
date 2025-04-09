@@ -50,6 +50,11 @@ export default {
     "eveningTips": "Good evening, {name}, the day's work is almost over, hard work!",
     "eveningAfterTips": "Good evening, {name}, take care of your rest, don't go to bed too late!",
     "thankUseTips": "Thank you for using!",
+    "noRecentActivities": "No recent activities!",
+    "noEnabledServices": "There are no enabled service!",
+    "noExceptionServices": "The service runs very stably, and there are no abnormal services!",
+    "noEnabledNodes": "There are no enabled nodes!",
+    "noAbnormalNodes": "No abnormal nodes, great machine maintenance!",
 
     "AUDIT_CONTROL": "Enable and disable kernel auditing; change auditing filter rules; retrieve auditing status and filtering rules.",
     "AUDIT_WRITE": "Write records to kernel auditing log.",

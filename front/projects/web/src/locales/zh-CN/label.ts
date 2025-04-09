@@ -180,6 +180,7 @@ export default {
     "updateBasic": "更新基本信息",
     "updateApplication": "更新应用信息",
     "updateDeployment": "更新部署信息",
-    "updateLabel": "更新标签"
+    "updateLabel": "更新标签",
+    "deploy": "部署"
   }
 }

@@ -36,6 +36,10 @@ export default {
     "editSchedule": "Edit Schedule",
     "groups": "Groups",
     "configs": "Configs",
-    "registries": "Registries"
+    "registries": "Registries",
+    "newDataOf30Days": "30 days of new data",
+    "recentActivities": "Recent Activities",
+    "exceptionService": "Exception services",
+    "abnormalNodes": "Abnormal Nodes"
   }
 }

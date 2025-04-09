@@ -16,7 +16,7 @@ const str = computed<
     [
       { label: "role.user", value: UserRole.User },
       { label: "role.admin", value: UserRole.Admin, color: "warning" },
-      { label: "role.supperAdmin", value: UserRole.SupperAdmin, color: "success" }
+      { label: "role.superAdmin", value: UserRole.SuperAdmin, color: "success" }
     ],
     x => x.value === props.role
   )

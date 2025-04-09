@@ -36,6 +36,10 @@ export default {
     "editSchedule": "编辑定时任务",
     "groups": "分组",
     "configs": "配置",
-    "registries": "仓库"
+    "registries": "仓库",
+    "newDataOf30Days": "过去30天新数据",
+    "recentActivities": "最近的操作记录",
+    "exceptionService": "异常服务",
+    "abnormalNodes": "异常机器"
   }
 }

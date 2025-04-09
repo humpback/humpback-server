@@ -31,10 +31,10 @@ function showActionBtn(info: UserInfo) {
   if (info.userId === userStore.userInfo.userId) {
     return false
   }
-  if (IsSupperAdmin(info.role)) {
+  if (IsSuperAdmin(info.role)) {
     return false
   }
-  return !IsAdmin(info.role) || userStore.isSupperAdmin
+  return !IsAdmin(info.role) || userStore.isSuperAdmin
 }
 
 async function search() {

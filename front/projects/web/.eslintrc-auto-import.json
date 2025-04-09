@@ -454,6 +454,8 @@
     "IconNotoSmilingFaceWithSunglasses": true,
     "IconNotoSalutingFace": true,
     "IconNotoGrinningFace": true,
-    "IconNotoMeltingFace": true
+    "IconNotoMeltingFace": true,
+    "IconMdiServer": true,
+    "IsSuperAdmin": true
   }
 }
