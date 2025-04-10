@@ -24,7 +24,8 @@ func groupCreate(c *gin.Context) {
     if !middleware.BindAndCheckBody(c, body) {
         return
     }
-    id, err := controller.GroupCreate(body)
+    userInfo := middleware.GetUserInfo(c)
+    id, err := controller.GroupCreate(userInfo, body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -83,7 +84,8 @@ func groupQuery(c *gin.Context) {
 
 func groupDelete(c *gin.Context) {
     id := c.Param("groupId")
-    if err := controller.GroupDelete(middleware.GetServiceChangeChannel(c), id); err != nil {
+    userInfo := middleware.GetUserInfo(c)
+    if err := controller.GroupDelete(userInfo, middleware.GetServiceChangeChannel(c), id); err != nil {
         middleware.AbortErr(c, err)
         return
     }

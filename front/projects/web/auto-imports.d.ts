@@ -438,7 +438,7 @@ declare global {
   export type { BaseInfo } from './src/types/base'
   import('./src/types/base')
   // @ts-ignore
-  export type { ContainerPerformance, ContainerStats, ContainerNetworkStats } from './src/types/container'
+  export type { ContainersPerformance, ContainerStats, ContainerNetworkStats } from './src/types/container'
   import('./src/types/container')
   // @ts-ignore
   export type { GroupInfo } from './src/types/group'

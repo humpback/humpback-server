@@ -148,6 +148,9 @@ func GetDataById[T any](bucketName string, id string) (*T, error) {
 
 func GetDataByIds[T any](bucketName string, ids []string, ignoreNotExist bool) ([]*T, error) {
     var results = make([]*T, 0)
+    if len(ids) == 0 {
+        return results, nil
+    }
     err := db.boltDB.View(func(tx *bolt.Tx) error {
         bucket := tx.Bucket([]byte(bucketName))
         if bucket == nil {
@@ -304,6 +307,9 @@ func DeleteData(bucketName string, id string) error {
 }
 
 func DeleteDataByIds(bucketName string, ids []string) error {
+    if len(ids) == 0 {
+        return nil
+    }
     return db.boltDB.Update(func(tx *bolt.Tx) error {
         bucket := tx.Bucket([]byte(bucketName))
         if bucket == nil {

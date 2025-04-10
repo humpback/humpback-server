@@ -94,6 +94,12 @@ let incrementOptions = computed<EChartsOption>(() => ({
       data: [1, 5, 8, 4, 10, 3, 1, 0, 0]
     },
     {
+      name: t("label.node"),
+      type: "bar",
+      seriesLayoutBy: "column",
+      data: [1, 5, 8, 4, 10, 3, 1, 0, 0]
+    },
+    {
       name: t("label.deploy"),
       type: "line",
       seriesLayoutBy: "column",

@@ -14,6 +14,7 @@ import (
 func Start(stopCh <-chan struct{}) {
     go SessionGCInterval(stopCh)
     go ReceiveActivities(stopCh)
+    go ReceiveStatisticsCount(stopCh)
 }
 
 func InitData() error {

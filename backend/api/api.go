@@ -54,16 +54,16 @@ func (api *Router) setMiddleware(nodeCh chan types.NodeSimpleInfo, serviceCh cha
 func (api *Router) setRoute() {
     var routes = map[string]map[string][]any{
         "/webapi": {
-            "/common":                   {handle.RouteCommon},
-            "/user":                     {handle.RouteUser},
-            "/team":                     {middleware.CheckLogin(), handle.RouteTeam},
-            "/config":                   {middleware.CheckLogin(), handle.RouteConfig},
-            "/registry":                 {middleware.CheckLogin(), handle.RouteRegistry},
-            "/node":                     {middleware.CheckLogin(), handle.RouteNodes},
-            "/group":                    {middleware.CheckLogin(), handle.RouteGroup},
-            "/group/:groupId/service":   {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteService},
-            "/group/:groupId/node":      {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteGroupNode},
-            "/group/:groupId/container": {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteGroupContainer},
+            "/common":                 {handle.RouteCommon},
+            "/user":                   {handle.RouteUser},
+            "/team":                   {middleware.CheckLogin(), handle.RouteTeam},
+            "/config":                 {middleware.CheckLogin(), handle.RouteConfig},
+            "/registry":               {middleware.CheckLogin(), handle.RouteRegistry},
+            "/node":                   {middleware.CheckLogin(), handle.RouteNodes},
+            "/group":                  {middleware.CheckLogin(), handle.RouteGroup},
+            "/group/:groupId/service": {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteService},
+            "/group/:groupId/node":    {middleware.CheckLogin(), middleware.CheckInGroup(), handle.RouteGroupNode},
+            "/statistics-count":       {middleware.CheckLogin(), handle.RouteStatisticsCount},
         },
     }
     

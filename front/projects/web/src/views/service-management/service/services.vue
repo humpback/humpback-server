@@ -76,8 +76,8 @@ async function operateService(serviceId: string, action: "Start" | "Stop" | "Res
   await search()
 }
 
-async function operateContainer(nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
-  await groupContainerService.operate(groupId.value, { containerId: containerId, nodeId: nodeId, action: action })
+async function operateContainer(serviceId: string, nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
+  await groupContainerService.operate(groupId.value, serviceId, { containerId: containerId, nodeId: nodeId, action: action })
   ShowSuccessMsg(t("message.operateSuccess"))
   await search()
 }
@@ -170,7 +170,7 @@ onMounted(async () => {
                   :title="t('label.restart')"
                   link
                   type="success"
-                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Restart')">
+                  @click="operateContainer(scope.row.serviceId, cscope.row.nodeId, cscope.row.containerId, 'Restart')">
                   <el-icon :size="16">
                     <IconMdiRestart />
                   </el-icon>
@@ -180,7 +180,7 @@ onMounted(async () => {
                   :title="t('label.start')"
                   link
                   type="success"
-                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Start')">
+                  @click="operateContainer(scope.row.serviceId, cscope.row.nodeId, cscope.row.containerId, 'Start')">
                   <el-icon :size="16">
                     <IconMdiPlay />
                   </el-icon>
@@ -190,7 +190,7 @@ onMounted(async () => {
                   :title="t('label.stop')"
                   link
                   type="danger"
-                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Stop')">
+                  @click="operateContainer(scope.row.serviceId, cscope.row.nodeId, cscope.row.containerId, 'Stop')">
                   <el-icon :size="16">
                     <IconMdiSquare />
                   </el-icon>
