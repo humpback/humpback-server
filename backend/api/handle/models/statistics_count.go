@@ -11,7 +11,7 @@ type StatisticsCountQueryReqInfo struct {
 }
 
 func (s *StatisticsCountQueryReqInfo) Check() error {
-    if s.StartAt > 0 && s.StartAt > s.EndAt {
+    if s.StartAt > 0 && s.EndAt > 0 && s.StartAt > s.EndAt {
         return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
     }
     return nil

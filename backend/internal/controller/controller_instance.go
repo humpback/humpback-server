@@ -25,12 +25,12 @@ func InstanceOperate(operator *types.User, groupInfo *types.NodesGroups, info *m
     if err = node.OperateNodeContainer(info.NodeId, info.ContainerId, info.Action); err != nil {
         return err
     }
-    action := types.ActivityActionStartInstance
+    action := types.ActivityActionStart
     if strings.ToLower(info.Action) == strings.ToLower(types.ServiceActionRestart) {
-        action = types.ActivityActionRestartInstance
+        action = types.ActivityActionRestart
     }
     if strings.ToLower(info.Action) == strings.ToLower(types.ServiceActionStop) {
-        action = types.ActivityActionStopInstance
+        action = types.ActivityActionStop
     }
     InsertServiceActivity(&ActivityServiceInfo{
         NewServiceInfo: service,
@@ -38,6 +38,7 @@ func InstanceOperate(operator *types.User, groupInfo *types.NodesGroups, info *m
         InstanceName:   container.ContainerName,
         OperatorInfo:   operator,
         OperateAt:      0,
+        GroupName:      groupInfo.GroupName,
     })
     return nil
 }

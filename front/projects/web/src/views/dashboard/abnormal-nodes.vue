@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-const props = defineProps<{ data?: any[]; enabledServices?: number }>()
+import { NodeInfo } from "@/types"
+
+const props = defineProps<{ data?: NodeInfo[]; enabledNodes?: number; isLoading?: boolean }>()
 const { t } = useI18n()
 
 const tableList = computed(() => props.data || [])
@@ -9,15 +11,19 @@ const tableList = computed(() => props.data || [])
   <v-card>
     <div class="title">{{ t("header.abnormalNodes") }}</div>
     <div>
-      <v-table v-if="tableList.length > 0" :data="tableList" hide-header-bg-color max-height="360px" minHeight="360px">
+      <v-table v-if="tableList.length > 0" v-loading="props.isLoading" :data="tableList" hide-header-bg-color max-height="360px" minHeight="360px">
         <el-table-column :label="t('label.ip')">
-          <template #default>aaa</template>
+          <template #default="scope">
+            <el-text type="danger">{{ scope.row.ipAddress }}</el-text>
+          </template>
         </el-table-column>
         <el-table-column :label="t('label.status')" width="100px">
-          <template #default>aaa</template>
+          <template #default="scope">
+            <v-node-status-tag :status="scope.row.status" />
+          </template>
         </el-table-column>
       </v-table>
-      <div v-else :class="['empty-content', props.enabledServices && 'no-abnormal']">
+      <div v-else v-loading="props.isLoading" :class="['empty-content', props.enabledNodes && 'no-abnormal']">
         <el-empty>
           <template #image>
             <el-icon :size="160">
@@ -25,7 +31,7 @@ const tableList = computed(() => props.data || [])
             </el-icon>
           </template>
           <template #description>
-            <span>{{ props.enabledServices ? t("tips.noAbnormalNodes") : t("tips.noEnabledNodes") }}</span>
+            <span>{{ props.enabledNodes ? t("tips.noAbnormalNodes") : t("tips.noEnabledNodes") }}</span>
           </template>
         </el-empty>
       </div>

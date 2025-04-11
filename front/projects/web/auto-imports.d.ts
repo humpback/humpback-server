@@ -44,6 +44,7 @@ declare global {
   const IsValidEmail: typeof import('./src/utils/rule')['IsValidEmail']
   const NewBaseEmptyInfo: typeof import('./src/types/base')['NewBaseEmptyInfo']
   const NewConfigEmptyInfo: typeof import('./src/types/setting')['NewConfigEmptyInfo']
+  const NewDashboardResourceStatisticsInfo: typeof import('./src/types/dashboard')['NewDashboardResourceStatisticsInfo']
   const NewGroupEmptyInfo: typeof import('./src/types/group')['NewGroupEmptyInfo']
   const NewNodeEmptyInfo: typeof import('./src/types/setting')['NewNodeEmptyInfo']
   const NewPageInfo: typeof import('./src/types/query')['NewPageInfo']
@@ -96,6 +97,7 @@ declare global {
   const TimestampToTime: typeof import('./src/utils/time')['TimestampToTime']
   const UserRole: typeof import('./src/models/enum')['UserRole']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
+  const activityService: typeof import('./src/services/activity-service')['activityService']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
   const commonService: typeof import('./src/services/common-service')['commonService']
@@ -119,6 +121,7 @@ declare global {
   const createTemplatePromise: typeof import('@vueuse/core')['createTemplatePromise']
   const createUnrefFn: typeof import('@vueuse/core')['createUnrefFn']
   const customRef: typeof import('vue')['customRef']
+  const dashboardService: typeof import('./src/services/dashboard')['dashboardService']
   const debouncedRef: typeof import('@vueuse/core')['debouncedRef']
   const debouncedWatch: typeof import('@vueuse/core')['debouncedWatch']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
@@ -204,6 +207,7 @@ declare global {
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
+  const statisticsCountService: typeof import('./src/services/statistics-count-service')['statisticsCountService']
   const storageEventBus: typeof import('./src/utils/event')['storageEventBus']
   const storeToRefs: typeof import('pinia')['storeToRefs']
   const stores: typeof import('./src/stores/index')['default']
@@ -435,11 +439,17 @@ declare global {
   export type { PageUserRelated, PageGroupDetail, PageServiceDetail, PageActivity, PageUserRelated, PageGroupDetail, PageServiceDetail, PageActivity } from './src/models/page'
   import('./src/models/page')
   // @ts-ignore
+  export type { ActivityInfo } from './src/types/activity'
+  import('./src/types/activity')
+  // @ts-ignore
   export type { BaseInfo } from './src/types/base'
   import('./src/types/base')
   // @ts-ignore
   export type { ContainersPerformance, ContainerStats, ContainerNetworkStats } from './src/types/container'
   import('./src/types/container')
+  // @ts-ignore
+  export type { DashboardResourceStatisticsInfo, ResourceExceptionServiceInfo } from './src/types/dashboard'
+  import('./src/types/dashboard')
   // @ts-ignore
   export type { GroupInfo } from './src/types/group'
   import('./src/types/group')
@@ -458,6 +468,9 @@ declare global {
   // @ts-ignore
   export type { ServiceInfo, ServiceMetaDockerInfo, ServiceCapabilitiesInfo, ServiceLogConfigInfo, ServiceResourcesInfo, ServiceVolumeInfo, ServiceNetworkInfo, ServicePortInfo, ServiceRestartPolicyInfo, ServiceDeploymentInfo, ServicePlacementInfo, ServiceScheduleInfo, ServiceContainerStatusInfo } from './src/types/service'
   import('./src/types/service')
+  // @ts-ignore
+  export type { StatisticsCountInfo } from './src/types/statistics-count'
+  import('./src/types/statistics-count')
 }
 
 // for vue template auto import
@@ -480,7 +493,11 @@ declare module 'vue' {
     readonly IconMdiCogOutline: UnwrapRef<typeof import('~icons/mdi/cog-outline')['default']>
     readonly IconMdiCompany: UnwrapRef<typeof import('~icons/mdi/company')['default']>
     readonly IconMdiLogoutVariant: UnwrapRef<typeof import('~icons/mdi/logout-variant')['default']>
+    readonly IconMdiPlay: UnwrapRef<typeof import('~icons/mdi/play')['default']>
+    readonly IconMdiRestart: UnwrapRef<typeof import('~icons/mdi/restart')['default']>
     readonly IconMdiServer: UnwrapRef<typeof import('~icons/mdi/server')['default']>
+    readonly IconMdiSquare: UnwrapRef<typeof import('~icons/mdi/square')['default']>
+    readonly IconMdiStopCircleOutline: UnwrapRef<typeof import('~icons/mdi/stop-circle-outline')['default']>
     readonly IconMdiTextBoxOutline: UnwrapRef<typeof import('~icons/mdi/text-box-outline')['default']>
     readonly IconMdiUserOutline: UnwrapRef<typeof import('~icons/mdi/user-outline')['default']>
     readonly IconMdiViewDashboard: UnwrapRef<typeof import('~icons/mdi/view-dashboard')['default']>
@@ -499,6 +516,7 @@ declare module 'vue' {
     readonly IsValidEmail: UnwrapRef<typeof import('./src/utils/rule')['IsValidEmail']>
     readonly NewBaseEmptyInfo: UnwrapRef<typeof import('./src/types/base')['NewBaseEmptyInfo']>
     readonly NewConfigEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewConfigEmptyInfo']>
+    readonly NewDashboardResourceStatisticsInfo: UnwrapRef<typeof import('./src/types/dashboard')['NewDashboardResourceStatisticsInfo']>
     readonly NewGroupEmptyInfo: UnwrapRef<typeof import('./src/types/group')['NewGroupEmptyInfo']>
     readonly NewNodeEmptyInfo: UnwrapRef<typeof import('./src/types/setting')['NewNodeEmptyInfo']>
     readonly NewPageInfo: UnwrapRef<typeof import('./src/types/query')['NewPageInfo']>
@@ -551,6 +569,7 @@ declare module 'vue' {
     readonly TimestampToTime: UnwrapRef<typeof import('./src/utils/time')['TimestampToTime']>
     readonly UserRole: UnwrapRef<typeof import('./src/models/enum')['UserRole']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
+    readonly activityService: UnwrapRef<typeof import('./src/services/activity-service')['activityService']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly commonService: UnwrapRef<typeof import('./src/services/common-service')['commonService']>
@@ -574,6 +593,7 @@ declare module 'vue' {
     readonly createTemplatePromise: UnwrapRef<typeof import('@vueuse/core')['createTemplatePromise']>
     readonly createUnrefFn: UnwrapRef<typeof import('@vueuse/core')['createUnrefFn']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
+    readonly dashboardService: UnwrapRef<typeof import('./src/services/dashboard')['dashboardService']>
     readonly debouncedRef: UnwrapRef<typeof import('@vueuse/core')['debouncedRef']>
     readonly debouncedWatch: UnwrapRef<typeof import('@vueuse/core')['debouncedWatch']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
@@ -659,6 +679,7 @@ declare module 'vue' {
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
+    readonly statisticsCountService: UnwrapRef<typeof import('./src/services/statistics-count-service')['statisticsCountService']>
     readonly storageEventBus: UnwrapRef<typeof import('./src/utils/event')['storageEventBus']>
     readonly storeToRefs: UnwrapRef<typeof import('pinia')['storeToRefs']>
     readonly stores: UnwrapRef<typeof import('./src/stores/index')['default']>

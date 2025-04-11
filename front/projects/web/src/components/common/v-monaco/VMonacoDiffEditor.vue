@@ -35,7 +35,9 @@ onMounted(() => {
     lineNumbers: "on",
     minimap: {
       maxColumn: 200,
-      showSlider: "mouseover"
+      side: "right",
+      size: "proportional",
+      renderCharacters: true
     }
   })
   diffEditor.setModel({

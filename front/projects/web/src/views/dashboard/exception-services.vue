@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-const props = defineProps<{ data?: any[]; enabledServices?: number }>()
+import { ResourceExceptionServiceInfo } from "@/types"
+import { PageServiceDetail } from "@/models"
+
+const props = defineProps<{ data?: ResourceExceptionServiceInfo[]; enabledServices?: number; isLoading?: boolean }>()
 const { t } = useI18n()
 
 const tableList = computed(() => props.data || [])
@@ -9,18 +12,27 @@ const tableList = computed(() => props.data || [])
   <v-card>
     <div class="title">{{ t("header.exceptionService") }}</div>
     <div>
-      <v-table v-if="tableList.length > 0" :data="tableList" hide-header-bg-color maxHeight="360px" min-height="360px">
-        <el-table-column :label="t('label.group')">
-          <template #default>aaa</template>
-        </el-table-column>
+      <v-table v-if="tableList.length > 0" v-loading="props.isLoading" :data="tableList" hide-header-bg-color maxHeight="360px" min-height="360px">
         <el-table-column :label="t('label.service')">
-          <template #default>aaa</template>
+          <template #default="scope">
+            <v-router-link
+              :href="`/ws/group/${scope.row.groupId}/service/${scope.row.serviceId}/${PageServiceDetail.BasicInfo}`"
+              :text="scope.row.serviceName" />
+          </template>
         </el-table-column>
-        <el-table-column :label="t('label.status')" width="100px">
-          <template #default>aaa</template>
+        <el-table-column :label="t('label.group')">
+          <template #default="scope">
+            <v-router-link :href="`/ws/group/${scope.row.groupId}/services`" :text="scope.row.groupName" />
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('label.status')" width="120px">
+          <template #default="scope">
+            <v-service-status-tag :status="scope.row.status" />
+            <v-memo v-if="!!scope.row.memo" :icon-size="18" :memo="scope.row.memo" only-icon />
+          </template>
         </el-table-column>
       </v-table>
-      <div v-else :class="['empty-content', props.enabledServices && 'no-abnormal']">
+      <div v-else v-loading="props.isLoading" :class="['empty-content', props.enabledServices && 'no-abnormal']">
         <el-empty>
           <template #image>
             <el-icon :size="160">

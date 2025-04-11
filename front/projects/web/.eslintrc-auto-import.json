@@ -453,6 +453,16 @@
     "IconMdiRestart": true,
     "IconMdiSquare": true,
     "IconMdiStopCircleOutline": true,
-    "ContainersPerformance": true
+    "ContainersPerformance": true,
+    "activityService": true,
+    "ActivityInfo": true,
+    "dashboardService": true,
+    "DashboardResourceStatisticsInfo": true,
+    "ResouceExceptionServcieInfo": true,
+    "ResourceExceptionServcieInfo": true,
+    "ResourceExceptionServiceInfo": true,
+    "NewDashboardResourceStatisticsInfo": true,
+    "StatisticsCountInfo": true,
+    "statisticsCountService": true
   }
 }

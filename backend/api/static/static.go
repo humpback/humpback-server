@@ -98,7 +98,7 @@ func Web(c *gin.Context) {
     if isIndexHtml {
         c.Header("Cache-Control", "public, max-age=86400")
     } else {
-        c.Header("Cache-Control", "public, max-age=31536000")
+        c.Header("Cache-Control", "public, max-age=604800")
     }
     c.Data(http.StatusOK, resourceInfo.ContentType, resourceInfo.Content)
 }

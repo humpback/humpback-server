@@ -67,7 +67,8 @@ func serviceCreate(c *gin.Context) {
     }
     body.GroupId = c.Param("groupId")
     userInfo := middleware.GetUserInfo(c)
-    result, err := controller.ServiceCreate(userInfo, body)
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.ServiceCreate(userInfo, groupInfo, body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -82,7 +83,8 @@ func serviceClone(c *gin.Context) {
     }
     body.GroupId = c.Param("groupId")
     userInfo := middleware.GetUserInfo(c)
-    result, err := controller.ServiceClone(userInfo, body)
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.ServiceClone(userInfo, groupInfo, body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -97,7 +99,8 @@ func serviceUpdate(c *gin.Context) {
     }
     body.GroupId = c.Param("groupId")
     userInfo := middleware.GetUserInfo(c)
-    result, err := controller.ServiceUpdate(userInfo, middleware.GetServiceChangeChannel(c), body)
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.ServiceUpdate(userInfo, groupInfo, middleware.GetServiceChangeChannel(c), body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -112,7 +115,8 @@ func serviceOperate(c *gin.Context) {
     }
     body.GroupId = c.Param("groupId")
     userInfo := middleware.GetUserInfo(c)
-    result, err := controller.ServiceOperate(userInfo, middleware.GetServiceChangeChannel(c), body)
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.ServiceOperate(userInfo, groupInfo, middleware.GetServiceChangeChannel(c), body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -124,7 +128,8 @@ func serviceDelete(c *gin.Context) {
     serviceId := c.Param("serviceId")
     groupId := c.Param("groupId")
     userInfo := middleware.GetUserInfo(c)
-    if err := controller.ServiceSoftDelete(userInfo, middleware.GetServiceChangeChannel(c), groupId, serviceId); err != nil {
+    groupInfo := middleware.GetGroupInfo(c)
+    if err := controller.ServiceSoftDelete(userInfo, groupInfo, middleware.GetServiceChangeChannel(c), groupId, serviceId); err != nil {
         middleware.AbortErr(c, err)
         return
     }

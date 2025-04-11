@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const props = defineProps<{ ownerGroups?: number; ownerServices?: number }>()
+const props = defineProps<{ ownerGroups?: number; ownerServices?: number; isLoading?: boolean }>()
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -61,11 +61,17 @@ const greetings = computed(() => {
         <div class="greeting-title-right">
           <div class="greeting-title-right-item">
             <div>{{ t("label.groups") }}</div>
-            <div class="mt-3 f-semiBold">{{ props.ownerGroups || 0 }}</div>
+            <div class="mt-3 f-semiBold">
+              <span v-if="!props.isLoading">{{ props.ownerGroups || 0 }}</span>
+              <v-loading v-else />
+            </div>
           </div>
           <div>
             <div>{{ t("label.services") }}</div>
-            <div class="mt-3 f-semiBold">{{ props.ownerServices || 0 }}</div>
+            <div class="mt-3 f-semiBold">
+              <span v-if="!props.isLoading">{{ props.ownerServices || 0 }}</span>
+              <v-loading v-else />
+            </div>
           </div>
         </div>
       </div>

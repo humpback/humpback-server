@@ -255,7 +255,7 @@ onMounted(async () => {
         <span v-else>--</span>
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
+    <el-table-column :label="t('label.updateDate')" min-width="160" prop="updatedAt" sortable="custom">
       <template #default="scope">
         <v-date-view :timestamp="scope.row.updatedAt" />
       </template>

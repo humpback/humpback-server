@@ -85,7 +85,7 @@ onMounted(async () => {
                       {{ t("label.createTime") }}
                     </el-text>
                   </template>
-                  <v-date-view :format="-1" :timestamp="scope.row.created" />
+                  <v-date-view :timestamp="scope.row.created" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -98,7 +98,7 @@ onMounted(async () => {
                       {{ t("label.startTime") }}
                     </el-text>
                   </template>
-                  <v-date-view :format="-1" :timestamp="scope.row.started" />
+                  <v-date-view :timestamp="scope.row.started" />
                 </el-form-item>
               </el-col>
               <el-divider border-style="dashed" />
@@ -113,7 +113,7 @@ onMounted(async () => {
                       {{ t("label.nextTime") }}
                     </el-text>
                   </template>
-                  <v-date-view :format="-1" :timestamp="scope.row.nextAt" />
+                  <v-date-view :timestamp="scope.row.nextAt" />
                 </el-form-item>
                 <el-divider border-style="dashed" />
               </el-col>

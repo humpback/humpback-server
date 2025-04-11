@@ -5,37 +5,57 @@ import GreetingPage from "./greetings.vue"
 import ActivitiesPage from "./activities.vue"
 import ExceptionServicesPage from "./exception-services.vue"
 import AbnormalNodesPage from "./abnormal-nodes.vue"
+import { DashboardResourceStatisticsInfo, NewDashboardResourceStatisticsInfo } from "@/types"
 
-const statistics = ref({
-  group: {
-    total: 200,
-    owner: 10
-  },
-  service: {
-    total: 1000,
-    owner: 200
-  },
-  node: {
-    total: 1000
-  },
-  user: {
-    total: 500
+const timelineRef = useTemplateRef<InstanceType<typeof TimeLinePage>>("timelineRef")
+const resourceStatisticsLoading = ref(false)
+const resourceStatisticsInfo = ref<DashboardResourceStatisticsInfo>(NewDashboardResourceStatisticsInfo())
+function get30DaysAgoMidnightTimestamp() {
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  const pastDate = new Date(now.getTime() - 29 * 24 * 60 * 60 * 1000)
+  return pastDate.getTime() // 返回毫秒时间戳
+}
+
+async function getResourceStatisticsInfo() {
+  resourceStatisticsLoading.value = true
+  return await dashboardService
+    .getResourceStatistics()
+    .then(statistics => {
+      resourceStatisticsInfo.value = statistics
+    })
+    .finally(() => (resourceStatisticsLoading.value = false))
+}
+
+async function getStatisticsCountData() {
+  const data = {
+    startAt: get30DaysAgoMidnightTimestamp()
   }
+  return await statisticsCountService.query(data).then(statistics => {
+    timelineRef.value?.setData(data.startAt, statistics)
+  })
+}
+
+onMounted(async () => {
+  await Promise.all([getResourceStatisticsInfo(), getStatisticsCountData()])
 })
 </script>
 
 <template>
   <div>
     <div>
-      <total-page />
+      <total-page :info="resourceStatisticsInfo" :is-loading="resourceStatisticsLoading" />
     </div>
 
     <div class="mt-5">
-      <greeting-page :owner-groups="statistics.group.owner" :owner-services="statistics.service.owner" />
+      <greeting-page
+        :is-loading="resourceStatisticsLoading"
+        :owner-groups="resourceStatisticsInfo.ownGroups"
+        :owner-services="resourceStatisticsInfo.ownServices" />
     </div>
 
     <div class="mt-5">
-      <time-line-page />
+      <time-line-page ref="timelineRef" />
     </div>
 
     <div class="mt-5">
@@ -44,10 +64,16 @@ const statistics = ref({
           <activities-page />
         </el-col>
         <el-col :span="8">
-          <exception-services-page />
+          <exception-services-page
+            :data="resourceStatisticsInfo.exceptionServices"
+            :enabled-services="resourceStatisticsInfo.enableOwnServices"
+            :is-loading="resourceStatisticsLoading" />
         </el-col>
         <el-col :span="8">
-          <abnormal-nodes-page />
+          <abnormal-nodes-page
+            :data="resourceStatisticsInfo.abnormalNodes"
+            :enabled-nodes="resourceStatisticsInfo.enableOwnNodes"
+            :is-loading="resourceStatisticsLoading" />
         </el-col>
       </el-row>
     </div>

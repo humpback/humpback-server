@@ -23,6 +23,24 @@ func UserGetSuperAdmin() (*types.User, error) {
     return nil, nil
 }
 
+func UsersGetTotal() (int, error) {
+    total := 0
+    if err := TransactionGet(func(tx *bolt.Tx) error {
+        bucket := tx.Bucket([]byte(BucketUsers))
+        if bucket == nil {
+            return ErrBucketNotExist
+        }
+        c := bucket.Cursor()
+        for k, _ := c.First(); k != nil; k, _ = c.Next() {
+            total++
+        }
+        return nil
+    }); err != nil {
+        return 0, err
+    }
+    return total, nil
+}
+
 func UsersGetAll() ([]*types.User, error) {
     return GetDataAll[types.User](BucketUsers)
 }

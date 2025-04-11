@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { TimestampToTime } from "@/utils"
 
-const props = withDefaults(defineProps<{ timestamp?: number; format?: number }>(), { format: 7 })
+const props = withDefaults(defineProps<{ timestamp?: number; format?: number }>(), { format: -1 })
 </script>
 
 <template>

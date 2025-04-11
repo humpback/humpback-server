@@ -35,7 +35,7 @@ func ServiceTotal(groupId string) (int, error) {
     return len(services), nil
 }
 
-func ServiceCreate(operator *types.User, info *models.ServiceCreateReqInfo) (string, error) {
+func ServiceCreate(operator *types.User, groupInfo *types.NodesGroups, info *models.ServiceCreateReqInfo) (string, error) {
     if err := serviceCheckNameExist(info.GroupId, info.ServiceName); err != nil {
         return "", err
     }
@@ -48,6 +48,7 @@ func ServiceCreate(operator *types.User, info *models.ServiceCreateReqInfo) (str
         Action:         types.ActivityActionAdd,
         OperatorInfo:   operator,
         OperateAt:      newService.UpdatedAt,
+        GroupName:      groupInfo.GroupName,
     })
     InsertStatisticsCount(&StatisticalCountEnvent{
         CreateAt: newService.UpdatedAt,
@@ -58,7 +59,7 @@ func ServiceCreate(operator *types.User, info *models.ServiceCreateReqInfo) (str
     return newService.ServiceId, nil
 }
 
-func ServiceClone(operator *types.User, info *models.ServiceCloneReqInfo) (string, error) {
+func ServiceClone(operator *types.User, groupInfo *types.NodesGroups, info *models.ServiceCloneReqInfo) (string, error) {
     serviceInfo, err := Service(info.GroupId, info.ServiceId)
     if err != nil {
         return "", err
@@ -94,6 +95,7 @@ func ServiceClone(operator *types.User, info *models.ServiceCloneReqInfo) (strin
         Action:         types.ActivityActionAdd,
         OperatorInfo:   operator,
         OperateAt:      newService.UpdatedAt,
+        GroupName:      groupInfo.GroupName,
     })
     InsertStatisticsCount(&StatisticalCountEnvent{
         CreateAt: newService.UpdatedAt,
@@ -117,7 +119,7 @@ func serviceCheckNameExist(groupId, serviceName string) error {
     return nil
 }
 
-func ServiceUpdate(operator *types.User, svcChan chan types.ServiceChangeInfo, info *models.ServiceUpdateReqInfo) (string, error) {
+func ServiceUpdate(operator *types.User, groupInfo *types.NodesGroups, svcChan chan types.ServiceChangeInfo, info *models.ServiceUpdateReqInfo) (string, error) {
     service, err := Service(info.GroupId, info.ServiceId)
     if err != nil {
         return "", err
@@ -170,6 +172,7 @@ func ServiceUpdate(operator *types.User, svcChan chan types.ServiceChangeInfo, i
         Action:         action,
         OperatorInfo:   operator,
         OperateAt:      service.UpdatedAt,
+        GroupName:      groupInfo.GroupName,
     })
     return service.ServiceId, nil
 }
@@ -202,7 +205,7 @@ func Service(groupId, serviceId string) (*types.Service, error) {
     return service, nil
 }
 
-func ServiceOperate(operator *types.User, svcChan chan types.ServiceChangeInfo, info *models.ServiceOperateReqInfo) (string, error) {
+func ServiceOperate(operator *types.User, groupInfo *types.NodesGroups, svcChan chan types.ServiceChangeInfo, info *models.ServiceOperateReqInfo) (string, error) {
     service, err := Service(info.GroupId, info.ServiceId)
     if err != nil {
         return "", err
@@ -250,6 +253,7 @@ func ServiceOperate(operator *types.User, svcChan chan types.ServiceChangeInfo, 
         Action:         action,
         OperatorInfo:   operator,
         OperateAt:      service.UpdatedAt,
+        GroupName:      groupInfo.GroupName,
     })
     if info.Action == types.ServiceActionEnable {
         InsertStatisticsCount(&StatisticalCountEnvent{
@@ -262,7 +266,7 @@ func ServiceOperate(operator *types.User, svcChan chan types.ServiceChangeInfo, 
     return service.ServiceId, nil
 }
 
-func ServiceSoftDelete(operator *types.User, svcChan chan types.ServiceChangeInfo, groupId, serviceId string) error {
+func ServiceSoftDelete(operator *types.User, groupInfo *types.NodesGroups, svcChan chan types.ServiceChangeInfo, groupId, serviceId string) error {
     service, err := db.ServiceGetById(serviceId)
     if err != nil {
         if err == db.ErrKeyNotExist {
@@ -285,6 +289,7 @@ func ServiceSoftDelete(operator *types.User, svcChan chan types.ServiceChangeInf
         Action:         types.ActivityActionDelete,
         OperatorInfo:   operator,
         OperateAt:      0,
+        GroupName:      groupInfo.GroupName,
     })
     return nil
 }

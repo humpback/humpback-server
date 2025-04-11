@@ -1,11 +1,14 @@
 <script lang="ts" setup>
+import { DashboardResourceStatisticsInfo } from "@/types"
+
+const props = defineProps<{ info: DashboardResourceStatisticsInfo; isLoading?: boolean }>()
 const { t } = useI18n()
 
 const totalOptions = computed(() => [
-  { i18nLabel: "label.groups", key: "groups", value: 200 },
-  { i18nLabel: "label.services", key: "services", value: 1000 },
-  { i18nLabel: "label.nodes", key: "nodes", value: 300 },
-  { i18nLabel: "label.users", key: "users", value: 50 }
+  { i18nLabel: "label.groups", key: "groups", value: props.info.groups },
+  { i18nLabel: "label.services", key: "services", value: props.info.services },
+  { i18nLabel: "label.nodes", key: "nodes", value: props.info.nodes },
+  { i18nLabel: "label.users", key: "users", value: props.info.users }
 ])
 </script>
 
@@ -16,7 +19,10 @@ const totalOptions = computed(() => [
         <div class="total-title">
           <div>{{ t(item.i18nLabel) }}</div>
         </div>
-        <div class="total-content"> {{ item.value }}</div>
+        <div class="total-content">
+          <span v-if="!props.isLoading">{{ item.value }}</span>
+          <v-loading v-else />
+        </div>
       </v-card>
     </el-col>
   </el-row>

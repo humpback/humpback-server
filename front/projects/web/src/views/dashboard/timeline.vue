@@ -13,7 +13,9 @@ import {
 import { LineChart, BarChart, LineSeriesOption, BarSeriesOption } from "echarts/charts"
 import { CanvasRenderer } from "echarts/renderers"
 import { UniversalTransition } from "echarts/features"
-import { map } from "lodash-es"
+import { map, toLower } from "lodash-es"
+import { TimestampToTime } from "@/utils"
+import { StatisticsCountInfo } from "@/types"
 
 echarts.use([GridComponent, ToolboxComponent, LegendComponent, BarChart, TooltipComponent, LineChart, CanvasRenderer, UniversalTransition])
 
@@ -26,34 +28,16 @@ const { t, locale } = useI18n()
 let incrementChart: echarts.ECharts
 const incrementRef = useTemplateRef<HTMLDivElement>("incrementRef")
 
-let incrementOptions = computed<EChartsOption>(() => ({
+let incrementOptions = ref<EChartsOption>({
   tooltip: {
-    trigger: "axis",
-    formatter: params => {
-      let content = ""
-      params = Array.isArray(params) ? params : [params]
-      content += `${params[0].axisValue}<br/>`
-      map(params, item => {
-        switch (item.seriesIndex) {
-          case 0:
-            content += `${item.marker}${item.seriesName}：${item.data}<br/>`
-            break
-          case 1:
-            content += `${item.marker}${item.seriesName}：${item.data}<br/>`
-            break
-          case 2:
-            content += `${item.marker}${item.seriesName}：${item.data}<br/>`
-            break
-        }
-      })
-      return content
-    }
+    trigger: "axis"
   },
   legend: {
     right: "50%",
     selected: {
       "Group": true,
       "Service": true,
+      "Node": true,
       "Deploy": true
     }
   },
@@ -76,7 +60,7 @@ let incrementOptions = computed<EChartsOption>(() => ({
   xAxis: [
     {
       type: "category",
-      data: ["3-1", "3-2", "3-3", "3-4", "4-5", "5-5", "6-5", "7-5", "8-5"]
+      data: []
     }
   ],
   yAxis: [{ type: "value" }],
@@ -85,46 +69,108 @@ let incrementOptions = computed<EChartsOption>(() => ({
       name: t("label.group"),
       type: "bar",
       seriesLayoutBy: "column",
-      data: [1, 2, 3, 4, 2, 3, 1, 9, 0]
+      data: []
     },
     {
       name: t("label.service"),
       type: "bar",
       seriesLayoutBy: "column",
-      data: [1, 5, 8, 4, 10, 3, 1, 0, 0]
+      data: []
     },
     {
       name: t("label.node"),
       type: "bar",
       seriesLayoutBy: "column",
-      data: [1, 5, 8, 4, 10, 3, 1, 0, 0]
+      data: []
     },
     {
       name: t("label.deploy"),
       type: "line",
       seriesLayoutBy: "column",
-      data: [5, 6, 7, 4, 20, 25, 11, 19, 16]
+      data: []
     }
   ]
-}))
+})
 
 function resize() {
   incrementChart?.resize()
 }
 
-watch(locale, () => {
+function refreshData() {
   incrementChart?.setOption(incrementOptions.value)
+}
+
+function setData(startAt: number, data: StatisticsCountInfo[]) {
+  const tempResultMap: Record<number, { timestamp: number; groups: number; services: number; nodes: number; deploy: number }> = {}
+  let tempStartAt = new Date(startAt)
+  tempStartAt.setHours(0, 0, 0, 0)
+  for (let i = 0; i < 30; i++) {
+    const timestamp = tempStartAt.getTime()
+    tempResultMap[timestamp] = { timestamp: timestamp, groups: 0, services: 0, nodes: 0, deploy: 0 }
+    tempStartAt.setDate(tempStartAt.getDate() + 1)
+  }
+  map(data, item => {
+    const date = new Date(item.createAt)
+    date.setHours(0, 0, 0, 0)
+    const timestamp = date.getTime()
+    const tempData = tempResultMap[timestamp]
+    if (tempData) {
+      switch (toLower(item.type)) {
+        case "group":
+          tempData.groups += item.num
+          break
+        case "service":
+          tempData.services += item.num
+          break
+        case "node":
+          tempData.nodes += item.num
+          break
+        case "deploy":
+          tempData.deploy += item.num
+          break
+      }
+      tempResultMap[timestamp] = tempData
+    }
+  })
+  const result = {
+    timeStr: [] as Array<string>,
+    groups: [] as Array<number>,
+    services: [] as Array<number>,
+    nodes: [] as Array<number>,
+    deploy: [] as Array<number>
+  }
+  Object.values(tempResultMap).forEach(v => {
+    result.timeStr.push(TimestampToTime(v.timestamp, 3))
+    result.groups.push(v.groups)
+    result.services.push(v.services)
+    result.nodes.push(v.nodes)
+    result.deploy.push(v.deploy)
+  })
+  incrementOptions.value!.xAxis![0].data = result.timeStr
+  incrementOptions.value!.series![0].data = result.groups
+  incrementOptions.value!.series![1].data = result.services
+  incrementOptions.value!.series![2].data = result.nodes
+  incrementOptions.value!.series![3].data = result.deploy
+  refreshData()
+}
+
+watch(locale, () => {
+  refreshData()
 })
 
 onMounted(() => {
   incrementChart = echarts.init(incrementRef.value)
-  incrementChart?.setOption(incrementOptions.value)
+  refreshData()
   window.addEventListener("resize", resize)
 })
 
 onBeforeUnmount(() => {
   incrementChart?.dispose()
   window.removeEventListener("resize", resize)
+})
+
+defineExpose({
+  setData
 })
 </script>
 

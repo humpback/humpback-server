@@ -23,7 +23,8 @@ export default {
     "systemError": "系统错误，请联系您的管理员进行检查！",
     "instanceNotExist": "实例不存在",
 
-    "NoAvailableNode": "无可用机器"
+    "NoAvailableNode": "无可用机器！",
+    "CreateContainerFailed": "创建实例失败！"
   },
   notify: {
     "noPermission": "无权限",

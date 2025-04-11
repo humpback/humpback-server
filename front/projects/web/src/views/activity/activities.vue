@@ -1,13 +1,7 @@
 <script lang="ts" setup>
 import { PageActivity } from "@/models"
 import { TabPaneName } from "element-plus"
-import PageGroups from "./groups/groups.vue"
-import PageServices from "./services/services.vue"
-import PageConfigs from "./configs/configs.vue"
-import PageNodes from "./nodes/nodes.vue"
-import PageUsers from "./users/users.vue"
-import PageTeams from "./teams/teams.vue"
-import PageRegistry from "./registries/registries.vue"
+import PageActivitiesContent from "./activity-content.vue"
 import { find } from "lodash-es"
 
 const { t } = useI18n()
@@ -22,14 +16,14 @@ async function changeTab(name: TabPaneName) {
   activeTab.value = name
 }
 
-const options = reactive<Array<{ name: string; label: string; component: any; limitAdmin?: boolean }>>([
-  { name: PageActivity.Groups, label: "header.groups", component: shallowRef(PageGroups) },
-  { name: PageActivity.Services, label: "header.services", component: shallowRef(PageServices) },
-  { name: PageActivity.Configs, label: "header.configs", component: shallowRef(PageConfigs) },
-  { name: PageActivity.Registries, label: "header.registries", component: shallowRef(PageRegistry), limitAdmin: true },
-  { name: PageActivity.Nodes, label: "header.nodes", component: shallowRef(PageNodes), limitAdmin: true },
-  { name: PageActivity.Users, label: "header.users", component: shallowRef(PageUsers), limitAdmin: true },
-  { name: PageActivity.Teams, label: "header.teams", component: shallowRef(PageTeams), limitAdmin: true }
+const options = reactive<Array<{ name: string; labelName: string; label: string; limitAdmin?: boolean }>>([
+  { name: PageActivity.Groups, labelName: "group", label: "header.groups" },
+  { name: PageActivity.Services, labelName: "service", label: "header.services" },
+  { name: PageActivity.Configs, labelName: "config", label: "header.configs" },
+  { name: PageActivity.Registries, labelName: "registry", label: "header.registries", limitAdmin: true },
+  { name: PageActivity.Nodes, labelName: "node", label: "header.nodes", limitAdmin: true },
+  { name: PageActivity.Users, labelName: "user", label: "header.users", limitAdmin: true },
+  { name: PageActivity.Teams, labelName: "team", label: "header.teams", limitAdmin: true }
 ])
 
 onMounted(() => {
@@ -49,7 +43,7 @@ onMounted(() => {
           <template #label>
             <strong>{{ t(item.label) }}</strong>
           </template>
-          <component :is="item.component" v-if="item.name === activeTab" />
+          <page-activities-content v-if="item.name === activeTab" :activity-type="item.name" :label-name="item.labelName" />
         </el-tab-pane>
       </template>
     </el-tabs>
