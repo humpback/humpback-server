@@ -44,6 +44,11 @@ export default {
     "eveningTips": "晚上好，{name}，一天的工作快结束了，辛苦啦！",
     "eveningAfterTips": "晚上好，{name}，注意休息，不要太晚睡！",
     "thankUseTips": "感谢您的使用！",
+    "noRecentActivities": "最近没有进行操作！",
+    "noEnabledServices": "没有启用的服务！",
+    "noExceptionServices": "服务运行的很稳定，没有异常的服务！",
+    "noEnabledNodes": "没有启用的机器!",
+    "noAbnormalNodes": "没有异常机器，超棒的机器维护！",
 
     "AUDIT_CONTROL": "启用和禁用内核审计;更改审计过滤规则;检索审核状态和筛选规则。",
     "AUDIT_WRITE": "将记录写入内核审计日志。",

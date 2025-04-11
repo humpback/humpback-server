@@ -19,6 +19,9 @@ func RouteService(router *gin.RouterGroup) {
     router.GET("/:serviceId/info", serviceInfo)
     router.PUT("/operate", serviceOperate)
     router.DELETE("/:serviceId", serviceDelete)
+    router.PUT("/:serviceId/instance/operate", instanceOperate)
+    router.POST("/:serviceId/instance/logs", instanceQueryLogs)
+    router.POST("/:serviceId/instance/performances", instancePerformances)
 }
 
 func serviceQuery(c *gin.Context) {
@@ -63,7 +66,9 @@ func serviceCreate(c *gin.Context) {
         return
     }
     body.GroupId = c.Param("groupId")
-    result, err := controller.ServiceCreate(body)
+    userInfo := middleware.GetUserInfo(c)
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.ServiceCreate(userInfo, groupInfo, body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -77,7 +82,9 @@ func serviceClone(c *gin.Context) {
         return
     }
     body.GroupId = c.Param("groupId")
-    result, err := controller.ServiceClone(body)
+    userInfo := middleware.GetUserInfo(c)
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.ServiceClone(userInfo, groupInfo, body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -91,7 +98,9 @@ func serviceUpdate(c *gin.Context) {
         return
     }
     body.GroupId = c.Param("groupId")
-    result, err := controller.ServiceUpdate(middleware.GetServiceChangeChannel(c), body)
+    userInfo := middleware.GetUserInfo(c)
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.ServiceUpdate(userInfo, groupInfo, middleware.GetServiceChangeChannel(c), body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -105,7 +114,9 @@ func serviceOperate(c *gin.Context) {
         return
     }
     body.GroupId = c.Param("groupId")
-    result, err := controller.ServiceOperate(middleware.GetServiceChangeChannel(c), body)
+    userInfo := middleware.GetUserInfo(c)
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.ServiceOperate(userInfo, groupInfo, middleware.GetServiceChangeChannel(c), body)
     if err != nil {
         middleware.AbortErr(c, err)
         return
@@ -116,9 +127,59 @@ func serviceOperate(c *gin.Context) {
 func serviceDelete(c *gin.Context) {
     serviceId := c.Param("serviceId")
     groupId := c.Param("groupId")
-    if err := controller.ServiceSoftDelete(middleware.GetServiceChangeChannel(c), groupId, serviceId); err != nil {
+    userInfo := middleware.GetUserInfo(c)
+    groupInfo := middleware.GetGroupInfo(c)
+    if err := controller.ServiceSoftDelete(userInfo, groupInfo, middleware.GetServiceChangeChannel(c), groupId, serviceId); err != nil {
         middleware.AbortErr(c, err)
         return
     }
     c.JSON(http.StatusOK, response.NewRespSucceed())
+}
+
+func instanceOperate(c *gin.Context) {
+    body := new(models.InstanceOperateReqInfo)
+    if !middleware.BindAndCheckBody(c, body) {
+        return
+    }
+    body.GroupId = c.Param("groupId")
+    body.ServiceId = c.Param("serviceId")
+    groupInfo := middleware.GetGroupInfo(c)
+    userInfo := middleware.GetUserInfo(c)
+    if err := controller.InstanceOperate(userInfo, groupInfo, body); err != nil {
+        middleware.AbortErr(c, err)
+        return
+    }
+    c.JSON(http.StatusOK, response.NewRespSucceed())
+}
+
+func instanceQueryLogs(c *gin.Context) {
+    body := new(models.InstanceLogsReqInfo)
+    if !middleware.BindAndCheckBody(c, body) {
+        return
+    }
+    body.GroupId = c.Param("groupId")
+    body.ServiceId = c.Param("serviceId")
+    groupInfo := middleware.GetGroupInfo(c)
+    logs, err := controller.InstanceQueryLogs(groupInfo, body)
+    if err != nil {
+        middleware.AbortErr(c, err)
+        return
+    }
+    c.JSON(http.StatusOK, logs)
+}
+
+func instancePerformances(c *gin.Context) {
+    body := new(models.InstancesPerformanceReqInfo)
+    if !middleware.BindAndCheckBody(c, body) {
+        return
+    }
+    body.GroupId = c.Param("groupId")
+    body.ServiceId = c.Param("serviceId")
+    groupInfo := middleware.GetGroupInfo(c)
+    result, err := controller.InsatncePerformances(groupInfo, body)
+    if err != nil {
+        middleware.AbortErr(c, err)
+        return
+    }
+    c.JSON(http.StatusOK, result)
 }

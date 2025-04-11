@@ -10,7 +10,7 @@ import (
 	"humpback/types"
 )
 
-func RegistryCreate(reqInfo *models.RegistryCreateReqInfo) (string, error) {
+func RegistryCreate(operator *types.User, reqInfo *models.RegistryCreateReqInfo) (string, error) {
 	_, defaultRegistry, err := registryCheck(reqInfo, "")
 	if err != nil {
 		return "", err
@@ -24,10 +24,16 @@ func RegistryCreate(reqInfo *models.RegistryCreateReqInfo) (string, error) {
 	if err = db.RegistryUpdate(updateList); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
+	InsertRegistryActivity(&ActivityRegistryInfo{
+		NewRegistryInfo: newInfo,
+		Action:          types.ActivityActionAdd,
+		OperatorInfo:    operator,
+		OperateAt:       newInfo.UpdatedAt,
+	})
 	return newInfo.RegistryId, err
 }
 
-func RegistryUpdate(reqInfo *models.RegistryUpdateReqInfo) (string, error) {
+func RegistryUpdate(operator *types.User, reqInfo *models.RegistryUpdateReqInfo) (string, error) {
 	oldRegistry, defaultRegistry, err := registryCheck(&reqInfo.RegistryCreateReqInfo, reqInfo.RegistryId)
 	if err != nil {
 		return "", err
@@ -41,6 +47,13 @@ func RegistryUpdate(reqInfo *models.RegistryUpdateReqInfo) (string, error) {
 	if err = db.RegistryUpdate(updateList); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
+	InsertRegistryActivity(&ActivityRegistryInfo{
+		OldRegistryInfo: oldRegistry,
+		NewRegistryInfo: newInfo,
+		Action:          types.ActivityActionUpdate,
+		OperatorInfo:    operator,
+		OperateAt:       newInfo.UpdatedAt,
+	})
 	return newInfo.RegistryId, err
 }
 
@@ -88,18 +101,18 @@ func Registries() ([]*types.Registry, error) {
 }
 
 func RegistryQuery(queryInfo *models.RegistryQueryReqInfo) (*response.QueryResult[types.Registry], error) {
-	registrys, err := Registries()
+	registries, err := Registries()
 	if err != nil {
 		return nil, err
 	}
-	result := queryInfo.QueryFilter(registrys)
+	result := queryInfo.QueryFilter(registries)
 	return response.NewQueryResult[types.Registry](
 		len(result),
 		types.QueryPagination[types.Registry](queryInfo.PageInfo, result),
 	), nil
 }
 
-func RegistryDelete(id string) error {
+func RegistryDelete(operator *types.User, id string) error {
 	info, err := Registry(id)
 	if err != nil {
 		return err
@@ -110,5 +123,11 @@ func RegistryDelete(id string) error {
 	if err := db.RegistryDelete(id); err != nil {
 		return response.NewRespServerErr(err.Error())
 	}
+	InsertRegistryActivity(&ActivityRegistryInfo{
+		OldRegistryInfo: info,
+		Action:          types.ActivityActionDelete,
+		OperatorInfo:    operator,
+		OperateAt:       0,
+	})
 	return nil
 }

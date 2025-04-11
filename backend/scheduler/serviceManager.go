@@ -131,7 +131,7 @@ func (sm *ServiceManager) Reconcile() {
 		}
 
 		// 如果有容器失败，就不再继续
-		if !sm.IsRunningWithSchedule() && sm.HasFailedContainer() {
+		if sm.HasFailedContainer() {
 			slog.Info("[Service Manager] container failed, stop dispatch......", "ServiceId", sm.ServiceInfo.ServiceId)
 			sm.ServiceInfo.Status = types.ServiceStatusFailed
 			sm.ServiceInfo.Memo = types.MemoCreateContainerFailed

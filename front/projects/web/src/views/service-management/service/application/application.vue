@@ -42,7 +42,7 @@ const labelRef = useTemplateRef<InstanceType<typeof LabelsPage>>("labelRef")
 const resourcesAndLogsRef = useTemplateRef<InstanceType<typeof ResourcesLogConfigPage>>("resourcesAndLogsRef")
 
 const rules = ref<FormRules>({
-  imageName: [
+  image: [
     { required: true, validator: RulePleaseEnter("label.image"), trigger: "blur" },
     {
       required: true,
@@ -55,9 +55,9 @@ const rules = ref<FormRules>({
   hostPort: [{ required: true, validator: checkHostPort, trigger: "blur" }]
 })
 
-const imageDomainExist = computed(() => {
+const registryDomainExist = computed(() => {
   if (registryStore.registries?.length > 0) {
-    return !!find(registryStore.registries, x => x.url === metaInfo.value.imageDomain)
+    return !!find(registryStore.registries, x => x.url === metaInfo.value.registryDomain)
   }
   return true
 })
@@ -208,7 +208,7 @@ async function search(init?: boolean) {
 }
 
 async function save() {
-  if (!(await validate()) || !imageDomainExist.value) {
+  if (!(await validate()) || !registryDomainExist.value) {
     return
   }
   isAction.value = true
@@ -233,12 +233,12 @@ onMounted(async () => {
   <el-form ref="formRef" v-loading="isLoading" :model="metaInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
     <el-row :gutter="12">
       <el-col :span="24">
-        <el-form-item :label="t('label.image')" prop="imageName">
-          <v-input v-model="metaInfo.imageName" :maxlength="RuleLength.ImageName?.Max" :placeholder="t('placeholder.egImage')" clearable show-word-limit>
+        <el-form-item :label="t('label.image')" prop="image">
+          <v-input v-model="metaInfo.image" :maxlength="RuleLength.ImageName?.Max" :placeholder="t('placeholder.egImage')" clearable show-word-limit>
             <template #prepend>
-              <el-dropdown placement="bottom-start" trigger="click" @command="metaInfo.imageDomain = $event">
+              <el-dropdown placement="bottom-start" trigger="click" @command="metaInfo.registryDomain = $event">
                 <div class="registry-domain">
-                  <div style="width: auto">{{ metaInfo.imageDomain }}</div>
+                  <div style="width: auto">{{ metaInfo.registryDomain }}</div>
                   <el-icon :size="18">
                     <IconMdiChevronDown />
                   </el-icon>
@@ -251,7 +251,7 @@ onMounted(async () => {
               </el-dropdown>
             </template>
           </v-input>
-          <div v-if="!imageDomainExist" class="mt-3 w-100">
+          <div v-if="!registryDomainExist" class="mt-3 w-100">
             <v-alert type="error">{{ t("rules.notExistRegistry") }}</v-alert>
           </div>
         </el-form-item>

@@ -11,14 +11,15 @@ import (
 	"humpback/types"
 )
 
-type GroupContainerOperateReqInfo struct {
+type InstanceOperateReqInfo struct {
 	GroupId     string `json:"-"`
+	ServiceId   string `json:"-"`
 	ContainerId string `json:"containerId"`
 	NodeId      string `json:"nodeId"`
 	Action      string `json:"action"`
 }
 
-func (g *GroupContainerOperateReqInfo) Check() error {
+func (g *InstanceOperateReqInfo) Check() error {
 	if err := verify.CheckIsEmpty(g.NodeId, locales.CodeNodesIdNotEmpty); err != nil {
 		return err
 	}
@@ -32,8 +33,9 @@ func (g *GroupContainerOperateReqInfo) Check() error {
 	return nil
 }
 
-type GroupContainerLogsReqInfo struct {
+type InstanceLogsReqInfo struct {
 	GroupId       string `json:"-"`
+	ServiceId     string `json:"-"`
 	ContainerId   string `json:"containerId"`
 	NodeId        string `json:"nodeId"`
 	Line          uint   `json:"line"`
@@ -42,7 +44,7 @@ type GroupContainerLogsReqInfo struct {
 	ShowTimestamp bool   `json:"showTimestamp"`
 }
 
-func (g *GroupContainerLogsReqInfo) Check() error {
+func (g *InstanceLogsReqInfo) Check() error {
 	if err := verify.CheckIsEmpty(g.ContainerId, locales.CodeContainerIdNotEmpty); err != nil {
 		return err
 	}
@@ -50,7 +52,7 @@ func (g *GroupContainerLogsReqInfo) Check() error {
 		return err
 	}
 	if g.StartAt > g.EndAt {
-		return response.NewBadRequestErr(locales.CodeContainerLogTimeInvlaid)
+		return response.NewBadRequestErr(locales.CodeContainerLogTimeInvalid)
 	}
 	if g.Line > uint(enum.LimitLogsLine.Max) {
 		g.Line = uint(enum.LimitLogsLine.Max)
@@ -58,15 +60,19 @@ func (g *GroupContainerLogsReqInfo) Check() error {
 	return nil
 }
 
-type GroupContainerStatsReqInfo struct {
+type InstanceStatsReqInfo struct {
 	ContainerId string `json:"containerId"`
 	NodeId      string `json:"nodeId"`
 }
 
-type GroupContainerPerformanceReqInfo []*GroupContainerStatsReqInfo
+type InstancesPerformanceReqInfo struct {
+	GroupId    string                  `json:"-"`
+	ServiceId  string                  `json:"-"`
+	Containers []*InstanceStatsReqInfo `json:"containers"`
+}
 
-func (g GroupContainerPerformanceReqInfo) Check() error {
-	for _, info := range g {
+func (i InstancesPerformanceReqInfo) Check() error {
+	for _, info := range i.Containers {
 		if info.ContainerId == "" {
 			return response.NewBadRequestErr(locales.CodeContainerIdNotEmpty)
 		}
@@ -74,7 +80,7 @@ func (g GroupContainerPerformanceReqInfo) Check() error {
 			return response.NewBadRequestErr(locales.CodeNodesIdNotEmpty)
 		}
 	}
-	if len(g) == 0 {
+	if len(i.Containers) == 0 {
 		response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	return nil

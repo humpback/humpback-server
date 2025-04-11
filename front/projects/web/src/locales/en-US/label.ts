@@ -1,6 +1,7 @@
 export default {
   label: {
     "all": "All",
+    "self": "Self",
     "role": "Role",
     "name": "Name",
     "username": "Username",
@@ -180,6 +181,7 @@ export default {
     "updateBasic": "Update Basic Info",
     "updateApplication": "Update Application",
     "updateDeployment": "Update Deployment",
-    "updateLabel": "Update Label"
+    "updateLabel": "Update Label",
+    "deploy": "Deploy"
   }
 }

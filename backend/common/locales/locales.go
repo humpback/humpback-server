@@ -78,6 +78,7 @@ const (
 	CodeRegistryUsernameLimitLength = "R4Registry-006"
 	CodeRegistryPasswordLimitLength = "R4Registry-007"
 	CodeRegistryDefaultNotDelete    = "R4Registry-008"
+	CodeRegistryDomainNotEmpty      = "R4Registry-009"
 
 	CodeNodesNotEmpty              = "R4Nodes-001"
 	CodeNodesIdNotEmpty            = "R4Nodes-002"
@@ -132,5 +133,9 @@ const (
 
 	CodeContainerIdNotEmpty     = "R4Container-001"
 	CodeContainerActionInvalid  = "R4Container-002"
-	CodeContainerLogTimeInvlaid = "R4Container-003"
+	CodeContainerLogTimeInvalid = "R4Container-003"
+	CodeContainerNotExist       = "R4Container-004"
+
+	CodeActivityTypeInvalid  = "R4Activity-001"
+	CodeActivityTypeNotEmpty = "R4Activity-002"
 )

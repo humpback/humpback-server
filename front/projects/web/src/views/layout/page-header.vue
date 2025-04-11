@@ -53,9 +53,9 @@ function handleUserMenuClick(v: string) {
     <div class="d-flex">
       <div class="d-flex gap-5 mr-5">
         <el-button v-if="!pageStore.isSmallScreen" link> {{ t("btn.help") }}</el-button>
-        <Language :iconSize="20" />
+        <Language :iconSize="18" />
         <el-link :underline="false" class="github-icon" href="https://github.com/humpback/humpback" target="_blank" title="GitHub">
-          <el-icon :size="22">
+          <el-icon :size="20">
             <IconMdiGithub />
           </el-icon>
         </el-link>

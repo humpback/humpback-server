@@ -29,7 +29,7 @@ const options = computed(() => {
   const data = [
     { label: "role.user", value: UserRole.User },
     { label: "role.admin", value: UserRole.Admin },
-    { label: "role.supperAdmin", value: UserRole.SupperAdmin }
+    { label: "role.superAdmin", value: UserRole.SuperAdmin }
   ]
   if (Array.isArray(props.onlyShowRoles) && props.onlyShowRoles.length > 0) {
     return data.filter(x => find(props.onlyShowRoles, r => r === x.value))

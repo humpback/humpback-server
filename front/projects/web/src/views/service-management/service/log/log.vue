@@ -55,7 +55,7 @@ function parseQuery() {
 }
 
 const queryLogs = CreateCancelRequest(async (...args: any[]) => {
-  return groupContainerService.logs(args[0], args[1])
+  return groupContainerService.logs(args[0], args[1], args[2])
 })
 
 async function getLogs() {
@@ -71,7 +71,7 @@ async function getLogs() {
   }
   await router.replace({ params: route.params, query: Object.assign({}, newQuery()) as any })
   isAction.value = true
-  await queryLogs(groupId.value, {
+  await queryLogs(groupId.value, serviceId.value, {
     nodeId: instanceInfo.nodeId,
     containerId: searchInfo.value.instance,
     line: searchInfo.value.line || 0,

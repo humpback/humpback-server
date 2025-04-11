@@ -1,9 +1,12 @@
-export interface ContainerPerformance {
-  containerId: string
-  nodeId: string
-  isSuccess: boolean
-  error: string
-  stats?: ContainerStats
+export interface ContainersPerformance {
+  statsAt: number
+  containers: Array<{
+    containerId: string
+    nodeId: string
+    isSuccess: boolean
+    error: string
+    stats?: ContainerStats
+  }>
 }
 
 export interface ContainerStats {

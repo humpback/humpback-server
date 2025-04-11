@@ -1,6 +1,7 @@
 export default {
   label: {
     "all": "全部",
+    "self": "自己",
     "role": "角色",
     "name": "名称",
     "username": "用户名",
@@ -180,6 +181,7 @@ export default {
     "updateBasic": "更新基本信息",
     "updateApplication": "更新应用信息",
     "updateDeployment": "更新部署信息",
-    "updateLabel": "更新标签"
+    "updateLabel": "更新标签",
+    "deploy": "部署"
   }
 }

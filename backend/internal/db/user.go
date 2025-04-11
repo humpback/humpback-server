@@ -10,17 +10,35 @@ import (
     bolt "go.etcd.io/bbolt"
 )
 
-func UserGetSupperAdmin() (*types.User, error) {
+func UserGetSuperAdmin() (*types.User, error) {
     users, err := UsersGetAll()
     if err != nil {
         return nil, err
     }
     for _, user := range users {
-        if types.IsSupperAdmin(user.Role) {
+        if types.IsSuperAdmin(user.Role) {
             return user, nil
         }
     }
     return nil, nil
+}
+
+func UsersGetTotal() (int, error) {
+    total := 0
+    if err := TransactionGet(func(tx *bolt.Tx) error {
+        bucket := tx.Bucket([]byte(BucketUsers))
+        if bucket == nil {
+            return ErrBucketNotExist
+        }
+        c := bucket.Cursor()
+        for k, _ := c.First(); k != nil; k, _ = c.Next() {
+            total++
+        }
+        return nil
+    }); err != nil {
+        return 0, err
+    }
+    return total, nil
 }
 
 func UsersGetAll() ([]*types.User, error) {

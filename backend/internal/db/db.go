@@ -27,7 +27,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
 
 	"humpback/config"
 
@@ -38,15 +37,29 @@ type dbHelper struct {
 	boltDB *bolt.DB
 }
 
-const BucketUsers = "Users"
-const BucketTeams = "Teams"
-const BucketSessions = "Sessions"
-const BucketRegistries = "Registries"
-const BucketConfigs = "Configs"
-const BucketNodes = "Nodes"
-const BucketNodesGroups = "NodesGroups"
-const BucketTemplates = "Templates"
-const BucketServices = "Services"
+const (
+	BucketUsers       = "Users"
+	BucketTeams       = "Teams"
+	BucketSessions    = "Sessions"
+	BucketRegistries  = "Registries"
+	BucketConfigs     = "Configs"
+	BucketNodes       = "Nodes"
+	BucketNodesGroups = "NodesGroups"
+	BucketServices    = "Services"
+	BucketActivities  = "Activities"
+	BucketStatistics  = "Statistics"
+)
+
+const (
+	ActivityBucketAccount     = "ActivityAccounts"
+	ActivityBucketUsers       = "ActivityUsers"
+	ActivityBucketTeams       = "ActivityTeams"
+	ActivityBucketNodes       = "ActivityNodes"
+	ActivityBucketRegistries  = "ActivityRegistries"
+	ActivityBucketNodesGroups = "ActivityNodesGroups"
+	ActivityBucketServices    = "ActivityNodesServices"
+	ActivityBucketConfigs     = "ActivityNodesConfigs"
+)
 
 var (
 	Buckets = []string{
@@ -57,8 +70,19 @@ var (
 		BucketConfigs,
 		BucketNodes,
 		BucketNodesGroups,
-		BucketTemplates,
 		BucketServices,
+		BucketActivities,
+		BucketStatistics,
+	}
+	ActivityBuckets = []string{
+		ActivityBucketAccount,
+		ActivityBucketUsers,
+		ActivityBucketTeams,
+		ActivityBucketNodes,
+		ActivityBucketRegistries,
+		ActivityBucketNodesGroups,
+		ActivityBucketServices,
+		ActivityBucketConfigs,
 	}
 )
 
@@ -70,29 +94,37 @@ var (
 var db *dbHelper
 
 func InitDB() error {
-	slog.Info("[Init DB] Check all buckets start...")
 	db = &dbHelper{}
 	boltDB, err := bolt.Open(config.DBArgs().Root, 0600, nil)
 	if err != nil {
 		return fmt.Errorf("open db failed: %s", err)
 	}
 	db.boltDB = boltDB
-	if err = db.boltDB.Batch(func(tx *bolt.Tx) error {
-		for _, bucket := range Buckets {
-			if _, err := tx.CreateBucketIfNotExists([]byte(bucket)); err != nil {
-				return err
-			}
-		}
-		return nil
-	}); err != nil {
-		return fmt.Errorf("init Buckets failed: %s", err)
-	}
-	slog.Info("[Init DB] Check all buckets completed.")
 	return nil
 }
 
 func CloseDB() {
 	db.boltDB.Close()
+}
+
+func EnsureAndInitBuckets() error {
+	return db.boltDB.Batch(func(tx *bolt.Tx) error {
+		for _, bucket := range Buckets {
+			if _, err := tx.CreateBucketIfNotExists([]byte(bucket)); err != nil {
+				return fmt.Errorf("check bucekt %s failed: %s", bucket, err)
+			}
+		}
+		activityBucket := tx.Bucket([]byte(BucketActivities))
+		if activityBucket == nil {
+			return ErrBucketNotExist
+		}
+		for _, bucket := range ActivityBuckets {
+			if _, err := activityBucket.CreateBucketIfNotExists([]byte(bucket)); err != nil {
+				return fmt.Errorf("check activity child bucekt %s failed: %s", bucket, err)
+			}
+		}
+		return nil
+	})
 }
 
 func GetDataById[T any](bucketName string, id string) (*T, error) {
@@ -116,6 +148,9 @@ func GetDataById[T any](bucketName string, id string) (*T, error) {
 
 func GetDataByIds[T any](bucketName string, ids []string, ignoreNotExist bool) ([]*T, error) {
 	var results = make([]*T, 0)
+	if len(ids) == 0 {
+		return results, nil
+	}
 	err := db.boltDB.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
@@ -272,6 +307,9 @@ func DeleteData(bucketName string, id string) error {
 }
 
 func DeleteDataByIds(bucketName string, ids []string) error {
+	if len(ids) == 0 {
+		return nil
+	}
 	return db.boltDB.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {

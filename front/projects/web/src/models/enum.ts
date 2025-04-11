@@ -5,7 +5,7 @@ export enum PageLimitRole {
 }
 
 export enum UserRole {
-  SupperAdmin = 1,
+  SuperAdmin = 1,
   Admin = 2,
   User = 3
 }

@@ -8,7 +8,7 @@ import (
 	"humpback/types"
 )
 
-func ConfigCreate(reqInfo *models.ConfigCreateReqInfo) (string, error) {
+func ConfigCreate(operator *types.User, reqInfo *models.ConfigCreateReqInfo) (string, error) {
 	if err := configCheckNameExist(reqInfo.ConfigName, ""); err != nil {
 		return "", err
 	}
@@ -16,10 +16,16 @@ func ConfigCreate(reqInfo *models.ConfigCreateReqInfo) (string, error) {
 	if err := db.ConfigUpdate(newInfo); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
+	InsertConfigActivity(&ActivityConfigInfo{
+		NewConfigInfo: newInfo,
+		Action:        types.ActivityActionAdd,
+		OperatorInfo:  operator,
+		OperateAt:     newInfo.UpdatedAt,
+	})
 	return newInfo.ConfigId, nil
 }
 
-func ConfigUpdate(reqInfo *models.ConfigUpdateReqInfo) (string, error) {
+func ConfigUpdate(operator *types.User, reqInfo *models.ConfigUpdateReqInfo) (string, error) {
 	if err := configCheckNameExist(reqInfo.ConfigName, reqInfo.ConfigId); err != nil {
 		return "", err
 	}
@@ -31,6 +37,13 @@ func ConfigUpdate(reqInfo *models.ConfigUpdateReqInfo) (string, error) {
 	if err = db.ConfigUpdate(newInfo); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
+	InsertConfigActivity(&ActivityConfigInfo{
+		OldConfigInfo: oldInfo,
+		NewConfigInfo: newInfo,
+		Action:        types.ActivityActionUpdate,
+		OperatorInfo:  operator,
+		OperateAt:     newInfo.UpdatedAt,
+	})
 	return newInfo.ConfigId, err
 }
 
@@ -70,9 +83,22 @@ func ConfigQuery(queryInfo *models.ConfigQueryReqInfo) (*response.QueryResult[ty
 	), nil
 }
 
-func ConfigDelete(id string) error {
+func ConfigDelete(operator *types.User, id string) error {
+	info, err := db.ConfigGetById(id)
+	if err != nil {
+		if err == db.ErrKeyNotExist {
+			return nil
+		}
+		return response.NewRespServerErr(err.Error())
+	}
 	if err := db.ConfigDelete(id); err != nil {
 		return response.NewRespServerErr(err.Error())
 	}
+	InsertConfigActivity(&ActivityConfigInfo{
+		OldConfigInfo: info,
+		Action:        types.ActivityActionDelete,
+		OperatorInfo:  operator,
+		OperateAt:     0,
+	})
 	return nil
 }

@@ -30,10 +30,14 @@ type HtmlConfig struct {
 }
 
 type DBConfig struct {
-	Root              string        `yaml:"root" json:"root" env:"DB_ROOT"`
-	Timeout           time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
-	SessionTimeout    time.Duration `yaml:"sessionTimeout" json:"sessionTimeout" env:"DB_SESSION_TIMEOUT"`
-	SessionGCInterval time.Duration `yaml:"sessionGCInterval" json:"sessionGCInterval" env:"DB_SESSION_GC_INTERVAL"`
+	Root                   string        `yaml:"root" json:"root" env:"DB_ROOT"`
+	Timeout                time.Duration `yaml:"timeout" json:"timeout" env:"DB_TIMEOUT"`
+	SessionTimeout         time.Duration `yaml:"sessionTimeout" json:"sessionTimeout" env:"DB_SESSION_TIMEOUT"`
+	SessionGCInterval      time.Duration `yaml:"sessionGCInterval" json:"sessionGCInterval" env:"DB_SESSION_GC_INTERVAL"`
+	ActivityGCInterval     time.Duration `yaml:"activityGCInterval" json:"activityGCInterval" env:"DB_ACTIVITY_GC_INTERVAL"`
+	ActivityRetentionDay   int           `yaml:"activityRetentionDay" json:"activityRetentionDay" env:"DB_ACTIVITY_RETENTION_DAY"`
+	StatisticsGCInterval   time.Duration `yaml:"statisticsGCInterval" json:"statisticsGCInterval" env:"DB_STATISTICS_GC_INTERVAL"`
+	StatisticsRetentionDay int           `yaml:"statisticsRetentionDay" json:"statisticsRetentionDay" env:"DB_STATISTICS_RETENTION_DAY"`
 }
 
 type AdminConfig struct {

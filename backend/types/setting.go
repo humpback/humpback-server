@@ -30,6 +30,13 @@ var (
 	ConfigTypeVolume ConfigType = 2
 )
 
+var (
+	ConfigTypesMap = map[ConfigType]string{
+		ConfigTypeStatic: "Static",
+		ConfigTypeVolume: "Volume",
+	}
+)
+
 type Config struct {
 	ConfigId    string     `json:"configId"`
 	ConfigName  string     `json:"configName"`

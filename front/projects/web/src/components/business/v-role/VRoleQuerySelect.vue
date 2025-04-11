@@ -25,7 +25,7 @@ const role = computed({
 const options = computed(() => [
   { label: "role.user", value: UserRole.User },
   { label: "role.admin", value: UserRole.Admin },
-  { label: "role.supperAdmin", value: UserRole.SupperAdmin }
+  { label: "role.superAdmin", value: UserRole.SuperAdmin }
 ])
 
 function change() {

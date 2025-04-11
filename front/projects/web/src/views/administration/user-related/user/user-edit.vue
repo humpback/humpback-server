@@ -45,7 +45,7 @@ const rules = ref<FormRules>({
 })
 
 function checkRole(rule: any, value: any, callback: any) {
-  const options = userStore.isSupperAdmin ? [UserRole.User, UserRole.Admin] : [UserRole.User]
+  const options = userStore.isSuperAdmin ? [UserRole.User, UserRole.Admin] : [UserRole.User]
   if (!find(options, x => x === value)) {
     return callback(new Error(t("rules.invalidRole")))
   }
@@ -133,7 +133,7 @@ defineExpose({ open })
               <v-role-select
                 v-model="dialogInfo.info.role"
                 :clearable="false"
-                :only-show-roles="userStore.isSupperAdmin ? [UserRole.User, UserRole.Admin] : [UserRole.User]" />
+                :only-show-roles="userStore.isSuperAdmin ? [UserRole.User, UserRole.Admin] : [UserRole.User]" />
             </el-form-item>
           </el-col>
           <el-col :span="12">

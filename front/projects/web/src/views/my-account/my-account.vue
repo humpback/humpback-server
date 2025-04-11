@@ -4,7 +4,7 @@ import { RuleFormatErrEmailOption, RuleFormatErrPhone, RulePleaseEnter } from "@
 import { RuleLength } from "@/models"
 import { FormInstance, FormRules } from "element-plus"
 import { cloneDeep } from "lodash-es"
-import { QueryInfo } from "@/types"
+import { ActivityInfo } from "@/types"
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -13,10 +13,18 @@ const loading = ref(false)
 const isLoadingActivities = ref(false)
 const userInfo = ref<UserInfo>(NewUserEmptyInfo())
 
-const queryUserActivityInfo = ref<QueryInfo>(new QueryInfo({}, ["keywords"], { size: 10, index: 1 }, { field: "", order: "desc" }))
+const queryUserActivityInfo = ref<any>({
+  filter: {
+    "type": "account"
+  },
+  pageInfo: {
+    size: 10,
+    index: 1
+  }
+})
 const activities = ref({
   total: 0,
-  data: [] as Array<any>
+  data: [] as Array<ActivityInfo>
 })
 
 const tableRef = useTemplateRef<FormInstance>("tableRef")
@@ -37,6 +45,10 @@ const rules = ref<FormRules>({
   description: [{ validator: RuleLimitMax(RuleLength.Description.Max), trigger: "blur" }]
 })
 
+const setRowClass = ({ row }) => {
+  return !row.oldContent && !row.newContent ? "hide-expand-icon" : ""
+}
+
 async function getUserInfo() {
   loading.value = true
   return await userService
@@ -50,7 +62,16 @@ async function getUserInfo() {
     })
 }
 
-async function getUserActivities() {}
+async function getUserActivities() {
+  isLoadingActivities.value = true
+  return await activityService
+    .query(queryUserActivityInfo.value)
+    .then(data => {
+      activities.value.total = data.total
+      activities.value.data = data.list
+    })
+    .finally(() => (isLoadingActivities.value = false))
+}
 
 async function save() {
   if (!(await tableRef.value?.validate())) {
@@ -62,89 +83,131 @@ async function save() {
     phone: userInfo.value.phone,
     description: userInfo.value.description
   })
-  await getUserInfo()
   ShowSuccessMsg(t("message.saveSuccess"))
+  await Promise.all([getUserInfo(), getUserActivities()])
 }
 
 onMounted(async () => {
-  await getUserInfo()
+  await Promise.all([getUserInfo(), getUserActivities()])
 })
 </script>
 
 <template>
-  <v-card v-loading="loading">
-    <div>
-      <v-role-admin :role="userInfo.role" size="default" />
-      <div class="d-flex gap-1 mt-2 pl-1 mb-3">
-        <el-text type="info">
-          {{ t("label.createDate") }}:
-          <v-date-view :timestamp="userInfo.createdAt" />
-        </el-text>
-        <el-divider direction="vertical" />
-        <div>
-          <change-password />
+  <div>
+    <v-card v-loading="loading">
+      <div>
+        <v-role-admin :role="userInfo.role" size="default" />
+        <div class="d-flex gap-1 mt-2 pl-1 mb-3">
+          <el-text type="info">
+            {{ t("label.createDate") }}:
+            <v-date-view :format="7" :timestamp="userInfo.createdAt" />
+          </el-text>
+          <el-divider direction="vertical" />
+          <div>
+            <change-password />
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="mb-5 mt-2">
-      <v-alert> {{ t("tips.usernameChangeTips") }}</v-alert>
-    </div>
-    <el-form ref="tableRef" :model="userInfo" :rules="rules" label-position="top" label-width="auto">
-      <el-row :gutter="12">
-        <el-col>
-          <el-form-item :label="t('label.username')" prop="username">
-            <v-username-input v-model="userInfo.username" />
-          </el-form-item>
-        </el-col>
-        <el-col>
-          <el-form-item :label="t('label.description')" prop="description">
-            <v-description-input v-model="userInfo.description" />
-          </el-form-item>
-        </el-col>
-        <el-col :md="12" :span="24">
-          <el-form-item :label="t('label.email')" prop="email">
-            <v-email-input v-model="userInfo.email" />
-          </el-form-item>
-        </el-col>
-        <el-col :md="12" :span="24">
-          <el-form-item :label="t('label.phone')" prop="phone">
-            <v-phone-input v-model="userInfo.phone" />
-          </el-form-item>
-        </el-col>
-        <el-col>
-          <el-form-item>
-            <div class="text-align-right w-100">
-              <el-button type="primary" @click="save()">{{ t("btn.save") }}</el-button>
-            </div>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-  </v-card>
-
-  <v-card v-loading="isLoadingActivities" class="mt-5">
-    <div class="d-flex gap-1">
-      <div class="f-bold">
-        {{ t("label.activities") }}
+      <div class="mb-5 mt-2">
+        <v-alert> {{ t("tips.usernameChangeTips") }}</v-alert>
       </div>
-      <el-button :title="t('label.refresh')" link type="primary">
-        <el-icon :size="20">
-          <IconMdiRefresh />
-        </el-icon>
-      </el-button>
-    </div>
-    <v-table
-      :data="activities.data"
-      :page-info="queryUserActivityInfo.pageInfo"
-      :show-header="false"
-      :total="activities.total"
-      @page-change="getUserActivities()">
-      <el-table-column>
-        <template #default></template>
-      </el-table-column>
-    </v-table>
-  </v-card>
+      <el-form ref="tableRef" :model="userInfo" :rules="rules" label-position="top" label-width="auto">
+        <el-row :gutter="12">
+          <el-col>
+            <el-form-item :label="t('label.username')" prop="username">
+              <v-username-input v-model="userInfo.username" />
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item :label="t('label.description')" prop="description">
+              <v-description-input v-model="userInfo.description" />
+            </el-form-item>
+          </el-col>
+          <el-col :md="12" :span="24">
+            <el-form-item :label="t('label.email')" prop="email">
+              <v-email-input v-model="userInfo.email" />
+            </el-form-item>
+          </el-col>
+          <el-col :md="12" :span="24">
+            <el-form-item :label="t('label.phone')" prop="phone">
+              <v-phone-input v-model="userInfo.phone" />
+            </el-form-item>
+          </el-col>
+          <el-col>
+            <el-form-item>
+              <div class="text-align-right w-100">
+                <el-button type="primary" @click="save()">{{ t("btn.save") }}</el-button>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </v-card>
+
+    <v-card class="mt-5">
+      <div class="d-flex gap-1">
+        <div class="f-bold">
+          {{ t("label.activities") }}
+        </div>
+        <el-button :disabled="isLoadingActivities" :title="t('label.refresh')" link type="primary" @click="getUserActivities()">
+          <el-icon v-if="!isLoadingActivities" :size="20">
+            <IconMdiRefresh />
+          </el-icon>
+          <v-loading v-else />
+        </el-button>
+      </div>
+      <div class="activity-content">
+        <v-table
+          v-loading="isLoadingActivities"
+          v-model:page-info="queryUserActivityInfo.pageInfo"
+          :data="activities.data"
+          :row-class-name="setRowClass"
+          :total="activities.total"
+          hide-header-bg-color
+          @page-change="getUserActivities()">
+          <el-table-column align="left" class-name="expand-column" type="expand" width="24">
+            <template #default="scope">
+              <div class="px-5">
+                <v-monaco-diff-editor
+                  v-if="scope.row.oldContent || scope.row.newContent"
+                  :new-data="scope.row.newContent ? JSON.stringify(scope.row.newContent, null, 4) : ''"
+                  :old-data="scope.row.oldContent ? JSON.stringify(scope.row.oldContent, null, 4) : ''"
+                  language="json" />
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column :label="t('label.description')" min-width="200px">
+            <template #default="scope">
+              <span>{{ t(`activity.account.${scope.row.action}`) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column width="160px">
+            <template #default="scope">
+              <v-date-view :timestamp="scope.row.operateAt" />
+            </template>
+          </el-table-column>
+        </v-table>
+      </div>
+    </v-card>
+  </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.activity-content {
+  margin-top: 40px;
+}
+
+:deep(.expand-column) {
+  .cell {
+    padding: 0 4px 0 8px;
+  }
+}
+
+:deep(.hide-expand-icon) {
+  .expand-column .cell {
+    padding-top: 4px;
+    display: none;
+  }
+}
+</style>

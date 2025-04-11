@@ -94,12 +94,12 @@ onMounted(() => search())
             <el-button v-else link type="primary" @click="openAction(Action.View, scope.row)">{{ t("btn.view") }}</el-button>
           </template>
         </el-table-column>
-        <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
+        <el-table-column :label="t('label.updateDate')" min-width="160" prop="updatedAt" sortable="custom">
           <template #default="scope">
             <v-date-view :timestamp="scope.row.updatedAt" />
           </template>
         </el-table-column>
-        <el-table-column :label="t('label.createDate')" min-width="140" prop="createdAt" sortable="custom">
+        <el-table-column :label="t('label.createDate')" min-width="160" prop="createdAt" sortable="custom">
           <template #default="scope">
             <v-date-view :timestamp="scope.row.createdAt" />
           </template>

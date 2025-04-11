@@ -23,7 +23,8 @@ export default {
     "systemError": "System Error, Contact your administrator to check!",
     "instanceNotExist": "The instance does not exist",
 
-    "NoAvailableNode": "No nodes available"
+    "NoAvailableNode": "No nodes available!",
+    "CreateContainerFailed": "Create instance failed!"
   },
   notify: {
     "noPermission": "No permission",

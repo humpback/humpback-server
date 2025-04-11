@@ -13,24 +13,38 @@ import (
 
 func Start(stopCh <-chan struct{}) {
 	go SessionGCInterval(stopCh)
+	go ActivityGCInterval(stopCh)
+	go StatisticsCountGCInterval(stopCh)
+	go ReceiveActivities(stopCh)
+	go ReceiveStatisticsCount(stopCh)
 }
 
 func InitData() error {
-	if err := initAdminUser(); err != nil {
+	slog.Info("[Init Buckets] Ensure and init all buckets...")
+	if err := db.EnsureAndInitBuckets(); err != nil {
+		return fmt.Errorf("init Buckets failed: %s", err)
+	}
+	slog.Info("[Init Buckets] Ensure and init all buckets completed.")
+
+	slog.Info("[Init Super Admin] Ensure and init super admin account...")
+	if err := ensureAndInitSuperAdminUser(); err != nil {
+		return fmt.Errorf("init super admin acount failed: %s", err)
+	}
+	slog.Info("[Init Super Admin] Ensure and init super admin account completed.")
+
+	slog.Info("[Init Default Registry] Ensure and init default registry...")
+	if err := ensureAndInitRegistry(); err != nil {
 		return err
 	}
-	if err := initRegistry(); err != nil {
-		return err
-	}
+	slog.Info("[Init Default Registry] Ensure and init default registry completed.")
 	return nil
 }
 
-func initAdminUser() error {
-	slog.Info("[Init Supper Admin] Account check start...")
+func ensureAndInitSuperAdminUser() error {
 	adminConfig := config.AdminArgs()
-	user, err := db.UserGetSupperAdmin()
+	user, err := db.UserGetSuperAdmin()
 	if err != nil {
-		return fmt.Errorf("Check supper admin account failed: %s", err)
+		return err
 	}
 	if user == nil {
 		var (
@@ -43,23 +57,21 @@ func initAdminUser() error {
 			Email:     "",
 			Password:  adminConfig.Password,
 			Phone:     "",
-			Role:      types.UserRoleSupperAdmin,
+			Role:      types.UserRoleSuperAdmin,
 			CreatedAt: t,
 			UpdatedAt: t,
 			Teams:     nil,
 		}); err != nil {
-			return fmt.Errorf("Create supper admin account failed: %s", err)
+			return fmt.Errorf("create super admin account failed: %s", err)
 		}
 	}
-	slog.Info("[Init Supper Admin] Account check completed.")
 	return nil
 }
 
-func initRegistry() error {
-	slog.Info("[Init Default Registry] Default Registry check start...")
+func ensureAndInitRegistry() error {
 	registries, err := db.RegistryGetAll()
 	if err != nil {
-		return fmt.Errorf("Check default registry failed: %s", err)
+		return fmt.Errorf("get registry failed: %s", err)
 	}
 	if slices.IndexFunc(registries, func(item *types.Registry) bool {
 		return item.URL == "docker.io"
@@ -76,10 +88,9 @@ func initRegistry() error {
 				UpdatedAt:  nowT,
 			},
 		}); err != nil {
-			return fmt.Errorf("Create default registry failed: %s", err)
+			return fmt.Errorf("create default registry failed: %s", err)
 		}
 	}
-	slog.Info("[Init Default Registry] Default Registry check completed.")
 	return nil
 }
 

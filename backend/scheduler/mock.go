@@ -152,7 +152,8 @@ func mockWebServices(c *gin.Context) {
 			Replicas: 2,
 		},
 		Meta: &types.ServiceMetaDocker{
-			Image: "nginx:latest",
+			RegistryDomain: "docker.io",
+			Image:          "nginx:latest",
 			Network: &types.NetworkInfo{
 				Mode: types.NetworkModeBridge,
 				Ports: []*types.PortInfo{
@@ -203,7 +204,8 @@ func mockScheduleServices(c *gin.Context) {
 			},
 		},
 		Meta: &types.ServiceMetaDocker{
-			Image: "nginx:latest",
+			RegistryDomain: "docker.io",
+			Image:          "nginx:latest",
 			Network: &types.NetworkInfo{
 				Mode: types.NetworkModeBridge,
 				Ports: []*types.PortInfo{

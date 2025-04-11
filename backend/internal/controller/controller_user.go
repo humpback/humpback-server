@@ -13,7 +13,7 @@ import (
 	"humpback/types"
 )
 
-func UserLogin(reqInfo *models.UserLoginReqInfo) (*types.User, string, error) {
+func MeLogin(reqInfo *models.UserLoginReqInfo) (*types.User, string, error) {
 	user, err := userCheckNamePsd(reqInfo.Username, reqInfo.Password)
 	if err != nil {
 		return nil, "", err
@@ -25,6 +25,7 @@ func UserLogin(reqInfo *models.UserLoginReqInfo) (*types.User, string, error) {
 	if err = SessionUpdate(sessionInfo); err != nil {
 		return nil, "", err
 	}
+	InsertAccountActivity(nil, user, types.ActivityActionLogin, 0)
 	return user, sessionInfo.SessionId, nil
 }
 
@@ -44,7 +45,24 @@ func userCheckNamePsd(username, password string) (*types.User, error) {
 	return nil, response.NewBadRequestErr(locales.CodeUserNotExist)
 }
 
-func MeUpdate(userInfo *types.User) error {
+func MeLogout(userInfo *types.User, sessionId string) error {
+	if err := SessionDelete(sessionId); err != nil {
+		return err
+	}
+	InsertAccountActivity(nil, userInfo, types.ActivityActionLogout, 0)
+	return nil
+}
+
+func MeUpdate(userInfo *types.User, info *models.MeUpdateReqInfo) error {
+	currentUser := info.NewUserInfo(userInfo)
+	if err := meUpdate(currentUser); err != nil {
+		return response.NewRespServerErr(err.Error())
+	}
+	InsertAccountActivity(userInfo, currentUser, types.ActivityActionUpdate, currentUser.UpdatedAt)
+	return nil
+}
+
+func meUpdate(userInfo *types.User) error {
 	if err := db.UserUpdate(userInfo.UserId, userInfo); err != nil {
 		return response.NewRespServerErr(err.Error())
 	}
@@ -57,16 +75,17 @@ func MeChangePassword(userInfo *types.User, reqInfo *models.MeChangePasswordReqI
 	}
 	userInfo.Password = reqInfo.NewPassword
 	userInfo.UpdatedAt = utils.NewActionTimestamp()
-	if err := MeUpdate(userInfo); err != nil {
+	if err := meUpdate(userInfo); err != nil {
 		return err
 	}
 	if err := SessionDeleteByUserId(userInfo.UserId); err != nil {
 		return err
 	}
+	InsertAccountActivity(nil, userInfo, types.ActivityActionChangePassword, userInfo.UpdatedAt)
 	return nil
 }
 
-func UserCreate(reqInfo *models.UserCreateReqInfo) (string, error) {
+func UserCreate(operator *types.User, reqInfo *models.UserCreateReqInfo) (string, error) {
 	err := userCheckNameExist(reqInfo.Username, "")
 	if err != nil {
 		return "", err
@@ -88,6 +107,13 @@ func UserCreate(reqInfo *models.UserCreateReqInfo) (string, error) {
 	if err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
+	InsertUserActivity(&ActivityUserInfo{
+		NewUserInfo:  userInfo,
+		NewTeams:     teams,
+		Action:       types.ActivityActionAdd,
+		OperatorInfo: operator,
+		OperateAt:    userInfo.UpdatedAt,
+	})
 	return id, nil
 }
 
@@ -100,7 +126,7 @@ func UserUpdate(reqInfo *models.UserUpdateReqInfo, operator *types.User) (string
 		return "", err
 	}
 	newUser, clearSession := reqInfo.NewUserInfo(oldUser)
-	updateTeams, err := userUpdateCheckTeams(oldUser.Teams, newUser.Teams, newUser.UserId)
+	allTeams, updateTeams, err := userUpdateCheckTeams(oldUser.Teams, newUser.Teams, newUser.UserId)
 	if err != nil {
 		return "", err
 	}
@@ -115,6 +141,15 @@ func UserUpdate(reqInfo *models.UserUpdateReqInfo, operator *types.User) (string
 			return "", err
 		}
 	}
+	InsertUserActivity(&ActivityUserInfo{
+		OldUserInfo:  oldUser,
+		OldTeams:     allTeams,
+		NewUserInfo:  newUser,
+		NewTeams:     allTeams,
+		Action:       types.ActivityActionUpdate,
+		OperatorInfo: operator,
+		OperateAt:    newUser.UpdatedAt,
+	})
 	return id, nil
 }
 
@@ -123,7 +158,7 @@ func userCheckRole(reqInfo *models.UserUpdateReqInfo, operator *types.User) (*ty
 	if err != nil {
 		return nil, err
 	}
-	if types.IsAdmin(user.Role) && !types.IsSupperAdmin(operator.Role) {
+	if types.IsAdmin(user.Role) && !types.IsSuperAdmin(operator.Role) {
 		return nil, response.NewNoPermissionErr(locales.CodeNoPermission)
 	}
 	return user, nil
@@ -142,9 +177,9 @@ func userCheckNameExist(username, userId string) error {
 	return nil
 }
 
-func userUpdateCheckTeams(oldTeams, newTeams []string, userId string) ([]*types.Team, error) {
+func userUpdateCheckTeams(oldTeams, newTeams []string, userId string) ([]*types.Team, []*types.Team, error) {
 	if len(oldTeams) == 0 && len(newTeams) == 0 {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	var teamIdMap = map[string]int{}
@@ -160,10 +195,14 @@ func userUpdateCheckTeams(oldTeams, newTeams []string, userId string) ([]*types.
 	}
 	teamList, err := TeamsGetByIds(maps.Keys(teamIdMap), false)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	var resultTeams = make([]*types.Team, 0)
+	var (
+		resultTeams = make([]*types.Team, 0)
+		allTeams    = make([]*types.Team, 0)
+	)
 	for _, team := range teamList {
+		allTeams = append(allTeams, team)
 		action, ok := teamIdMap[team.TeamId]
 		if !ok && action == 0 {
 			continue
@@ -179,7 +218,7 @@ func userUpdateCheckTeams(oldTeams, newTeams []string, userId string) ([]*types.
 			resultTeams = append(resultTeams, team)
 		}
 	}
-	return resultTeams, nil
+	return allTeams, resultTeams, nil
 }
 
 func User(id string) (*types.User, error) {
@@ -240,7 +279,7 @@ func UsersGetByTeamId(teamId string) ([]*types.User, error) {
 }
 
 func UserDelete(id string, operator *types.User) error {
-	info, err := db.UserGetById(id)
+	userInfo, err := db.UserGetById(id)
 	if err != nil {
 		if err == db.ErrKeyNotExist {
 			return nil
@@ -250,11 +289,11 @@ func UserDelete(id string, operator *types.User) error {
 	if id == operator.UserId {
 		return response.NewBadRequestErr(locales.CodeUserIsOwner)
 	}
-	if info.Role == types.UserRoleSupperAdmin || (info.Role == types.UserRoleAdmin && operator.Role != types.UserRoleSupperAdmin) {
+	if userInfo.Role == types.UserRoleSuperAdmin || (userInfo.Role == types.UserRoleAdmin && operator.Role != types.UserRoleSuperAdmin) {
 		return response.NewNoPermissionErr(locales.CodeNoPermission)
 	}
 
-	teams, err := userDeleteCheckTeams(info.Teams, id)
+	teams, err := userDeleteCheckTeams(userInfo.Teams, id)
 	if err != nil {
 		return err
 	}
@@ -278,8 +317,15 @@ func UserDelete(id string, operator *types.User) error {
 		return response.NewRespServerErr(err.Error())
 	}
 	if err = db.SessionBatchDeleteByUserId(id); err != nil {
-		slog.Warn("[User Delete] Clear session failed.", "UserId", id, "UserName", info.Username, "Error", err.Error())
+		slog.Warn("[User Delete] Clear session failed.", "UserId", id, "UserName", userInfo.Username, "Error", err.Error())
 	}
+	InsertUserActivity(&ActivityUserInfo{
+		OldUserInfo:  userInfo,
+		OldTeams:     teams,
+		Action:       types.ActivityActionDelete,
+		OperatorInfo: operator,
+		OperateAt:    0,
+	})
 	return nil
 }
 

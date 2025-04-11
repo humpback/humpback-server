@@ -9,20 +9,20 @@ const action = defineModel<string>()
 
 const options = computed<Array<{ i18nLabel: string; value: string; modeList: string[] }>>(() => {
   const actions = [
-    { i18nLabel: "label.add", value: "add", modeList: ["group", "service", "registry", "config", "node", "user", "team"] },
-    { i18nLabel: "label.update", value: "update", modeList: ["group", "registry", "config", "user", "team"] },
-    { i18nLabel: "label.delete", value: "delete", modeList: ["group", "service", "registry", "config", "node", "user", "team"] },
-    { i18nLabel: "label.updateLabel", value: "updateLabel", modeList: ["node"] },
-    { i18nLabel: "label.addNode", value: "addNode", modeList: ["group"] },
-    { i18nLabel: "label.removeNode", value: "removeNode", modeList: ["group"] },
-    { i18nLabel: "label.updateBasic", value: "updateBasic", modeList: ["service"] },
-    { i18nLabel: "label.updateApplication", value: "updateApplication", modeList: ["service"] },
-    { i18nLabel: "label.updateDeployment", value: "updateDeployment", modeList: ["service"] },
-    { i18nLabel: "label.enable", value: "enable", modeList: ["service", "node"] },
-    { i18nLabel: "label.disable", value: "disable", modeList: ["service", "node"] },
-    { i18nLabel: "label.start", value: "start", modeList: ["service"] },
-    { i18nLabel: "label.restart", value: "restart", modeList: ["service"] },
-    { i18nLabel: "label.stop", value: "stop", modeList: ["service"] }
+    { i18nLabel: "label.add", value: "Add", modeList: ["group", "service", "registry", "config", "node", "user", "team"] },
+    { i18nLabel: "label.update", value: "Update", modeList: ["group", "registry", "config", "user", "team"] },
+    { i18nLabel: "label.delete", value: "Delete", modeList: ["group", "service", "registry", "config", "node", "user", "team"] },
+    { i18nLabel: "label.updateLabel", value: "UpdateLabel", modeList: ["node"] },
+    { i18nLabel: "label.addNode", value: "AddNode", modeList: ["group"] },
+    { i18nLabel: "label.removeNode", value: "RemoveNode", modeList: ["group"] },
+    { i18nLabel: "label.updateBasic", value: "UpdateBasic", modeList: ["service"] },
+    { i18nLabel: "label.updateApplication", value: "UpdateApplication", modeList: ["service"] },
+    { i18nLabel: "label.updateDeployment", value: "UpdateDeployment", modeList: ["service"] },
+    { i18nLabel: "label.enable", value: "Enable", modeList: ["service", "node"] },
+    { i18nLabel: "label.disable", value: "Disable", modeList: ["service", "node"] },
+    { i18nLabel: "label.start", value: "Start", modeList: ["service"] },
+    { i18nLabel: "label.restart", value: "Restart", modeList: ["service"] },
+    { i18nLabel: "label.stop", value: "Stop", modeList: ["service"] }
   ]
   return filter(actions, x => !!find(x.modeList, m => m === props.mode))
 })

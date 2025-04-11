@@ -28,7 +28,8 @@ func teamCreate(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.TeamCreate(body)
+	userInfo := middleware.GetUserInfo(c)
+	id, err := controller.TeamCreate(userInfo, body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -41,7 +42,8 @@ func teamUpdate(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.TeamUpdate(body)
+	userInfo := middleware.GetUserInfo(c)
+	id, err := controller.TeamUpdate(userInfo, body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -96,7 +98,8 @@ func teamsByUserId(c *gin.Context) {
 
 func teamDelete(c *gin.Context) {
 	id := c.Param("id")
-	if err := controller.TeamDelete(id); err != nil {
+	userInfo := middleware.GetUserInfo(c)
+	if err := controller.TeamDelete(userInfo, id); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}

@@ -12,16 +12,16 @@ import (
 )
 
 func SessionGCInterval(stopCh <-chan struct{}) {
-	slog.Info("[GC Session] startup.", "Interval", config.DBArgs().SessionGCInterval.String())
+	slog.Info("[Session GC] Startup GC channel.", "Interval", config.DBArgs().SessionGCInterval.String())
 	ticker := time.NewTicker(config.DBArgs().SessionGCInterval)
 	defer ticker.Stop()
 	for {
 		select {
 		case <-ticker.C:
-			slog.Info("[GC Session] time is up...")
+			slog.Info("[Session GC] Time is up...")
 			sessions, err := db.SessionsGetAll()
 			if err != nil {
-				slog.Error("[GC Session] get all session failed.", "Error", err)
+				slog.Error("[Session GC] get all session failed.", "Error", err)
 			}
 			var (
 				nowT  = utils.NewActionTimestamp()
@@ -32,12 +32,12 @@ func SessionGCInterval(stopCh <-chan struct{}) {
 					gcIds = append(gcIds, session.SessionId)
 				}
 			}
-			slog.Info("[GC Session] checked.", "Total", len(gcIds))
+			slog.Info("[Session GC] Checked.", "Total", len(gcIds))
 			if len(gcIds) > 0 {
 				if err = db.SessionGCByIds(gcIds); err != nil {
-					slog.Error("[GC Session] gc session failed.", "Total", len(gcIds), "Error", err)
+					slog.Error("[Session GC] GC session failed.", "Total", len(gcIds), "Error", err)
 				} else {
-					slog.Info("[GC Session] gc session success", "Total", len(gcIds))
+					slog.Info("[Session GC] GC session completed.", "Total", len(gcIds))
 				}
 			}
 

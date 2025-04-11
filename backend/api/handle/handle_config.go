@@ -23,7 +23,8 @@ func configCreate(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.ConfigCreate(body)
+	userInfo := middleware.GetUserInfo(c)
+	id, err := controller.ConfigCreate(userInfo, body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -36,7 +37,8 @@ func configUpdate(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.ConfigUpdate(body)
+	userInfo := middleware.GetUserInfo(c)
+	id, err := controller.ConfigUpdate(userInfo, body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -69,7 +71,8 @@ func configQuery(c *gin.Context) {
 
 func configDelete(c *gin.Context) {
 	id := c.Param("id")
-	if err := controller.ConfigDelete(id); err != nil {
+	userInfo := middleware.GetUserInfo(c)
+	if err := controller.ConfigDelete(userInfo, id); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}

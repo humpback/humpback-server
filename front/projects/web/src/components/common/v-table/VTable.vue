@@ -8,6 +8,8 @@ type Props = Partial<
     total: number
     sortInfo: SortInfo
     pageLayout: string
+    minHeight?: string
+    hideHeaderBgColor?: boolean
   }
 >
 
@@ -22,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
   tooltipOptions: () => {
     return { placement: "top-start" }
   },
+  minHeight: "396px",
   headerCellClassName: "table-header"
 })
 
@@ -50,7 +53,7 @@ const defaultSort = ref<Sort | undefined>(
 )
 
 const tableAttrs = computed(() => {
-  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total", "pageLayout"]))
+  const attrs: any = cloneDeep(omit(props, ["pageInfo", "total", "sortInfo", "total", "pageLayout", "minHeight"]))
   attrs.defaultSort = defaultSort.value
 
   return Object.keys(attrs).reduce((acc, key) => {
@@ -101,8 +104,8 @@ defineExpose({ clearSelection, toggleRowExpansion })
   <div>
     <el-table
       ref="tableRef"
-      class-name="v-table"
-      style="min-height: 396px"
+      :class-name="!props.hideHeaderBgColor ? 'header-bg-color' : undefined"
+      :style="{ minHeight: props.minHeight || undefined }"
       v-bind="tableAttrs"
       @select="selectionChangeEvent"
       @sort-change="sortChangeEvent"
@@ -134,7 +137,7 @@ defineExpose({ clearSelection, toggleRowExpansion })
 </template>
 
 <style lang="scss" scoped>
-.v-table {
+.header-bg-color {
   :deep(.table-header) {
     background-color: var(--hp-table-header-bg-color);
   }

@@ -26,7 +26,8 @@ func registryCreate(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.RegistryCreate(body)
+	userInfo := middleware.GetUserInfo(c)
+	id, err := controller.RegistryCreate(userInfo, body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -39,7 +40,8 @@ func registryUpdate(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	id, err := controller.RegistryUpdate(body)
+	userInfo := middleware.GetUserInfo(c)
+	id, err := controller.RegistryUpdate(userInfo, body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -103,7 +105,8 @@ func registryQuery(c *gin.Context) {
 
 func registryDelete(c *gin.Context) {
 	id := c.Param("id")
-	if err := controller.RegistryDelete(id); err != nil {
+	userInfo := middleware.GetUserInfo(c)
+	if err := controller.RegistryDelete(userInfo, id); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}

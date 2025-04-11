@@ -4,6 +4,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/jinzhu/copier"
 	"humpback/api/handle/models"
 	"humpback/common/locales"
 	"humpback/common/response"
@@ -29,15 +30,12 @@ func ServiceQuery(groupId string, queryInfo *models.ServiceQueryReqInfo) (*respo
 func ServiceTotal(groupId string) (int, error) {
 	services, err := db.ServicesGetValidByPrefix(groupId)
 	if err != nil {
-		if err == db.ErrKeyNotExist {
-			return 0, response.NewBadRequestErr(locales.CodeGroupNotExist)
-		}
 		return 0, response.NewRespServerErr(err.Error())
 	}
 	return len(services), nil
 }
 
-func ServiceCreate(info *models.ServiceCreateReqInfo) (string, error) {
+func ServiceCreate(operator *types.User, groupInfo *types.NodesGroups, info *models.ServiceCreateReqInfo) (string, error) {
 	if err := serviceCheckNameExist(info.GroupId, info.ServiceName); err != nil {
 		return "", err
 	}
@@ -45,10 +43,23 @@ func ServiceCreate(info *models.ServiceCreateReqInfo) (string, error) {
 	if err := db.ServiceUpdate(newService); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
+	InsertServiceActivity(&ActivityServiceInfo{
+		NewServiceInfo: newService,
+		Action:         types.ActivityActionAdd,
+		OperatorInfo:   operator,
+		OperateAt:      newService.UpdatedAt,
+		GroupName:      groupInfo.GroupName,
+	})
+	InsertStatisticsCount(&StatisticalCountEvent{
+		CreateAt: newService.UpdatedAt,
+		Type:     types.CountTypeService,
+		Num:      1,
+		UserId:   operator.UserId,
+	})
 	return newService.ServiceId, nil
 }
 
-func ServiceClone(info *models.ServiceCloneReqInfo) (string, error) {
+func ServiceClone(operator *types.User, groupInfo *types.NodesGroups, info *models.ServiceCloneReqInfo) (string, error) {
 	serviceInfo, err := Service(info.GroupId, info.ServiceId)
 	if err != nil {
 		return "", err
@@ -79,15 +90,25 @@ func ServiceClone(info *models.ServiceCloneReqInfo) (string, error) {
 	if err = db.ServiceUpdate(newService); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
+	InsertServiceActivity(&ActivityServiceInfo{
+		NewServiceInfo: newService,
+		Action:         types.ActivityActionAdd,
+		OperatorInfo:   operator,
+		OperateAt:      newService.UpdatedAt,
+		GroupName:      groupInfo.GroupName,
+	})
+	InsertStatisticsCount(&StatisticalCountEvent{
+		CreateAt: newService.UpdatedAt,
+		Type:     types.CountTypeService,
+		Num:      1,
+		UserId:   operator.UserId,
+	})
 	return newService.ServiceId, nil
 }
 
 func serviceCheckNameExist(groupId, serviceName string) error {
 	services, err := db.ServicesGetValidByPrefix(groupId)
 	if err != nil {
-		if err == db.ErrKeyNotExist {
-			return response.NewBadRequestErr(locales.CodeGroupNotExist)
-		}
 		return response.NewRespServerErr(err.Error())
 	}
 	if slices.IndexFunc(services, func(service *types.Service) bool {
@@ -98,17 +119,22 @@ func serviceCheckNameExist(groupId, serviceName string) error {
 	return nil
 }
 
-func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpdateReqInfo) (string, error) {
+func ServiceUpdate(operator *types.User, groupInfo *types.NodesGroups, svcChan chan types.ServiceChangeInfo, info *models.ServiceUpdateReqInfo) (string, error) {
 	service, err := Service(info.GroupId, info.ServiceId)
 	if err != nil {
 		return "", err
 	}
-
+	var (
+		oldService = new(types.Service)
+		action     = types.ActivityActionUpdateBasic
+	)
+	copier.Copy(oldService, service)
 	switch info.Type {
 	case models.ServiceUpdateBasicInfo:
 		service.Description = info.Description
 	case models.ServiceUpdateApplication:
 		{
+			action = types.ActivityActionUpdateApplication
 			if service.Meta != nil {
 				info.MetaInfo.Envs = service.Meta.Envs
 			}
@@ -119,6 +145,7 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 		}
 	case models.ServiceUpdateDeployment:
 		{
+			action = types.ActivityActionUpdateDeployment
 			if service.IsEnabled && (service.Deployment == nil || !cmp.Equal(service.Deployment.Schedule, info.DeploymentInfo.Schedule)) {
 				service.Version = utils.NewVersionId()
 			}
@@ -132,7 +159,21 @@ func ServiceUpdate(svcChan chan types.ServiceChangeInfo, info *models.ServiceUpd
 	}
 	if service.IsEnabled {
 		sendServiceEvent(svcChan, service.ServiceId, service.Version, service.Action)
+		InsertStatisticsCount(&StatisticalCountEvent{
+			CreateAt: service.UpdatedAt,
+			Type:     types.CountTypeDeploy,
+			Num:      1,
+			UserId:   operator.UserId,
+		})
 	}
+	InsertServiceActivity(&ActivityServiceInfo{
+		OldServiceInfo: oldService,
+		NewServiceInfo: service,
+		Action:         action,
+		OperatorInfo:   operator,
+		OperateAt:      service.UpdatedAt,
+		GroupName:      groupInfo.GroupName,
+	})
 	return service.ServiceId, nil
 }
 
@@ -164,12 +205,12 @@ func Service(groupId, serviceId string) (*types.Service, error) {
 	return service, nil
 }
 
-func ServiceOperate(svcChan chan types.ServiceChangeInfo, info *models.ServiceOperateReqInfo) (string, error) {
+func ServiceOperate(operator *types.User, groupInfo *types.NodesGroups, svcChan chan types.ServiceChangeInfo, info *models.ServiceOperateReqInfo) (string, error) {
 	service, err := Service(info.GroupId, info.ServiceId)
 	if err != nil {
 		return "", err
 	}
-
+	action := types.ActivityActionEnable
 	switch info.Action {
 	case types.ServiceActionEnable:
 		if service.IsEnabled {
@@ -181,22 +222,51 @@ func ServiceOperate(svcChan chan types.ServiceChangeInfo, info *models.ServiceOp
 		if !service.IsEnabled {
 			return "", response.NewBadRequestErr(locales.CodeServiceIsDisabled)
 		}
+		action = types.ActivityActionDisable
 		service.IsEnabled = false
-	case types.ServiceActionStart, types.ServiceActionRestart, types.ServiceActionStop:
+	case types.ServiceActionStart:
 		if !service.IsEnabled {
 			return "", response.NewBadRequestErr(locales.CodeServiceIsNotEnable)
 		}
-		service.Action = info.Action
+		action = types.ActivityActionStart
+		service.Action = types.ServiceActionStart
+	case types.ServiceActionRestart:
+		if !service.IsEnabled {
+			return "", response.NewBadRequestErr(locales.CodeServiceIsNotEnable)
+		}
+		action = types.ActivityActionRestart
+		service.Action = types.ServiceActionRestart
+	case types.ServiceActionStop:
+		if !service.IsEnabled {
+			return "", response.NewBadRequestErr(locales.CodeServiceIsNotEnable)
+		}
+		action = types.ActivityActionStop
+		service.Action = types.ServiceActionStop
 	}
 	service.UpdatedAt = utils.NewActionTimestamp()
 	if err = db.ServiceUpdate(service); err != nil {
 		return "", response.NewRespServerErr(err.Error())
 	}
 	sendServiceEvent(svcChan, service.ServiceId, service.Version, info.Action)
+	InsertServiceActivity(&ActivityServiceInfo{
+		NewServiceInfo: service,
+		Action:         action,
+		OperatorInfo:   operator,
+		OperateAt:      service.UpdatedAt,
+		GroupName:      groupInfo.GroupName,
+	})
+	if info.Action == types.ServiceActionEnable {
+		InsertStatisticsCount(&StatisticalCountEvent{
+			CreateAt: service.UpdatedAt,
+			Type:     types.CountTypeDeploy,
+			Num:      1,
+			UserId:   operator.UserId,
+		})
+	}
 	return service.ServiceId, nil
 }
 
-func ServiceSoftDelete(svcChan chan types.ServiceChangeInfo, groupId, serviceId string) error {
+func ServiceSoftDelete(operator *types.User, groupInfo *types.NodesGroups, svcChan chan types.ServiceChangeInfo, groupId, serviceId string) error {
 	service, err := db.ServiceGetById(serviceId)
 	if err != nil {
 		if err == db.ErrKeyNotExist {
@@ -214,5 +284,12 @@ func ServiceSoftDelete(svcChan chan types.ServiceChangeInfo, groupId, serviceId 
 	if service.IsEnabled {
 		sendServiceEvent(svcChan, service.ServiceId, service.Version, types.ServiceActionDelete)
 	}
+	InsertServiceActivity(&ActivityServiceInfo{
+		OldServiceInfo: service,
+		Action:         types.ActivityActionDelete,
+		OperatorInfo:   operator,
+		OperateAt:      0,
+		GroupName:      groupInfo.GroupName,
+	})
 	return nil
 }

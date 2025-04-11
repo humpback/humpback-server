@@ -1,17 +1,18 @@
 package models
 
 import (
+	"regexp"
 	"slices"
 	"strings"
 	"time"
-
+	
 	"humpback/common/enum"
 	"humpback/common/locales"
 	"humpback/common/response"
 	"humpback/common/verify"
 	"humpback/pkg/utils"
 	"humpback/types"
-
+	
 	cronv3 "github.com/robfig/cron/v3"
 )
 
@@ -129,7 +130,7 @@ func (s *ServiceQueryReqInfo) filter(service *types.Service) bool {
 	if strings.Contains(strings.ToLower(service.ServiceName), strings.ToLower(s.Keywords)) {
 		return true
 	}
-	if service.Meta != nil && strings.Contains(strings.ToLower(service.Meta.Image), strings.ToLower(s.Keywords)) {
+	if service.Meta != nil && strings.Contains(strings.ToLower(strings.Join([]string{service.Meta.RegistryDomain, service.Meta.Image}, "/")), strings.ToLower(s.Keywords)) {
 		return true
 	}
 	return false
@@ -221,7 +222,12 @@ func (s *ServiceUpdateReqInfo) checkMetaInfo() error {
 		return response.NewBadRequestErr(locales.CodeRequestParamsInvalid)
 	}
 	info := s.MetaInfo
+	re := regexp.MustCompile(`/+`)
+	info.Image = strings.Trim(re.ReplaceAllString(info.Image, "/"), "/")
 	if err := verify.CheckIsEmpty(info.Image, locales.CodeServiceImageNotEmpty); err != nil {
+		return err
+	}
+	if err := verify.CheckIsEmpty(info.RegistryDomain, locales.CodeRegistryDomainNotEmpty); err != nil {
 		return err
 	}
 	if err := verify.CheckIsEmpty(info.RegistryId, locales.CodeRegistryIdNotEmpty); err != nil {

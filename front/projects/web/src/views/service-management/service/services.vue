@@ -76,8 +76,12 @@ async function operateService(serviceId: string, action: "Start" | "Stop" | "Res
   await search()
 }
 
-async function operateContainer(nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
-  await groupContainerService.operate(groupId.value, { containerId: containerId, nodeId: nodeId, action: action })
+async function operateContainer(serviceId: string, nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
+  await groupContainerService.operate(groupId.value, serviceId, {
+    containerId: containerId,
+    nodeId: nodeId,
+    action: action
+  })
   ShowSuccessMsg(t("message.operateSuccess"))
   await search()
 }
@@ -131,7 +135,7 @@ onMounted(async () => {
     <el-table-column align="left" class-name="expand-column" type="expand" width="24">
       <template #default="scope">
         <div style="padding: 20px 40px">
-          <v-table :data="scope.row.containers" :max-height="500" border>
+          <v-table :data="scope.row.containers" :max-height="500" border minHeight="0">
             <el-table-column :label="t('label.instanceName')" min-width="200">
               <template #default="cscope">
                 <v-router-link :href="`/ws/group/${groupId}/service/${scope.row.serviceId}/${PageServiceDetail.Instances}`" :text="cscope.row.containerName" />
@@ -170,7 +174,7 @@ onMounted(async () => {
                   :title="t('label.restart')"
                   link
                   type="success"
-                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Restart')">
+                  @click="operateContainer(scope.row.serviceId, cscope.row.nodeId, cscope.row.containerId, 'Restart')">
                   <el-icon :size="16">
                     <IconMdiRestart />
                   </el-icon>
@@ -180,7 +184,7 @@ onMounted(async () => {
                   :title="t('label.start')"
                   link
                   type="success"
-                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Start')">
+                  @click="operateContainer(scope.row.serviceId, cscope.row.nodeId, cscope.row.containerId, 'Start')">
                   <el-icon :size="16">
                     <IconMdiPlay />
                   </el-icon>
@@ -190,7 +194,7 @@ onMounted(async () => {
                   :title="t('label.stop')"
                   link
                   type="danger"
-                  @click="operateContainer(cscope.row.nodeId, cscope.row.containerId, 'Stop')">
+                  @click="operateContainer(scope.row.serviceId, cscope.row.nodeId, cscope.row.containerId, 'Stop')">
                   <el-icon :size="16">
                     <IconMdiSquare />
                   </el-icon>
@@ -238,7 +242,7 @@ onMounted(async () => {
     </el-table-column>
     <el-table-column :label="t('label.image')" min-width="200" prop="image">
       <template #default="scope">
-        <v-table-column-none :text="scope.row.meta?.image" />
+        <v-table-column-none :text="[scope.row.meta?.registryDomain, scope.row.meta?.image].join('/')" />
       </template>
     </el-table-column>
     <el-table-column :label="t('label.deployMode')" min-width="220">
@@ -255,7 +259,7 @@ onMounted(async () => {
         <span v-else>--</span>
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.updateDate')" min-width="140" prop="updatedAt" sortable="custom">
+    <el-table-column :label="t('label.updateDate')" min-width="160" prop="updatedAt" sortable="custom">
       <template #default="scope">
         <v-date-view :timestamp="scope.row.updatedAt" />
       </template>

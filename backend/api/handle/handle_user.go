@@ -35,7 +35,7 @@ func login(c *gin.Context) {
 	if !middleware.BindAndCheckBody(c, body) {
 		return
 	}
-	userInfo, sessionId, err := controller.UserLogin(body)
+	userInfo, sessionId, err := controller.MeLogin(body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
@@ -47,7 +47,7 @@ func login(c *gin.Context) {
 
 func logout(c *gin.Context) {
 	sessionId := middleware.GetSessionId(c)
-	if err := controller.SessionDelete(sessionId); err != nil {
+	if err := controller.MeLogout(middleware.GetUserInfo(c), sessionId); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}
@@ -67,8 +67,7 @@ func meUpdate(c *gin.Context) {
 		return
 	}
 	userInfo := middleware.GetUserInfo(c)
-	userInfo = body.NewUserInfo(userInfo)
-	if err := controller.MeUpdate(userInfo); err != nil {
+	if err := controller.MeUpdate(userInfo, body); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}
@@ -100,7 +99,7 @@ func userCreate(c *gin.Context) {
 		middleware.AbortErr(c, err)
 		return
 	}
-	id, err := controller.UserCreate(body)
+	id, err := controller.UserCreate(userInfo, body)
 	if err != nil {
 		middleware.AbortErr(c, err)
 		return
