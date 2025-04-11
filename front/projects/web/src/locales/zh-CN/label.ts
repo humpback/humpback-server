@@ -1,6 +1,7 @@
 export default {
   label: {
     "all": "全部",
+    "self": "自己",
     "role": "角色",
     "name": "名称",
     "username": "用户名",

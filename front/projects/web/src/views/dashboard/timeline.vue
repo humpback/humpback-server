@@ -3,14 +3,14 @@ import * as echarts from "echarts/core"
 import {
   GridComponent,
   GridComponentOption,
-  ToolboxComponent,
-  ToolboxComponentOption,
   LegendComponent,
   LegendComponentOption,
+  ToolboxComponent,
+  ToolboxComponentOption,
   TooltipComponent,
   TooltipComponentOption
 } from "echarts/components"
-import { LineChart, BarChart, LineSeriesOption, BarSeriesOption } from "echarts/charts"
+import { BarChart, BarSeriesOption, LineChart, LineSeriesOption } from "echarts/charts"
 import { CanvasRenderer } from "echarts/renderers"
 import { UniversalTransition } from "echarts/features"
 import { map, toLower } from "lodash-es"
@@ -23,7 +23,15 @@ type EChartsOption = echarts.ComposeOption<
   GridComponentOption | ToolboxComponentOption | BarSeriesOption | LineSeriesOption | TooltipComponentOption | LegendComponentOption
 >
 
+const props = defineProps<{ isLoading?: boolean }>()
+
+const emits = defineEmits<{
+  (e: "change"): void
+}>()
+
 const { t, locale } = useI18n()
+
+const onlyMe = defineModel<boolean>()
 
 let incrementChart: echarts.ECharts
 const incrementRef = useTemplateRef<HTMLDivElement>("incrementRef")
@@ -101,7 +109,16 @@ function refreshData() {
 }
 
 function setData(startAt: number, data: StatisticsCountInfo[]) {
-  const tempResultMap: Record<number, { timestamp: number; groups: number; services: number; nodes: number; deploy: number }> = {}
+  const tempResultMap: Record<
+    number,
+    {
+      timestamp: number
+      groups: number
+      services: number
+      nodes: number
+      deploy: number
+    }
+  > = {}
   let tempStartAt = new Date(startAt)
   tempStartAt.setHours(0, 0, 0, 0)
   for (let i = 0; i < 30; i++) {
@@ -176,8 +193,14 @@ defineExpose({
 
 <template>
   <v-card>
-    <div class="title">{{ t("header.newDataOf30Days") }}</div>
-    <div ref="incrementRef" class="chart" />
+    <div class="title">
+      <span>{{ t("header.newDataOf30Days") }}</span>
+      <el-radio-group v-model="onlyMe" size="small" @change="emits('change')">
+        <el-radio-button :label="t('label.all')" :value="false" />
+        <el-radio-button :label="t('label.self')" :value="true" />
+      </el-radio-group>
+    </div>
+    <div ref="incrementRef" v-loading="props.isLoading" class="chart" />
   </v-card>
 </template>
 
@@ -187,6 +210,9 @@ defineExpose({
   font-weight: 600;
   margin-bottom: 20px;
   padding-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .chart {

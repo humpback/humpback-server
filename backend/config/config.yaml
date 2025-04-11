@@ -14,6 +14,9 @@ db:
   sessionTimeout: 12h
   sessionGCInterval: 24h
   activityGCInterval: 24h
+  activityRetentionDay: 120  #单位：天
+  statisticsGCInterval: 24h
+  statisticsRetentionDay: 32 #单位：天
 html:
   dir: '../front/projects/web/dist'
   load: false

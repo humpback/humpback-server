@@ -16,7 +16,14 @@ async function changeTab(name: TabPaneName) {
   activeTab.value = name
 }
 
-const options = reactive<Array<{ name: string; labelName: string; label: string; limitAdmin?: boolean }>>([
+const options = reactive<
+  Array<{
+    name: string
+    labelName: "config" | "user" | "group" | "service" | "node" | "registry" | "team"
+    label: string
+    limitAdmin?: boolean
+  }>
+>([
   { name: PageActivity.Groups, labelName: "group", label: "header.groups" },
   { name: PageActivity.Services, labelName: "service", label: "header.services" },
   { name: PageActivity.Configs, labelName: "config", label: "header.configs" },

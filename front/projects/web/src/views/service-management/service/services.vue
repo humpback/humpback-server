@@ -77,7 +77,11 @@ async function operateService(serviceId: string, action: "Start" | "Stop" | "Res
 }
 
 async function operateContainer(serviceId: string, nodeId: string, containerId: string, action: "Start" | "Stop" | "Restart") {
-  await groupContainerService.operate(groupId.value, serviceId, { containerId: containerId, nodeId: nodeId, action: action })
+  await groupContainerService.operate(groupId.value, serviceId, {
+    containerId: containerId,
+    nodeId: nodeId,
+    action: action
+  })
   ShowSuccessMsg(t("message.operateSuccess"))
   await search()
 }
@@ -238,7 +242,7 @@ onMounted(async () => {
     </el-table-column>
     <el-table-column :label="t('label.image')" min-width="200" prop="image">
       <template #default="scope">
-        <v-table-column-none :text="scope.row.meta?.image" />
+        <v-table-column-none :text="[scope.row.meta?.registryDomain, scope.row.meta?.image].join('/')" />
       </template>
     </el-table-column>
     <el-table-column :label="t('label.deployMode')" min-width="220">

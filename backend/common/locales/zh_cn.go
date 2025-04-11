@@ -69,6 +69,7 @@ var zhCnMsg = map[string]string{
 	CodeRegistryUsernameLimitLength: fmt.Sprintf("仓库用户名长度最大限制为%d。", enum.LimitRegistryUsername.Max),
 	CodeRegistryPasswordLimitLength: fmt.Sprintf("仓库密码长度最大限制为%d。", enum.LimitRegistryPassword.Max),
 	CodeRegistryDefaultNotDelete:    "仓库docker.io不能被删除。",
+	CodeRegistryDomainNotEmpty:      "仓库域名不能为空。",
 
 	CodeNodesNotEmpty:              "机器不能为空。",
 	CodeNodesIdNotEmpty:            "机器ID不能为空。",

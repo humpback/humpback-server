@@ -3,7 +3,10 @@ import { TableHeight } from "@/utils"
 import { QueryActivityInfo } from "./common.ts"
 import { ActivityInfo } from "@/types"
 
-const props = defineProps<{ activityType: string; labelName: string }>()
+const props = defineProps<{
+  activityType: string
+  labelName: "config" | "user" | "group" | "service" | "node" | "registry" | "team"
+}>()
 
 const { t } = useI18n()
 const route = useRoute()
@@ -57,7 +60,7 @@ onMounted(() => {
       <v-group-select v-model="queryInfo.filter.groupId" :placeholder="t('placeholder.all')" show-out-label />
     </div>
     <div style="width: 280px">
-      <v-activity-action-select v-model="queryInfo.filter.action" mode="service" show-out-label />
+      <v-activity-action-select v-model="queryInfo.filter.action" :mode="props.labelName" show-out-label />
     </div>
     <div v-if="userStore.isAdmin" style="width: 280px">
       <v-users-select

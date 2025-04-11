@@ -68,6 +68,7 @@ var enUSMsg = map[string]string{
 	CodeRegistryUsernameLimitLength: fmt.Sprintf("The registry username length limit is %d.", enum.LimitRegistryUsername.Max),
 	CodeRegistryPasswordLimitLength: fmt.Sprintf("The registry password length limit is %d.", enum.LimitRegistryPassword.Max),
 	CodeRegistryDefaultNotDelete:    "The repository docker.io cannot be deleted.",
+	CodeRegistryDomainNotEmpty:      "The registry domain cannot be empty.",
 
 	CodeNodesNotEmpty:              "The nodes cannot be empty.",
 	CodeNodesIdNotEmpty:            "The node ID cannot be empty.",

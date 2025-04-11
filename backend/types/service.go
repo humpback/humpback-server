@@ -144,20 +144,21 @@ type ScheduleInfo struct {
 }
 
 type ServiceMetaDocker struct {
-	Image         string            `json:"image"`
-	RegistryId    string            `json:"registryId"`
-	AlwaysPull    bool              `json:"alwaysPull"`
-	Command       string            `json:"command"`
-	EnvConfig     []string          `json:"envConfig"`
-	Envs          []string          `json:"env"`
-	Labels        map[string]string `json:"labels"`
-	Privileged    bool              `json:"privileged"`
-	Capabilities  *Capabilities     `json:"capabilities"`
-	LogConfig     *ServiceLogConfig `json:"logConfig"`
-	Resources     *ServiceResources `json:"resources"`
-	Volumes       []*ServiceVolume  `json:"volumes"`
-	Network       *NetworkInfo      `json:"network"`
-	RestartPolicy *RestartPolicy    `json:"restartPolicy"`
+	RegistryDomain string            `json:"registryDomain"`
+	Image          string            `json:"image"`
+	RegistryId     string            `json:"registryId"`
+	AlwaysPull     bool              `json:"alwaysPull"`
+	Command        string            `json:"command"`
+	EnvConfig      []string          `json:"envConfig"`
+	Envs           []string          `json:"env"`
+	Labels         map[string]string `json:"labels"`
+	Privileged     bool              `json:"privileged"`
+	Capabilities   *Capabilities     `json:"capabilities"`
+	LogConfig      *ServiceLogConfig `json:"logConfig"`
+	Resources      *ServiceResources `json:"resources"`
+	Volumes        []*ServiceVolume  `json:"volumes"`
+	Network        *NetworkInfo      `json:"network"`
+	RestartPolicy  *RestartPolicy    `json:"restartPolicy"`
 }
 
 type Capabilities struct {

@@ -1,11 +1,9 @@
 import { ServiceRestartPolicyMode, ServiceVolumeType } from "@/models"
 import { NewServiceMetaDockerEmptyInfo, RegistryInfo, ServiceMetaDockerInfo } from "@/types"
-import { filter, find, map, omit, omitBy, startsWith } from "lodash-es"
+import { filter, find, map, omit, omitBy } from "lodash-es"
 import { GenerateUUID } from "@/utils"
 
 export interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
-  imageDomain: string
-  imageName: string
   validEnv: Array<{ id: string; name: string; value: string }>
   validLabel: Array<{ id: string; name: string; value: string }>
   validVolumes: Array<{
@@ -26,12 +24,10 @@ export interface ServiceApplicationInfo extends ServiceMetaDockerInfo {
 
 export function NewApplicationInfo(registries: RegistryInfo[], info?: ServiceMetaDockerInfo): ServiceApplicationInfo {
   const validData = omitBy(info, (value, key) => value === undefined || value === null)
-  const metaInfo = Object.assign({}, NewServiceMetaDockerEmptyInfo(), validData)
-  const imageInfo = parseImageInfo(registries, metaInfo.image)
+  const defaultImage = find(registries, x => x.isDefault)?.url || undefined
+  const metaInfo = Object.assign({}, NewServiceMetaDockerEmptyInfo(), { registryDomain: defaultImage }, validData)
   return {
     ...metaInfo,
-    imageDomain: imageInfo.domain,
-    imageName: imageInfo.imageName,
     validEnv: filter(
       map(metaInfo.envConfig, x => {
         const s = x.split("=")
@@ -68,30 +64,11 @@ export function NewApplicationInfo(registries: RegistryInfo[], info?: ServiceMet
   }
 }
 
-function parseImageInfo(registries: RegistryInfo[], image: string) {
-  const defaultImage = find(registries, x => x.isDefault)?.url || ""
-  const matchRegistryUrls = map(
-    filter(registries, x => startsWith(image, x.url)),
-    r => r.url
-  )
-  const matchImageDomain = matchRegistryUrls.reduce((a, b) => (a.length > b.length ? a : b), "")
-  if (image) {
-    return {
-      domain: matchImageDomain || defaultImage,
-      imageName: image.replace(`${matchImageDomain}/`, "")
-    }
-  }
-  return {
-    domain: defaultImage || "docker.io",
-    imageName: ""
-  }
-}
-
 export function ParseMetaInfo(info: ServiceApplicationInfo, registryList: RegistryInfo[]): ServiceMetaDockerInfo {
-  const imageInfo = find(registryList, x => x.url === info.imageDomain)
-  info.imageName = info.imageName.replace(/\/+/g, "/").replace(/^\/|\/$/g, "")
+  const imageInfo = find(registryList, x => x.url === info.registryDomain)
   return {
-    image: `${info.imageDomain}/${info.imageName}`,
+    registryDomain: info.registryDomain,
+    image: info.image.replace(/\/+/g, "/").replace(/^\/|\/$/g, ""),
     registryId: imageInfo?.registryId || "",
     alwaysPull: info.alwaysPull,
     command: info.command,

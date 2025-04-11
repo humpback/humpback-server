@@ -78,6 +78,7 @@ const (
 	CodeRegistryUsernameLimitLength = "R4Registry-006"
 	CodeRegistryPasswordLimitLength = "R4Registry-007"
 	CodeRegistryDefaultNotDelete    = "R4Registry-008"
+	CodeRegistryDomainNotEmpty      = "R4Registry-009"
 
 	CodeNodesNotEmpty              = "R4Nodes-001"
 	CodeNodesIdNotEmpty            = "R4Nodes-002"

@@ -27,7 +27,7 @@ const tableList = computed(() => props.data || [])
         </el-table-column>
         <el-table-column :label="t('label.status')" width="120px">
           <template #default="scope">
-            <v-service-status-tag :status="scope.row.status" />
+            <v-service-status-tag :is-enabled="scope.row.isEnabled" :status="scope.row.status" />
             <v-memo v-if="!!scope.row.memo" :icon-size="18" :memo="scope.row.memo" only-icon />
           </template>
         </el-table-column>

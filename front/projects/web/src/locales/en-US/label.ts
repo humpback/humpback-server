@@ -1,6 +1,7 @@
 export default {
   label: {
     "all": "All",
+    "self": "Self",
     "role": "Role",
     "name": "Name",
     "username": "Username",
