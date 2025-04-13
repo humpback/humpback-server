@@ -26,5 +26,5 @@
 **/package-lock.json
 #**/pnpm-lock.yaml
 *.exe
-**/humpback_linux
+backend/humpback
 **/humpback

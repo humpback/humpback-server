@@ -10,7 +10,7 @@ import (
 	"humpback/types"
 )
 
-func NodeCreate(operator *types.User, nodes models.NodesCreateReqInfo) error {
+func NodeCreate(operator *types.User, nodeCh chan types.NodeSimpleInfo, nodes models.NodesCreateReqInfo) error {
 	nodeList, err := Nodes()
 	if err != nil {
 		return err
@@ -27,6 +27,7 @@ func NodeCreate(operator *types.User, nodes models.NodesCreateReqInfo) error {
 		return response.NewRespServerErr(err.Error())
 	}
 	for _, node := range addNodes {
+		sendNodeEvent(nodeCh, node.NodeId, "")
 		InsertNodeActivity(&ActivityNodeInfo{
 			NewNodeInfo:  node,
 			Action:       types.ActivityActionAdd,
