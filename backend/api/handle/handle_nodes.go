@@ -29,7 +29,7 @@ func nodesCreate(c *gin.Context) {
 		return
 	}
 	userInfo := middleware.GetUserInfo(c)
-	if err := controller.NodeCreate(userInfo, nodes); err != nil {
+	if err := controller.NodeCreate(userInfo, middleware.GetNodeChannel(c), nodes); err != nil {
 		middleware.AbortErr(c, err)
 		return
 	}
