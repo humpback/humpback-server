@@ -23,6 +23,7 @@ const serviceInfo = computed<ServiceInfo | undefined>(() => stateStore.getServic
 
 const isLoading = ref(false)
 const timer = ref<any>(null)
+const isClosed = ref(false)
 
 const cpuRef = useTemplateRef<any>("cpuRef")
 const memoryRef = useTemplateRef<any>("memoryRef")
@@ -313,6 +314,9 @@ async function getPerformance() {
 }
 
 function loopSearchPerformance() {
+  if (isClosed.value) {
+    return
+  }
   timer.value = setTimeout(async () => {
     if (serviceInfo.value?.isEnabled) {
       await getPerformance().catch(() => {})
@@ -353,6 +357,7 @@ onBeforeUnmount(() => {
   ioChart?.dispose()
   window.removeEventListener("resize", resize)
 
+  isClosed.value = true
   if (timer.value) {
     clearTimeout(timer.value)
     timer.value = null
