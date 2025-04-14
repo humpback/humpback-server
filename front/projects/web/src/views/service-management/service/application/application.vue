@@ -10,7 +10,7 @@ import LabelsPage from "./advanced/labels.vue"
 import CapabilitiesPage from "./advanced/capabilities.vue"
 import ResourcesLogConfigPage from "./advanced/resources-log-config.vue"
 import { NewApplicationInfo, ParseMetaInfo, ServiceApplicationInfo } from "./application.ts"
-import { refreshData } from "@/views/service-management/service/common.ts"
+import { refreshData } from "../common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -20,6 +20,7 @@ const stateStore = useStateStore()
 
 const isLoading = ref(false)
 const isAction = ref(false)
+const isInit = ref(false)
 
 const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
@@ -223,211 +224,214 @@ async function save() {
   await search()
 }
 
-onMounted(async () => {
-  await search(true)
+onBeforeMount(async () => {
+  await search(true).finally(() => (isInit.value = true))
   SetWebTitle(`${t("webTitle.serviceInfo")} - ${stateStore.getService()?.serviceName}`)
 })
 </script>
 
 <template>
-  <el-form ref="formRef" v-loading="isLoading" :model="metaInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
-    <el-row :gutter="12">
-      <el-col :span="24">
-        <el-form-item :label="t('label.image')" prop="image">
-          <v-input v-model="metaInfo.image" :maxlength="RuleLength.ImageName?.Max" :placeholder="t('placeholder.egImage')" clearable show-word-limit>
-            <template #prepend>
-              <el-dropdown placement="bottom-start" trigger="click" @command="metaInfo.registryDomain = $event">
-                <div class="registry-domain">
-                  <div style="width: auto">{{ metaInfo.registryDomain }}</div>
-                  <el-icon :size="18">
-                    <IconMdiChevronDown />
-                  </el-icon>
-                </div>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item v-for="item in registryStore.registries" :key="item.registryId" :command="item.url">{{ item.url }} </el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-          </v-input>
-          <div v-if="!registryDomainExist" class="mt-3 w-100">
-            <v-alert type="error">{{ t("rules.notExistRegistry") }}</v-alert>
-          </div>
-        </el-form-item>
-      </el-col>
-      <el-col :span="24">
-        <el-form-item :label="t('label.command')">
-          <v-description-input v-model="metaInfo.command" />
-        </el-form-item>
-      </el-col>
-
-      <el-col :md="metaInfo.restartPolicy!.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure ? 12 : 24">
-        <el-form-item :label="t('label.restartPolicy')">
-          <el-select v-model="metaInfo.restartPolicy!.mode">
-            <el-option :label="t('label.no')" :value="ServiceRestartPolicyMode.RestartPolicyModeNo" />
-            <el-option :label="t('label.always')" :value="ServiceRestartPolicyMode.RestartPolicyModeAlways" />
-            <el-option :label="t('label.onFailure')" :value="ServiceRestartPolicyMode.RestartPolicyModeOnFailure" />
-            <el-option :label="t('label.unlessStopped')" :value="ServiceRestartPolicyMode.RestartPolicyModeUnlessStopped" />
-          </el-select>
-        </el-form-item>
-      </el-col>
-
-      <el-col v-if="metaInfo.restartPolicy!.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure" :md="12">
-        <el-form-item :label="t('label.maxRetryCount')">
-          <v-input-number v-model="metaInfo.restartPolicy!.maxRetryCount" :min="0" style="width: 100%" />
-        </el-form-item>
-      </el-col>
-
-      <el-col
-        :span="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeHost ? 24 : metaInfo.network!.mode === ServiceNetworkMode.NetworkModeBridge ? 10 : 6">
-        <el-form-item :label="t('label.network')">
-          <el-select v-model="metaInfo.network!.mode">
-            <el-option :label="t('label.host')" :value="ServiceNetworkMode.NetworkModeHost" />
-            <el-option :label="t('label.bridge')" :value="ServiceNetworkMode.NetworkModeBridge" />
-            <el-option :label="t('label.custom')" :value="ServiceNetworkMode.NetworkModeCustom" />
-          </el-select>
-        </el-form-item>
-      </el-col>
-
-      <el-col v-if="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeCustom" :span="6">
-        <el-form-item :label="t('label.networkName')">
-          <v-input v-model="metaInfo.network!.networkName" />
-        </el-form-item>
-      </el-col>
-
-      <el-col
-        v-if="metaInfo.network!.mode !== ServiceNetworkMode.NetworkModeHost"
-        :span="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeBridge ? 14 : 12">
-        <el-form-item :label="t('label.hostname')" prop="network.hostname">
-          <v-input v-model="metaInfo.network!.hostname" :disabled="metaInfo.network!.useMachineHostname">
-            <template #prepend>
-              <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }} </el-checkbox>
-            </template>
-          </v-input>
-        </el-form-item>
-      </el-col>
-
-      <el-col v-if="metaInfo.network!.mode !== ServiceNetworkMode.NetworkModeHost">
-        <div class="network-box">
-          <div class="mb-3">
-            <v-tips>{{ t("tips.networkPortTips") }}</v-tips>
-          </div>
-          <el-row :gutter="12">
-            <el-col v-for="(portInfo, index) in metaInfo.validPorts" :key="index" :span="24">
-              <div class="d-flex gap-2">
-                <el-form-item :prop="`validPorts.${index}.containerPort`" :rules="rules.containerPort" class="flex-1">
-                  <v-input-number
-                    v-model="metaInfo.validPorts[index].containerPort"
-                    :controls="false"
-                    :min="0"
-                    :placeholder="t('placeholder.containerPort')"
-                    style="width: 100%">
-                  </v-input-number>
-                </el-form-item>
-                <el-form-item :prop="`validPorts.${index}.protocol`">
-                  <el-select v-model="metaInfo.validPorts[index].protocol" :placeholder="t('placeholder.protocol')" style="width: 200px">
-                    <el-option :label="t('label.tcp')" :value="ServiceNetworkProtocol.NetworkProtocolTCP" />
-                    <el-option :label="t('label.udp')" :value="ServiceNetworkProtocol.NetworkProtocolUDP" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item :prop="`validPorts.${index}.hostPort`" :rules="rules.hostPort" class="flex-1">
-                  <v-input-number v-model="metaInfo.validPorts[index].hostPort" :controls="false" :placeholder="t('placeholder.hostPort')" class="flex-1" />
-                </el-form-item>
-                <el-form-item>
-                  <el-button plain style="padding: 4px 12px" text type="danger" @click="removePort(index)">
-                    <el-icon :size="26">
-                      <IconMdiClose />
+  <el-skeleton v-if="!isInit" :rows="14" animated />
+  <div v-else>
+    <el-form ref="formRef" v-loading="isLoading" :model="metaInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
+      <el-row :gutter="12">
+        <el-col :span="24">
+          <el-form-item :label="t('label.image')" prop="image">
+            <v-input v-model="metaInfo.image" :maxlength="RuleLength.ImageName?.Max" :placeholder="t('placeholder.egImage')" clearable show-word-limit>
+              <template #prepend>
+                <el-dropdown placement="bottom-start" trigger="click" @command="metaInfo.registryDomain = $event">
+                  <div class="registry-domain">
+                    <div style="width: auto">{{ metaInfo.registryDomain }}</div>
+                    <el-icon :size="18">
+                      <IconMdiChevronDown />
                     </el-icon>
-                  </el-button>
-                </el-form-item>
-              </div>
-            </el-col>
-            <el-col>
-              <el-button size="small" type="info" @click="addPort">
-                <template #icon>
-                  <el-icon :size="20">
-                    <IconMdiAdd />
-                  </el-icon>
-                </template>
-                {{ t("btn.addPort") }}
-              </el-button>
-            </el-col>
-          </el-row>
-        </div>
-      </el-col>
+                  </div>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item v-for="item in registryStore.registries" :key="item.registryId" :command="item.url">{{ item.url }}</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </template>
+            </v-input>
+            <div v-if="!registryDomainExist" class="mt-3 w-100">
+              <v-alert type="error">{{ t("rules.notExistRegistry") }}</v-alert>
+            </div>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item :label="t('label.command')">
+            <v-description-input v-model="metaInfo.command" />
+          </el-form-item>
+        </el-col>
 
-      <el-col>
-        <el-form-item class="w-100 mt-5">
-          <el-segmented v-model="advancedMode" :options="advancedOptions" block class="advanced-segmented w-100">
-            <template #default="{ item }">
-              <span :class="(item as any).color">{{ t((item as any).label as string) }}</span>
-            </template>
-          </el-segmented>
-        </el-form-item>
-      </el-col>
+        <el-col :md="metaInfo.restartPolicy!.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure ? 12 : 24">
+          <el-form-item :label="t('label.restartPolicy')">
+            <el-select v-model="metaInfo.restartPolicy!.mode">
+              <el-option :label="t('label.no')" :value="ServiceRestartPolicyMode.RestartPolicyModeNo" />
+              <el-option :label="t('label.always')" :value="ServiceRestartPolicyMode.RestartPolicyModeAlways" />
+              <el-option :label="t('label.onFailure')" :value="ServiceRestartPolicyMode.RestartPolicyModeOnFailure" />
+              <el-option :label="t('label.unlessStopped')" :value="ServiceRestartPolicyMode.RestartPolicyModeUnlessStopped" />
+            </el-select>
+          </el-form-item>
+        </el-col>
 
-      <el-col>
-        <div class="advanced-box">
-          <div class="advanced-content">
-            <volumes-page
-              v-if="advancedMode === 'volumes'"
-              ref="volumeRef"
-              v-model="metaInfo.validVolumes"
-              :has-valid="!!find(advancedOptions, x => x.value === 'volumes')?.color"
-              @check="checkVolumes()" />
+        <el-col v-if="metaInfo.restartPolicy!.mode === ServiceRestartPolicyMode.RestartPolicyModeOnFailure" :md="12">
+          <el-form-item :label="t('label.maxRetryCount')">
+            <v-input-number v-model="metaInfo.restartPolicy!.maxRetryCount" :min="0" style="width: 100%" />
+          </el-form-item>
+        </el-col>
 
-            <environments-page
-              v-if="advancedMode === 'environments'"
-              ref="environmentRef"
-              v-model="metaInfo.validEnv"
-              :has-valid="!!find(advancedOptions, x => x.value === 'environments')?.color"
-              @check="checkEnvironment()" />
+        <el-col
+          :span="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeHost ? 24 : metaInfo.network!.mode === ServiceNetworkMode.NetworkModeBridge ? 10 : 6">
+          <el-form-item :label="t('label.network')">
+            <el-select v-model="metaInfo.network!.mode">
+              <el-option :label="t('label.host')" :value="ServiceNetworkMode.NetworkModeHost" />
+              <el-option :label="t('label.bridge')" :value="ServiceNetworkMode.NetworkModeBridge" />
+              <el-option :label="t('label.custom')" :value="ServiceNetworkMode.NetworkModeCustom" />
+            </el-select>
+          </el-form-item>
+        </el-col>
 
-            <labels-page
-              v-if="advancedMode === 'labels'"
-              ref="labelRef"
-              v-model="metaInfo.validLabel"
-              :has-valid="!!find(advancedOptions, x => x.value === 'labels')?.color"
-              @check="checkLabels()" />
+        <el-col v-if="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeCustom" :span="6">
+          <el-form-item :label="t('label.networkName')">
+            <v-input v-model="metaInfo.network!.networkName" />
+          </el-form-item>
+        </el-col>
 
-            <resources-log-config-page
-              v-if="advancedMode === 'resourcesAndLogs'"
-              ref="resourcesAndLogsRef"
-              v-model:log-config="metaInfo.validLogConfig"
-              v-model:resources="metaInfo.resources"
-              :has-valid="!!find(advancedOptions, x => x.value === 'resourcesAndLogs')?.color"
-              @check="checkLogConfig()" />
+        <el-col
+          v-if="metaInfo.network!.mode !== ServiceNetworkMode.NetworkModeHost"
+          :span="metaInfo.network!.mode === ServiceNetworkMode.NetworkModeBridge ? 14 : 12">
+          <el-form-item :label="t('label.hostname')" prop="network.hostname">
+            <v-input v-model="metaInfo.network!.hostname" :disabled="metaInfo.network!.useMachineHostname">
+              <template #prepend>
+                <el-checkbox v-model="metaInfo.network!.useMachineHostname">{{ t("label.useMachineHostname") }}</el-checkbox>
+              </template>
+            </v-input>
+          </el-form-item>
+        </el-col>
 
-            <capabilities-page
-              v-if="advancedMode === 'capabilities'"
-              v-model:cap-add="metaInfo.capabilities!.capAdd"
-              v-model:cap-drop="metaInfo.capabilities!.capDrop" />
+        <el-col v-if="metaInfo.network!.mode !== ServiceNetworkMode.NetworkModeHost">
+          <div class="network-box">
+            <div class="mb-3">
+              <v-tips>{{ t("tips.networkPortTips") }}</v-tips>
+            </div>
+            <el-row :gutter="12">
+              <el-col v-for="(portInfo, index) in metaInfo.validPorts" :key="index" :span="24">
+                <div class="d-flex gap-2">
+                  <el-form-item :prop="`validPorts.${index}.containerPort`" :rules="rules.containerPort" class="flex-1">
+                    <v-input-number
+                      v-model="metaInfo.validPorts[index].containerPort"
+                      :controls="false"
+                      :min="0"
+                      :placeholder="t('placeholder.containerPort')"
+                      style="width: 100%">
+                    </v-input-number>
+                  </el-form-item>
+                  <el-form-item :prop="`validPorts.${index}.protocol`">
+                    <el-select v-model="metaInfo.validPorts[index].protocol" :placeholder="t('placeholder.protocol')" style="width: 200px">
+                      <el-option :label="t('label.tcp')" :value="ServiceNetworkProtocol.NetworkProtocolTCP" />
+                      <el-option :label="t('label.udp')" :value="ServiceNetworkProtocol.NetworkProtocolUDP" />
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item :prop="`validPorts.${index}.hostPort`" :rules="rules.hostPort" class="flex-1">
+                    <v-input-number v-model="metaInfo.validPorts[index].hostPort" :controls="false" :placeholder="t('placeholder.hostPort')" class="flex-1" />
+                  </el-form-item>
+                  <el-form-item>
+                    <el-button plain style="padding: 4px 12px" text type="danger" @click="removePort(index)">
+                      <el-icon :size="26">
+                        <IconMdiClose />
+                      </el-icon>
+                    </el-button>
+                  </el-form-item>
+                </div>
+              </el-col>
+              <el-col>
+                <el-button size="small" type="info" @click="addPort">
+                  <template #icon>
+                    <el-icon :size="20">
+                      <IconMdiAdd />
+                    </el-icon>
+                  </template>
+                  {{ t("btn.addPort") }}
+                </el-button>
+              </el-col>
+            </el-row>
           </div>
-        </div>
-      </el-col>
+        </el-col>
 
-      <el-col class="mt-5">
-        <el-form-item>
-          <el-checkbox v-model="metaInfo.alwaysPull">
-            <el-text class="f-bold" size="small">{{ t("label.alwaysPull") }}</el-text>
-          </el-checkbox>
-          <v-tips>{{ t("tips.alwaysPullTips") }}</v-tips>
-        </el-form-item>
-      </el-col>
-      <el-col>
-        <el-form-item>
-          <el-checkbox v-model="metaInfo.privileged">
-            <el-text class="f-bold" size="small">{{ t("label.privilegedMode") }}</el-text>
-          </el-checkbox>
-          <v-tips>{{ t("tips.privilegedTips") }}</v-tips>
-        </el-form-item>
-      </el-col>
-    </el-row>
-  </el-form>
-  <div class="text-align-right pt-5">
-    <el-button @click="cancel()">{{ t("btn.cancel") }}</el-button>
-    <el-button :loading="isAction" type="primary" @click="save()">{{ t("btn.save") }}</el-button>
+        <el-col>
+          <el-form-item class="w-100 mt-5">
+            <el-segmented v-model="advancedMode" :options="advancedOptions" block class="advanced-segmented w-100">
+              <template #default="{ item }">
+                <span :class="(item as any).color">{{ t((item as any).label as string) }}</span>
+              </template>
+            </el-segmented>
+          </el-form-item>
+        </el-col>
+
+        <el-col>
+          <div class="advanced-box">
+            <div class="advanced-content">
+              <volumes-page
+                v-if="advancedMode === 'volumes'"
+                ref="volumeRef"
+                v-model="metaInfo.validVolumes"
+                :has-valid="!!find(advancedOptions, x => x.value === 'volumes')?.color"
+                @check="checkVolumes()" />
+
+              <environments-page
+                v-if="advancedMode === 'environments'"
+                ref="environmentRef"
+                v-model="metaInfo.validEnv"
+                :has-valid="!!find(advancedOptions, x => x.value === 'environments')?.color"
+                @check="checkEnvironment()" />
+
+              <labels-page
+                v-if="advancedMode === 'labels'"
+                ref="labelRef"
+                v-model="metaInfo.validLabel"
+                :has-valid="!!find(advancedOptions, x => x.value === 'labels')?.color"
+                @check="checkLabels()" />
+
+              <resources-log-config-page
+                v-if="advancedMode === 'resourcesAndLogs'"
+                ref="resourcesAndLogsRef"
+                v-model:log-config="metaInfo.validLogConfig"
+                v-model:resources="metaInfo.resources"
+                :has-valid="!!find(advancedOptions, x => x.value === 'resourcesAndLogs')?.color"
+                @check="checkLogConfig()" />
+
+              <capabilities-page
+                v-if="advancedMode === 'capabilities'"
+                v-model:cap-add="metaInfo.capabilities!.capAdd"
+                v-model:cap-drop="metaInfo.capabilities!.capDrop" />
+            </div>
+          </div>
+        </el-col>
+
+        <el-col class="mt-5">
+          <el-form-item>
+            <el-checkbox v-model="metaInfo.alwaysPull">
+              <el-text class="f-bold" size="small">{{ t("label.alwaysPull") }}</el-text>
+            </el-checkbox>
+            <v-tips>{{ t("tips.alwaysPullTips") }}</v-tips>
+          </el-form-item>
+        </el-col>
+        <el-col>
+          <el-form-item>
+            <el-checkbox v-model="metaInfo.privileged">
+              <el-text class="f-bold" size="small">{{ t("label.privilegedMode") }}</el-text>
+            </el-checkbox>
+            <v-tips>{{ t("tips.privilegedTips") }}</v-tips>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form>
+    <div class="text-align-right pt-5">
+      <el-button @click="cancel()">{{ t("btn.cancel") }}</el-button>
+      <el-button :loading="isAction" type="primary" @click="save()">{{ t("btn.save") }}</el-button>
+    </div>
   </div>
 </template>
 

@@ -10,6 +10,7 @@ const { t } = useI18n()
 const userStore = useUserStore()
 
 const loading = ref(false)
+const isAction = ref(false)
 const isLoadingActivities = ref(false)
 const userInfo = ref<UserInfo>(NewUserEmptyInfo())
 
@@ -77,12 +78,15 @@ async function save() {
   if (!(await tableRef.value?.validate())) {
     return
   }
-  await userService.updateMeInfo({
-    username: userInfo.value.username,
-    email: userInfo.value.email,
-    phone: userInfo.value.phone,
-    description: userInfo.value.description
-  })
+  isAction.value = true
+  await userService
+    .updateMeInfo({
+      username: userInfo.value.username,
+      email: userInfo.value.email,
+      phone: userInfo.value.phone,
+      description: userInfo.value.description
+    })
+    .finally(() => (isAction.value = false))
   ShowSuccessMsg(t("message.saveSuccess"))
   await Promise.all([getUserInfo(), getUserActivities()])
 }
@@ -137,7 +141,7 @@ onMounted(async () => {
           <el-col>
             <el-form-item>
               <div class="text-align-right w-100">
-                <el-button type="primary" @click="save()">{{ t("btn.save") }}</el-button>
+                <el-button :loading="isAction" type="primary" @click="save()">{{ t("btn.save") }}</el-button>
               </div>
             </el-form-item>
           </el-col>
@@ -146,16 +150,12 @@ onMounted(async () => {
     </v-card>
 
     <v-card class="mt-5">
-      <div class="d-flex gap-1">
+      <div class="d-flex gap-2">
         <div class="f-bold">
           {{ t("label.activities") }}
         </div>
-        <el-button :disabled="isLoadingActivities" :title="t('label.refresh')" link type="primary" @click="getUserActivities()">
-          <el-icon v-if="!isLoadingActivities" :size="20">
-            <IconMdiRefresh />
-          </el-icon>
-          <v-loading v-else />
-        </el-button>
+        <el-button :disabled="isLoadingActivities" plain size="small" type="success" @click="getUserActivities()"> {{ t("btn.refresh") }}</el-button>
+        <v-loading v-if="isLoadingActivities" />
       </div>
       <div class="activity-content">
         <v-table

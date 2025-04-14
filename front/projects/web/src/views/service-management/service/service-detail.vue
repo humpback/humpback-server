@@ -249,13 +249,10 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <v-card v-loading="isReset" class="body-content">
+      <v-card class="body-content">
         <template v-for="(item, index) in menuOptions" :key="index">
           <div v-if="!item.isGroup && item.value === activeMenu">
-            <div v-if="isReset" class="reset-loading">
-              <v-loading :size="80" />
-            </div>
-            <component :is="item.component" v-else />
+            <component :is="item.component" />
           </div>
         </template>
       </v-card>
@@ -336,13 +333,6 @@ onUnmounted(() => {
 
   .body-content {
     flex: 75%;
-
-    .reset-loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 60vh;
-    }
   }
 }
 </style>
