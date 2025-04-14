@@ -105,8 +105,8 @@ onMounted(() => search())
         <el-table-column :label="t('label.action')" align="right" fixed="right" header-align="center" width="130">
           <template #default="scope">
             <el-button link type="primary" @click="openAction(Action.Edit, scope.row)">{{ t("btn.edit") }}</el-button>
-            <el-button v-if="!isDefaultRegistry(scope.row.url)" link type="danger" @click="openAction(Action.Delete, scope.row)"
-              >{{ t("btn.delete") }}
+            <el-button v-if="!isDefaultRegistry(scope.row.url)" link type="danger" @click="openAction(Action.Delete, scope.row)">
+              {{ t("btn.delete") }}
             </el-button>
           </template>
         </el-table-column>

@@ -179,7 +179,7 @@ onMounted(async () => {
           </el-table-column>
           <el-table-column :label="t('label.description')" min-width="200px">
             <template #default="scope">
-              <span>{{ t(`activity.account.${scope.row.action}`) }}</span>
+              <span>{{ scope.row.action ? t(`activity.account.${scope.row.action}`) : "--" }}</span>
             </template>
           </el-table-column>
           <el-table-column width="160px">
