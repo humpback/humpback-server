@@ -11,6 +11,7 @@ const stateStore = useStateStore()
 
 const isLoading = ref(false)
 const isAction = ref(false)
+const isInit = ref(false)
 
 const groupId = ref(route.params.groupId as string)
 const serviceId = ref(route.params.serviceId as string)
@@ -56,23 +57,26 @@ async function save() {
 }
 
 onMounted(async () => {
-  await search()
+  await search().finally(() => (isInit.value = true))
   SetWebTitle(`${t("webTitle.serviceInfo")} - ${stateStore.getService()?.serviceName}`)
 })
 </script>
 
 <template>
-  <el-form ref="formRef" v-loading="isLoading" :model="serviceInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
-    <el-form-item :label="t('label.name')" prop="serviceName">
-      <v-input :maxlength="RuleLength.ServiceName.Max" :model-value="serviceInfo.serviceName" clearable disabled show-word-limit />
-    </el-form-item>
-    <el-form-item :label="t('label.description')" prop="description">
-      <v-description-input v-model="serviceInfo.description" />
-    </el-form-item>
-  </el-form>
-  <div class="text-align-right pt-3">
-    <el-button @click="cancel()">{{ t("btn.cancel") }}</el-button>
-    <el-button :loading="isAction" type="primary" @click="save">{{ t("btn.save") }}</el-button>
+  <el-skeleton v-if="!isInit" :rows="5" animated />
+  <div v-else>
+    <el-form ref="formRef" v-loading="isLoading" :model="serviceInfo" :rules="rules" class="form-box" label-position="top" label-width="auto">
+      <el-form-item :label="t('label.name')" prop="serviceName">
+        <v-input :maxlength="RuleLength.ServiceName.Max" :model-value="serviceInfo.serviceName" clearable disabled show-word-limit />
+      </el-form-item>
+      <el-form-item :label="t('label.description')" prop="description">
+        <v-description-input v-model="serviceInfo.description" />
+      </el-form-item>
+    </el-form>
+    <div class="text-align-right pt-3">
+      <el-button @click="cancel()">{{ t("btn.cancel") }}</el-button>
+      <el-button :loading="isAction" type="primary" @click="save">{{ t("btn.save") }}</el-button>
+    </div>
   </div>
 </template>
 

@@ -1,13 +1,19 @@
 <script lang="ts" setup>
 import { TableHeight } from "@/utils"
 import { ActivityInfo } from "@/types"
+import VLoading from "@/components/business/v-loading/VLoading.vue"
+import { refreshData } from "@/views/service-management/service/common.ts"
 
 const { t } = useI18n()
 const route = useRoute()
 
 const tableHeight = computed(() => TableHeight(362))
 
+const groupId = ref(route.params.groupId as string)
+const serviceId = ref(route.params.serviceId as string)
+
 const isLoading = ref(false)
+const isLoadingActivity = ref(false)
 const queryInfo = ref<any>({
   filter: {
     "type": "services",
@@ -28,19 +34,25 @@ const setRowClass = ({ row }) => {
   return !row.oldContent && !row.newContent ? "hide-expand-icon" : ""
 }
 
-async function getActivities() {
+async function search() {
   isLoading.value = true
+  await refreshData(groupId.value, serviceId.value, "activity").finally(() => (isLoading.value = false))
+}
+
+async function getActivities() {
+  isLoadingActivity.value = true
   return await activityService
     .query(queryInfo.value)
     .then(data => {
       tableList.value.total = data.total
       tableList.value.data = data.list
     })
-    .finally(() => (isLoading.value = false))
+    .finally(() => (isLoadingActivity.value = false))
 }
 
-onMounted(() => {
-  getActivities()
+onBeforeMount(async () => {
+  await search()
+  await getActivities()
 })
 </script>
 
@@ -53,17 +65,13 @@ onMounted(() => {
     </div>
     <div class="d-flex gap-1">
       <el-text class="f-bold" size="large">{{ t("label.activities") }}</el-text>
-      <el-button :disabled="isLoading" :title="t('label.refresh')" link type="primary" @click="getActivities()">
-        <el-icon v-if="!isLoading" :size="20">
-          <IconMdiRefresh />
-        </el-icon>
-        <v-loading v-else />
-      </el-button>
     </div>
+    <el-button plain size="small" type="success" @click="getActivities()">{{ t("btn.refresh") }}</el-button>
+    <v-loading v-if="isLoading" />
   </div>
 
   <v-table
-    v-loading="isLoading"
+    v-loading="isLoadingActivity"
     v-model:page-info="queryInfo.pageInfo"
     :data="tableList.data"
     :max-height="tableHeight"
@@ -85,10 +93,10 @@ onMounted(() => {
     </el-table-column>
     <el-table-column :label="t('label.description')" min-width="200">
       <template #default="scope">
-        <span v-if="scope.row.instanceName">
-          {{ t(`activity.service.${scope.row.action}Instance`, { name: scope.row.instanceName }) }}
+        <span v-if="scope.row.action">
+          {{ t(`activity.service.${scope.row.action}`, { name: scope.row.instanceName }) }}
         </span>
-        <span v-else>{{ t(`activity.service.${scope.row.action}`) }} </span>
+        <span v-else>--</span>
       </template>
     </el-table-column>
     <el-table-column :label="t('label.operator')" min-width="140" prop="operator" />

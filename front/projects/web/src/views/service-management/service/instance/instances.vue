@@ -56,6 +56,7 @@ onMounted(async () => {
         {{ t("btn.viewMonitor") }}
       </el-button>
     </div>
+    <v-loading v-if="isLoading" />
   </div>
 
   <v-memo v-if="toLower(serviceInfo?.status) === toLower(ServiceStatus.ServiceStatusFailed)" :memo="serviceInfo?.memo" class="mt-5" />

@@ -82,7 +82,7 @@ async function save() {
     </el-form>
     <template #footer>
       <el-button @click="show = false">{{ t("btn.cancel") }}</el-button>
-      <el-button v-loading="loading" type="primary" @click="save">{{ t("btn.save") }}</el-button>
+      <el-button :loading="loading" type="primary" @click="save">{{ t("btn.save") }}</el-button>
     </template>
   </v-dialog>
 </template>

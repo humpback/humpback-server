@@ -7,7 +7,7 @@ import { serviceService } from "services/service-client.ts"
 import ServiceCreate from "./action/service-create.vue"
 import ServiceDelete from "./action/service-delete.vue"
 import VServiceStatusTag from "@/components/business/v-service/VServiceStatusTag.vue"
-import { capitalize, toLower } from "lodash-es"
+import { toLower } from "lodash-es"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -245,11 +245,12 @@ onMounted(async () => {
         <v-table-column-none :text="[scope.row.meta?.registryDomain, scope.row.meta?.image].join('/')" />
       </template>
     </el-table-column>
-    <el-table-column :label="t('label.deployMode')" min-width="220">
+    <el-table-column :label="t('label.deployMode')" min-width="240">
       <template #default="scope">
         <div v-if="scope.row.deployment" class="d-flex gap-2">
-          <div>
-            <el-text>{{ capitalize(scope.row.deployment.mode) }}</el-text>
+          <div style="min-width: 100px">
+            <el-text v-if="scope.row.deployment.mode === ServiceDeployMode.DeployModeGlobal">{{ t("label.global") }}</el-text>
+            <el-text v-if="scope.row.deployment.mode === ServiceDeployMode.DeployModeReplicate">{{ t("label.replicated") }}</el-text>
             <el-text v-if="scope.row.deployment.mode === ServiceDeployMode.DeployModeReplicate" type="primary">
               {{ ` (${scope.row.deployment.replicas})` }}
             </el-text>

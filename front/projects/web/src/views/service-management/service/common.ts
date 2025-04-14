@@ -78,7 +78,7 @@ async function getGroupNodes(groupId: string) {
 export async function refreshData(
   groupId: string,
   serviceId: string,
-  mode: "global" | "basic-info" | "application" | "deployment" | "instances" | "log",
+  mode: "global" | "basic-info" | "application" | "deployment" | "instances" | "log" | "activity",
   init?: boolean
 ) {
   const taskList: Array<Promise<void> | undefined> = [

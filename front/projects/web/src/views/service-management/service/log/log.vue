@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import { SetWebTitle } from "@/utils"
-import { refreshData } from "@/views/service-management/service/common.ts"
+import { refreshData } from "../common.ts"
 import { RuleLength } from "@/models"
 import { filter, find, toLower } from "lodash-es"
-import VLogSearchTimeRange from "@/components/business/v-log/VLogSearchTimeRange.vue"
 
 const { t } = useI18n()
 const route = useRoute()
@@ -111,9 +110,10 @@ onMounted(async () => {
       </el-icon>
     </div>
     <el-text class="f-bold" size="large">{{ t("label.instanceLogs") }}</el-text>
+    <v-loading v-if="isLoading" />
   </div>
 
-  <div v-loading="isLoading">
+  <div>
     <div class="mt-3">
       <v-tips>{{ t("tips.logsTips") }}</v-tips>
     </div>

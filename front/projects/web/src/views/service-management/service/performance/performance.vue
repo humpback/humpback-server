@@ -5,7 +5,7 @@ import { LineChart, LineSeriesOption } from "echarts/charts"
 import { UniversalTransition } from "echarts/features"
 import { CanvasRenderer } from "echarts/renderers"
 import { SetWebTitle, TimestampToTime } from "@/utils"
-import { refreshData } from "@/views/service-management/service/common.ts"
+import { refreshData } from "../common.ts"
 import { ContainersPerformance, ServiceInfo } from "@/types"
 import { filter, find, findIndex, map, toLower } from "lodash-es"
 
@@ -368,9 +368,10 @@ onBeforeUnmount(() => {
       </el-icon>
     </div>
     <el-text class="f-bold" size="large">{{ t("label.performance") }}</el-text>
+    <v-loading v-if="isLoading" />
   </div>
 
-  <div v-loading="isLoading">
+  <div>
     <el-row :gutter="20">
       <el-col :md="12" :span="24" class="mt-5">
         <div class="chart-box">
