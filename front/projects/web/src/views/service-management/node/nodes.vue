@@ -5,7 +5,7 @@ import { Action } from "@/models"
 import NodeAdd from "./node-add.vue"
 import NodeRemove from "./node-remove.vue"
 import { QueryGroupNodesInfo } from "./common.ts"
-import { serviceService } from "services/service-client.ts"
+import { serviceService } from "services/service-service.ts"
 
 const { t } = useI18n()
 const route = useRoute()

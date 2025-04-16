@@ -10,19 +10,7 @@ export default {
     "help": "Help",
     "myAccount": "My Account",
     "logout": "Logout",
-    "activities": "Activities",
-    header: {
-      "dashboard": "Dashboard",
-      "serviceManagement": "Service Management",
-      "userRelated": "User Related",
-      "registries": "Registries",
-      "nodes": "Nodes",
-      "configs": "Configs",
-      "help": "Help",
-      "myAccount": "My Account",
-      "groups": "Groups",
-      "activities": "Activities"
-    }
+    "activities": "Activities"
   },
   webTitle: {
     "404": "Page Not Found",
