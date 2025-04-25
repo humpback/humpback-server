@@ -2,7 +2,7 @@
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/docker/docker)](https://golang.org/)
 [![Vue 3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://v3.vuejs.org/)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/humpbacks/humpback?sort=semver)](https://github.com/humpbacks/humpback/releases/latest)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/humpbacks/humpback-server?sort=semver)](https://github.com/humpbacks/humpback-server/releases/latest)
 
 ![Humpback logo](/assets/logo.png)
 
@@ -55,6 +55,6 @@ http://localhost:8100
 
 初始化的超级管理员账号密码均为 **humpback**
 
-## License
+## 许可证
 
 Humpback Server 根据 [Apache Licence 2.0](http://www.apache.org/licenses/LICENSE-2.0.html) 获得许可。

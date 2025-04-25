@@ -2,7 +2,8 @@
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/docker/docker)](https://golang.org/)
 [![Vue 3](https://img.shields.io/badge/vue-3.x-brightgreen.svg)](https://v3.vuejs.org/)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/humpbacks/humpback?sort=semver)](https://github.com/humpbacks/humpback/releases/latest)
+[![Docker](https://img.shields.io/badge/docker-pull-blue?logo=docker)](https://hub.docker.com/r/humpbacks/humpback-server)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/humpbacks/humpback-server?sort=semver)](https://github.com/humpbacks/humpback-server/releases/latest)
 
 ![Humpback logo](/assets/logo.png)
 
