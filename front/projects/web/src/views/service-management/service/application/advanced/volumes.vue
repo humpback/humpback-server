@@ -80,10 +80,10 @@ defineExpose({ validate })
           </el-radio-group>
         </el-form-item>
         <el-form-item :prop="`${index}.target`" :rules="rules.containerVolume" class="flex-1">
-          <v-input v-model="volumes![index].target" :placeholder="t('placeholder.containerVolume')" @blur="emits('check')"> </v-input>
+          <v-input v-model="volumes![index].target" :placeholder="t('placeholder.containerVolume')" @blur="emits('check')"></v-input>
         </el-form-item>
         <el-form-item :prop="`${index}.source`" :rules="rules.hostVolume" class="flex-1">
-          <v-input v-model="volumes![index].source" :placeholder="t('placeholder.hostVolume')" @blur="emits('check')"> </v-input>
+          <v-input v-model="volumes![index].source" :placeholder="t('placeholder.hostVolume')" @blur="emits('check')"></v-input>
         </el-form-item>
         <el-form-item>
           <el-button plain style="padding: 4px 12px" text type="danger" @click="removeVolume(index)">
@@ -95,11 +95,9 @@ defineExpose({ validate })
       </div>
     </el-form>
     <el-button size="small" type="info" @click="addVolume()">
-      <template #icon>
-        <el-icon :size="20">
-          <IconMdiAdd />
-        </el-icon>
-      </template>
+      <el-icon :size="16">
+        <IconMdiAdd />
+      </el-icon>
       {{ t("btn.addVolume") }}
     </el-button>
   </div>

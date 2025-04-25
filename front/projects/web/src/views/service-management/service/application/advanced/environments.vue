@@ -78,11 +78,9 @@ defineExpose({ validate })
       </div>
     </el-form>
     <el-button size="small" type="info" @click="addEnv()">
-      <template #icon>
-        <el-icon :size="20">
-          <IconMdiAdd />
-        </el-icon>
-      </template>
+      <el-icon :size="16">
+        <IconMdiAdd />
+      </el-icon>
       {{ t("btn.addEnvironment") }}
     </el-button>
   </div>

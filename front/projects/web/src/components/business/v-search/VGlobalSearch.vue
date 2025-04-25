@@ -97,7 +97,7 @@ onClickOutside(contentRef, hidePopover)
 
           <div v-else class="pl-5 d-flex gap-1">
             <el-text type="warning">
-              <el-icon :size="15">
+              <el-icon :size="16">
                 <IconMdiWarningCircleOutline />
               </el-icon>
             </el-text>
@@ -122,7 +122,7 @@ onClickOutside(contentRef, hidePopover)
             </div>
             <div v-else class="pl-5 d-flex gap-1">
               <el-text type="warning">
-                <el-icon :size="15">
+                <el-icon :size="16">
                   <IconMdiWarningCircleOutline />
                 </el-icon>
               </el-text>

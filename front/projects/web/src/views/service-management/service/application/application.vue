@@ -348,11 +348,9 @@ onBeforeMount(async () => {
               </el-col>
               <el-col>
                 <el-button size="small" type="info" @click="addPort">
-                  <template #icon>
-                    <el-icon :size="20">
-                      <IconMdiAdd />
-                    </el-icon>
-                  </template>
+                  <el-icon :size="16">
+                    <IconMdiAdd />
+                  </el-icon>
                   {{ t("btn.addPort") }}
                 </el-button>
               </el-col>
