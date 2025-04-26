@@ -81,7 +81,7 @@ func ActivityQuery(info *models.ActivityQueryReqInfo, bucket string) (*response.
 	return results, nil
 }
 
-func ActivityAllQuery(info *models.ActivityAllQueryReqInfo, bucket string) ([]*types.ActivityInfo, error) {
+func ActivityQueryByStartAtAndUser(info *models.ActivityAllQueryReqInfo, bucket string) ([]*types.ActivityInfo, error) {
 	var (
 		results = make([]*types.ActivityInfo, 0)
 	)
@@ -101,7 +101,7 @@ func ActivityAllQuery(info *models.ActivityAllQueryReqInfo, bucket string) ([]*t
 				break
 			}
 			keys := strings.Split(string(k), "-")
-			valid, err := info.IsValid(keys[0])
+			valid, err := info.IsValid(keys[0], keys[1])
 			if err != nil {
 				return err
 			}
