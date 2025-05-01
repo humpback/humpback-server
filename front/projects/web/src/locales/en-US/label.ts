@@ -182,6 +182,7 @@ export default {
     "updateApplication": "Update Application",
     "updateDeployment": "Update Deployment",
     "updateLabel": "Update Label",
-    "deploy": "Deploy"
+    "deploy": "Deploy",
+    "myAccount": "My Account"
   }
 }

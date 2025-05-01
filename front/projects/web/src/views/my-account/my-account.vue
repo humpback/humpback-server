@@ -99,6 +99,7 @@ onMounted(async () => {
 <template>
   <div>
     <v-card v-loading="loading">
+      <v-page-title :title="t('label.myAccount')" />
       <div>
         <v-role-admin :role="userInfo.role" size="default" />
         <div class="d-flex gap-1 mt-2 pl-1 mb-3">

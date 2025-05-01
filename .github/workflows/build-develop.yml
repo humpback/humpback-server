@@ -49,6 +49,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: humpbacks/humpback-server
+          tags: |
+            type=raw,value=develop
       
       - name: Build and push
         uses: docker/build-push-action@v6

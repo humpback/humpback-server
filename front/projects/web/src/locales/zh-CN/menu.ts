@@ -10,19 +10,7 @@ export default {
     "help": "帮助",
     "myAccount": "我的账户",
     "logout": "退出登录",
-    "activities": "操作记录",
-    header: {
-      "dashboard": "仪表板",
-      "serviceManagement": "服务管理",
-      "userRelated": "用户相关",
-      "registries": "仓库",
-      "nodes": "机器",
-      "configs": "配置",
-      "help": "帮助",
-      "myAccount": "我的账户",
-      "groups": "分组",
-      "activities": "操作记录"
-    }
+    "activities": "操作记录"
   },
   webTitle: {
     "404": "找不到页面",

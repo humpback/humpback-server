@@ -177,7 +177,6 @@ watch(locale, () => {
 
 onMounted(() => {
   incrementChart = echarts.init(incrementRef.value)
-  refreshData()
   window.addEventListener("resize", resize)
 })
 

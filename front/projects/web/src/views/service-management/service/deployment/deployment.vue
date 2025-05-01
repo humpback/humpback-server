@@ -258,11 +258,9 @@ onBeforeMount(async () => {
 
         <el-form-item style="margin: 0">
           <el-button size="small" type="info" @click="addPlacementConstraint">
-            <template #icon>
-              <el-icon :size="20">
-                <IconMdiAdd />
-              </el-icon>
-            </template>
+            <el-icon :size="16">
+              <IconMdiAdd />
+            </el-icon>
             {{ t("btn.addPlacementConstraint") }}
           </el-button>
         </el-form-item>
@@ -313,11 +311,9 @@ onBeforeMount(async () => {
         </div>
 
         <el-button size="small" type="info" @click="editSchedule(-1)">
-          <template #icon>
-            <el-icon :size="20">
-              <IconMdiAdd />
-            </el-icon>
-          </template>
+          <el-icon :size="16">
+            <IconMdiAdd />
+          </el-icon>
           {{ t("btn.addSchedule") }}
         </el-button>
       </div>

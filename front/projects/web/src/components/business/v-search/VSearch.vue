@@ -31,19 +31,15 @@ const keywords = defineModel<string>()
 
         <div>
           <el-button native-type="submit" type="primary">
-            <template #icon>
-              <el-icon :size="20">
-                <IconMdiSearch />
-              </el-icon>
-            </template>
+            <el-icon :size="16">
+              <IconMdiSearch />
+            </el-icon>
             {{ t("btn.search") }}
           </el-button>
           <el-button v-if="props.addLabel" plain type="primary" @click="emits('add')">
-            <template #icon>
-              <el-icon :size="20">
-                <IconMdiAdd />
-              </el-icon>
-            </template>
+            <el-icon :size="16">
+              <IconMdiAdd />
+            </el-icon>
             {{ props.addLabel }}
           </el-button>
         </div>

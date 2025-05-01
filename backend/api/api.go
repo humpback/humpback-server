@@ -22,7 +22,6 @@ type Router struct {
 
 func InitRouter(nodeCh chan types.NodeSimpleInfo, serviceCh chan types.ServiceChangeInfo) *Router {
 	gin.SetMode(gin.ReleaseMode)
-	gin.Default()
 	r := &Router{engine: gin.New()}
 	r.setMiddleware(nodeCh, serviceCh)
 	r.setRoute()
@@ -48,7 +47,7 @@ func (api *Router) Close(c context.Context) error {
 }
 
 func (api *Router) setMiddleware(nodeCh chan types.NodeSimpleInfo, serviceCh chan types.ServiceChangeInfo) {
-	api.engine.Use(middleware.Log(), middleware.CorsCheck(), middleware.HandleError(), middleware.SetEventChannel(nodeCh, serviceCh))
+	api.engine.Use(gin.Recovery(), middleware.Log(), middleware.CorsCheck(), middleware.HandleError(), middleware.SetEventChannel(nodeCh, serviceCh))
 }
 
 func (api *Router) setRoute() {

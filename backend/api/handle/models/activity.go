@@ -108,10 +108,16 @@ func (s *ActivityAllQueryReqInfo) Check() error {
 	return nil
 }
 
-func (s *ActivityAllQueryReqInfo) IsValid(timestampStr string) (bool, error) {
+func (s *ActivityAllQueryReqInfo) IsValid(timestampStr, userId string) (bool, error) {
 	timestamp, err := strconv.ParseInt(timestampStr, 10, 64)
 	if err != nil {
 		return false, err
 	}
-	return timestamp > s.StartAt, nil
+	if timestamp < s.StartAt {
+		return false, nil
+	}
+	if types.IsUser(s.UserInfo.Role) && userId != s.UserInfo.UserId {
+		return false, nil
+	}
+	return true, nil
 }

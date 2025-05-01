@@ -182,6 +182,7 @@ export default {
     "updateApplication": "更新应用信息",
     "updateDeployment": "更新部署信息",
     "updateLabel": "更新标签",
-    "deploy": "部署"
+    "deploy": "部署",
+    "myAccount": "我的账户"
   }
 }

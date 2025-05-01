@@ -1030,9 +1030,9 @@ func ActivityAllQuery(info *models.ActivityAllQueryReqInfo) (map[string][]*types
 	for key, bucket := range buckets {
 		go func(name string, bucket string) {
 			defer wg.Done()
-			list, err := db.ActivityAllQuery(info, bucket)
+			list, err := db.ActivityQueryByStartAtAndUser(info, bucket)
 			if err != nil {
-				slog.Error("[ActivityAllQuery] List activities failed.", "Bucket", bucket, "Error", err.Error())
+				slog.Error("[ActivityQueryByStartAtAndUser] List activities failed.", "Bucket", bucket, "Error", err.Error())
 				return
 			}
 			l.Lock()

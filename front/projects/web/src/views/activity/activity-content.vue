@@ -72,11 +72,9 @@ onMounted(() => {
         show-out-label />
     </div>
     <el-button type="primary" @click="search()">
-      <template #icon>
-        <el-icon :size="20">
-          <IconMdiFilterVariant />
-        </el-icon>
-      </template>
+      <el-icon :size="16">
+        <IconMdiFilterVariant />
+      </el-icon>
       {{ t("btn.filter") }}
     </el-button>
   </div>

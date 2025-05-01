@@ -215,11 +215,9 @@ defineExpose({ validate })
         </div>
         <div>
           <el-button :disabled="!logConfig!.type" size="small" type="info" @click="addOption()">
-            <template #icon>
-              <el-icon :size="20">
-                <IconMdiAdd />
-              </el-icon>
-            </template>
+            <el-icon :size="16">
+              <IconMdiAdd />
+            </el-icon>
             {{ t("btn.addOption") }}
           </el-button>
         </div>
