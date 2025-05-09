@@ -114,7 +114,7 @@ export default defineConfig({
       ]
     }),
     ElementPlus({
-      useSource: process.env.NODE_ENV === "development"
+      useSource: true
     })
   ],
   server: {
